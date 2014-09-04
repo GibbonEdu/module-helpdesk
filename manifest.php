@@ -20,14 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //This file describes the module, including database tables
 
 //Basic variables
-$name="" ; //The name of the variable as it appears to users. Needs to be unique to installation. Also the name of the folder that holds the unit.
-$description="" ; //Short text description
+$name="Help Desk" ; //The name of the variable as it appears to users. Needs to be unique to installation. Also the name of the folder that holds the unit.
+$description="Gibbon Help Desk Module"; //Short text description
 $entryURL="index.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
-$category="" ; //The main menu area to place the module in
-$version="" ; //Verson number
-$author="" ; //Your name
-$url="" ; //Your URL
+$category="Other" ; //The main menu area to place the module in
+$version="0.0.0" ; //Verson number
+$author="Ray Clark & Adrien Tremblay" ; //Your name
+$url="http://www.adrientremblay.com" ; //Your URL
 
 //Module tables & gibbonSettings entries
 $moduleTables[0]="" ; //One array entry for every database table you need to create. Might be nice to preface the table name with the module name, to keep the db neat. 
