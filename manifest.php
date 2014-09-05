@@ -25,7 +25,7 @@ $description="Gibbon Help Desk Module"; //Short text description
 $entryURL="index.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Other" ; //The main menu area to place the module in
-$version="0.0.0" ; //Verson number
+$version="0.0.00" ; //Verson number
 $author="Ray Clark & Adrien Tremblay" ; //Your name
 $url="http://www.adrientremblay.com" ; //Your URL
 
