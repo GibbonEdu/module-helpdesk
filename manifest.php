@@ -27,11 +27,11 @@ $type="Additional" ; //Do not change.
 $category="Other" ; //The main menu area to place the module in
 $version="0.0.00" ; //Verson number
 $author="Ray Clark & Adrien Tremblay" ; //Your name
-$url="http://www.adrientremblay.com" ; //Your URL
+$url="https://github.com/adrientremblay/helpdesk" ; //Your URL
 
 //Module tables & gibbonSettings entries
-$moduleTables[0]="" ; //One array entry for every database table you need to create. Might be nice to preface the table name with the module name, to keep the db neat. 
-$moduleTables[1]="" ; //Also can be used to put data into gibbonSettings. Other sql can be run, but resulting data will not be cleaned up on uninstall.
+//$moduleTables[0]="" ; //One array entry for every database table you need to create. Might be nice to preface the table name with the module name, to keep the db neat. 
+//$moduleTables[1]="" ; //Also can be used to put data into gibbonSettings. Other sql can be run, but resulting data will not be cleaned up on uninstall.
 
 
 //Action rows 
@@ -52,6 +52,4 @@ $actionRows[0]["categoryPermissionStudent"]="N" ; //Should this action be availa
 $actionRows[0]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
 $actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
 
-//Hooks
-$hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.
 ?>
