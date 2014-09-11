@@ -25,14 +25,35 @@ $description="Gibbon Help Desk Module"; //Short text description
 $entryURL="index.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Other" ; //The main menu area to place the module in
-$version="0.0.00" ; //Verson number
+$version="0.0.01" ; //Verson number
 $author="Ray Clark & Adrien Tremblay" ; //Your name
 $url="https://github.com/adrientremblay/helpdesk" ; //Your URL
 
 //Module tables & gibbonSettings entries
-//$moduleTables[0]="" ; //One array entry for every database table you need to create. Might be nice to preface the table name with the module name, to keep the db neat. 
-//$moduleTables[1]="" ; //Also can be used to put data into gibbonSettings. Other sql can be run, but resulting data will not be cleaned up on uninstall.
+$moduleTables[0]="CREATE TABLE `gibbonTechnicians` (
+  `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+  `permission` enum('Head','Normal','Junior') NOT NULL DEFAULT 'Junior',
+  PRIMARY KEY (`technicianID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
+$moduleTables[1]="CREATE TABLE `gibbonIssue` (
+  `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+  `title` varchar(55) NOT NULL,
+  `desc` text NOT NULL,
+  `active` boolean DEFAULT TRUE,
+  PRIMARY KEY (`issueID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
+
+$moduleTables[2]="CREATE TABLE `gibbonIssueDiscuss` (
+  `issueDiscussID` int(12) unsigned zerofill NOT NULL,
+  `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+  `comment` text NOT NULL,
+  PRIMARY KEY (`issueDiscussID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
 //Action rows 
 //One array per action
