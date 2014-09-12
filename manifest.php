@@ -33,7 +33,6 @@ $url="https://github.com/adrientremblay/helpdesk" ; //Your URL
 $moduleTables[0]="CREATE TABLE `gibbonTechnicians` (
   `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
-  `permission` enum('Head','Normal','Junior') NOT NULL DEFAULT 'Junior',
   PRIMARY KEY (`technicianID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
@@ -43,7 +42,7 @@ $moduleTables[1]="CREATE TABLE `gibbonIssue` (
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   `title` varchar(55) NOT NULL,
   `desc` text NOT NULL,
-  `active` enun('Y','N') DEFAULT 'Y',
+  `active` boolean DEFAULT TRUE,
   PRIMARY KEY (`issueID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
