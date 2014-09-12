@@ -26,7 +26,7 @@ $entryURL="index.php" ;
 $type="Additional" ;
 $category="Other" ;
 $version="0.0.01" ;
-$author="Ray Clark & Adrien Tremblay" ;
+$author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/adrientremblay/helpdesk" ;
 
 //Module tables & gibbonSettings entries
@@ -56,20 +56,124 @@ $moduleTables[2]="CREATE TABLE `gibbonIssueDiscuss` (
 
 //Action rows
 //One array per action
-$actionRows[0]["name"]="" ; //The name of the action (appears to user in the right hand side module menu)
-$actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[0]["category"]="" ; //Optional: subgroups for the right hand side module menu
-$actionRows[0]["description"]="" ; //Text description
-$actionRows[0]["URLList"]="" ; //List of pages included in this action
-$actionRows[0]["entryURL"]="" ; //The landing action for the page.
-$actionRows[0]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
-$actionRows[0]["defaultPermissionTeacher"]="Y" ; //Default permission for built in role Teacher
-$actionRows[0]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
-$actionRows[0]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
-$actionRows[0]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
-$actionRows[0]["categoryPermissionStaff"]="N" ; //Should this action be available to user roles in the Staff category?
-$actionRows[0]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
-$actionRows[0]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
-$actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+$actionCount = 0 ;
+
+$actionRows[$actionCount]["name"]="Submit Issue" ; //The name of the action (appears to user in the right hand side module menu)
+$actionRows[$actionCount]["precedence"]="0" ; //If it is a grouped action, the precedence controls which is highest action in group
+$actionRows[$actionCount]["category"]="" ; //Optional: subgroups for the right hand side module menu
+$actionRows[$actionCount]["description"]="Submits an IT related issue to be resolved by the help desk staff" ; //Text description
+$actionRows[$actionCount]["URLList"]="" ; //List of pages included in this action
+$actionRows[$actionCount]["entryURL"]="" ; //The landing action for the page.
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ; //Default permission for built in role Teacher
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
+$actionRows[$actionCount]["categoryPermissionStaff"]="N" ; //Should this action be available to user roles in the Staff category?
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="Assign a tech an issue" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]="Assign any tech an existing unresolved issue" ;
+$actionRows[$actionCount]["URLList"]="" ;
+$actionRows[$actionCount]["entryURL"]="" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="View issues" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]="Lists all existing issues" ;
+$actionRows[$actionCount]["URLList"]="" ;
+$actionRows[$actionCount]["entryURL"]="" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="View all my submitted issues" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]= "Lists all active issues under my name" ;
+$actionRows[$actionCount]["URLList"]="" ;
+$actionRows[$actionCount]["entryURL"]="" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="Assign myself to an issue" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]="Assigns technician to an issue" ;
+$actionRows[$actionCount]["URLList"]="" ;
+$actionRows[$actionCount]["entryURL"]="" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="View issues techs are working on" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]="Views lessons that any techs are working on in detail" ;
+$actionRows[$actionCount]["URLList"]="" ;
+$actionRows[$actionCount]["entryURL"]="" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="View all issues I am working on" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]= "Lists all active issues under my name" ;
+$actionRows[$actionCount]["URLList"]="" ;
+$actionRows[$actionCount]["entryURL"]="" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 ?>
