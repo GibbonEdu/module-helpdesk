@@ -20,14 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //This file describes the module, including database tables
 
 //Basic variables
-$name="Help Desk" ; //The name of the variable as it appears to users. Needs to be unique to installation. Also the name of the folder that holds the unit.
-$description="Gibbon Help Desk Module"; //Short text description
-$entryURL="index.php" ; //The landing page for the unit, used in the main menu
-$type="Additional" ; //Do not change.
-$category="Other" ; //The main menu area to place the module in
-$version="0.0.01" ; //Verson number
-$author="Ray Clark & Adrien Tremblay" ; //Your name
-$url="https://github.com/adrientremblay/helpdesk" ; //Your URL
+$name="Help Desk" ;
+$description="Gibbon Help Desk Module";
+$entryURL="index.php" ;
+$type="Additional" ;
+$category="Other" ;
+$version="0.0.01" ;
+$author="Ray Clark & Adrien Tremblay" ;
+$url="https://github.com/adrientremblay/helpdesk" ;
 
 //Module tables & gibbonSettings entries
 $moduleTables[0]="CREATE TABLE `gibbonTechnicians` (
@@ -54,7 +54,7 @@ $moduleTables[2]="CREATE TABLE `gibbonIssueDiscuss` (
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
-//Action rows 
+//Action rows
 //One array per action
 $actionRows[0]["name"]="" ; //The name of the action (appears to user in the right hand side module menu)
 $actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
@@ -67,7 +67,7 @@ $actionRows[0]["defaultPermissionTeacher"]="Y" ; //Default permission for built 
 $actionRows[0]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
 $actionRows[0]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
 $actionRows[0]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
-$actionRows[0]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
+$actionRows[0]["categoryPermissionStaff"]="N" ; //Should this action be available to user roles in the Staff category?
 $actionRows[0]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
 $actionRows[0]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
 $actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
