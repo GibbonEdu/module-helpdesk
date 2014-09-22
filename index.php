@@ -40,6 +40,10 @@ else {
 		echo $e->getMessage();
 	}
 
-	echo "kelik sukz"
+	?>
+		<h3 style = "color : red">Please select a kelik egg on the right.</h3>
+		<!--Please select an action on the right.-->
+		<img src = "http://upload.wikimedia.org/wikipedia/commons/5/5e/Chicken_egg_2009-06-04.jpg" style = "height : 300px ; width : 200px"></img>
+	<?php
 }
 ?>
