@@ -29,7 +29,7 @@ if (isModuleAccessible($guid, $connection2)==FALSE) {
 	print "</div>" ;
 }
 else {
-	//New PDO DB connection. 
+	//New PDO DB connection.
 	//Gibbon uses PDO to connect to databases, rather than the PHP mysql classes, as they provide paramaterised connections, which are more secure.
 	try {
 		$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
@@ -39,5 +39,7 @@ else {
 	catch(PDOException $e) {
 		echo $e->getMessage();
 	}
-}	
+
+	echo "kelik sukz"
+}
 ?>
