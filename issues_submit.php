@@ -19,23 +19,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-//Module includes
-include "./modules/Policies/moduleFunctions.php" ;
+include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Policies/policies_view.php")==FALSE) {
+if (isModuleAccessible($guid, $connection2)==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print "You do not have access to this action." ;
 	print "</div>" ;
 }
 else {
-	$highestAction=getHighestGroupedAction($guid, $_GET["q"], $connection2) ;
-	if ($highestAction==FALSE) {
-		print "<div class='error'>" ;
-		print "The highest grouped action cannot be determined." ;
-		print "</div>" ;
+	//New PDO DB connection.
+	//Gibbon uses PDO to connect to databases, rather than the PHP mysql classes, as they provide paramaterised connections, which are more secure.
+	try {
+		$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
+		$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 	}
-	else {
+	catch(PDOException $e) {
+		echo $e->getMessage();
+	}
+	?>
 	
-	}	
+	<?php
+}
 ?>

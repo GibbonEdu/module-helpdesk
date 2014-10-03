@@ -45,12 +45,5 @@ else {
 	?>
 	
 	<?php
-	/*
-		View Issues Filters:
-			Issues I am working on
-			Issues All Techs are working on
-			Issues I submitted
-			Resolved Issues
-	*/
 }
 ?>
