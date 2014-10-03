@@ -10,23 +10,47 @@ the Free Software Foundation, either version 3 of the License, or
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 @session_start() ;
-include "./modules/Help Desk/moduleFunctions.php";
 
-if (isActionAccessible($guid, $connection2, "/modules/Policies/issues_view.php")==FALSE) {
+//Module includes
+include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+
+if (isModuleAccessible($guid, $connection2)==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print "You do not have access to this action." ;
 	print "</div>" ;
-} else {
-	
 }
-
+else {
+	//New PDO DB connection.
+	//Gibbon uses PDO to connect to databases, rather than the PHP mysql classes, as they provide paramaterised connections, which are more secure.
+	try {
+		$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
+		$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+	}
+	catch(PDOException $e) {
+		echo $e->getMessage();
+	}
+	print "<h2>" ;
+	print _("Filter") ;
+	print "</h2>" ;
+	?>
+	
+	<?php
+	/*
+		View Issues Filters:
+			Issues I am working on
+			Issues All Techs are working on
+			Issues I submitted
+			Resolved Issues
+	*/
+}
 ?>
