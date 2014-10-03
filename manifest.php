@@ -71,7 +71,7 @@ $actionRows[$actionCount]["defaultPermissionParent"]="N" ; //Default permission 
 $actionRows[$actionCount]["defaultPermissionSupport"]="Y" ; //Default permission for built in role Support
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
 $actionRows[$actionCount]["categoryPermissionStudent"]="Y" ; //Should this action be available to user roles in the Student category?
-$actionRows[$actionCount]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
+$actionRows[$actionCount]["categoryPermissionParent"]="Y" ; //Should this action be available to user roles in the Parent category?
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
 
 $actionCount++ ;
@@ -88,7 +88,7 @@ $actionRows[$actionCount]["defaultPermissionParent"]="N" ;
 $actionRows[$actionCount]["defaultPermissionSupport"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
@@ -99,13 +99,13 @@ $actionRows[$actionCount]["description"]="Lists all existing issues" ;
 $actionRows[$actionCount]["URLList"]="issues_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
-$actionRows[$actionCount]["defaultPermissionTeacher"]="Y" ;
-$actionRows[$actionCount]["defaultPermissionStudent"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
 $actionRows[$actionCount]["defaultPermissionParent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionSupport"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
@@ -120,9 +120,9 @@ $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
 $actionRows[$actionCount]["defaultPermissionParent"]="N" ;
 $actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
-$actionRows[$actionCount]["categoryPermissionStaff"]="N" ;
-$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
@@ -143,29 +143,29 @@ $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Assign_self" ;
+$actionRows[$actionCount]["name"]="Assign Issue_self" ;
 $actionRows[$actionCount]["precedence"]="1" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Assigns technician to an issue" ;
-$actionRows[$actionCount]["URLList"]="issues_assignIssue.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_assignIssue.php" ;
+$actionRows[$actionCount]["URLList"]="issues_discuss.php" ;
+$actionRows[$actionCount]["entryURL"]="issues_discuss.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
 $actionRows[$actionCount]["defaultPermissionParent"]="N" ;
 $actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
-$actionRows[$actionCount]["categoryPermissionStaff"]="N" ;
-$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Assign_tech" ;
+$actionRows[$actionCount]["name"]="Assign Issue_tech" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Assign any tech an existing unresolved issue" ;
-$actionRows[$actionCount]["URLList"]="issues_discuss.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_discuss.php" ;
+$actionRows[$actionCount]["URLList"]="issues_assignIssue.php" ;
+$actionRows[$actionCount]["entryURL"]="issues_assignIssue.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
@@ -175,6 +175,5 @@ $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
-
 
 ?>
