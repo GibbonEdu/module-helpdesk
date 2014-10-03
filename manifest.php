@@ -143,7 +143,7 @@ $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Assign_self Issue" ;
+$actionRows[$actionCount]["name"]="Assign_self" ;
 $actionRows[$actionCount]["precedence"]="1" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Assigns technician to an issue" ;
@@ -160,7 +160,7 @@ $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Assign_tech Issue" ;
+$actionRows[$actionCount]["name"]="Assign_tech" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Assign any tech an existing unresolved issue" ;
