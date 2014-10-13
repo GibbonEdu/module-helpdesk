@@ -43,8 +43,8 @@ else {
 	print _("Filter") ;
 	print "</h3>" ;
 
-	$con = mysql_connect("localhost", "root", "root") or die(mysql_error());
-  mysql_select_db('gibbon') or die ("Cannot select database");
+	$con = mysql_connect($databaseServer, $databaseUsername, $databasePassword) or die(mysql_error());
+  mysql_select_db($databaseName) or die ("Cannot select database");
 
 	$query = mysql_query("SELECT * FROM gibbonIssue");
 
