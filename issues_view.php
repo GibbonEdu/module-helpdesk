@@ -39,11 +39,26 @@ else {
 	catch(PDOException $e) {
 		echo $e->getMessage();
 	}
-	print "<h2>" ;
+	print "<h3>" ;
 	print _("Filter") ;
-	print "</h2>" ;
-	?>
-	
-	<?php
+	print "</h3>" ;
+
+	$con = mysql_connect("localhost", "root", "root") or die(mysql_error());
+  mysql_select_db('gibbon') or die ("Cannot select database");
+
+	$query = mysql_query("SELECT * FROM gibbonIssue");
+
+	print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
+	print "<tr> <th>Title</th> <th>Description</th> </tr>";
+
+	while ($row = mysql_fetch_array($query)){
+		print "<tr>";
+		printf("<td>" .$row['title']. "</td>");
+		printf("<td>" .$row['desc']. "</td>");
+		print "</tr>";
+	}
+	print "</table>";
+
+	mysql_close($con);
 }
 ?>
