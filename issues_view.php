@@ -29,36 +29,31 @@ if (isModuleAccessible($guid, $connection2)==FALSE) {
 	print "</div>" ;
 }
 else {
-	//New PDO DB connection.
-	//Gibbon uses PDO to connect to databases, rather than the PHP mysql classes, as they provide paramaterised connections, which are more secure.
-	try {
-		$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-		$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-	}
-	catch(PDOException $e) {
-		echo $e->getMessage();
-	}
 	print "<h3>" ;
 	print _("Filter") ;
 	print "</h3>" ;
 
-	$con = mysql_connect($databaseServer, $databaseUsername, $databasePassword) or die(mysql_error());
-  mysql_select_db($databaseName) or die ("Cannot select database");
+	try {
+		$dataIssue=array("issueID"=>$row["issueID"]); 
+		$sqlIssue="SELECT * FROM helpDeskIssue" ;
+		$resultIssue=$connection2->prepare($sqlIssue);
+		$resultIssue->execute($dataIssue);
+		
+		print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
+		print "<tr> <th>Title</th> <th>Description</th> </tr>";
 
-	$query = mysql_query("SELECT * FROM gibbonIssue");
-
-	print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-	print "<tr> <th>Title</th> <th>Description</th> </tr>";
-
-	while ($row = mysql_fetch_array($query)){
-		print "<tr>";
-		printf("<td>" .$row['title']. "</td>");
-		printf("<td>" .$row['desc']. "</td>");
-		print "</tr>";
+		foreach($resultIssue as $row){
+			print "<tr>";
+			printf("<td>" .$row['title']. "</td>");
+			printf("<td>" .$row['desc']. "</td>");
+			print "</tr>";
+		}
+		print "</table>";
 	}
-	print "</table>";
+	catch(PDOException $e) { 
+	}
 
-	mysql_close($con);
+	
+
 }
 ?>

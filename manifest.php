@@ -30,13 +30,13 @@ $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/adrientremblay/helpdesk" ;
 
 //Module tables & gibbonSettings entries
-$moduleTables[0]="CREATE TABLE `gibbonTechnicians` (
+$moduleTables[0]="CREATE TABLE `helpDeskTechnicians` (
   `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   PRIMARY KEY (`technicianID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[1]="CREATE TABLE `gibbonIssue` (
+$moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `technicianID` int(4) unsigned zerofill NOT NULL,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
@@ -46,7 +46,7 @@ $moduleTables[1]="CREATE TABLE `gibbonIssue` (
   PRIMARY KEY (`issueID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[2]="CREATE TABLE `gibbonIssueDiscuss` (
+$moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `issueID` int(12) unsigned zerofill NOT NULL,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
