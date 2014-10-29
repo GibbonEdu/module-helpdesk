@@ -34,26 +34,35 @@ else {
 	print "</h3>" ;
 
 	try {
-		$dataIssue=array("issueID"=>$row["issueID"]); 
-		$sqlIssue="SELECT * FROM helpDeskIssue" ;
+		$dataIssue=array("issueID"=>$row["issueID"]);
+		$sqlIssue="SELECT helpDeskIssue.*, surname, preferredName, title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID)" ;
 		$resultIssue=$connection2->prepare($sqlIssue);
 		$resultIssue->execute($dataIssue);
-		
+	}
+	catch(PDOException $e) {
+
+	}
 		print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-		print "<tr> <th>Title</th> <th>Description</th> </tr>";
+		print "<tr> <th>Title</th> <th>Description</th> <th>Active</th> <th>gibbonPerson</th> </tr>";
 
 		foreach($resultIssue as $row){
 			print "<tr>";
 			printf("<td>" .$row['title']. "</td>");
 			printf("<td>" .$row['desc']. "</td>");
+			printf("<td>" .$row['active']. "</td>");
+
+
+			foreach($resultPerson as $row2){
+				printf("<td>" .$row2['firstName']. "</td>");
+			}
+
 			print "</tr>";
 		}
 		print "</table>";
 	}
-	catch(PDOException $e) { 
-	}
 
-	
+
+
 
 }
 ?>
