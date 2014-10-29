@@ -23,46 +23,37 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 if (isModuleAccessible($guid, $connection2)==FALSE) {
-	//Acess denied
-	print "<div class='error'>" ;
-		print "You do not have access to this action." ;
-	print "</div>" ;
+  //Acess denied
+  print "<div class='error'>" ;
+    print "You do not have access to this action." ;
+  print "</div>" ;
 }
 else {
-	print "<h3>" ;
-	print _("Filter") ;
-	print "</h3>" ;
+  print "<h3>" ;
+  print _("Filter") ;
+  print "</h3>" ;
 
-	try {
-		$dataIssue=array("issueID"=>$row["issueID"]);
-		$sqlIssue="SELECT helpDeskIssue.*, surname, preferredName, title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID)" ;
-		$resultIssue=$connection2->prepare($sqlIssue);
-		$resultIssue->execute($dataIssue);
-	}
-	catch(PDOException $e) {
+  //fix title glitch boiyo
 
-	}
-		print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-		print "<tr> <th>Title</th> <th>Description</th> <th>Active</th> <th>gibbonPerson</th> </tr>";
+  try {
+    $dataIssue=array("issueID"=>$row["issueID"]);
+    $sqlIssue="SELECT helpDeskIssue.* , surname , preferredName FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID)" ;
+    $resultIssue=$connection2->prepare($sqlIssue);
+    $resultIssue->execute($dataIssue);
+  }
+  catch(PDOException $e) {
 
-		foreach($resultIssue as $row){
-			print "<tr>";
-			printf("<td>" .$row['title']. "</td>");
-			printf("<td>" .$row['desc']. "</td>");
-			printf("<td>" .$row['active']. "</td>");
-
-
-			foreach($resultPerson as $row2){
-				printf("<td>" .$row2['firstName']. "</td>");
-			}
-
-			print "</tr>";
-		}
-		print "</table>";
-	}
-
-
-
-
+  }
+    print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
+    print "<tr> <th>Title</th> <th>Description</th> <th>Active</th> <th>Name</th> </tr>";
+    foreach($resultIssue as $row){
+      print "<tr>";
+      printf("<td>" .$row['title']. "</td>");
+      printf("<td>" .$row['desc']. "</td>");
+      printf("<td>" .$row['active']. "</td>");
+      printf("<td>" .$row['surname'].", ".$row['preferredName']. "</td>");
+      print "</tr>";
+    }
+    print "</table>";
 }
 ?>
