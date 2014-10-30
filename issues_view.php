@@ -33,27 +33,77 @@ else {
 	print _("Filter") ;
 	print "</h3>" ;
 
-	try {
-		$dataIssue=array("issueID"=>$row["issueID"]); 
-		$sqlIssue="SELECT * FROM helpDeskIssue" ;
-		$resultIssue=$connection2->prepare($sqlIssue);
-		$resultIssue->execute($dataIssue);
-		
-		print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-		print "<tr> <th>Title</th> <th>Description</th> </tr>";
-
-		foreach($resultIssue as $row){
-			print "<tr>";
-			printf("<td>" .$row['title']. "</td>");
-			printf("<td>" .$row['desc']. "</td>");
-			print "</tr>";
-		}
-		print "</table>";
+	$and="" ;
+	$filter=NULL ;
+	if (isset($_GET["filter"])) {
+		$filter=$_GET["filter"] ;
 	}
-	catch(PDOException $e) { 
+	else if (isset($_POST["filter"])) {
+		$filter=$_POST["filter"] ;
 	}
-
 	
+	$issueFilters = array("My Issues", "Resolved", "All");
+	
+	if ($filter=="") {
+		$filter=$issueFilters[0];
+		$and=" WHERE active='1'" ;
+	}
+	if ($filter=="Resolved") {
+		$and=" WHERE active='0'" ;
+	}
+
+	print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "'>" ;
+		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;	
+			?>
+			<tr>
+				<td> 
+					<b><?php print _('Issue Filter') ?></b><br/>
+					<span style="font-size: 90%"><i></i></span>
+				</td>
+				<td class="right">
+					<?php
+					print "<select name='filter' id='filter' style='width:302px'>" ;
+						
+						foreach($issueFilters as $option) {
+							$selected="" ;
+							if ($option==$filter) {
+								$selected="selected" ;
+							}
+							print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+						}
+					print "</select>" ;
+					?>
+				</td>
+			</tr>
+			<?php
+			print "<tr>" ;
+				print "<td class='right' colspan=2>" ;
+					print "<input type='submit' value='" . _('Go') . "'>" ;
+				print "</td>" ;
+			print "</tr>" ;
+		print"</table>" ;
+	print "</form>" ;	
+
+  try {
+    $dataIssue=array("issueID"=>$row["issueID"]);
+    $sqlIssue="SELECT helpDeskIssue.* , surname , preferredName, gibbonPerson.title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID)" . $and;
+    $resultIssue=$connection2->prepare($sqlIssue);
+    $resultIssue->execute($dataIssue);
+  }
+  catch(PDOException $e) {
+
+  }
+    print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
+    print "<tr> <th>Title</th> <th>Description</th> <th>Name</th> <th>Active</th> </tr>";
+    foreach($resultIssue as $row){
+      print "<tr>";
+      printf("<td>" .$row['issueName']. "</td>");
+      printf("<td>" .$row['desc']. "</td>");
+      printf("<td>" .$row['title'].$row['surname'].", ".$row['preferredName']. "</td>");
+      printf("<td>" .(($row['active'] == 1) ? "TRUE" : "FALSE"). "</td>");
+      print "</tr>";
+    }
+    print "</table>";	
 
 }
 ?>
