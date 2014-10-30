@@ -42,6 +42,7 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   `issueName` varchar(55) NOT NULL,
   `desc` text NOT NULL,
+  `date` date NOT NULL,
   `active` boolean DEFAULT TRUE,
   PRIMARY KEY (`issueID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
