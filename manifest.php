@@ -40,7 +40,7 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `technicianID` int(4) unsigned zerofill NOT NULL,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
-  `title` varchar(55) NOT NULL,
+  `issueName` varchar(55) NOT NULL,
   `desc` text NOT NULL,
   `active` boolean DEFAULT TRUE,
   PRIMARY KEY (`issueID`)

@@ -33,11 +33,9 @@ else {
   print _("Filter") ;
   print "</h3>" ;
 
-  //fix title glitch boiyo
-
   try {
     $dataIssue=array("issueID"=>$row["issueID"]);
-    $sqlIssue="SELECT helpDeskIssue.* , surname , preferredName FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID)" ;
+    $sqlIssue="SELECT helpDeskIssue.* , surname , preferredName, gibbonPerson.title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID)" ;
     $resultIssue=$connection2->prepare($sqlIssue);
     $resultIssue->execute($dataIssue);
   }
@@ -45,13 +43,13 @@ else {
 
   }
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-    print "<tr> <th>Title</th> <th>Description</th> <th>Active</th> <th>Name</th> </tr>";
+    print "<tr> <th>Title</th> <th>Description</th> <th>Name</th> <th>Active</th> </tr>";
     foreach($resultIssue as $row){
       print "<tr>";
-      printf("<td>" .$row['title']. "</td>");
+      printf("<td>" .$row['issueName']. "</td>");
       printf("<td>" .$row['desc']. "</td>");
-      printf("<td>" .$row['active']. "</td>");
-      printf("<td>" .$row['surname'].", ".$row['preferredName']. "</td>");
+      printf("<td>" .$row['title'].$row['surname'].", ".$row['preferredName']. "</td>");
+      printf("<td>" .(($row['active'] == 1) ? "TRUE" : "FALSE"). "</td>");
       print "</tr>";
     }
     print "</table>";
