@@ -41,9 +41,9 @@ else {
 	else if (isset($_POST["filter"])) {
 		$filter=$_POST["filter"] ;
 	}
-	
+
 	$issueFilters = array("My Issues", "Resolved", "All");
-	
+
 	if ($filter=="") {
 		$filter=$issueFilters[0];
 		$and=" WHERE active='1'" ;
@@ -53,17 +53,17 @@ else {
 	}
 
 	print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "'>" ;
-		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;	
+		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;
 			?>
 			<tr>
-				<td> 
+				<td>
 					<b><?php print _('Issue Filter') ?></b><br/>
 					<span style="font-size: 90%"><i></i></span>
 				</td>
 				<td class="right">
 					<?php
 					print "<select name='filter' id='filter' style='width:302px'>" ;
-						
+
 						foreach($issueFilters as $option) {
 							$selected="" ;
 							if ($option==$filter) {
@@ -82,7 +82,7 @@ else {
 				print "</td>" ;
 			print "</tr>" ;
 		print"</table>" ;
-	print "</form>" ;	
+	print "</form>" ;
 
   try {
     $dataIssue=array("issueID"=>$row["issueID"]);
@@ -103,7 +103,7 @@ else {
       printf("<td>" .(($row['active'] == 1) ? "TRUE" : "FALSE"). "</td>");
       print "</tr>";
     }
-    print "</table>";	
+    print "</table>";
 
 }
 ?>

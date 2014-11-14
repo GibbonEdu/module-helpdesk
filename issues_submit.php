@@ -38,8 +38,55 @@ else {
 	catch(PDOException $e) {
 		echo $e->getMessage();
 	}
+
 	?>
-	
+
+	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_submitProccess.php" ?>">
+		<table class='smallIntBorder' cellspacing='0' style="width: 100%">
+			<tr>
+				<td style='width: 275px'>
+					<b><?php print _('Issue Name') ?> *</b><br/>
+				</td>
+				<td class="right">
+					<input name="name" id="name" maxlength=100 value="" type="text" style="width: 300px">
+					<script type="text/javascript">
+						var name2=new LiveValidation('name');
+						name2.add(Validate.Presence);
+					</script>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<b><?php print _('Active') ?> *</b><br/>
+					<span style="font-size: 90%"><i></i></span>
+				</td>
+				<td class="right">
+					<select name="active" id="active" style="width: 302px">
+						<option value="Y"><?php print _('Yes') ?></option>
+						<option value="N"><?php print _('No') ?></option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<b><?php print _('Description') ?></b><br/>
+				</td>
+				<td class="right">
+					<textarea name='description' id='description' rows=5 style='width: 300px'></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span style="font-size: 90%"><i>* <?php print _("denotes a required field") ; ?></i></span>
+				</td>
+				<td class="right">
+					<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
+					<input type="submit" value="<?php print _("Submit") ; ?>">
+				</td>
+			</tr>
+		</table>
+	</form>
+
 	<?php
 }
 ?>
