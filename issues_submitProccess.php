@@ -47,10 +47,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_submit.ph
 else {
 	//Proceed!
 	$name=$_POST["name"] ;
-	$active=$_POST["active"] ;
 	$description=$_POST["description"] ;
 
-	if ($name=="" OR $active=="") {
+	if ($name=="") {
 		//Fail 3
 		$URL=$URL . "&addReturn=fail3" ;
 		header("Location: {$URL}");
@@ -58,15 +57,14 @@ else {
 	else {
 		//Write to database
 		try {
-
-			$data=array("issueID"=> 0, "technicianID"=> 1, "gibbonPersonID"=> $_SESSION[$guid]["gibbonPersonID"], "name"=>$name, "active"=>$active, "description"=>$description, "date" => date("Y-m-d"), active => $active);
-			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, active=:active" ;
-      $result=$connection2->prepare($sql);
+			$data=array("issueID"=>0, "technicianID"=>0, "gibbonPersonID"=>$_SESSION[$guid]["gibbonPersonID"], "name"=>$name, "description"=>$description, "date" =>date("Y-m-d"), "status"=>"Unassigned", "gibbonSchoolYearID"=>19);
+			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, gibbonSchoolYearID=:gibbonSchoolYearID" ;
+      		$result=$connection2->prepare($sql);
 			$result->execute($data);
 		}
 		catch(PDOException $e) {
 			//Fail 2q
-      print $e;
+     	 	print $e;
 			$URL=$URL . "&addReturn=fail2" ;
 			header("Location: {$URL}");
 			break ;
