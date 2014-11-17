@@ -57,18 +57,6 @@ else {
 			</tr>
 			<tr>
 				<td>
-					<b><?php print _('Active') ?> *</b><br/>
-					<span style="font-size: 90%"><i></i></span>
-				</td>
-				<td class="right">
-					<select name="active" id="active" style="width: 302px">
-						<option value="Y"><?php print _('Yes') ?></option>
-						<option value="N"><?php print _('No') ?></option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>
 					<b><?php print _('Description') ?></b><br/>
 				</td>
 				<td class="right">
