@@ -51,7 +51,6 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
 $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `issueID` int(12) unsigned zerofill NOT NULL,
-  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   `comment` text NOT NULL,
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
