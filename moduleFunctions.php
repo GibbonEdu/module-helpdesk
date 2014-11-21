@@ -17,4 +17,37 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+function isTechnician($gibbonPersonID, $connection2){
+  try {
+    $data=array("gibbonPersonID"=> $gibbonPersonID);
+    $sql="SELECT * FROM helpDeskTechnicians WHERE gibbonPersonID=:gibbonPersonID";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+  }
+  catch(PDOException $e) {
+	print $e;
+  }
+  
+  return ($result->rowCount()==1);
+}
+
+function getTechnicianID($gibbonPersonID, $connection2){
+  try {
+    $data=array("gibbonPersonID"=> $gibbonPersonID);
+    $sql="SELECT * FROM helpDeskTechnicians WHERE helpDeskTechnicians.gibbonPersonID=:gibbonPersonID ";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+  }
+  catch(PDOException $e) {
+	print $e;
+  }
+  $id = null;
+  if($result->rowCount()==1){
+  	$array = $result->fetchAll();
+  	$id = $array[0]["technicianID"];
+  }
+  return $id;
+}
+
 ?>

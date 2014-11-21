@@ -57,7 +57,7 @@ else {
 	else {
 		//Write to database
 		try {
-			$data=array("issueID"=>0, "technicianID"=>0, "gibbonPersonID"=>$_SESSION[$guid]["gibbonPersonID"], "name"=>$name, "description"=>$description, "date" =>date("Y-m-d"), "status"=>"Unassigned", "gibbonSchoolYearID"=>19);
+			$data=array("issueID"=> 0, "technicianID"=>null, "gibbonPersonID"=> $_SESSION[$guid]["gibbonPersonID"], "name"=> $name, "description"=> $description, "date" => date("Y-m-d"), "status"=>"Unassigned", "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"]);
 			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, gibbonSchoolYearID=:gibbonSchoolYearID" ;
       		$result=$connection2->prepare($sql);
 			$result->execute($data);

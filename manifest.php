@@ -38,7 +38,7 @@ $moduleTables[0]="CREATE TABLE `helpDeskTechnicians` (
 
 $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `technicianID` int(4) unsigned zerofill NOT NULL,
+  `technicianID` int(4) unsigned zerofill DEFAULT NULL,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   `issueName` varchar(55) NOT NULL,
   `description` text NOT NULL,
@@ -51,10 +51,14 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
 $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `issueID` int(12) unsigned zerofill NOT NULL,
-  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   `comment` text NOT NULL,
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
+
+$moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSystemSettingsID`, `scope`, `name`, `nameDisplay`, `description`, `value`) 
+VALUES 
+(NULL, 'Help Desk', 'priority', 'Priority', 'Different priority levels for the issues.', ''), 
+(NULL, 'Help Desk', 'category', 'Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application')";
 
 //Action rows
 //One array per action
@@ -111,29 +115,12 @@ $actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Assign Issue_self" ;
-$actionRows[$actionCount]["precedence"]="1" ;
-$actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Assign self an issue." ;
-$actionRows[$actionCount]["URLList"]="issues_discuss.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_discuss.php" ;
-$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
-$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
-$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
-$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
-
-$actionCount++ ;
-$actionRows[$actionCount]["name"]="Assign Issue_tech" ;
-$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["name"]="View issues_All&Assign" ;
+$actionRows[$actionCount]["precedence"]="2" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Assign any tech an existing unresolved issue." ;
-$actionRows[$actionCount]["URLList"]="issues_assignIssue.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_assignIssue.php" ;
+$actionRows[$actionCount]["URLList"]="issues_view.php" ;
+$actionRows[$actionCount]["entryURL"]="issues_view.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
