@@ -29,6 +29,9 @@ if (isModuleAccessible($guid, $connection2)==FALSE) {
 	print "</div>" ;
 }
 else {
+	print "<div class='trail'>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('View Issues') . "</div>" ;
+	print "</div>" ;
 	print "<h3>" ;
 	print _("Filter") ;
 	print "</h3>" ;
@@ -54,7 +57,9 @@ else {
 		$filter2=$_POST["filter2"] ;
 	}
 	
-	$issueFilters = array("My Issues", "All");
+	$issueFilters = array("My Issues");
+	if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) array_push($issueFilters, "My Working");
+	if($highestAction=="View issues_All" || $highestAction=="View issues_All&Assign") array_push($issueFilters, "All");
 	$statusFilters = array("All", "Unassigned", "Pending", "Resolved");
 	$dataIssue["gibbonSchoolYearID"]=$_SESSION[$guid]["gibbonSchoolYearID"];
 	$and="" ;
@@ -62,9 +67,14 @@ else {
 	if ($filter=="") {
 		$filter=$issueFilters[0];
 	}
+		
 	if ($filter=="My Issues") {
 		$dataIssue["helpDeskGibbonPersonID"] = $_SESSION[$guid]["gibbonPersonID"];
 		$whereIssue.= " AND helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID";
+	}
+	else if ($filter=="My Working") {
+		$dataIssue["helpDeskTechnicianID"] = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
+		$whereIssue.= " AND helpDeskIssue.technicianID=:helpDeskTechnicianID";
 	}
 	if ($filter2=="") {
 		$filter2=$statusFilters[0];
@@ -81,14 +91,10 @@ else {
 		$dataIssue["helpDeskStatus"] = 'Resolved';
 		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
 	}
-	
-	if($filter=="My Issue" && $filter2!="All"){
-		#and = " AND"
-	}
 		
 	print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "'>" ;
 		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;	
-		if($highestAction=="View issues_All")
+		if(count($issueFilters)>1)
 		{
 			print "<tr>";
 				print "<td> ";
@@ -142,19 +148,44 @@ else {
   catch(PDOException $e) {
 	print $e;
   }
+  	print "<h3>" ;
+	print _("Issues") ;
+	print "</h3>" ;
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
     print "<tr> <th>Title</th> <th>Description</th> <th>Name</th> <th>Status</th> <th>Date</th> <th>Action</th> </tr>";
-    foreach($resultIssue as $row){
-      printf($row);
-      print "<tr>";
-      printf("<td>" .$row['issueName']. "</td>");
-      printf("<td>" .$row['description']. "</td>");
-      printf("<td>" .$row['title'].$row['surname'].", ".$row['preferredName']. "</td>");
-      printf("<td>" .$row['status']. "</td>");
-      printf("<td>" ."". "</td>");
-      printf("<td>" ."". "</td>");
-      print "</tr>";
+	if ($resultIssue->rowCount()<1){
+    	print "<tr>";
+    	print "<td colspan=5>";
+    	print _("There are no records to display.");
+		print "<td>";
+		print "</tr>";
     }
+    else {
+		foreach($resultIssue as $row){
+		  print "<tr>";
+		  printf("<td>" .$row['issueName']. "</td>");
+		  printf("<td>" .$row['description']. "</td>");
+		  printf("<td>" .$row['title'].$row['surname'].", ".$row['preferredName']. "</td>");
+		  printf("<td>" .$row['status']. "</td>");
+		  printf("<td>" .dateConvertBack($guid, $row["date"]). "</td>");
+		  print "<td>";
+		  if($row['technicianID']==null && isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) 
+		  {
+		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issue_acceptProcess.php&issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
+			print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issue_dicuss.php&issueID=". $row["issueID"] . "'><img title=" . _('View ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+		  }
+		  else if($row['technicianID']==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))
+		  {
+			print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issue_dicuss.php&issueID=". $row["issueID"] . "'><img title=" . _('Work ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+		  }
+		  if($row['technicianID']==null && $highestAction=="View issues_All&Assign")
+		  {
+		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issue_assign.php&issueID=". $row["issueID"] . "'><img title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";		  
+		  }
+		  print "</td>";
+		  print "</tr>";
+		}
+	}
     print "</table>";	
 
 }
