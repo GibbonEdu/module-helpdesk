@@ -42,7 +42,7 @@ else {
 		print _("The highest grouped action cannot be determined.") ;
 		print "</div>" ;
 	}
-	
+
 	$filter=NULL ;
 	$filter2=NULL ;
 	$filter3=NULL ;
@@ -104,7 +104,7 @@ else {
 	if ($filter=="") {
 		$filter=$issueFilters[0];
 	}
-		
+
 	if ($filter=="My Issues") {
 		$dataIssue["helpDeskGibbonPersonID"] = $_SESSION[$guid]["gibbonPersonID"];
 		$whereIssue.= " AND helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID";
@@ -122,7 +122,7 @@ else {
 		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
 	}
 	else if ($filter2=="Pending") {
-		$dataIssue["helpDeskStatus"] = 'Pending';	
+		$dataIssue["helpDeskStatus"] = 'Pending';
 		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
 	}
 	else if ($filter2=="Resolved") {
@@ -231,7 +231,7 @@ else {
 				print "</td>" ;
 			print "</tr>" ;
 		print"</table>" ;
-	print "</form>" ;	
+	print "</form>" ;
 
   try {
     $sqlIssue="SELECT helpDeskIssue.* , surname , preferredName, gibbonPerson.title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE gibbonSchoolYearID=:gibbonSchoolYearID " . $whereIssue . " ORDER BY date DESC" ;
@@ -285,7 +285,7 @@ else {
 		  print "</tr>";
 		}
 	}
-    print "</table>";	
+    print "</table>";
 
 }
 ?>

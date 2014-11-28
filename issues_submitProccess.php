@@ -24,7 +24,7 @@ include "./moduleFunctions.php" ;
 
 //New PDO DB connection
 try {
-  	$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
+  $connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
 	$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 }
@@ -37,11 +37,9 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_submit.php" ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_view.php" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_submit.php")==FALSE) {
-	//Fail 0
-	$URL=$URL . "&addReturn=fail0" ;
 	header("Location: {$URL}");
 }
 else {
@@ -65,16 +63,11 @@ else {
 			$result->execute($data);
 		}
 		catch(PDOException $e) {
-			//Fail 2q
-     	 	print $e;
-			$URL=$URL . "&addReturn=fail2" ;
 			header("Location: {$URL}");
 			break ;
-		}
-		
+		}		
 		//Success 0
 		$URL=$URL . "&addReturn=success0" ;
-
 		header("Location: {$URL}");
 
 	}

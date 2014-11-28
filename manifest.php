@@ -54,6 +54,8 @@ $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `issueID` int(12) unsigned zerofill NOT NULL,
   `comment` text NOT NULL,
+  `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `technicianPosted` boolean DEFAULT 0,
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
@@ -62,7 +64,6 @@ VALUES
 (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''), 
 (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'), 
 (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application')";
-
 //Action rows
 //One array per action
 $actionCount = 0 ;
