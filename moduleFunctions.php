@@ -26,9 +26,9 @@ function isTechnician($gibbonPersonID, $connection2){
     $result->execute($data);
   }
   catch(PDOException $e) {
-	print $e;
+	   print $e;
   }
-  
+
   return ($result->rowCount()==1);
 }
 
@@ -40,7 +40,7 @@ function getTechnicianID($gibbonPersonID, $connection2){
     $result->execute($data);
   }
   catch(PDOException $e) {
-	print $e;
+	   print $e;
   }
   $id = null;
   if($result->rowCount()==1){

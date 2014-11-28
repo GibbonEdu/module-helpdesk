@@ -39,21 +39,106 @@ else {
     echo $e->getMessage();
   }
 
+  $issueID=$_GET["issueID"] ;
+  $data=array("issueID"=>$issueID) ;
+
   try {
-    $sql="SELECT * FROM helpDeskIssue" ;
+    $sql="SELECT helpDeskIssue.* , surname , preferredName , passwordStrong , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
     $result=$connection2->prepare($sql);
     $result->execute($data);
+    $array = $result->fetchall();
+
+    $sql2="SELECT helpDeskIssue.* , helpDeskTechnicians.gibbonPersonID , surname , title, preferredName FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
+    $result2=$connection2->prepare($sql2);
+    $result2->execute($data);
+    $array2 = $result2->fetchall();
+
+    $sql3="SELECT * FROM helpDeskIssueDiscuss WHERE issueID=:issueID ORDER BY timestamp ASC" ;
+    $result3=$connection2->prepare($sql3);
+    $result3->execute($data);
+    //$array3 = $result3->fetchall();
+
+    $studentName = formatName($array[0]["title"] , $array[0]["preferredName"] , $array[0]["surname"] , "Student", FALSE, FALSE);
+
+    if ($array2[0]["gibbonPersonID"] == NULL) {
+      $technicianName = "UNASSIGNED" ;
+    } else {
+      $technicianName = formatName($array2[0]["title"] , $array2[0]["preferredName"] , $array2[0]["surname"] , "Student", FALSE, FALSE);
+    }
+
   }
   catch(PDOException $e) {
     print $e ;
   }
-  $array = $result->fetchall();
 
-  ?>
+  print "<div class='trail'>" ;
+  print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Discuss Issue') . "</div>" ;
+  print "</div>" ;
 
-  <p><?php print "title: " . $array[0]["issueName"] ; ?></p>
-  <p><?php print "description: " . $array[0]["description"] ; ?></p>
+  print "<h1>" . $array[0]["issueName"] . "</h1>" ;
 
-  <?php
+  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
+  print "<tr>" ;
+  print "<td style='width: 33%; vertical-align: top'>" ;
+  print "<span style='font-size: 115%; font-weight: bold'>" . _('Student') . "</span><br/>" ;
+  print $studentName ;
+  print "</td>" ;
+  print "<td style='width: 33%; vertical-align: top'>" ;
+  print "<span style='font-size: 115%; font-weight: bold'>" . _('Technician') . "</span><br/>" ;
+  print $technicianName;
+  print "</td>" ;
+  print "<td style='width: 33%; vertical-align: top'>" ;
+  print "<span style='font-size: 115%; font-weight: bold'>" . _('Date') . "</span><br/>" ;
+  print dateConvertBack($guid, $array[0]["date"]) ;
+  print "</td>" ;
+  print "</tr>" ;
+  print "</table>" ;
+
+  print "<h2 style='padding-top: 30px'>" . _('Description') . "</h2>" ;
+  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
+    print "<tr>" ;
+      print "<td>". $array[0]["description"] ."</td>" ;
+    print "</tr>" ;
+  print "</table>" ;
+
+  print "<a name='discuss'></a>" ;
+  print "<h2 style='padding-top: 30px'>" . _('Discuss') . "</h2>" ;
+  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
+    print "<tr>" ;
+      print "<td style='text-align: justify; padding-top: 5px; width: 33%; vertical-align: top; max-width: 752px!important;' colspan=3>" ;
+
+      print "<div style='margin: 0px' class='linkTop'>" ;
+      print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/issues_discuss_view.php&issueID=" . $_GET["issueID"] . "'>" . _('Refresh') . "<img style='margin-left: 5px' title='" . _('Refresh') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/refresh.png'/></a> <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view_post.php&issueID=" . $_GET["issueID"] . "'>" .  _('Add') . "<img style='margin-left: 5px' title='" . _('Add') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a> " ;
+      print "</div>" ;
+
+      print "<div style='margin-bottom: 0px' class='success'>" ;
+      printf(_('Items in %1$sred%2$s are new since your last login. Items in green are older.'), "<span style='color: #c00'>", "</span>") ;
+      print "</div>" ;
+
+      if ($result3->rowCount()==0){
+        print "<div class = 'error'>" ;
+            print _("There are no records to display.");
+        print "</div>";
+      } else {
+        $level = 0 ;
+        while ($row3=$result3->fetch()){
+          print "<table class='noIntBorder' cellspacing='0' style='width: 500px ; padding: 1px 3px; margin-bottom: -2px; margin-top: 50; margin-left: 100px; border:  ; background-color: #f9f9f9'>" ;
+            print "<tr>" ;
+              if ($row3["technicianPosted"] == 0) {
+                print "<td style='color: #777'><i>". $studentName . " " . _('said') . "</i>:</td>" ;
+              } else {
+                print "<td style='color: #777'><i>". $technicianName . " " . _('said') . "</i>:</td>" ;
+              }
+              print "<td>" . $row3["comment"] . "</td>" ;
+              print "<td style='color: #777; text-align: right'><i>" . _('Posted at') . " <b>" . substr($row3["timestamp"],11,5) . "</b> on <b>" . dateConvertBack($guid, $row3["timestamp"]) . "</b></i></td>" ;
+            print "</tr>" ;
+          print "</table>" ;
+        }
+      }
+
+      print "</td>" ;
+    print "</tr>" ;
+  print "</table>" ;
+
 }
 ?>

@@ -52,12 +52,14 @@ $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `issueID` int(12) unsigned zerofill NOT NULL,
   `comment` text NOT NULL,
+  `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `technicianPosted` boolean DEFAULT 0,
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSystemSettingsID`, `scope`, `name`, `nameDisplay`, `description`, `value`) 
-VALUES 
-(NULL, 'Help Desk', 'priority', 'Priority', 'Different priority levels for the issues.', ''), 
+$moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSystemSettingsID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
+VALUES
+(NULL, 'Help Desk', 'priority', 'Priority', 'Different priority levels for the issues.', ''),
 (NULL, 'Help Desk', 'category', 'Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application')";
 
 //Action rows
