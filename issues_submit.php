@@ -42,6 +42,40 @@ else {
 	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Submit Issues') . "</div>" ;
 	print "</div>" ;
 
+	try {
+		$data=array(); 
+		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriority'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { }
+	$row=$result->fetch() ;
+	$priorityOptions = array();
+	foreach (explode(",", $row["value"]) as $type) {
+		array_push($priorityOptions, $type);
+	}
+	try {
+		$data=array(); 
+		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriorityName'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { }
+	$row=$result->fetch() ;
+	$priorityName = $row["value"];
+	try {
+		$data=array(); 
+		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issueCategory'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { }
+	$row=$result->fetch() ;
+	$categoryOptions = array();
+	foreach (explode(",", $row["value"]) as $type) {
+		array_push($categoryOptions, $type);
+	}
+
 	?>
 
 	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_submitProccess.php" ?>">
@@ -58,14 +92,58 @@ else {
 					</script>
 				</td>
 			</tr>
+			<?php
+			if(count($categoryOptions)>0) {
+				print "<tr>";
+					print "<td> ";
+						print "<b>". _('Category') ." *</b><br/>";
+						print "<span style=\"font-size: 90%\"><i></i></span>";
+					print "</td>";
+					print "<td class=\"right\">";
+						print "<select name='category' id='category' style='width:302px'>" ;
+						
+							foreach($categoryOptions as $option) {
+								$selected="" ;
+								if ($option==$filter) {
+									$selected="selected" ;
+								}
+								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+							}
+						print "</select>" ;
+					print "</td>";
+				print "</tr>";
+			}
+			?>
 			<tr>
 				<td>
-					<b><?php print _('Description') ?></b><br/>
+					<b><?php print _('Description') ?> *</b><br/>
 				</td>
 				<td class="right">
 					<textarea name='description' id='description' rows=5 style='width: 300px'></textarea>
 				</td>
 			</tr>
+			<?php
+			if(count($priorityOptions)>1) {
+				print "<tr>";
+					print "<td> ";
+						print "<b>". $priorityName ." *</b><br/>";
+						print "<span style=\"font-size: 90%\"><i></i></span>";
+					print "</td>";
+					print "<td class=\"right\">";
+						print "<select name='priority' id='priority' style='width:302px'>" ;
+						
+							foreach($priorityOptions as $option) {
+								$selected="" ;
+								if ($option==$filter) {
+									$selected="selected" ;
+								}
+								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+							}
+						print "</select>" ;
+					print "</td>";
+				print "</tr>";
+			}
+			?>
 			<tr>
 				<td>
 					<span style="font-size: 90%"><i>* <?php print _("denotes a required field") ; ?></i></span>

@@ -44,6 +44,8 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `description` text NOT NULL,
   `date` date NOT NULL,
   `status` ENUM('Unassigned','Pending','Resolved') DEFAULT 'Unassigned',
+  `category` varchar(100) DEFAULT NULL,
+  `priority` varchar(100) DEFAULT NULL,
   `gibbonSchoolYearID` int(3) unsigned zerofill NOT NULL,
   PRIMARY KEY (`issueID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
@@ -57,8 +59,9 @@ $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
 
 $moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSystemSettingsID`, `scope`, `name`, `nameDisplay`, `description`, `value`) 
 VALUES 
-(NULL, 'Help Desk', 'priority', 'Priority', 'Different priority levels for the issues.', ''), 
-(NULL, 'Help Desk', 'category', 'Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application')";
+(NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''), 
+(NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'), 
+(NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application')";
 
 //Action rows
 //One array per action
@@ -119,8 +122,25 @@ $actionRows[$actionCount]["name"]="View issues_All&Assign" ;
 $actionRows[$actionCount]["precedence"]="2" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Assign any tech an existing unresolved issue." ;
-$actionRows[$actionCount]["URLList"]="issues_view.php" ;
+$actionRows[$actionCount]["URLList"]="issues_view.php, issues_assign.php, issues_assignProcess.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="Help Desk Settings" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]="Edit the settings for the module" ;
+$actionRows[$actionCount]["URLList"]="issues_settings.php" ;
+$actionRows[$actionCount]["entryURL"]="issues_settings.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
