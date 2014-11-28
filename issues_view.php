@@ -22,6 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
+
 if (isModuleAccessible($guid, $connection2)==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
@@ -44,25 +45,61 @@ else {
 
 	$filter=NULL ;
 	$filter2=NULL ;
-	if (isset($_GET["filter"])) {
-		$filter=$_GET["filter"] ;
-	}
-	else if (isset($_POST["filter"])) {
+	$filter3=NULL ;
+	$filter4=NULL ;
+
+	if (isset($_POST["filter"])) {
 		$filter=$_POST["filter"] ;
 	}
-	if (isset($_GET["filter2"])) {
-		$filter2=$_GET["filter2"] ;
-	}
-	else if (isset($_POST["filter2"])) {
+	if (isset($_POST["filter2"])) {
 		$filter2=$_POST["filter2"] ;
 	}
-
+	if (isset($_POST["filter3"])) {
+		$filter3=$_POST["filter3"] ;
+	}
+	if (isset($_POST["filter4"])) {
+		$filter4=$_POST["filter4"] ;
+	}
+	
+	try {
+		$data=array(); 
+		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriority'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { }
+	$row=$result->fetch() ;
+	$priorityFilters = array("All");
+	foreach (explode(",", $row["value"]) as $type) {
+		array_push($priorityFilters, $type);
+	}
+	try {
+		$data=array(); 
+		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriorityName'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { }
+	$row=$result->fetch() ;
+	$priorityName = $row["value"];
+	try {
+		$data=array(); 
+		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issueCategory'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { }
+	$row=$result->fetch() ;
+	$categoryFilters = array("All");
+	foreach (explode(",", $row["value"]) as $type) {
+		array_push($categoryFilters, $type);
+	}
+	
 	$issueFilters = array("My Issues");
 	if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) array_push($issueFilters, "My Working");
 	if($highestAction=="View issues_All" || $highestAction=="View issues_All&Assign") array_push($issueFilters, "All");
 	$statusFilters = array("All", "Unassigned", "Pending", "Resolved");
 	$dataIssue["gibbonSchoolYearID"]=$_SESSION[$guid]["gibbonSchoolYearID"];
-	$and="" ;
 	$whereIssue = "";
 	if ($filter=="") {
 		$filter=$issueFilters[0];
@@ -76,6 +113,7 @@ else {
 		$dataIssue["helpDeskTechnicianID"] = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
 		$whereIssue.= " AND helpDeskIssue.technicianID=:helpDeskTechnicianID";
 	}
+	
 	if ($filter2=="") {
 		$filter2=$statusFilters[0];
 	}
@@ -91,40 +129,37 @@ else {
 		$dataIssue["helpDeskStatus"] = 'Resolved';
 		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
 	}
-
+	
+	if ($filter3=="") {
+		$filter3=$categoryFilters[0];
+	}
+	if ($filter3!="All") {
+		$dataIssue["helpDeskCategory"] = $filter3;
+		$whereIssue.= " AND helpDeskIssue.category=:helpDeskCategory";
+	}
+	
+	if ($filter4=="") {
+		$filter4=$priorityFilters[0];
+	}
+	if ($filter4!="All") {
+		$dataIssue["helpDeskPriority"] = $filter4;
+		$whereIssue.= " AND helpDeskIssue.priority=:helpDeskPriority";
+	}
 	print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "'>" ;
-		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;
-		if(count($issueFilters)>1)
-		{
-			print "<tr>";
-				print "<td> ";
-					print "<b>". _('Issue Filter') ."</b><br/>";
-					print "<span style=\"font-size: 90%\"><i></i></span>";
-				print "</td>";
-				print "<td class=\"right\">";
-					print "<select name='filter' id='filter' style='width:302px'>" ;
-
-						foreach($issueFilters as $option) {
-							$selected="" ;
-							if ($option==$filter) {
-								$selected="selected" ;
-							}
-							print "<option $selected value='" . $option . "'>". $option ."</option>" ;
-						}
-					print "</select>" ;
-				print "</td>";
-			print "</tr>";
-		}
-			print "<tr>";
+		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;	
+			if(count($issueFilters)>1)
+			{
+				print "<tr>";
 					print "<td> ";
-						print "<b>".  _('Status Filter') ."</b><br/>";
+						print "<b>". _('Issue Filter') ."</b><br/>";
 						print "<span style=\"font-size: 90%\"><i></i></span>";
 					print "</td>";
 					print "<td class=\"right\">";
-						print "<select name='filter2' id='filter2' style='width:302px'>" ;
-							foreach($statusFilters as $option) {
+						print "<select name='filter' id='filter' style='width:302px'>" ;
+						
+							foreach($issueFilters as $option) {
 								$selected="" ;
-								if ($option==$filter2) {
+								if ($option==$filter) {
 									$selected="selected" ;
 								}
 								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
@@ -132,7 +167,65 @@ else {
 						print "</select>" ;
 					print "</td>";
 				print "</tr>";
-				print "<tr>" ;
+			}
+			print "<tr>";
+				print "<td> ";
+					print "<b>".  _('Status Filter') ."</b><br/>";
+					print "<span style=\"font-size: 90%\"><i></i></span>";
+				print "</td>";
+				print "<td class=\"right\">";
+					print "<select name='filter2' id='filter2' style='width:302px'>" ;
+						foreach($statusFilters as $option) {
+							$selected="" ;
+							if ($option==$filter2) {
+								$selected="selected" ;
+							}
+							print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+						}
+					print "</select>" ;
+				print "</td>";
+			print "</tr>";
+			if(count($categoryFilters)>0) {
+				print "<tr>";
+					print "<td> ";
+						print "<b>". _('Category') ."</b><br/>";
+						print "<span style=\"font-size: 90%\"><i></i></span>";
+					print "</td>";
+					print "<td class=\"right\">";
+						print "<select name='filter3' id='filter3' style='width:302px'>" ;
+					
+							foreach($categoryFilters as $option) {
+								$selected="" ;
+								if ($option==$filter3) {
+									$selected="selected" ;
+								}
+								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+							}
+						print "</select>" ;
+					print "</td>";
+				print "</tr>";
+			}
+			if(count($priorityFilters)>1) {
+				print "<tr>";
+					print "<td> ";
+						print "<b>". $priorityName ."</b><br/>";
+						print "<span style=\"font-size: 90%\"><i></i></span>";
+					print "</td>";
+					print "<td class=\"right\">";
+						print "<select name='filter4' id='filter4' style='width:302px'>" ;
+						
+							foreach($priorityFilters as $option) {
+								$selected="" ;
+								if ($option==$filter4) {
+									$selected="selected" ;
+								}
+								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+							}
+						print "</select>" ;
+					print "</td>";
+				print "</tr>";
+			}
+			print "<tr>" ;
 				print "<td class='right' colspan=2>" ;
 					print "<input type='submit' value='" . _('Go') . "'>" ;
 				print "</td>" ;
@@ -141,7 +234,7 @@ else {
 	print "</form>" ;
 
   try {
-    $sqlIssue="SELECT helpDeskIssue.* , surname , preferredName, gibbonPerson.title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE gibbonSchoolYearID=:gibbonSchoolYearID " . $whereIssue ;
+    $sqlIssue="SELECT helpDeskIssue.* , surname , preferredName, gibbonPerson.title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE gibbonSchoolYearID=:gibbonSchoolYearID " . $whereIssue . " ORDER BY date DESC" ;
     $resultIssue=$connection2->prepare($sqlIssue);
     $resultIssue->execute($dataIssue);
   }
@@ -152,10 +245,10 @@ else {
 	print _("Issues") ;
 	print "</h3>" ;
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-    print "<tr> <th>Title</th> <th>Description</th> <th>Name</th> <th>Status</th> <th>Date</th> <th>Action</th> </tr>";
+    print "<tr> <th>Date</th> <th>Title</th> <th>Description</th> <th>Name</th> <th>Status</th> <th>Category</th> <th>$priorityName</th> <th>Action</th> </tr>";
 	if ($resultIssue->rowCount()==0){
     	print "<tr>";
-    	print "<td colspan=5>";
+    	print "<td colspan=7>";
     	print _("There are no records to display.");
 		print "<td>";
 		print "</tr>";
@@ -163,24 +256,30 @@ else {
     else {
 		foreach($resultIssue as $row){
 		  print "<tr>";
+		  printf("<td>" .dateConvertBack($guid, $row["date"]). "</td>");
 		  printf("<td>" .$row['issueName']. "</td>");
 		  printf("<td>" .$row['description']. "</td>");
-		  printf("<td>" .$row['title'].$row['surname'].", ".$row['preferredName']. "</td>");
+		  printf("<td>" .formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE). "</td>");
 		  printf("<td>" .$row['status']. "</td>");
-		  printf("<td>" .dateConvertBack($guid, $row["date"]). "</td>");
+		  printf("<td>" .$row['category']. "</td>");
+		  printf("<td>" .$row['priority']. "</td>");
 		  print "<td>";
-		  if($row['technicianID']==null && isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2))
+		  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2))
 		  {
-		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php&issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
-			print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('View ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
-		  }
-		  else if($row['technicianID']==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))
-		  {
-			print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Work ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+			  if($row['technicianID']==null) 
+			  {
+				?><input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>"><?php
+				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php&issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
+				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss.php&issueID=". $row["issueID"] . "'><img title=" . _('View ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+			  }
+			  else if($row['technicianID']==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))
+			  {
+				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss.php&issueID=". $row["issueID"] . "'><img title=" . _('Work ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+			  }
 		  }
 		  if($row['technicianID']==null && $highestAction=="View issues_All&Assign")
 		  {
-		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $row["issueID"] . "'><img title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";
+		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $row["issueID"] . "'><img title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";		  
 		  }
 		  print "</td>";
 		  print "</tr>";

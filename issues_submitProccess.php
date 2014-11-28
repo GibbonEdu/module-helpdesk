@@ -45,24 +45,29 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_submit.ph
 else {
 	//Proceed!
 	$name=$_POST["name"] ;
+	$category=$_POST["category"] ;
 	$description=$_POST["description"] ;
+	$priority=$_POST["priority"] ;
 
-	if ($name=="") {
+	if ($name=="" || $category=="" || $description=="" || $priority=="") {
+		//Fail 3
+		$URL=$URL . "&addReturn=fail3" ;
 		header("Location: {$URL}");
 	}
 	else {
 		//Write to database
 		try {
-			$data=array("issueID"=> 0, "technicianID"=>null, "gibbonPersonID"=> $_SESSION[$guid]["gibbonPersonID"], "name"=> $name, "description"=> $description, "date" => date("Y-m-d"), "status"=>"Unassigned", "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"]);
-			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, gibbonSchoolYearID=:gibbonSchoolYearID" ;
-      $result=$connection2->prepare($sql);
+			$data=array("issueID"=> 0, "technicianID"=>null, "gibbonPersonID"=> $_SESSION[$guid]["gibbonPersonID"], "name"=> $name, "description"=> $description, "date" => date("Y-m-d"), "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"]);
+			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID" ;
+      		$result=$connection2->prepare($sql);
 			$result->execute($data);
 		}
 		catch(PDOException $e) {
 			header("Location: {$URL}");
 			break ;
-		}
-
+		}		
+		//Success 0
+		$URL=$URL . "&addReturn=success0" ;
 		header("Location: {$URL}");
 
 	}

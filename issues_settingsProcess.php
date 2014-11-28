@@ -20,9 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 include "../../functions.php" ;
 include "../../config.php" ;
 
-include "./moduleFunctions.php" ;
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
-
 //New PDO DB connection
 try {
   	$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
@@ -38,49 +35,56 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_view.php" ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_settings.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_settings.php")==FALSE) {
 	//Fail 0
-	$URL=$URL . "&addReturn=fail0" ;
+	$URL=$URL . "&updateReturn=fail0" ;
 	header("Location: {$URL}");
 }
 else {
 	//Proceed!
-	$issueID = intval($_GET["issueID"]) ;
-	if ($issueID=="") {
-		//Fail 3
-		$URL=$URL . "&addReturn=fail3" ;
+	$issuePriority="" ; 
+	foreach (explode(",", $_POST["issuePriority"]) as $type) {
+		$issuePriority.=trim($type) . "," ;
+	}
+	$issuePriority=substr($issuePriority,0,-1) ; 	
+	$issueCategory="" ; 
+	foreach (explode(",", $_POST["issueCategory"]) as $type) {
+		$issueCategory.=trim($type) . "," ;
+	}
+	$issueCategory=substr($issueCategory,0,-1) ; 
+	$fail=FALSE ;
+
+	try {
+		$data=array("value"=>$issuePriority); 
+		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriority'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { 
+		$fail=TRUE ;
+	}
+	try {
+		$data=array("value"=>$issueCategory); 
+		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issueCategory'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { 
+		$fail=TRUE ;
+	}
+
+	if ($fail==TRUE) {
+		//Fail 2
+		$URL=$URL . "&updateReturn=fail2" ;
 		header("Location: {$URL}");
 	}
 	else {
-		if (isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !(hasTechnicianAssigned($issueID, $connection2))) {
-			$technicianID = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
-
-			//Write to database
-			try {
-				$data=array("issueID"=> $issueID, "technicianID"=> $technicianID, "status"=> "Pending");
-				$sql="UPDATE helpDeskIssue SET technicianID=:technicianID, status=:status WHERE issueID=:issueID" ;
-				$result=$connection2->prepare($sql);
-				$result->execute($data);
-			}
-			catch(PDOException $e) {
-				//Fail 2q
-				print $e;
-				$URL=$URL . "&addReturn=fail2" ;
-				header("Location: {$URL}");
-				break ;
-			}
-		
-			//Success 0
-			$URL=$URL . "&addReturn=success0" ;
-			header("Location: {$URL}");
-		}
-		else
-		{
-			$URL=$URL . "&addReturn=fail0" ;
-			header("Location: {$URL}");
-		}
+		//Success 0
+		getSystemSettings($guid, $connection2) ;
+		$URL=$URL . "&updateReturn=success0" ;
+		header("Location: {$URL}");
 	}
 }
 ?>
