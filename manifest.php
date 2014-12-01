@@ -59,10 +59,10 @@ $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSystemSettingsID`, `scope`, `name`, `nameDisplay`, `description`, `value`) 
-VALUES 
-(NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''), 
-(NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'), 
+$moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSystemSettingsID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
+VALUES
+(NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
+(NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
 (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application')";
 //Action rows
 //One array per action
@@ -153,10 +153,10 @@ $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Create Technicians" ;
+$actionRows[$actionCount]["name"]="Create Technician" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Create technicians." ;
+$actionRows[$actionCount]["description"]="Create technician." ;
 $actionRows[$actionCount]["URLList"]="issues_createTechnician.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_createTechnician.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;

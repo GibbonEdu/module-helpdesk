@@ -70,8 +70,8 @@ function getAllTechnicians($connection2, $returnName=FALSE)
 {
   try {
     $data=array();
-    $sql="SELECT helpDeskTechnicians.*, surname, preferredName 
-	FROM helpDeskTechnicians 
+    $sql="SELECT helpDeskTechnicians.*, surname, preferredName
+	FROM helpDeskTechnicians
 	JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)
 	WHERE status='Full'";
     $result=$connection2->prepare($sql);
@@ -80,7 +80,7 @@ function getAllTechnicians($connection2, $returnName=FALSE)
   catch(PDOException $e) {
 	print $e;
   }
-  
+
   if($returnName)
   {
   	$array = array();
@@ -100,8 +100,8 @@ function getTechnicianIDViaName($connection2, $name)
 {
   try {
     $data=array();
-    $sql="SELECT helpDeskTechnicians.*, surname, preferredName 
-	FROM helpDeskTechnicians 
+    $sql="SELECT helpDeskTechnicians.*, surname, preferredName
+	FROM helpDeskTechnicians
 	JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)
 	WHERE status='Full'";
     $result=$connection2->prepare($sql);
@@ -129,6 +129,20 @@ function technicianExists($connection2, $technicianID)
   }
   catch(PDOException $e) {
 	   print $e;
+  }
+
+  return ($result->rowCount()==1);
+}
+
+function technicianExistsFromPersonID($connection2, $gibbonPersonID) {
+  try {
+    $data=array("gibbonPersonID"=> $personID);
+    $sql="SELECT * FROM helpDeskTechnicians WHERE gibbonPersonID=:gibbonPersonID";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+  }
+  catch(PDOException $e) {
+    print $e;
   }
 
   return ($result->rowCount()==1);

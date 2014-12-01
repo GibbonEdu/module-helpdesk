@@ -39,7 +39,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_view.php" ;
 
-	
+
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.php")==FALSE) {
 	//Fail 0
 	header("Location: {$URL}");
@@ -50,7 +50,7 @@ else {
 	if(isset($_POST["technician"])) {
 		$technician = $_POST["technician"];
 	}
-	else { 
+	else {
 	  header("Location: {$URL}");
 	  exit();
 	}
@@ -61,25 +61,25 @@ else {
 // 		print _("The highest grouped action cannot be determined.") ;
 // 		print "</div>" ;
 	}
-	if(!($highestAction=="View issues_All&Assign")) { 
+	if(!($highestAction=="View issues_All&Assign")) {
 	  header("Location: {$URL}");
 	  exit();
 	}
-		
-	if($technicianID==null){ 
+
+	if($technicianID==null){
  	  header("Location: {$URL}");
  	  exit();
  	}
-		
+
 	if(isset($_GET["issueID"])) {
 	  $issueID = (int) $_GET["issueID"];
-	}	
+	}
 	else {
 	  header("Location: {$URL}");
 	  exit();
 	}
-		
-	try { 
+
+	try {
 		$data=array("issueID"=> $issueID, "technicianID"=> $technicianID, "status"=> "Pending");
 		$sql="UPDATE helpDeskIssue SET technicianID=:technicianID, status=:status WHERE issueID=:issueID" ;
 		$result=$connection2->prepare($sql);
@@ -89,9 +89,9 @@ else {
 		//Fail 2q
 // 		$fail = TRUE;
 	}
-	
-	
-	header("Location: {$URL}");
+
+	print $technician ;
+	//header("Location: {$URL}");
 
 // 	if ($fail==TRUE) {
 		//Fail 2
@@ -99,7 +99,7 @@ else {
 // 	}
 // 	else {
 		//Success 0
-// 	header("Location: {$URL}");	
+// 	header("Location: {$URL}");
 // 	}
 }
 ?>
