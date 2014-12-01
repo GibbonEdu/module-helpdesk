@@ -153,6 +153,7 @@ $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
+<<<<<<< HEAD
 $actionRows[$actionCount]["name"]="Create Technician" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
