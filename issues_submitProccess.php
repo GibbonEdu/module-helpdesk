@@ -44,12 +44,22 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_submit.ph
 }
 else {
 	//Proceed!
-	$name=$_POST["name"] ;
-	$category=$_POST["category"] ;
-	$description=$_POST["description"] ;
-	$priority=$_POST["priority"] ;
+	if(isset($_POST["name"])) {
+	  $name=$_POST["name"] ;
+	}
+	if(isset($_POST["category"])) {
+	  $category=$_POST["category"] ;
+	}
+	if(isset($_POST["description"])) {
+	  $description=$_POST["description"] ;
+	}
+	$priority = "";
+	if(isset($_POST["priority"])) {
+	  $priority=$_POST["priority"] ;
+	}
+	
 
-	if ($name=="" || $category=="" || $description=="" || $priority=="") {
+	if ($name=="" || $category=="" || $description=="") {
 		//Fail 3
 		$URL=$URL . "&addReturn=fail3" ;
 		header("Location: {$URL}");

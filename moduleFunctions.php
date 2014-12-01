@@ -119,4 +119,19 @@ function getTechnicianIDViaName($connection2, $name)
   return null;
 }
 
+function technicianExists($connection2, $technicianID)
+{
+  try {
+    $data=array("technicianID"=> $technicianID);
+    $sql="SELECT * FROM helpDeskTechnicians WHERE technicianID=:technicianID";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+  }
+  catch(PDOException $e) {
+	   print $e;
+  }
+
+  return ($result->rowCount()==1);
+}
+
 ?>

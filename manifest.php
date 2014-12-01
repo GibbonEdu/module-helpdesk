@@ -152,4 +152,21 @@ $actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="Create Technicians" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]="Create technicians." ;
+$actionRows[$actionCount]["URLList"]="issues_createTechnician.php" ;
+$actionRows[$actionCount]["entryURL"]="issues_createTechnician.php" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+
 ?>

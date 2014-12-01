@@ -46,20 +46,33 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
 }
 else {
 	//Proceed!
-	$issueID = intval($_GET["issueID"]) ;
+	if(isset($_GET["issueID"])) {
+	  $issueID = intval($_GET["issueID"]) ;
+	}
 	if ($issueID=="") {
 		//Fail 3
 		$URL=$URL . "&addReturn=fail3" ;
 		header("Location: {$URL}");
 	}
 	else {
-		if (isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !(hasTechnicianAssigned($issueID, $connection2))) {
-			$technicianID = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
+	  try {
+	  	$data1=array("issueID"=> $issueID);
+		$sql1="SELECT gibbonPersonID, technicianID FROM helpDeskIssue WHERE issueID=:issueID" ;
+		$result1=$connection2->prepare($sql1);
+		$result1->execute($data1);
+	  }
+	  catch(PDOException $e) {
+		print $e;
+	  }
+	  $row = $result1->fetch();
+	  $technicianID = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
+	  
+		if ($row["gibbonPersonID"] == $_SESSION[$guid]["gibbonPersonID"] || ($row["technicianID"] == $technicianID && !($technicianID == null))) {
 
 			//Write to database
 			try {
-				$data=array("issueID"=> $issueID, "technicianID"=> $technicianID, "status"=> "Pending");
-				$sql="UPDATE helpDeskIssue SET technicianID=:technicianID, status=:status WHERE issueID=:issueID" ;
+				$data=array("issueID"=> $issueID, "status"=> "Resolved");
+				$sql="UPDATE helpDeskIssue SET status=:status WHERE issueID=:issueID" ;
 				$result=$connection2->prepare($sql);
 				$result->execute($data);
 			}

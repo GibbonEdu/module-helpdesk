@@ -71,8 +71,11 @@ else {
 	$row=$result->fetch() ;
 	$priorityFilters = array("All");
 	foreach (explode(",", $row["value"]) as $type) {
-		array_push($priorityFilters, $type);
+		if(!($type=="")) { 
+		  array_push($priorityFilters, $type);
+		}
 	}
+	$renderPriority = count($priorityFilters)>1;
 	try {
 		$data=array(); 
 		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriorityName'" ;
@@ -92,7 +95,9 @@ else {
 	$row=$result->fetch() ;
 	$categoryFilters = array("All");
 	foreach (explode(",", $row["value"]) as $type) {
-		array_push($categoryFilters, $type);
+		if(!($type=="")) { 
+		  array_push($categoryFilters, $type);
+		}
 	}
 	
 	$issueFilters = array("My Issues");
@@ -185,7 +190,7 @@ else {
 					print "</select>" ;
 				print "</td>";
 			print "</tr>";
-			if(count($categoryFilters)>0) {
+			if(count($categoryFilters)>1) {
 				print "<tr>";
 					print "<td> ";
 						print "<b>". _('Category') ."</b><br/>";
@@ -205,7 +210,7 @@ else {
 					print "</td>";
 				print "</tr>";
 			}
-			if(count($priorityFilters)>1) {
+			if($renderPriority) {
 				print "<tr>";
 					print "<td> ";
 						print "<b>". $priorityName ."</b><br/>";
@@ -245,10 +250,14 @@ else {
 	print _("Issues") ;
 	print "</h3>" ;
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-    print "<tr> <th>Date</th> <th>Title</th> <th>Description</th> <th>Name</th> <th>Status</th> <th>Category</th> <th>$priorityName</th> <th>Action</th> </tr>";
+    print "<tr> <th>Date</th> <th>Title</th> <th>Description</th> <th>Name</th> <th>Status</th> <th>Category</th>"; 
+  	if($renderPriority) { print "<th>$priorityName</th>"; }
+    print "<th>Action</th> </tr>";
 	if ($resultIssue->rowCount()==0){
     	print "<tr>";
-    	print "<td colspan=7>";
+    	$colspan = 7;
+    	if(!$renderPriority) { $colspan-=1; }
+    	print "<td colspan=$colspan>";
     	print _("There are no records to display.");
 		print "<td>";
 		print "</tr>";
@@ -262,22 +271,27 @@ else {
 		  printf("<td>" .formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE). "</td>");
 		  printf("<td>" .$row['status']. "</td>");
 		  printf("<td>" .$row['category']. "</td>");
-		  printf("<td>" .$row['priority']. "</td>");
+		  if($renderPriority) { printf("<td>" .$row['priority']. "</td>"); }
 		  print "<td>";
 		  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2))
 		  {
-			  if($row['technicianID']==null) 
+			  if($row['technicianID']==null && !($row['status']=="Resolved")) 
 			  {
 				?><input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>"><?php
-				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php&issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
-				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss.php&issueID=". $row["issueID"] . "'><img title=" . _('View ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
+			 	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('View ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
 			  }
 			  else if($row['technicianID']==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))
 			  {
-				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss.php&issueID=". $row["issueID"] . "'><img title=" . _('Work ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Work ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+			    if(!($row['status']=="Resolved")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>"; }
 			  }
 		  }
-		  if($row['technicianID']==null && $highestAction=="View issues_All&Assign")
+		  if($row['gibbonPersonID']==$_SESSION[$guid]["gibbonPersonID"] && !($row['technicianID']==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2)) && !($row['status']=="Resolved"))
+		  {
+		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
+		  }
+		  if($row['technicianID']==null && $highestAction=="View issues_All&Assign" && !($row['status']=="Resolved"))
 		  {
 		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $row["issueID"] . "'><img title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";		  
 		  }
