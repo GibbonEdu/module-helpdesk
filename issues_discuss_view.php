@@ -50,7 +50,7 @@ else {
     $array = $result->fetchall();
 
     $sql2="SELECT helpDeskTechnicians.*, surname , title, preferredName FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
-    $result2=$connection2->prepare($sql2);
+    $result2=$connection2->prepare($sql2);	
     $result2->execute($data);
     $array2 = $result2->fetchall();
 
@@ -76,6 +76,10 @@ else {
   print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Discuss Issue') . "</div>" ;
   print "</div>" ;
 
+  if(!isset($array2[0]["technicianID"])) {
+    $array2[0]["technicianID"] = null;
+  }
+
   if(technicianExists($connection2, $array2[0]["technicianID"]))
   {
     if(!($array2[0]["technicianID"]==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))) {
@@ -85,7 +89,7 @@ else {
 	  exit();
     }
   }
-  else {
+  else if(!($array2[0]["technicianID"]==null)){
     print "<div class='error'>" ;
 	  print "You do not have access to this action." ;
 	print "</div>" ;
@@ -116,9 +120,16 @@ else {
     print "<tr>" ;
       print "<td>". $array[0]["description"] ."</td>" ;
     print "</tr>" ;
+    if($array2[0]["technicianID"]==null) {
+      print "<tr>";
+        print "<td class='right'>";
+          print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $issueID . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
+        print "</td>";
+      print "</tr>";
+    }
   print "</table>" ;
 
-	if(isset($array2[0]["techicanID"])) {
+	if(!($array2[0]["technicianID"]==null)) {
 	  print "<a name='discuss'></a>" ;
 	  print "<h2 style='padding-top: 30px'>" . _('Discuss') . "</h2>" ;
 	  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
