@@ -52,7 +52,9 @@ else {
 	$row=$result->fetch() ;
 	$priorityOptions = array();
 	foreach (explode(",", $row["value"]) as $type) {
-		array_push($priorityOptions, $type);
+		if(!($type=="")) {
+			array_push($priorityOptions, $type);
+		}
 	}
 	try {
 		$data=array(); 
@@ -73,7 +75,9 @@ else {
 	$row=$result->fetch() ;
 	$categoryOptions = array();
 	foreach (explode(",", $row["value"]) as $type) {
-		array_push($categoryOptions, $type);
+		if(!($type=="")) {
+			array_push($categoryOptions, $type);
+		}
 	}
 
 	?>
@@ -123,7 +127,7 @@ else {
 				</td>
 			</tr>
 			<?php
-			if(count($priorityOptions)>1) {
+			if(count($priorityOptions)>0) {
 				print "<tr>";
 					print "<td> ";
 						print "<b>". $priorityName ." *</b><br/>";

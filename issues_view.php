@@ -267,7 +267,7 @@ else {
 		  print "<tr>";
 		  printf("<td>" .dateConvertBack($guid, $row["date"]). "</td>");
 		  printf("<td>" .$row['issueName']. "</td>");
-		  printf("<td>" .$row['description']. "</td>");
+		  printf("<td>" .substr($row['description'], 0, 20). "...</td>");
 		  printf("<td>" .formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE). "</td>");
 		  printf("<td>" .$row['status']. "</td>");
 		  printf("<td>" .$row['category']. "</td>");
