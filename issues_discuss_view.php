@@ -47,7 +47,6 @@ else {
     $sql="SELECT helpDeskIssue.* , surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
     $result=$connection2->prepare($sql);
     $result->execute($data);
-    $array = $result->fetchall();
 
     $sql2="SELECT helpDeskTechnicians.*, surname , title, preferredName FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
     $result2=$connection2->prepare($sql2);
@@ -57,9 +56,6 @@ else {
     $sql3="SELECT * FROM helpDeskIssueDiscuss WHERE issueID=:issueID ORDER BY timestamp ASC" ;
     $result3=$connection2->prepare($sql3);
     $result3->execute($data);
-    //$array3 = $result3->fetchall();
-
-    $studentName = formatName($array[0]["title"] , $array[0]["preferredName"] , $array[0]["surname"] , "Student", FALSE, FALSE);
 
     if (!isset($array2[0]["gibbonPersonID"])) {
       $technicianName = "UNASSIGNED" ;
@@ -92,33 +88,37 @@ else {
 	exit();
   }
 
-  print "<h1>" . $array[0]["issueName"] . "</h1>" ;
+  while ($row=$result->fetch()){
+    print "<h1>" . $row["issueName"] . "</h1>" ;
 
-  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
-  print "<tr>" ;
-  print "<td style='width: 33%; vertical-align: top'>" ;
-  print "<span style='font-size: 115%; font-weight: bold'>" . _('Student') . "</span><br/>" ;
-  print $studentName ;
-  print "</td>" ;
-  print "<td style='width: 33%; vertical-align: top'>" ;
-  print "<span style='font-size: 115%; font-weight: bold'>" . _('Technician') . "</span><br/>" ;
-  print $technicianName;
-  print "</td>" ;
-  print "<td style='width: 33%; vertical-align: top'>" ;
-  print "<span style='font-size: 115%; font-weight: bold'>" . _('Date') . "</span><br/>" ;
-  print dateConvertBack($guid, $array[0]["date"]) ;
-  print "</td>" ;
-  print "</tr>" ;
-  print "</table>" ;
-
-  print "<h2 style='padding-top: 30px'>" . _('Description') . "</h2>" ;
-  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
+    print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
     print "<tr>" ;
-      print "<td>". $array[0]["description"] ."</td>" ;
+    print "<td style='width: 33%; vertical-align: top'>" ;
+    print "<span style='font-size: 115%; font-weight: bold'>" . _('Student') . "</span><br/>" ;
+    print $studentName ;
+    print "</td>" ;
+    print "<td style='width: 33%; vertical-align: top'>" ;
+    print "<span style='font-size: 115%; font-weight: bold'>" . _('Technician') . "</span><br/>" ;
+    print $technicianName;
+    print "</td>" ;
+    print "<td style='width: 33%; vertical-align: top'>" ;
+    print "<span style='font-size: 115%; font-weight: bold'>" . _('Date') . "</span><br/>" ;
+    print dateConvertBack($guid, $row["date"]) ;
+    print "</td>" ;
     print "</tr>" ;
-  print "</table>" ;
+    print "</table>" ;
 
-	if(isset($array2[0]["techicanID"])) {
+    print "<h2 style='padding-top: 30px'>" . _('Description') . "</h2>" ;
+    print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
+    print "<tr>" ;
+    print "<td>". $row["description"] ."</td>" ;
+    print "</tr>" ;
+    print "</table>" ;
+
+    $studentName = formatName($array[0]["title"] , $array[0]["preferredName"] , $array[0]["surname"] , "Student", FALSE, FALSE);
+  }
+
+	if(isset($array2[0]["technicianID"])) {
 	  print "<a name='discuss'></a>" ;
 	  print "<h2 style='padding-top: 30px'>" . _('Discuss') . "</h2>" ;
 	  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
@@ -140,7 +140,7 @@ else {
 		  } else {
 			$level = 0 ;
 			while ($row3=$result3->fetch()){
-			  print "<table class='noIntBorder' cellspacing='0' style='width: 500px ; padding: 1px 3px; margin-bottom: -2px; margin-top: 50; margin-left: 100px; border:  ; background-color: #f9f9f9'>" ;
+			  print "<table class='noIntBorder' cellspacing='0' style='width: 100% ; padding: 1px 3px; margin-bottom: -2px; margin-top: 50; margin-left: 0px ; background-color: #f9f9f9'>" ;
 				print "<tr>" ;
 				  if ($row3["technicianPosted"] == 0) {
 					print "<td style='color: #777'><i>". $studentName . " " . _('said') . "</i>:</td>" ;

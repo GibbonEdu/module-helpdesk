@@ -3,4 +3,12 @@ CHANGELOG
 
 v0.0.01
 -------
-First Release. 
+First Release.
+
+V0.0.02
+-------
+
+Deleted Create Technicians Action in manifest.php.
+Added Manage Technicians Action in manifest.php.
+Added issues_manage_technicians.php.
+Added issues_techniciansDeleteProcess.php.

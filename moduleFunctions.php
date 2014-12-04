@@ -136,7 +136,7 @@ function technicianExists($connection2, $technicianID)
 
 function technicianExistsFromPersonID($connection2, $gibbonPersonID) {
   try {
-    $data=array("gibbonPersonID"=> $personID);
+    $data=array("gibbonPersonID"=> $gibbonPersonID);
     $sql="SELECT * FROM helpDeskTechnicians WHERE gibbonPersonID=:gibbonPersonID";
     $result=$connection2->prepare($sql);
     $result->execute($data);

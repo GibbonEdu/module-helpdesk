@@ -153,13 +153,12 @@ $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
-<<<<<<< HEAD
-$actionRows[$actionCount]["name"]="Create Technician" ;
+$actionRows[$actionCount]["name"]="Manage Technicians" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Create technician." ;
-$actionRows[$actionCount]["URLList"]="issues_createTechnician.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_createTechnician.php" ;
+$actionRows[$actionCount]["description"]="Manage Technicians." ;
+$actionRows[$actionCount]["URLList"]="issues_manage_technicians.php, issues_createTechnician.php" ;
+$actionRows[$actionCount]["entryURL"]="issues_manage_technicians.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
