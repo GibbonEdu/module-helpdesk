@@ -76,6 +76,9 @@ else {
 			header("Location: {$URL}");
 			break ;
 		}		
+		
+		
+		notifyTechnican($connection2, $guid, $connection2->lastInsertId());
 		//Success 0
 		$URL=$URL . "&addReturn=success0" ;
 		header("Location: {$URL}");

@@ -148,4 +148,20 @@ function technicianExistsFromPersonID($connection2, $gibbonPersonID) {
   return ($result->rowCount()==1);
 }
 
+function notifyTechnican($connection2, $guid, $issueID) {
+  try {
+    $data=array();
+    $sql="SELECT * FROM helpDeskTechnicians";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+  }
+  catch(PDOException $e) {
+	   print $e;
+  }
+  
+  while($row = $result->fetch()) {
+  	setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
+  }
+}
+
 ?>
