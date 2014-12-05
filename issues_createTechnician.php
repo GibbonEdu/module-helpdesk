@@ -51,18 +51,19 @@ else {
           <?php print "<b>". _('Person') ." *</b><br/>";?>
           <span style=\"font-size: 90%\"><i></i></span>
         </td>
-        <td class=\"right\">
+        <td class="right">
           <select name='person' id='person' style='width:302px'>
             <?php
+            print "<option value=''>Please select...</option>" ;
             foreach($result as $option) {
-              $selected="" ;
-              if ($option==$filter) {
-                $selected="selected" ;
-              }
-              print "<option $selected value='" . $option['gibbonPersonID'] . "'>". formatName($option['title'],$option['preferredName'],$option['surname'], "Student", FALSE, FALSE) ."</option>" ;
+              print "<option value='" . $option['gibbonPersonID'] . "'>". formatName($option['title'],$option['preferredName'],$option['surname'], "Student", FALSE, FALSE) ."</option>" ;
             }
             ?>
           </select>
+          <script type="text/javascript">
+            var name=new LiveValidation('person');
+            name.add(Validate.Presence);
+          </script>
         </td>
       </tr>
       <tr>
