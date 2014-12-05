@@ -49,7 +49,7 @@ else {
     $result->execute($data);
 
     $sql2="SELECT helpDeskTechnicians.*, surname , title, preferredName FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
-    $result2=$connection2->prepare($sql2);	
+    $result2=$connection2->prepare($sql2);
     $result2->execute($data);
     $array2 = $result2->fetchall();
 
@@ -116,7 +116,6 @@ else {
     print "<tr>" ;
     print "<td>". $row["description"] ."</td>" ;
     print "</tr>" ;
-    print "</table>" ;
   }
 
     if($array2[0]["technicianID"]==null) {

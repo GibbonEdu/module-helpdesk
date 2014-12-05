@@ -60,6 +60,10 @@ else {
     $sql="DELETE FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
     $result=$connection2->prepare($sql);
     $result->execute($data);
+
+    $sql2="UPDATE helpDeskIssue SET helpDeskIssue.technicianID=null, helpDeskIssue.status='Unassigned' WHERE helpDeskIssue.technicianID=:technicianID" ;
+    $result2=$connection2->prepare($sql2);
+    $result2->execute($data);
   } catch(PDOException $e) {
     //Fail 2
     print $e ;

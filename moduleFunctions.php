@@ -158,7 +158,7 @@ function notifyTechnican($connection2, $guid, $issueID) {
   catch(PDOException $e) {
 	   print $e;
   }
-  
+
   while($row = $result->fetch()) {
   	setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
   }
@@ -167,12 +167,11 @@ function notifyTechnican($connection2, $guid, $issueID) {
 function relatedToIssue($connection2, $issueID, $gibbonPersonID) {
   try {
     $data=array("issueID"=> $issueID);
-    $sql="SELECT helpDeskIssue.*, helpDeskTechnicians.technicianID AS techID, helpDeskTechnicians.gibbonPersonID AS personID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=techI3D) WHERE issueID=:issueID";
+    $sql="SELECT helpDeskIssue.*, helpDeskTechnicians.technicianID, helpDeskTechnicians.gibbonPersonID AS personID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) WHERE helpDeskIssue.issueID=:issueID";
     $result=$connection2->prepare($sql);
     $result->execute($data);
   }
   catch(PDOException $e) {
-    return false;
   }
   $row = $result->fetch();
   if($row["gibbonPersonID"]==$gibbonPersonID || $row["personID"]==$gibbonPersonID) {
