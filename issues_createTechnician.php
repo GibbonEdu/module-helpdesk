@@ -35,7 +35,7 @@ else {
 
   try {
     $data=array();
-    $sql="SELECT gibbonPerson.* FROM gibbonPerson JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID!=helpDeskTechnicians.gibbonPersonID) WHERE status='Full'";
+    $sql="SELECT gibbonPerson.* FROM gibbonPerson LEFT JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID!=helpDeskTechnicians.gibbonPersonID) WHERE status='Full' AND NOT gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID";
     $result=$connection2->prepare($sql);
     $result->execute($data);
   } catch(PDOException $e) {

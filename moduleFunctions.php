@@ -167,7 +167,7 @@ function notifyTechnican($connection2, $guid, $issueID) {
 function relatedToIssue($connection2, $issueID, $gibbonPersonID) {
   try {
     $data=array("issueID"=> $issueID);
-    $sql="SELECT helpDeskIssue.*, helpDeskTechnicians.technicianID AS techID, helpDeskTechnicians.gibbonPersonID AS personID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=techID) WHERE issueID=:issueID";
+    $sql="SELECT helpDeskIssue.*, helpDeskTechnicians.technicianID AS techID, helpDeskTechnicians.gibbonPersonID AS personID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=techI3D) WHERE issueID=:issueID";
     $result=$connection2->prepare($sql);
     $result->execute($data);
   }

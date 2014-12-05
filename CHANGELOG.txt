@@ -20,3 +20,4 @@ Fixed an issues with the drop down menu in issues_createTechnicians.php where yo
 Fixed Security Issues with issues_discuss_view_post.php and issues_discuss_postProcess.php.
 Fixed Security Issue with issues_technicianDeleteProcess.php.
 Fixed an issue with the table in issues_manage_technicians.php.
+Fixed an issue with issues_createTechnician.php
