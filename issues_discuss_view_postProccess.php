@@ -39,7 +39,15 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=".$_GET["issueID"] ;
 
-if (!isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) || !isOwnerOfIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
+if(isset($_GET["issueID"])) {
+  $issueID = $_GET["issueID"];
+}
+else {
+  $URL=$URL . "&addReturn=fail0" ;
+  header("Location: {$URL}");
+}
+
+if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
   //Fail 0
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");
@@ -48,6 +56,10 @@ else {
   //Proceed!
   if(isset($_POST["comment"])) {
     $comment=$_POST["comment"] ;
+  }
+  else {
+    $URL=$URL . "&addReturn=fail0" ;
+    header("Location: {$URL}");
   }
   //Write to database
 

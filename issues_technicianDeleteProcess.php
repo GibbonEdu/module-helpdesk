@@ -40,7 +40,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_manage_technicians.php" ;
 
 // TEMP FIX (FIX IT!!!)
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_discuss_view_post.php")==TRUE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_manage_technicians.php")==FALSE) {
   //Fail 0
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");
@@ -49,6 +49,10 @@ else {
   //Proceed!
   if(isset($_GET["technicianID"])) {
     $technicianID=$_GET["technicianID"] ;
+  }
+  else {
+    $URL=$URL . "&addReturn=fail0" ;
+    header("Location: {$URL}");
   }
   //Write to database
 

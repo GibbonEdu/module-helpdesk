@@ -172,7 +172,7 @@ function relatedToIssue($connection2, $issueID, $gibbonPersonID) {
     $result->execute($data);
   }
   catch(PDOException $e) {
-    print $e;
+    return false;
   }
   $row = $result->fetch();
   if($row["gibbonPersonID"]==$gibbonPersonID || $row["personID"]==$gibbonPersonID) {
