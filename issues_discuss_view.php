@@ -49,7 +49,7 @@ else {
     $result->execute($data);
 
     $sql2="SELECT helpDeskTechnicians.*, surname , title, preferredName FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
-    $result2=$connection2->prepare($sql2);	
+    $result2=$connection2->prepare($sql2);
     $result2->execute($data);
     $array2 = $result2->fetchall();
 
@@ -93,6 +93,8 @@ else {
   }
 
   while ($row=$result->fetch()){
+    $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", FALSE, FALSE);
+
     print "<h1>" . $row["issueName"] . "</h1>" ;
 
     print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
@@ -110,7 +112,6 @@ else {
     print dateConvertBack($guid, $row["date"]) ;
     print "</td>" ;
     print "</tr>" ;
-<<<<<<< HEAD
     print "</table>" ;
 
     print "<h2 style='padding-top: 30px'>" . _('Description') . "</h2>" ;
@@ -120,11 +121,7 @@ else {
     print "</tr>" ;
     print "</table>" ;
 
-    $studentName = formatName($array[0]["title"] , $array[0]["preferredName"] , $array[0]["surname"] , "Student", FALSE, FALSE);
   }
-
-	if(isset($array2[0]["technicianID"])) {
-=======
     if($array2[0]["technicianID"]==null) {
       print "<tr>";
         print "<td class='right'>";
@@ -135,7 +132,6 @@ else {
   print "</table>" ;
 
 	if(!($array2[0]["technicianID"]==null)) {
->>>>>>> e98a7dfd5270c42acc39363f08a920e1a2c86403
 	  print "<a name='discuss'></a>" ;
 	  print "<h2 style='padding-top: 30px'>" . _('Discuss') . "</h2>" ;
 	  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
