@@ -39,8 +39,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_manage_technicians.php" ;
 
-// TEMP FIX (FIX IT!!!)
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_discuss_view_post.php")==TRUE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_manage_technicians.php")==FALSE) {
   //Fail 0
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");
@@ -50,6 +49,10 @@ else {
   if(isset($_GET["technicianID"])) {
     $technicianID=$_GET["technicianID"] ;
   }
+  else {
+    $URL=$URL . "&addReturn=fail0" ;
+    header("Location: {$URL}");
+  }
   //Write to database
 
   try {
@@ -58,7 +61,7 @@ else {
     $result=$connection2->prepare($sql);
     $result->execute($data);
 
-    $sql2="UPDATE helpDeskIssues SET helpDeskIssue.technicianID='UNASSIGNED' WHERE helpDeskIssues.technicianID=:technicianID SET " ;
+    $sql2="UPDATE helpDeskIssue SET helpDeskIssue.technicianID=null, helpDeskIssue.status='Unassigned' WHERE helpDeskIssue.technicianID=:technicianID" ;
     $result2=$connection2->prepare($sql2);
     $result2->execute($data);
   } catch(PDOException $e) {

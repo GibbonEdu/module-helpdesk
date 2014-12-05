@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-	
+
 @session_start() ;
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
@@ -35,7 +35,7 @@ else {
 
   try {
     $data=array();
-    $sql="SELECT gibbonPerson.* FROM gibbonPerson JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID!=helpDeskTechnicians.gibbonPersonID) WHERE status='Full'";
+    $sql="SELECT helpDeskTechnicians.gibbonPersonID, gibbonPerson.* FROM gibbonPerson JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID!=helpDeskTechnicians.gibbonPersonID) WHERE status='Full'";
     $result=$connection2->prepare($sql);
     $result->execute($data);
   } catch(PDOException $e) {

@@ -94,9 +94,7 @@ else {
 
   while ($row=$result->fetch()){
     $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", FALSE, FALSE);
-
     print "<h1>" . $row["issueName"] . "</h1>" ;
-
     print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
     print "<tr>" ;
     print "<td style='width: 33%; vertical-align: top'>" ;
@@ -113,15 +111,13 @@ else {
     print "</td>" ;
     print "</tr>" ;
     print "</table>" ;
-
     print "<h2 style='padding-top: 30px'>" . _('Description') . "</h2>" ;
     print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
     print "<tr>" ;
     print "<td>". $row["description"] ."</td>" ;
     print "</tr>" ;
-    print "</table>" ;
-
   }
+
     if($array2[0]["technicianID"]==null) {
       print "<tr>";
         print "<td class='right'>";

@@ -40,6 +40,14 @@ else {
     echo $e->getMessage();
   }
 
+	if (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
+	  //Fail 0
+	  print "<div class='error'>" ;
+  print "You do not have access to this action." ;
+  print "</div>" ;
+	  exit();
+	}
+
   ?>
 
   <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view_postProccess.php?issueID="  . $_GET["issueID"]?>">
