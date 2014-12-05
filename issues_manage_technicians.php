@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 @session_start() ;
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view_technician.php")==TRUE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_manage_technicians.php")==FALSE) {
   //Acess denied
   print "<div class='error'>" ;
     print _("You do not have access to this action.") ;
@@ -67,9 +67,13 @@ else {
       print "<tr>" ;
         print "<td>". formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) ."</td>" ;
         if (! $result2->rowcount() == 0) {
+          print "<td>";
+          $issues = "";
           while($row2=$result2->fetch()){
-            print "<td>". $row2["issueName"] ."</td>" ;
+            $issues.=$row2["issueName"] . ", ";
           }
+          print substr($issues, 0, strlen($issues)-2);
+          print "</td>";
         } else {
           print "<td> UNASSIGNED </td>" ;
         }
@@ -82,7 +86,7 @@ else {
     print "<tr>";
       print "<td colspan= 3>";
         print _("There are no records to display.");
-      print "<td>";
+      print "</td>";
     print "</tr>";
   }
 
