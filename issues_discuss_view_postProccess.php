@@ -39,8 +39,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=".$_GET["issueID"] ;
 
-// TEMP FIX (FIX IT!!!)
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_discuss_view_post.php")==TRUE) {
+if (!isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) || !isOwnerOfIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
   //Fail 0
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");

@@ -91,8 +91,8 @@ else {
 				<td class="right">
 					<input name="name" id="name" maxlength=100 value="" type="text" style="width: 300px">
 					<script type="text/javascript">
-						var name2=new LiveValidation('name');
-						name2.add(Validate.Presence);
+						var name=new LiveValidation('name');
+						name.add(Validate.Presence);
 					</script>
 				</td>
 			</tr>
@@ -105,7 +105,7 @@ else {
 					print "</td>";
 					print "<td class=\"right\">";
 						print "<select name='category' id='category' style='width:302px'>" ;
-						
+							print "<option value=''>Please select...</option>" ;						
 							foreach($categoryOptions as $option) {
 								$selected="" ;
 								if ($option==$filter) {
@@ -114,6 +114,12 @@ else {
 								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
 							}
 						print "</select>" ;
+						?>
+						<script type="text/javascript">
+							var name2=new LiveValidation('category');
+							name2.add(Validate.Presence);
+						</script>
+						<?php
 					print "</td>";
 				print "</tr>";
 			}
@@ -124,6 +130,10 @@ else {
 				</td>
 				<td class="right">
 					<textarea name='description' id='description' rows=5 style='width: 300px'></textarea>
+					<script type="text/javascript">
+						var name3=new LiveValidation('description');
+						name3.add(Validate.Presence);
+					</script>
 				</td>
 			</tr>
 			<?php
@@ -135,7 +145,7 @@ else {
 					print "</td>";
 					print "<td class=\"right\">";
 						print "<select name='priority' id='priority' style='width:302px'>" ;
-						
+							print "<option value=''>Please select...</option>" ;							
 							foreach($priorityOptions as $option) {
 								$selected="" ;
 								if ($option==$filter) {
@@ -144,6 +154,12 @@ else {
 								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
 							}
 						print "</select>" ;
+						?>
+						<script type="text/javascript">
+							var name4=new LiveValidation('priority');
+							name4.add(Validate.Presence);
+						</script>
+						<?php
 					print "</td>";
 				print "</tr>";
 			}

@@ -57,9 +57,9 @@ else {
 	$technicianID = getTechnicianIDViaName($connection2, $technician);
 	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_assignProcess.php", $connection2) ;
 	if ($highestAction==FALSE) {
-		// print "<div class='error'>" ;
-// 		print _("The highest grouped action cannot be determined.") ;
-// 		print "</div>" ;
+		print "<div class='error'>" ;
+		print _("The highest grouped action cannot be determined.") ;
+		print "</div>" ;
 	}
 	if(!($highestAction=="View issues_All&Assign")) {
 	  header("Location: {$URL}");
@@ -90,8 +90,7 @@ else {
 // 		$fail = TRUE;
 	}
 
-	print $technician ;
-	//header("Location: {$URL}");
+	header("Location: {$URL}");
 
 // 	if ($fail==TRUE) {
 		//Fail 2

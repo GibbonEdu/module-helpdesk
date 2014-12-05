@@ -4,3 +4,10 @@ CHANGELOG
 v0.0.01
 -------
 First Release. 
+
+v0.0.02
+-------
+Fixed an issue with issues_assignProcess.php where a user would not be redirected.
+Added a button above the Table on issues_view.php to go to issues_submit.php.
+Set default for category and priority drop downs in issues_submit.php to 'Please Select'.
+Added Live Verification to the inputs in issues_submit.php.

@@ -246,7 +246,9 @@ else {
   catch(PDOException $e) {
 	print $e;
   }
+
   	print "<h3>" ;
+  	print "<a style='position:relative; bottom:10px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_submit.php'><img title=" . _('New ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
 	print _("Issues") ;
 	print "</h3>" ;
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
