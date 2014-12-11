@@ -22,3 +22,13 @@ Fixed Security Issue with issues_technicianDeleteProcess.php.
 Fixed an issue with the table in issues_manage_technicians.php.
 Fixed an issue with issues_createTechnician.php
 Updated issues_technicianDeleteProcess.php so it deletes all related data in the helpDeskIssues table.
+
+v0.1.00
+-------
+Added text next to topLinks to standardise with Gibbon Core.
+Fixed a bug with the drop down in issues_createTechnician.php not showing anyone.
+Disabled feature to access Resolved issues because of a security issue.
+Changed Submit Issue to Create Issue.
+Change issues_submit.php to issues_create.php.
+Change issues_submitProcess.php to issues_createProcess.php.
+Fixed a bug with issue_manage_technicians.php where wrong data would be shown for technicians with no issues.

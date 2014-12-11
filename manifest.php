@@ -25,7 +25,7 @@ $description="Gibbon Help Desk Module";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.0.02" ;
+$version="0.1.00" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/adrientremblay/helpdesk" ;
 
@@ -68,12 +68,12 @@ VALUES
 //One array per action
 $actionCount = 0 ;
 
-$actionRows[$actionCount]["name"]="Submit Issue" ; //The name of the action (appears to user in the right hand side module menu)
+$actionRows[$actionCount]["name"]="Create Issue" ; //The name of the action (appears to user in the right hand side module menu)
 $actionRows[$actionCount]["precedence"]="0" ; //If it is a grouped action, the precedence controls which is highest action in group
 $actionRows[$actionCount]["category"]="" ; //Optional: subgroups for the right hand side module menu
 $actionRows[$actionCount]["description"]="Submits an IT related issue to be resolved by the help desk staff" ; //Text description
-$actionRows[$actionCount]["URLList"]="issues_submit.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_submit.php" ;
+$actionRows[$actionCount]["URLList"]="issues_create.php" ;
+$actionRows[$actionCount]["entryURL"]="issues_create.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
 $actionRows[$actionCount]["defaultPermissionTeacher"]="Y" ; //Default permission for built in role Teacher
 $actionRows[$actionCount]["defaultPermissionStudent"]="Y" ; //Default permission for built in role Student

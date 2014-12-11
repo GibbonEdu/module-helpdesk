@@ -37,9 +37,9 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_view.php" ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_submit.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.php")==FALSE) {
 	header("Location: {$URL}");
 }
 else {
@@ -61,7 +61,7 @@ else {
 
 	if ($name=="" || $category=="" || $description=="") {
 		//Fail 3
-		$URL=$URL . "&addReturn=fail3" ;
+		$URL=$URL  . "/issues_create.php&addReturn=fail3" ;
 		header("Location: {$URL}");
 	}
 	else {
@@ -77,10 +77,10 @@ else {
 			break ;
 		}		
 		
-		
-		notifyTechnican($connection2, $guid, $connection2->lastInsertId());
+		$issueID = $connection2->lastInsertId();
+		notifyTechnican($connection2, $guid, $issueID);
 		//Success 0
-		$URL=$URL . "&addReturn=success0" ;
+		$URL=$URL . "/issues_discuss_view.php&issueID=" . $issueID ;
 		header("Location: {$URL}");
 
 	}

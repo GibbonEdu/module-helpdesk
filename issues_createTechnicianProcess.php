@@ -37,7 +37,7 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_view.php" ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_manage_technicians.php" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_createTechnician.php")==FALSE) {
   header("Location: {$URL}");

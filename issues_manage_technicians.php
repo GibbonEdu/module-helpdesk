@@ -44,9 +44,9 @@ else {
   } catch(PDOException $e) {
     print $e;
   }
-
-  print "Technicians" ;
-
+  print "<h3>";
+    print "Technicians" ;
+  print "</h3>";
   print "<table cellspacing='0' style='width: 100%'>" ;
     print "<tr class='head'>" ;
       print "<th>" ;
@@ -60,23 +60,26 @@ else {
       print "</th>" ;
   print "</tr>" ;
 
-  print "<a style = 'position:relative; bottom:5px; float: right' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnician.php"."'><img title=" . _('Create Technician ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-
+print "<div class='linkTop'>" ;
+    print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnician.php'><img title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
+  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnician.php'>" .  _('Create');
+  print "</div>" ;
   if (! $result->rowcount() == 0){
     while($row=$result->fetch()){
       print "<tr>" ;
         print "<td>". formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) ."</td>" ;
-        if (! $result2->rowcount() == 0) {
-          print "<td>";
-          $issues = "";
+        print "<td>";
+        $issues = "";
           while($row2=$result2->fetch()){
             $issues.=$row2["issueName"] . ", ";
           }
-          print substr($issues, 0, strlen($issues)-2);
-          print "</td>";
+        $issue = substr($issues, 0, strlen($issues)-2);
+        if (strlen($issue) > 0) {
+          print $issue;
         } else {
-          print "<td> UNASSIGNED </td>" ;
+          print "UNASSIGNED";
         }
+        print "</td>";
         print "<td>". "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_technicianDeleteProcess.php?technicianID=". $row['technicianID'] ."'><img title=" . _('Delete Technician ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconCross.png'/></a>" ."</td>" ;
 
       print "</tr>" ;

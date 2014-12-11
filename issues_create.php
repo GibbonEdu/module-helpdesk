@@ -82,7 +82,7 @@ else {
 
 	?>
 
-	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_submitProccess.php" ?>">
+	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_createProccess.php" ?>">
 		<table class='smallIntBorder' cellspacing='0' style="width: 100%">
 			<tr>
 				<td style='width: 275px'>

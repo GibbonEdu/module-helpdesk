@@ -44,6 +44,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_settings.
 }
 else {
 	//Proceed!
+// 	var_dump($_POST["issuePriorityName"]);
 	$issuePriority="" ; 
 	foreach (explode(",", $_POST["issuePriority"]) as $type) {
 		$issuePriority.=trim($type) . "," ;
@@ -68,6 +69,15 @@ else {
 	try {
 		$data=array("value"=>$issueCategory); 
 		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issueCategory'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { 
+		$fail=TRUE ;
+	}
+	try {
+		$data=array("value"=>$_POST["issuePriorityName"]); 
+		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriorityName'" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
 	}

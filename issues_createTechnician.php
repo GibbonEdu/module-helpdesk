@@ -35,7 +35,26 @@ else {
 
   try {
     $data=array();
-    $sql="SELECT gibbonPerson.* FROM gibbonPerson LEFT JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID!=helpDeskTechnicians.gibbonPersonID) WHERE status='Full' AND NOT gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID";
+    $sql="SELECT * FROM helpDeskTechnicians";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+  } catch(PDOException $e) {
+    print $e;
+  }
+  $exists = false;
+  if($result->rowCount() > 0) {
+  	$exists = true;
+  }
+  else {
+  	$exists = false;
+  }
+
+  try {
+    $data=array();
+    $sql="SELECT gibbonPerson.* FROM gibbonPerson LEFT JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID!=0) WHERE status='Full'";
+    if($exists) {
+      $sql.=" AND NOT gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID";
+    }
     $result=$connection2->prepare($sql);
     $result->execute($data);
   } catch(PDOException $e) {
@@ -54,15 +73,15 @@ else {
         <td class="right">
           <select name='person' id='person' style='width:302px'>
             <?php
-            print "<option value=''>Please select...</option>" ;
+			print "<option value=''>Please select...</option>" ;						
             foreach($result as $option) {
               print "<option value='" . $option['gibbonPersonID'] . "'>". formatName($option['title'],$option['preferredName'],$option['surname'], "Student", FALSE, FALSE) ."</option>" ;
             }
             ?>
           </select>
           <script type="text/javascript">
-            var name=new LiveValidation('person');
-            name.add(Validate.Presence);
+            var name2=new LiveValidation('person');
+            name2.add(Validate.Presence);
           </script>
         </td>
       </tr>
