@@ -84,7 +84,8 @@ else {
 			header("Location: {$URL}");
 			break ;
 		}		
-		
+		setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
+
 		$issueID = $connection2->lastInsertId();
 		notifyTechnican($connection2, $guid, $issueID);
 		//Success 0

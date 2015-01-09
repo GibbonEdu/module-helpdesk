@@ -35,3 +35,4 @@ Fixed a bug with issues_manage_technicians.php where wrong data would be shown f
 Added new Create For in issues_create.php where technicians can create issues on behalf of others.
 Fixed truncated strings not being displayed correctly in issues_view.php.
 Added new column to helpDeskIssue called createdByID.
+Added notification sent to person if an issue was created on behalf of them.
