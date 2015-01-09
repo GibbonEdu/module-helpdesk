@@ -47,6 +47,7 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `category` varchar(100) DEFAULT NULL,
   `priority` varchar(100) DEFAULT NULL,
   `gibbonSchoolYearID` int(3) unsigned zerofill NOT NULL,
+  `createdByID` int(12) unsigned zerofill NOT NULL,
   PRIMARY KEY (`issueID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
@@ -83,6 +84,23 @@ $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ; //Should this action 
 $actionRows[$actionCount]["categoryPermissionStudent"]="Y" ; //Should this action be available to user roles in the Student category?
 $actionRows[$actionCount]["categoryPermissionParent"]="Y" ; //Should this action be available to user roles in the Parent category?
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="Create Issue_forOther" ;
+$actionRows[$actionCount]["precedence"]="1" ;
+$actionRows[$actionCount]["category"]="" ; 
+$actionRows[$actionCount]["description"]="Submits an IT related issue to be resolved by the help desk staff with an optional feature to create on the behalf of others." ; 
+$actionRows[$actionCount]["URLList"]="issues_create.php" ;
+$actionRows[$actionCount]["entryURL"]="issues_create.php" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ; 
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ; 
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ; 
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ; 
+$actionRows[$actionCount]["defaultPermissionSupport"]="Y" ; 
+$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ; 
+$actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="View issues_Mine" ;

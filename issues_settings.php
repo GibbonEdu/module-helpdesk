@@ -75,7 +75,11 @@ else {
 					<span style="font-size: 90%"><i><?php if ($row["description"]!="") { print _($row["description"]) ; } ?></i></span>
 				</td>
 				<td class="right">
-					<input name="<?php print $row["name"] ?>" id="<?php print $row["name"] ?>" maxlength=100 value="<?php print $row["value"] ?>" type="text" style="width: 300px">
+					<input name="<?php print $row["name"] ?>" id="<?php print $row["name"] ?>" maxlength=100 value="<?php print $row["value"] ?>" type="text" data-minlength="1" style="width: 300px">
+					<script type="text/javascript">
+						var priorityName=new LiveValidation('issuePriorityName');
+						priorityName.add(Validate.Presence);
+					</script>
 				</td>
 			</tr>
 			<tr>

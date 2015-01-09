@@ -99,6 +99,7 @@ else {
 		  array_push($categoryFilters, $type);
 		}
 	}
+	$renderCategory = count($categoryFilters)>1;
 	
 	$issueFilters = array("My Issues");
 	if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) array_push($issueFilters, "My Working");
@@ -253,15 +254,17 @@ else {
   print "</h3>" ;
   print "<div class='linkTop'>" ;
     print "<a style='position:relative; bottom:10px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php'><img title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php'>" .  _('Create');
+  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create3.php'>" .  _('Create');
   print "</div>" ;
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-    print "<tr> <th>Date</th> <th>Title</th> <th>Description</th> <th>Name</th> <th>Status</th> <th>Category</th>"; 
-  	if($renderPriority) { print "<th>$priorityName</th>"; }
+    print "<tr> <th>Date</th> <th>Title</th> <th>Description</th> <th>Name</th> <th>Status</th>"; 
+  	if($renderCategory) { print "<th>Category</th>"; }
+  	if($renderPriority) { print "<th>$priorityName</th>"; } 
     print "<th>Action</th> </tr>";
 	if ($resultIssue->rowCount()==0){
     	print "<tr>";
     	$colspan = 7;
+    	if(!$renderCategory) { $colspan-=1; }
     	if(!$renderPriority) { $colspan-=1; }
     	print "<td colspan=$colspan>";
     	print _("There are no records to display.");
@@ -272,30 +275,32 @@ else {
 		foreach($resultIssue as $row){
 		  print "<tr>";
 		  printf("<td>" .dateConvertBack($guid, $row["date"]). "</td>");
-		  printf("<td>" .$row['issueName']. "</td>");
-		  printf("<td>" .substr($row['description'], 0, 15). "...</td>");
+		  $issueName = $row['issueName'];
+		  if(strlen($issueName)>15) $issueName = substr($issueName, 0, 15) . "...";
+		  printf("<td>" .$issueName. "</td>");
+		  $descriptionText = $row['description'];
+		  if(strlen($descriptionText)>15) $descriptionText = substr($descriptionText, 0, 15) . "...";
+		  printf("<td>" .$descriptionText. "</td>");
 		  printf("<td>" .formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE). "</td>");
 		  printf("<td>" .$row['status']. "</td>");
-		  printf("<td>" .$row['category']. "</td>");
+		  if($renderCategory) { printf("<td>" .$row['category']. "</td>"); }
 		  if($renderPriority) { printf("<td>" .$row['priority']. "</td>"); }
 		  print "<td>";
-		  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2))
+		  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]))
 		  {
 			  if($row['technicianID']==null && !($row['status']=="Resolved")) 
 			  {
 				?><input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>"><?php
 				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
-			 	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('View ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
-			  }
-			  else if($row['technicianID']==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))
-			  {
-				if(!($row['status']=="Resolved")) {print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Work ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
-			    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>"; }
+			 	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
 			  }
 		  }
-		  if($row['gibbonPersonID']==$_SESSION[$guid]["gibbonPersonID"] && !($row['technicianID']==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2)) && !($row['status']=="Resolved"))
+		  if(relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) && !($row['status']=="Resolved"))
 		  {
-		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
+		    if(!($row['status']=="Resolved")) {
+		      print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; 
+		      print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
+		    }
 		  }
 		  if($row['technicianID']==null && $highestAction=="View issues_All&Assign" && !($row['status']=="Resolved"))
 		  {

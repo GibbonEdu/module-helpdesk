@@ -57,7 +57,7 @@ else {
           <b><?php print _('Comment') ?></b><br/>
         </td>
         <td class="right">
-          <textarea name='comment' id='comment' rows=5 style='width: 300px'></textarea>
+          <textarea name='comment' id='comment' maxlength=1000 rows=5 style='width: 300px'></textarea>
         </td>
       </tr>
       <tr>

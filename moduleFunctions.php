@@ -167,19 +167,46 @@ function notifyTechnican($connection2, $guid, $issueID) {
 function relatedToIssue($connection2, $issueID, $gibbonPersonID) {
   try {
     $data=array("issueID"=> $issueID);
-    $sql="SELECT helpDeskIssue.*, helpDeskTechnicians.technicianID, helpDeskTechnicians.gibbonPersonID AS personID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) WHERE helpDeskIssue.issueID=:issueID";
+    $sql="SELECT * FROM helpDeskIssue WHERE issueID=:issueID";
     $result=$connection2->prepare($sql);
     $result->execute($data);
   }
   catch(PDOException $e) {
-  }
+	print $e;
+  }  
   $row = $result->fetch();
-  if($row["gibbonPersonID"]==$gibbonPersonID || $row["personID"]==$gibbonPersonID) {
-  	return true;
+  if($row['technicianID']!=null) {
+    try {
+      $data=array("issueID"=> $issueID);
+      $sql="SELECT helpDeskIssue.*, helpDeskTechnicians.technicianID, helpDeskTechnicians.gibbonPersonID AS personID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) WHERE issueID=:issueID";
+      $result=$connection2->prepare($sql);
+      $result->execute($data);
+    }  
+    catch(PDOException $e) {
+	  print $e;
+    }
+    $row = $result->fetch();  
+    $isRelated = $row["gibbonPersonID"]==$gibbonPersonID || $row["personID"]==$gibbonPersonID;
   }
   else {
-    return false;
+    $isRelated = $row["gibbonPersonID"]==$gibbonPersonID;
   }
+
+  return $isRelated;
+}
+
+function isPersonsIssue($connection2, $isssueID, $gibbonPersonID) {
+  try {
+    $data=array("issueID"=> $issueID, "gibbonPersonID"=> $gibbonPersonID);
+    $sql="SELECT * FROM helpDeskIssue WHERE issueID=:issueID AND gibbonPersonID=:gibbonPersonID";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+  }
+  catch(PDOException $e) {
+	print $e;
+  }
+  
+  return ($result->rowCount()==1);
 }
 
 ?>

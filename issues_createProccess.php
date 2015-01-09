@@ -43,10 +43,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.ph
 	header("Location: {$URL}");
 }
 else {
+	$personID = $_SESSION[$guid]["gibbonPersonID"];
 	//Proceed!
 	if(isset($_POST["name"])) {
 	  $name=$_POST["name"] ;
 	}
+	$category = "";
 	if(isset($_POST["category"])) {
 	  $category=$_POST["category"] ;
 	}
@@ -57,9 +59,14 @@ else {
 	if(isset($_POST["priority"])) {
 	  $priority=$_POST["priority"] ;
 	}
+	$createdByID = 0;
+	if(isset($_POST["createFor"])) {
+	  $personID = $_POST["createFor"];
+	  $createdByID = $_SESSION[$guid]["gibbonPersonID"];
+	}
 	
 
-	if ($name=="" || $category=="" || $description=="") {
+	if ($name=="" || $description=="") {
 		//Fail 3
 		$URL=$URL  . "/issues_create.php&addReturn=fail3" ;
 		header("Location: {$URL}");
@@ -67,12 +74,13 @@ else {
 	else {
 		//Write to database
 		try {
-			$data=array("issueID"=> 0, "technicianID"=>null, "gibbonPersonID"=> $_SESSION[$guid]["gibbonPersonID"], "name"=> $name, "description"=> $description, "date" => date("Y-m-d"), "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"]);
-			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID" ;
+			$data=array("issueID"=> 0, "technicianID"=>null, "gibbonPersonID"=> $personID, "name"=> $name, "description"=> $description, "date" => date("Y-m-d"), "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID"=> $createdByID);
+			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID" ;
       		$result=$connection2->prepare($sql);
 			$result->execute($data);
 		}
 		catch(PDOException $e) {
+			$URL=$URL . "/issues_create.php";
 			header("Location: {$URL}");
 			break ;
 		}		

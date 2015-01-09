@@ -62,9 +62,14 @@ else {
     header("Location: {$URL}");
   }
   //Write to database
+  
+  $isTech = false;
+  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+    $isTech = true;
+  }
 
   try {
-    $data=array("issueDiscussID"=>0 , "issueID"=>$_GET["issueID"] , "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "technicianPosted" => isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) ;
+    $data=array("issueDiscussID"=>0 , "issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "technicianPosted" => $isTech) ;
     $sql="INSERT INTO helpDeskIssueDiscuss SET issueDiscussID=:issueDiscussID, issueID=:issueID, comment=:comment, timestamp=:timestamp, technicianPosted=:technicianPosted" ;
     $result=$connection2->prepare($sql);
     $result->execute($data);

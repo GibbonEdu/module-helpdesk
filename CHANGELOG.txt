@@ -31,4 +31,7 @@ Disabled feature to access Resolved issues because of a security issue.
 Changed Submit Issue to Create Issue.
 Change issues_submit.php to issues_create.php.
 Change issues_submitProcess.php to issues_createProcess.php.
-Fixed a bug with issue_manage_technicians.php where wrong data would be shown for technicians with no issues.
+Fixed a bug with issues_manage_technicians.php where wrong data would be shown for technicians with no issues.
+Added new Create For in issues_create.php where technicians can create issues on behalf of others.
+Fixed truncated strings not being displayed correctly in issues_view.php.
+Added new column to helpDeskIssue called createdByID.

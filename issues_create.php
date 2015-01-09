@@ -39,7 +39,7 @@ else {
 		echo $e->getMessage();
 	}
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Submit Issues') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Create Issue') . "</div>" ;
 	print "</div>" ;
 
 	try {
@@ -89,7 +89,7 @@ else {
 					<b><?php print _('Issue Name') ?> *</b><br/>
 				</td>
 				<td class="right">
-					<input name="name" id="name" maxlength=100 value="" type="text" style="width: 300px">
+					<input name="name" id="name" maxlength=55 value="" type="text" style="width: 300px">
 					<script type="text/javascript">
 						var name=new LiveValidation('name');
 						name.add(Validate.Presence);
@@ -129,7 +129,7 @@ else {
 					<b><?php print _('Description') ?> *</b><br/>
 				</td>
 				<td class="right">
-					<textarea name='description' id='description' rows=5 style='width: 300px'></textarea>
+					<textarea name='description' id='description' maxlength=1000 rows=5 style='width: 300px'></textarea>
 					<script type="text/javascript">
 						var name3=new LiveValidation('description');
 						name3.add(Validate.Presence);
@@ -162,6 +162,35 @@ else {
 						<?php
 					print "</td>";
 				print "</tr>";
+			}
+			if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) {
+			?>
+				<tr>
+					<td>
+						<b>Create on behalf of</b><br/>
+						<span style=\"font-size: 90%\"><i>Leave blank if creating issue for self.</i></span>
+					</td>
+					<td class="right">
+						<select name='createFor' id='createFor' style='width:302px'>
+							<option value=''>Select...</option>
+							<?php
+								try {
+									$data=array(); 
+									$sql="SELECT gibbonPersonID, surname, preferredName, title FROM gibbonPerson WHERE status='Full'" ;
+									$result=$connection2->prepare($sql);
+									$result->execute($data);
+								}
+								catch(PDOException $e) { }
+								while(($row = $result->fetch())!=null) {
+									if(intval($row["gibbonPersonID"])!=$_SESSION[$guid]["gibbonPersonID"]) {
+										print "<option value='" . $row["gibbonPersonID"] . "'>". formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) ."</option>" ; 
+									}
+								}
+							?>
+						</select>
+					</td>			
+				</tr>
+			<?php
 			}
 			?>
 			<tr>
