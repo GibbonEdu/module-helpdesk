@@ -42,3 +42,4 @@ Fixed technicians showing incorrect issues assigned to them in issues_manage_tec
 Fixed people not being able to access their own issues.
 Change background colour of technician post in issues_discuss_view.php.
 Changed Issue Filter default to "All" if available.
+Added notification for posting for issues_discuss_view.php.
