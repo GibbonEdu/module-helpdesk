@@ -21,7 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 include "./modules/Help Desk/moduleFunctions.php" ;
 
-if (isModuleAccessible($guid, $connection2)==FALSE || (hasTechnicianAssigned($_GET["issueID"], $connection2) && !relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]))) {
+$allowed = relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]);
+if(!hasTechnicianAssigned($_GET["issueID"], $connection2)) {
+  $allowed = true;
+}
+//
+if (isModuleAccessible($guid, $connection2)==FALSE || !$allowed) {
   //Acess denied
   print "<div class='error'>" ;
     print "You do not have access to this action." ;
@@ -80,7 +85,7 @@ else {
     $array2[0]["technicianID"] = null;
   }
 
-  if(technicianExists($connection2, $array2[0]["technicianID"]))
+  if(technicianExists($connection2, $array2[0]["technicianID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]))
   {
     if(!($array2[0]["technicianID"]==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))) {
 	  print "<div class='error'>" ;
@@ -88,12 +93,6 @@ else {
 	  print "</div>" ;
 	  exit();
     }
-  }
-  else if(!($array2[0]["technicianID"]==null)){
-    print "<div class='error'>" ;
-	  print "You do not have access to this action." ;
-	print "</div>" ;
-	exit();
   }
   
   $tdWidth = "33%" ;
@@ -156,25 +155,25 @@ else {
 		  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
 		  print "</div>" ;
 
-		  print "<div style='margin-bottom: 0px' class='success'>" ;
-		  printf(_('Items in %1$sred%2$s are new since your last login. Items in green are older.'), "<span style='color: #c00'>", "</span>") ;
-		  print "</div>" ;
-
 		  if ($result3->rowCount()==0){
 			print "<div class = 'error'>" ;
 				print _("There are no records to display.");
 			print "</div>";
 		  } else {
 			while ($row3=$result3->fetch()){
+			  $bgc = "#EDF7FF";
+			  if($row3["technicianPosted"] == 1) {
+			  	$bgc = "#FFEDFE";
+			  }
 			  print "<table class='noIntBorder' cellspacing='0' style='width: 100% ; padding: 1px 3px; margin-bottom: -2px; margin-top: 50; margin-left: 0px ; background-color: #f9f9f9'>" ;
 				print "<tr>" ;
 				  if ($row3["technicianPosted"] == 0) {
-					print "<td style='color: #777'><i>". $studentName . " " . _('said') . "</i>:</td>" ;
+					print "<td style='background-color:" . $bgc . "; color: #777'><i>". $studentName . " " . _('said') . "</i>:</td>" ;
 				  } else {
-					print "<td style='color: #777'><i>". $technicianName . " " . _('said') . "</i>:</td>" ;
+					print "<td style='background-color:" . $bgc . "; color: #777'><i>". $technicianName . " " . _('said') . "</i>:</td>" ;
 				  }
-				  print "<td><div>" . $row3["comment"] . "</div></td>" ;
-				  print "<td style='color: #777; text-align: right'><i>" . _('Posted at') . " <b>" . substr($row3["timestamp"],11,5) . "</b> on <b>" . dateConvertBack($guid, $row3["timestamp"]) . "</b></i></td>" ;
+				  print "<td style='background-color:" . $bgc . ";'><div>" . $row3["comment"] . "</div></td>" ;
+				  print "<td style='background-color:" . $bgc . "; color: #777; text-align: right'><i>" . _('Posted at') . " <b>" . substr($row3["timestamp"],11,5) . "</b> on <b>" . dateConvertBack($guid, $row3["timestamp"]) . "</b></i></td>" ;
 				print "</tr>" ;
 			  print "</table>" ;
 			}

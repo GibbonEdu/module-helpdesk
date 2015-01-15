@@ -63,10 +63,7 @@ else {
   }
   //Write to database
   
-  $isTech = false;
-  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
-    $isTech = true;
-  }
+  $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
   try {
     $data=array("issueDiscussID"=>0 , "issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "technicianPosted" => $isTech) ;
@@ -79,6 +76,24 @@ else {
     header("Location: {$URL}");
     break ;
   }
+  $message = "A new message has been left for you";
+  if($isTech) {
+  	$message.= " by the technician working on your issue";
+  }
+  else {
+  	$message.= " by the person who has the issue";
+  }
+  $message.=".";
+  $personID = 0000000000;
+  if($isTech) {
+      $personID = getOwnerOfIssue($connection2, $issueID);
+  }
+  else {
+    	$personID = getTechWorkingOnIssue($connection2, $issueID);
+  }
+  setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
+  
+  
   //Success 0
   $URL=$URL . "&addReturn=success0" ;
   header("Location: {$URL}");

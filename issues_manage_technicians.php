@@ -34,11 +34,11 @@ else {
 
   try {
     $data=array();
-    $sql="SELECT helpDeskTechnicians.* , surname, preferredName, title FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)";
+    $sql="SELECT helpDeskTechnicians.* , surname, preferredName, title FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) ORDER BY helpDeskTechnicians.technicianID ASC";
     $result=$connection2->prepare($sql);
     $result->execute($data);
 
-    $sql2="SELECT helpDeskIssue.technicianID , issueName , issueID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskTechnicians.technicianID=helpDeskIssue.technicianID)";
+    $sql2="SELECT helpDeskIssue.technicianID , issueName , issueID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskTechnicians.technicianID=helpDeskIssue.technicianID) ORDER BY helpDeskTechnicians.technicianID ASC";
     $result2=$connection2->prepare($sql2);
     $result2->execute($data);
   } catch(PDOException $e) {
@@ -62,13 +62,13 @@ else {
 
 print "<div class='linkTop'>" ;
     print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnician.php'><img title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnician.php'>" .  _('Create');
+  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnician.php'>" .  _('Create') . "</a>";
   print "</div>" ;
   if (! $result->rowcount() == 0){
     while($row=$result->fetch()){
       print "<tr>" ;
         print "<td>". formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) ."</td>" ;
-        print "<td>";
+        print "<td> ";
         $issues = "";
           while($row2=$result2->fetch()){
             $issues.=$row2["issueName"] . ", ";
