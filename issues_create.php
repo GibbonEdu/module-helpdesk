@@ -42,8 +42,36 @@ else {
 	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Create Issue') . "</div>" ;
 	print "</div>" ;
 
+	if (isset($_GET["addReturn"])) { $addReturn=$_GET["addReturn"] ; } else { $addReturn="" ; }
+	$addReturnMessage="" ;
+	$class="error" ;
+	if (!($addReturn=="")) {
+		if ($addReturn=="fail0") {
+			$addReturnMessage=_("Your request failed because you do not have access to this action.") ;
+		}
+		else if ($addReturn=="fail2") {
+			$addReturnMessage=_("Your request failed due to a database error.") ;
+		}
+		else if ($addReturn=="fail3") {
+			$addReturnMessage=_("Your request failed because your inputs were invalid.") ;
+		}
+		else if ($addReturn=="fail4") {
+			$addReturnMessage="Your request failed because your inputs were invalid." ;
+		}
+		else if ($addReturn=="fail5") {
+			$addReturnMessage="Your request was successful, but some data was not properly saved." ;
+		}
+		else if ($addReturn=="success0") {
+			$addReturnMessage=_("Your request was completed successfully. You can now add another record if you wish.") ;
+			$class="success" ;
+		}
+		print "<div class='$class'>" ;
+		print $addReturnMessage;
+		print "</div>" ;
+	}
+
 	try {
-		$data=array(); 
+		$data=array();
 		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriority'" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
@@ -57,7 +85,7 @@ else {
 		}
 	}
 	try {
-		$data=array(); 
+		$data=array();
 		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriorityName'" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
@@ -66,7 +94,7 @@ else {
 	$row=$result->fetch() ;
 	$priorityName = $row["value"];
 	try {
-		$data=array(); 
+		$data=array();
 		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issueCategory'" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
@@ -105,7 +133,7 @@ else {
 					print "</td>";
 					print "<td class=\"right\">";
 						print "<select name='category' id='category' style='width:302px'>" ;
-							print "<option value=''>Please select...</option>" ;						
+							print "<option value=''>Please select...</option>" ;
 							foreach($categoryOptions as $option) {
 								$selected="" ;
 								if ($option==$filter) {
@@ -145,7 +173,7 @@ else {
 					print "</td>";
 					print "<td class=\"right\">";
 						print "<select name='priority' id='priority' style='width:302px'>" ;
-							print "<option value=''>Please select...</option>" ;							
+							print "<option value=''>Please select...</option>" ;
 							foreach($priorityOptions as $option) {
 								$selected="" ;
 								if ($option==$filter) {
@@ -175,7 +203,7 @@ else {
 							<option value=''>Select...</option>
 							<?php
 								try {
-									$data=array(); 
+									$data=array();
 									$sql="SELECT gibbonPersonID, surname, preferredName, title FROM gibbonPerson WHERE status='Full'" ;
 									$result=$connection2->prepare($sql);
 									$result->execute($data);
@@ -183,12 +211,12 @@ else {
 								catch(PDOException $e) { }
 								while(($row = $result->fetch())!=null) {
 									if(intval($row["gibbonPersonID"])!=$_SESSION[$guid]["gibbonPersonID"]) {
-										print "<option value='" . $row["gibbonPersonID"] . "'>". formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) ."</option>" ; 
+										print "<option value='" . $row["gibbonPersonID"] . "'>". formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) ."</option>" ;
 									}
 								}
 							?>
 						</select>
-					</td>			
+					</td>
 				</tr>
 			<?php
 			}

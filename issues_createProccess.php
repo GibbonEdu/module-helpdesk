@@ -43,6 +43,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.ph
 	header("Location: {$URL}");
 }
 else {
+
 	$personID = $_SESSION[$guid]["gibbonPersonID"];
 	//Proceed!
 	if(isset($_POST["name"])) {
@@ -64,7 +65,7 @@ else {
 	  $personID = $_POST["createFor"];
 	  $createdByID = $_SESSION[$guid]["gibbonPersonID"];
 	}
-	
+
 
 	if ($name=="" || $description=="") {
 		//Fail 3
@@ -80,16 +81,16 @@ else {
 			$result->execute($data);
 		}
 		catch(PDOException $e) {
-			$URL=$URL . "/issues_create.php";
+      $URL=$URL  . "/issues_create.php&addReturn=fail2" ;
 			header("Location: {$URL}");
 			break ;
-		}		
+		}
 
 		$issueID = $connection2->lastInsertId();
 		setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
 		notifyTechnican($connection2, $guid, $issueID);
 		//Success 0
-		$URL=$URL . "/issues_discuss_view.php&issueID=" . $issueID ;
+		$URL=$URL . "/issues_discuss_view.php&issueID=" . $issueID . "&addReturn=success0" ;
 		header("Location: {$URL}");
 
 	}

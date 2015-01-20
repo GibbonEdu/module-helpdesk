@@ -43,8 +43,8 @@ else {
 	if (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
 	  //Fail 0
 	  print "<div class='error'>" ;
-  print "You do not have access to this action." ;
-  print "</div>" ;
+      print "You do not have access to this action." ;
+    print "</div>" ;
 	  exit();
 	}
 
