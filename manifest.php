@@ -25,7 +25,7 @@ $description="Gibbon Help Desk Module";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.1.01" ;
+$version="0.1.02" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/adrientremblay/helpdesk" ;
 
@@ -56,7 +56,7 @@ $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   `issueID` int(12) unsigned zerofill NOT NULL,
   `comment` text NOT NULL,
   `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `technicianPosted` boolean DEFAULT 0,
+  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
@@ -124,7 +124,7 @@ $actionRows[$actionCount]["name"]="View issues_All" ;
 $actionRows[$actionCount]["precedence"]="1" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Lists all existing issues." ;
-$actionRows[$actionCount]["URLList"]="issues_view.php" ;
+$actionRows[$actionCount]["URLList"]="issues_view.php, issues_discuss_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
@@ -141,7 +141,7 @@ $actionRows[$actionCount]["name"]="View issues_All&Assign" ;
 $actionRows[$actionCount]["precedence"]="2" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Assign any tech an existing unresolved issue." ;
-$actionRows[$actionCount]["URLList"]="issues_view.php, issues_assign.php, issues_assignProcess.php" ;
+$actionRows[$actionCount]["URLList"]="issues_view.php, issues_assign.php, issues_discuss_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;

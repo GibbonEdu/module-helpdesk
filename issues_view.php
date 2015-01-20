@@ -33,6 +33,35 @@ else {
 	print "<div class='trail'>" ;
 	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('View Issues') . "</div>" ;
 	print "</div>" ;
+
+	if (isset($_GET["addReturn"])) { $addReturn=$_GET["addReturn"] ; } else { $addReturn="" ; }
+	$addReturnMessage="" ;
+	$class="error" ;
+	if (!($addReturn=="")) {
+		if ($addReturn=="fail0") {
+			$addReturnMessage=_("Your request failed because you do not have access to this action.") ;
+		}
+		else if ($addReturn=="fail2") {
+			$addReturnMessage=_("Your request failed due to a database error.") ;
+		}
+		else if ($addReturn=="fail3") {
+			$addReturnMessage=_("Your request failed because your inputs were invalid.") ;
+		}
+		else if ($addReturn=="fail4") {
+			$addReturnMessage="Your request failed because your inputs were invalid." ;
+		}
+		else if ($addReturn=="fail5") {
+			$addReturnMessage="Your request was successful, but some data was not properly saved." ;
+		}
+		else if ($addReturn=="success0") {
+			$addReturnMessage=_("Your request was completed successfully. You can now add another record if you wish.") ;
+			$class="success" ;
+		}
+		print "<div class='$class'>" ;
+			print $addReturnMessage;
+		print "</div>" ;
+	}
+
 	print "<h3>" ;
 	print _("Filter") ;
 	print "</h3>" ;
@@ -60,9 +89,9 @@ else {
 	if (isset($_POST["filter4"])) {
 		$filter4=$_POST["filter4"] ;
 	}
-	
+
 	try {
-		$data=array(); 
+		$data=array();
 		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriority'" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
@@ -71,13 +100,13 @@ else {
 	$row=$result->fetch() ;
 	$priorityFilters = array("All");
 	foreach (explode(",", $row["value"]) as $type) {
-		if(!($type=="")) { 
+		if(!($type=="")) {
 		  array_push($priorityFilters, $type);
 		}
 	}
 	$renderPriority = count($priorityFilters)>1;
 	try {
-		$data=array(); 
+		$data=array();
 		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriorityName'" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
@@ -86,7 +115,7 @@ else {
 	$row=$result->fetch() ;
 	$priorityName = $row["value"];
 	try {
-		$data=array(); 
+		$data=array();
 		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issueCategory'" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
@@ -95,12 +124,12 @@ else {
 	$row=$result->fetch() ;
 	$categoryFilters = array("All");
 	foreach (explode(",", $row["value"]) as $type) {
-		if(!($type=="")) { 
+		if(!($type=="")) {
 		  array_push($categoryFilters, $type);
 		}
 	}
 	$renderCategory = count($categoryFilters)>1;
-	
+
 	$issueFilters = array();
 	if($highestAction=="View issues_All" || $highestAction=="View issues_All&Assign") array_push($issueFilters, "All");
 	if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) array_push($issueFilters, "My Working");
@@ -121,7 +150,7 @@ else {
 		$dataIssue["status"] = 'Resolved';
 		$whereIssue.= " AND helpDeskIssue.technicianID=:helpDeskTechnicianID AND NOT helpDeskIssue.status=:status";
 	}
-	
+
 	if ($filter2=="") {
 		$filter2=$statusFilters[0];
 	}
@@ -137,7 +166,7 @@ else {
 		$dataIssue["helpDeskStatus"] = 'Resolved';
 		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
 	}
-	
+
 	if ($filter3=="") {
 		$filter3=$categoryFilters[0];
 	}
@@ -145,7 +174,7 @@ else {
 		$dataIssue["helpDeskCategory"] = $filter3;
 		$whereIssue.= " AND helpDeskIssue.category=:helpDeskCategory";
 	}
-	
+
 	if ($filter4=="") {
 		$filter4=$priorityFilters[0];
 	}
@@ -154,7 +183,7 @@ else {
 		$whereIssue.= " AND helpDeskIssue.priority=:helpDeskPriority";
 	}
 	print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "'>" ;
-		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;	
+		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;
 			if(count($issueFilters)>1)
 			{
 				print "<tr>";
@@ -164,7 +193,7 @@ else {
 					print "</td>";
 					print "<td class=\"right\">";
 						print "<select name='filter' id='filter' style='width:302px'>" ;
-						
+
 							foreach($issueFilters as $option) {
 								$selected="" ;
 								if ($option==$filter) {
@@ -201,7 +230,7 @@ else {
 					print "</td>";
 					print "<td class=\"right\">";
 						print "<select name='filter3' id='filter3' style='width:302px'>" ;
-					
+
 							foreach($categoryFilters as $option) {
 								$selected="" ;
 								if ($option==$filter3) {
@@ -221,7 +250,7 @@ else {
 					print "</td>";
 					print "<td class=\"right\">";
 						print "<select name='filter4' id='filter4' style='width:302px'>" ;
-						
+
 							foreach($priorityFilters as $option) {
 								$selected="" ;
 								if ($option==$filter4) {
@@ -258,13 +287,20 @@ else {
   	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php'>" .  _('Create') . "</a>";
   print "</div>" ;
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
-    print "<tr> <th>Date</th> <th>Title</th> <th>Description</th> <th>Name</th> <th>Status</th>"; 
-  	if($renderCategory) { print "<th>Category</th>"; }
-  	if($renderPriority) { print "<th>$priorityName</th>"; } 
+   	print "<tr>";
+    print "<th>Title <br/>";
+    print "<span style='font-size: 85%; font-style: italic'>" . _('Date') . "</span>" ;
+    print "</th>";
+    print "<th>Description</th>";
+    print "<th>Owner <br/>";
+  	if($renderCategory) { print "<span style='font-size: 85%; font-style: italic'>" . _('Category') . "</span>"; }
+  	print "</th>";
+  	if($renderPriority) { print "<th>$priorityName</th>"; }
+  	print "<th>Status</th>";
     print "<th>Action</th> </tr>";
 	if ($resultIssue->rowCount()==0){
     	print "<tr>";
-    	$colspan = 7;
+    	$colspan = 5;
     	if(!$renderCategory) { $colspan-=1; }
     	if(!$renderPriority) { $colspan-=1; }
     	print "<td colspan=$colspan>";
@@ -275,37 +311,48 @@ else {
     else {
 		foreach($resultIssue as $row){
 		  print "<tr>";
-		  printf("<td>" .dateConvertBack($guid, $row["date"]). "</td>");
 		  $issueName = $row['issueName'];
 		  if(strlen($issueName)>15) $issueName = substr($issueName, 0, 15) . "...";
-		  printf("<td>" .$issueName. "</td>");
+		  printf("<td><b>" .$issueName . "</b><br/>");
+		  print "<span style='font-size: 85%; font-style: italic'>" . dateConvertBack($guid, $row["date"]) . "</span>" ;
+		  print "</td>";
 		  $descriptionText = $row['description'];
 		  if(strlen($descriptionText)>15) $descriptionText = substr($descriptionText, 0, 15) . "...";
-		  printf("<td>" .$descriptionText. "</td>");
-		  printf("<td>" .formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE). "</td>");
-		  printf("<td>" .$row['status']. "</td>");
-		  if($renderCategory) { printf("<td>" .$row['category']. "</td>"); }
-		  if($renderPriority) { printf("<td>" .$row['priority']. "</td>"); }
+		  printf("<td><b>" .$descriptionText. "</b></td>");
+		  printf("<td><b>" .formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) . "</b>");
+		  if($renderCategory) { print "<br/><span style='font-size: 85%; font-style: italic'>" . $row['category'] . "</span>" ;}
+		  print "</td>";
+		  if($renderPriority) { printf("<td><b>" .$row['priority']. "</b></td>"); }
+		  printf("<td><b>" .$row['status']. "</b></td>");
 		  print "<td>";
+		  $openCreated = false;
+		  $resolveCreated = false;
 		  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]))
 		  {
-			  if($row['technicianID']==null && !($row['status']=="Resolved")) 
+			  if($row['technicianID']==null && !($row['status']=="Resolved"))
 			  {
 				?><input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>"><?php
 				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
 			 	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+			 	$openCreated = true;
 			  }
 		  }
 		  if(relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) && !($row['status']=="Resolved"))
 		  {
 		    if(!($row['status']=="Resolved")) {
-		      print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; 
+		      print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
 		      print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
+		      $openCreated = true;
+		      $resolveCreated = true;
 		    }
 		  }
 		  if($row['technicianID']==null && $highestAction=="View issues_All&Assign" && !($row['status']=="Resolved"))
 		  {
-		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $row["issueID"] . "'><img title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";		  
+		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $row["issueID"] . "'><img title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";
+		  }
+		  if($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All") {
+		      if(!$openCreated) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; }
+		      if(!$resolveCreated) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>"; }
 		  }
 		  print "</td>";
 		  print "</tr>";

@@ -39,9 +39,9 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_view.php" ;
 
-
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.php")==FALSE) {
 	//Fail 0
+  $URL = $URL."&addReturn=fail0" ;
 	header("Location: {$URL}");
 	exit();
 }
@@ -51,22 +51,25 @@ else {
 		$technician = $_POST["technician"];
 	}
 	else {
+    $URL = $URL."&addReturn=fail1" ;
 	  header("Location: {$URL}");
 	  exit();
 	}
 	$technicianID = getTechnicianIDViaName($connection2, $technician);
-	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_assignProcess.php", $connection2) ;
+	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_assign.php", $connection2) ;
 	if ($highestAction==FALSE) {
 		print "<div class='error'>" ;
 		print _("The highest grouped action cannot be determined.") ;
 		print "</div>" ;
 	}
 	if(!($highestAction=="View issues_All&Assign")) {
+    $URL = $URL."&addReturn=fail0" ;
 	  header("Location: {$URL}");
 	  exit();
 	}
 
 	if($technicianID==null){
+    $URL = $URL."&addReturn=fail1" ;
  	  header("Location: {$URL}");
  	  exit();
  	}
@@ -75,6 +78,7 @@ else {
 	  $issueID = (int) $_GET["issueID"];
 	}
 	else {
+    $URL = $URL."&addReturn=fail1" ;
 	  header("Location: {$URL}");
 	  exit();
 	}
@@ -86,19 +90,14 @@ else {
 		$result->execute($data);
 	}
 	catch(PDOException $e) {
-		//Fail 2q
-// 		$fail = TRUE;
+    $URL = $URL."&addReturn=fail2" ;
+    header("Location: {$URL}");
+    exit();
 	}
 
+  	$URL = $URL."&addReturn=success0" ; 
 	header("Location: {$URL}");
 
-// 	if ($fail==TRUE) {
-		//Fail 2
-// 		header("Location: {$URL}");
-// 	}
-// 	else {
-		//Success 0
-// 	header("Location: {$URL}");
-// 	}
+
 }
 ?>

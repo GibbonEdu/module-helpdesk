@@ -47,3 +47,14 @@ Added notification for posting for issues_discuss_view.php.
 v0.1.01
 -------
 Update broken in v0.1.00 fixed in this version.
+
+v0.1.02
+-------
+Changed Student to Owner in issues_discuss_view.php.
+Changed Name to Owner in issues_view.php.
+Changed drop down to order by surname, preferredName in issues_createTechnicians.php.
+Changed drop down to show surname, preferredName in issues_createTechnicians.php.
+Combined Date and Title and Owner and Category in issues_view.php.
+Gave Admins full access to system.
+Changed URLList of View issues_All and View issues_All&Assign to "issues_view.php, issues_discuss_view.php" and "issues_view.php, issues_assign.php, issues_discuss_view.php" respectively.
+Changed technicianPosted to gibbonPersonID in table helpDeskIssueDiscuss.

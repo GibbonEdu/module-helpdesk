@@ -40,6 +40,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_manage_technicians.php" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_createTechnician.php")==FALSE) {
+	$URL = $URL."&addReturn=fail0" ; 
   header("Location: {$URL}");
 }
 else {
@@ -49,6 +50,7 @@ else {
   }
 
   if ($person == "" || technicianExistsFromPersonID($connection2, $person)) {
+  	$URL = $URL."&addReturn=fail1" ; 
     header("Location: {$URL}");
   }
   else {
@@ -61,11 +63,12 @@ else {
       $result->execute($data);
     }
     catch(PDOException $e) {
-      print $e ;
+      $URL = $URL."&addReturn=fail2" ; 
       break ;
     }
 
     //Success 0
+    $URL = $URL."&addReturn=success0" ; 
     header("Location: {$URL}");
 
   }

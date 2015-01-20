@@ -31,6 +31,35 @@ else {
   print "<div class='trail'>" ;
   print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Assign Issue') . "</div>" ;
   print "</div>" ;
+  
+  if (isset($_GET["addReturn"])) { $addReturn=$_GET["addReturn"] ; } else { $addReturn="" ; }
+  $addReturnMessage="" ;
+  $class="error" ;
+  if (!($addReturn=="")) {
+    if ($addReturn=="fail0") {
+      $addReturnMessage=_("Your request failed because you do not have access to this action.") ;
+    }
+    else if ($addReturn=="fail2") {
+      $addReturnMessage=_("Your request failed due to a database error.") ;
+    }
+    else if ($addReturn=="fail3") {
+      $addReturnMessage=_("Your request failed because your inputs were invalid.") ;
+    }
+    else if ($addReturn=="fail4") {
+      $addReturnMessage="Your request failed because your inputs were invalid." ;
+    }
+    else if ($addReturn=="fail5") {
+      $addReturnMessage="Your request was successful, but some data was not properly saved." ;
+    }
+    else if ($addReturn=="success0") {
+      $addReturnMessage=_("Your request was completed successfully. You can now add another record if you wish.") ;
+      $class="success" ;
+    }
+    print "<div class='$class'>" ;
+    print $addReturnMessage;
+    print "</div>" ;
+  }
+  
 
   try {
     $data=array();

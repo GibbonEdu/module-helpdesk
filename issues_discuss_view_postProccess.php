@@ -47,7 +47,9 @@ else {
   header("Location: {$URL}");
 }
 
-if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_discuss_view.php", $connection2);
+
+if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All")) {
   //Fail 0
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");
@@ -66,8 +68,8 @@ else {
   $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
   try {
-    $data=array("issueDiscussID"=>0 , "issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "technicianPosted" => $isTech) ;
-    $sql="INSERT INTO helpDeskIssueDiscuss SET issueDiscussID=:issueDiscussID, issueID=:issueID, comment=:comment, timestamp=:timestamp, technicianPosted=:technicianPosted" ;
+    $data=array("issueDiscussID"=>0 , "issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "gibbonPersonID" => $_SESSION[$guid]["gibbonPersonID"]) ;
+    $sql="INSERT INTO helpDeskIssueDiscuss SET issueDiscussID=:issueDiscussID, issueID=:issueID, comment=:comment, timestamp=:timestamp, gibbonPersonID=:gibbonPersonID" ;
     $result=$connection2->prepare($sql);
     $result->execute($data);
   } catch(PDOException $e) {
@@ -76,6 +78,9 @@ else {
     header("Location: {$URL}");
     break ;
   }
+
+$isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || $highestAction=="View issues_All&Assign" || $highestAction=="View issues_All";
+
   $message = "A new message has been left for you";
   if($isTech) {
   	$message.= " by the technician working on your issue";
