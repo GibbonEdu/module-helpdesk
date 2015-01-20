@@ -55,7 +55,7 @@ else {
 	  exit();
 	}
 	$technicianID = getTechnicianIDViaName($connection2, $technician);
-	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_assignProcess.php", $connection2) ;
+	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_assign.php", $connection2) ;
 	if ($highestAction==FALSE) {
 		print "<div class='error'>" ;
 		print _("The highest grouped action cannot be determined.") ;

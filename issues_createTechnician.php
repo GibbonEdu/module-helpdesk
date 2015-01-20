@@ -55,6 +55,7 @@ else {
     if($exists) {
       $sql.=" AND NOT gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID";
     }
+    $sql.=" ORDER BY surname, preferredName ASC";
     $result=$connection2->prepare($sql);
     $result->execute($data);
   } catch(PDOException $e) {
@@ -75,7 +76,7 @@ else {
             <?php
 			print "<option value=''>Please select...</option>" ;						
             foreach($result as $option) {
-              print "<option value='" . $option['gibbonPersonID'] . "'>". formatName($option['title'],$option['preferredName'],$option['surname'], "Student", FALSE, FALSE) ."</option>" ;
+              print "<option value='" . $option['gibbonPersonID'] . "'>". $option['surname'] . ", " . $option['preferredName']."</option>" ;
             }
             ?>
           </select>

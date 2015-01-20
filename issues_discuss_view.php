@@ -25,6 +25,10 @@ $allowed = relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibb
 if(!hasTechnicianAssigned($_GET["issueID"], $connection2)) {
   $allowed = true;
 }
+
+$highestAction=getHighestGroupedAction($guid, $_GET["q"], $connection2) ;
+if($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All") { $allowed = true; }
+
 //
 if (isModuleAccessible($guid, $connection2)==FALSE || !$allowed) {
   //Acess denied
@@ -85,7 +89,7 @@ else {
     $array2[0]["technicianID"] = null;
   }
 
-  if(technicianExists($connection2, $array2[0]["technicianID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]))
+  if(technicianExists($connection2, $array2[0]["technicianID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All"))
   {
     if(!($array2[0]["technicianID"]==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))) {
 	  print "<div class='error'>" ;
@@ -106,7 +110,7 @@ else {
     print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
       print "<tr>" ;
    		print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
-    		print "<span style='font-size: 115%; font-weight: bold'>" . _('Student') . "</span><br/>" ;
+    		print "<span style='font-size: 115%; font-weight: bold'>" . _('Owner') . "</span><br/>" ;
     		print $studentName ;
     	print "</td>" ;
   	  	print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
@@ -162,15 +166,30 @@ else {
 		  } else {
 			while ($row3=$result3->fetch()){
 			  $bgc = "#EDF7FF";
-			  if($row3["technicianPosted"] == 1) {
+			  if(!isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {
 			  	$bgc = "#FFEDFE";
 			  }
 			  print "<table class='noIntBorder' cellspacing='0' style='width: 100% ; padding: 1px 3px; margin-bottom: -2px; margin-top: 50; margin-left: 0px ; background-color: #f9f9f9'>" ;
 				print "<tr>" ;
-				  if ($row3["technicianPosted"] == 0) {
+				  if (isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {
 					print "<td style='background-color:" . $bgc . "; color: #777'><i>". $studentName . " " . _('said') . "</i>:</td>" ;
 				  } else {
-					print "<td style='background-color:" . $bgc . "; color: #777'><i>". $technicianName . " " . _('said') . "</i>:</td>" ;
+				    $techName = $technicianName;
+				  	if(!(getTechWorkingOnIssue($connection2, $issueID) == $row3["gibbonPersonID"])) { 
+					    $data2=array("gibbonPersonID"=>$row3["gibbonPersonID"]) ;
+
+					    try {
+						  $sql5="SELECT surname, preferredName, title FROM gibbonPerson WHERE gibbonPersonID=:gibbonPersonID" ;
+						  $result5=$connection2->prepare($sql5);
+						  $result5->execute($data2);
+						  $row5 = $result5->fetch();
+					    }
+					    catch(PDOException $e) {
+						  print $e ;
+					    }
+     					$techName = formatName($row5["title"] , $row5["preferredName"] , $row5["surname"] , "Student", FALSE, FALSE);
+				  	}
+					print "<td style='background-color:" . $bgc . "; color: #777'><i>". $techName . " " . _('said') . "</i>:</td>" ;
 				  }
 				  print "<td style='background-color:" . $bgc . ";'><div>" . $row3["comment"] . "</div></td>" ;
 				  print "<td style='background-color:" . $bgc . "; color: #777; text-align: right'><i>" . _('Posted at') . " <b>" . substr($row3["timestamp"],11,5) . "</b> on <b>" . dateConvertBack($guid, $row3["timestamp"]) . "</b></i></td>" ;

@@ -25,6 +25,12 @@ $count++;
 $sql[$count][0]="0.1.01" ;
 $sql[$count][1]="INSERT INTO gibbonAction SET name='Create Issue_forOther', precedence='1', category='', description='Submits an IT related issue to be resolved by the help desk staff with an optional feature to create on the behalf of others.', URLList='issues_create.php', entryURL='issues_create.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='Y', defaultPermissionStudent='Y', defaultPermissionParent='N', defaultPermissionSupport='Y', categoryPermissionStaff='Y', categoryPermissionStudent='Y', categoryPermissionParent='Y', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end" ;
 
-
+//v0.1.02
+$count++;
+$sql[$count][0]="0.1.02" ;
+$sql[$count][1]="UPDATE gibbonAction SET URLList='issues_view.php, issues_discuss_view.php' WHERE name='View issues_All' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET URLList='issues_view.php, issues_assign.php, issues_discuss_view.php' WHERE name='View issues_All&Assign' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+ALTER TABLE helpDeskIssueDiscuss DROP COLUMN technicianPosted;end
+ALTER TABLE helpDeskIssueDiscuss ADD gibbonPersonID int(10) unsigned zerofill NOT NULL;end" ;
 
 ?>

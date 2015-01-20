@@ -55,19 +55,8 @@ else {
 		header("Location: {$URL}");
 	}
 	else {
-	  try {
-	  	$data1=array("issueID"=> $issueID);
-		$sql1="SELECT gibbonPersonID, technicianID FROM helpDeskIssue WHERE issueID=:issueID" ;
-		$result1=$connection2->prepare($sql1);
-		$result1->execute($data1);
-	  }
-	  catch(PDOException $e) {
-		print $e;
-	  }
-	  $row = $result1->fetch();
-	  $technicianID = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
-	  
-		if ($row["gibbonPersonID"] == $_SESSION[$guid]["gibbonPersonID"] || ($row["technicianID"] == $technicianID && !($technicianID == null))) {
+		$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_view.php", $connection2) ;
+		if (relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || $highestAction=="View issues_All&Assign" || $highestAction=="View issues_All") {
 
 			//Write to database
 			try {

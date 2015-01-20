@@ -29,6 +29,7 @@ if (isModuleAccessible($guid, $connection2)==FALSE) {
   print "</div>" ;
 }
 else {
+	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_discuss_view.php", $connection2) ;
   //New PDO DB connection.
   //Gibbon uses PDO to connect to databases, rather than the PHP mysql classes, as they provide paramaterised connections, which are more secure.
   try {
@@ -40,7 +41,7 @@ else {
     echo $e->getMessage();
   }
 
-	if (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
+	if (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) && !($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All")) {
 	  //Fail 0
 	  print "<div class='error'>" ;
   print "You do not have access to this action." ;
