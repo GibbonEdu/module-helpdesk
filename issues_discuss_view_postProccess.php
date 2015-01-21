@@ -64,7 +64,8 @@ else {
     header("Location: {$URL}");
   }
   //Write to database
-  
+
+  $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
   try {
     $data=array("issueDiscussID"=>0 , "issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "gibbonPersonID" => $_SESSION[$guid]["gibbonPersonID"]) ;
@@ -77,7 +78,7 @@ else {
     header("Location: {$URL}");
     break ;
   }
-  
+
 $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || $highestAction=="View issues_All&Assign" || $highestAction=="View issues_All";
 
   $message = "A new message has been left for you";
@@ -95,8 +96,7 @@ $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isP
   else {
     	$personID = getTechWorkingOnIssue($connection2, $issueID);
   }
-  setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
-  
+  setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);  
   
   //Success 2 aka Posted
   $URL=$URL . "&addReturn=success2" ;

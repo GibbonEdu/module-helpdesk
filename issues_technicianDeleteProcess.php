@@ -50,7 +50,7 @@ else {
     $technicianID=$_GET["technicianID"] ;
   }
   else {
-    $URL=$URL . "&addReturn=fail0" ;
+    $URL=$URL . "&addReturn=fail1" ;
     header("Location: {$URL}");
   }
   //Write to database
@@ -66,8 +66,8 @@ else {
     $result2->execute($data);
   } catch(PDOException $e) {
     //Fail 2
-    print $e ;
-    break ;
+    $URL = $URL."&addReturn=fail2" ; 
+    header("Location: {$URL}");
   }
   //Success 0
   $URL=$URL . "&addReturn=success0" ;

@@ -44,8 +44,8 @@ else {
 	if (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) && !($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All")) {
 	  //Fail 0
 	  print "<div class='error'>" ;
-  print "You do not have access to this action." ;
-  print "</div>" ;
+      print "You do not have access to this action." ;
+    print "</div>" ;
 	  exit();
 	}
 

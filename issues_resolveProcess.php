@@ -66,19 +66,15 @@ else {
 				$result->execute($data);
 			}
 			catch(PDOException $e) {
-				//Fail 2q
-				print $e;
 				$URL=$URL . "&addReturn=fail2" ;
 				header("Location: {$URL}");
-				break ;
 			}
 		
 			//Success 0
 			$URL=$URL . "&addReturn=success0" ;
 			header("Location: {$URL}");
 		}
-		else
-		{
+		else {
 			$URL=$URL . "&addReturn=fail0" ;
 			header("Location: {$URL}");
 		}
