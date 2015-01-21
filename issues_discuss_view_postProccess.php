@@ -43,14 +43,14 @@ if(isset($_GET["issueID"])) {
   $issueID = $_GET["issueID"];
 }
 else {
-  $URL=$URL . "&addReturn=fail0" ;
+  $URL=$URL . "&addReturn=fail1" ;
   header("Location: {$URL}");
 }
 
 $highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_discuss_view.php", $connection2);
 
 if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All")) {
-  //Fail 0
+  //Fail 0 aka No permission
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");
 }
@@ -60,7 +60,7 @@ else {
     $comment=$_POST["comment"] ;
   }
   else {
-    $URL=$URL . "&addReturn=fail0" ;
+    $URL=$URL . "&addReturn=fail1" ;
     header("Location: {$URL}");
   }
   //Write to database
@@ -98,8 +98,8 @@ $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isP
   setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
   
   
-  //Success 0
-  $URL=$URL . "&addReturn=success0" ;
+  //Success 2 aka Posted
+  $URL=$URL . "&addReturn=success2" ;
   header("Location: {$URL}");
 }
 ?>

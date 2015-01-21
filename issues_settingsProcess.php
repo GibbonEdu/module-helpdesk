@@ -43,8 +43,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_settings.
 	header("Location: {$URL}");
 }
 else {
+
+	if(!(isset($_POST["issuePriority"]) || isset($_POST["issueCategory"]) || isset($_POST["issuePriorityName"]))) {
+		$URL=$URL . "&updateReturn=fail1" ;
+		header("Location: {$URL}");
+	}
 	//Proceed!
-// 	var_dump($_POST["issuePriorityName"]);
 	$issuePriority="" ; 
 	foreach (explode(",", $_POST["issuePriority"]) as $type) {
 		$issuePriority.=trim($type) . "," ;

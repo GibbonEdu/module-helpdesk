@@ -84,6 +84,36 @@ else {
   print "<div class='trail'>" ;
   print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Discuss Issue') . "</div>" ;
   print "</div>" ;
+  
+  if (isset($_GET["addReturn"])) { $addReturn=$_GET["addReturn"] ; } else { $addReturn="" ; }
+	$addReturnMessage="" ;
+	$class="error" ;
+	if (!($addReturn=="")) {
+		if ($addReturn=="fail0") {
+			$addReturnMessage=_("You do not have access to this action.") ;	
+		}
+		else if ($addReturn=="fail1") {
+			$addReturnMessage=_("Your request failed because your inputs were invalid.") ;	
+		}
+		else if ($addReturn=="fail2") {
+			$addReturnMessage=_("Your request failed due to a database error.") ;	
+		}
+		else if ($addReturn=="success0") {
+			$addReturnMessage=_("Your issue was successfully created.") ;	
+			$class="success" ;
+		}
+		else if ($addReturn=="success1") {
+			$addReturnMessage=_("You have successfully accepted this issue.") ;	
+			$class="success" ;
+		}
+		else if ($addReturn=="success2") {
+			$addReturnMessage=_("Your post has successfully been posted.") ;	
+			$class="success" ;
+		}
+		print "<div class='$class'>" ;
+			print $addReturnMessage;
+		print "</div>" ;
+	} 
 
   if(!isset($array2[0]["technicianID"])) {
     $array2[0]["technicianID"] = null;

@@ -51,7 +51,7 @@ else {
 	}
 	if ($issueID=="") {
 		//Fail 3
-		$URL=$URL . "&addReturn=fail3" ;
+		$URL=$URL . "&addReturn=fail1" ;
 		header("Location: {$URL}");
 	}
 	else {

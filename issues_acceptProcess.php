@@ -37,11 +37,11 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_view.php" ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php")==FALSE) {
 	//Fail 0
-	$URL=$URL . "&addReturn=fail0" ;
+	$URL=$URL . "issues_view.php&addReturn=fail0" ;
 	header("Location: {$URL}");
 }
 else {
@@ -49,7 +49,7 @@ else {
 	$issueID = intval($_GET["issueID"]) ;
 	if ($issueID=="") {
 		//Fail 3
-		$URL=$URL . "&addReturn=fail3" ;
+		$URL=$URL . "issues_view.php&addReturn=fail1" ;
 		header("Location: {$URL}");
 	}
 	else {
@@ -66,18 +66,18 @@ else {
 			catch(PDOException $e) {
 				//Fail 2q
 				print $e;
-				$URL=$URL . "&addReturn=fail2" ;
+				$URL=$URL . "issues_view.php&addReturn=fail2" ;
 				header("Location: {$URL}");
 				break ;
 			}
 		
-			//Success 0
-			$URL=$URL . "&addReturn=success0" ;
+			//Success 1 aka Accepted
+			$URL=$URL . "issues_discuss_view.php&issueID=" . $issueID . "&addReturn=success1" ;
 			header("Location: {$URL}");
 		}
 		else
 		{
-			$URL=$URL . "&addReturn=fail0" ;
+			$URL=$URL . "issues_view.php&addReturn=fail0" ;
 			header("Location: {$URL}");
 		}
 	}

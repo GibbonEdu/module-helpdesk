@@ -40,6 +40,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.php")==FALSE) {
+	$URL.= "&addReturn=fail0"
 	header("Location: {$URL}");
 }
 else {
@@ -68,7 +69,7 @@ else {
 
 	if ($name=="" || $description=="") {
 		//Fail 3
-		$URL=$URL  . "/issues_create.php&addReturn=fail3" ;
+		$URL=$URL  . "/issues_create.php&addReturn=fail1" ;
 		header("Location: {$URL}");
 	}
 	else {
@@ -80,7 +81,7 @@ else {
 			$result->execute($data);
 		}
 		catch(PDOException $e) {
-			$URL=$URL . "/issues_create.php";
+			$URL=$URL . "/issues_create.php&addReturn=fail2";
 			header("Location: {$URL}");
 			break ;
 		}		
@@ -88,8 +89,8 @@ else {
 		$issueID = $connection2->lastInsertId();
 		setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
 		notifyTechnican($connection2, $guid, $issueID);
-		//Success 0
-		$URL=$URL . "/issues_discuss_view.php&issueID=" . $issueID ;
+		//Success 0 aka Created
+		$URL=$URL . "/issues_discuss_view.php&issueID=" . $issueID . "&addReturn=success0" ;
 		header("Location: {$URL}");
 
 	}

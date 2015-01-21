@@ -58,3 +58,5 @@ Combined Date and Title and Owner and Category in issues_view.php.
 Gave Admins full access to system.
 Changed URLList of View issues_All and View issues_All&Assign to "issues_view.php, issues_discuss_view.php" and "issues_view.php, issues_assign.php, issues_discuss_view.php" respectively.
 Changed technicianPosted to gibbonPersonID in table helpDeskIssueDiscuss.
+Fixed an issue where admins would not show their name when posting.
+Added success and failure boxes at the tops of multiple pages.
