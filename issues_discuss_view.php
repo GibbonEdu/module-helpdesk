@@ -99,7 +99,7 @@ else {
 			$addReturnMessage=_("Your request failed due to a database error.") ;	
 		}
 		else if ($addReturn=="success0") {
-			$addReturnMessage=_("Your issue was successfully created. Your unique issue ID is " . $issueID . ".") ;	
+			$addReturnMessage=_("Your issue was successfully created. Your unique issue ID is " . intval($issueID) . ".") ;	
 			$class="success" ;
 		}
 		else if ($addReturn=="success1") {
@@ -131,15 +131,19 @@ else {
 
 	$createdByShow = (isset($row["createdByID"]) && $row["createdByID"] != $row["gibbonPersonID"]);
 
-  $tdWidth = "33%" ;
+  $tdWidth = "25%" ;
   if($createdByShow) {
-  	$tdWidth = "25%";
+  	$tdWidth = "20%";
   }
     $row=$result->fetch();
     $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", FALSE, FALSE);
     print "<h1>" . $row["issueName"] . "</h1>" ;
     print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
       print "<tr>" ;
+     	 print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
+    		print "<span style='font-size: 115%; font-weight: bold'>" . _('Issue ID') . "</span><br/>" ;
+    		print intval($issueID) ;
+    	print "</td>" ;
    		print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
     		print "<span style='font-size: 115%; font-weight: bold'>" . _('Owner') . "</span><br/>" ;
     		print $studentName ;
