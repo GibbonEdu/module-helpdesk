@@ -69,3 +69,7 @@ Fixed buttons duplicating in issues_view.php.
 Fixed one redirect not working in issue_createProcess.php
 Fixed people sometimes showing twice in issues_create.php and issues_createTechnician.php along with ordering the lists by surname, preferredName.
 Ordered list in issues_assign.php.
+
+v0.1.04
+-------
+Fixed an issue where the gibbonPersonID would not be set when creating an issue in issues_create.php.
