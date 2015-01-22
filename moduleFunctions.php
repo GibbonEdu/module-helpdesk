@@ -204,41 +204,19 @@ function getTechWorkingOnIssue($connection2, $issueID) {
 }
 
 function getAllPeople($connection2, $excludeTechnicians = false) {
-	try {
-		$data=array();
-		$sql="SELECT gibbonPersonID, surname, preferredName FROM gibbonPerson WHERE status='Full'";
-		$sql.=" ORDER BY surname, preferredName ASC";
-		$result=$connection2->prepare($sql);
-		$result->execute($data);
-	} catch(PDOException $e) {
-	print $e;
-	}
-	$allPeople = array();
-  if($excludeTechnicians) {
-		try {
-			$data2=array();
-			$sql2="SELECT * FROM helpDeskTechnicians";
-			$result2=$connection2->prepare($sql2);
-			$result2->execute($data2);
+	 	try {
+			$data=array();
+			if (!$excludeTechnicians) {
+				$sql="SELECT gibbonPersonID, surname, preferredName FROM gibbonPerson WHERE status='Full' ORDER BY surname, preferredName ASC";
+			}
+			else {
+				$sql="SELECT gibbonPerson.gibbonPersonID, surname, preferredName FROM gibbonPerson LEFT JOIN helpDeskTechnicians ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE status='Full' AND helpDeskTechnicians.gibbonPersonID IS NULL ORDER BY surname, preferredName ASC";
+			}
+			$result=$connection2->prepare($sql);
+			$result->execute($data);
 		} catch(PDOException $e) {
 		print $e;
 		}
-		while($row = $result->fetch()) {
-			$gibbonPersonID = $row["gibbonPersonID"];
-			$match = false;
-			while($row2 = $result->fetch()) {
-				if($match) { break; }
-				$match = ($gibbonPersonID == $row2["gibbonPersonID"]);
-			}
-			if(!$match) {
-				array_push($allPeople, $row);
-			}
-		}
-  	} else {
-		while($row = $result->fetch()) {
-			array_push($allPeople, $row);
-		}	
-  	}
-  	 return $allPeople;
-  }
+  	 return $result->fetchAll();
+}
 ?>
