@@ -66,7 +66,7 @@ else {
     $result3=$connection2->prepare($sql3);
     $result3->execute($data);
 
-    $sql4="SELECT helpDeskIssue.createdByID, surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.createdByID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID";
+    $sql4="SELECT surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.createdByID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID";
  	$result4=$connection2->prepare($sql4);
     $result4->execute($data);
     $row4 = $result4->fetch();
@@ -129,12 +129,13 @@ else {
     }
   }
 
+	$createdByShow = (isset($row["createdByID"]) && $row["createdByID"] != $row["gibbonPersonID"]);
+
   $tdWidth = "33%" ;
-  if(isset($row4["createdByID"])) {
+  if($createdByShow) {
   	$tdWidth = "25%";
   }
-
-  while ($row=$result->fetch()){
+    $row=$result->fetch();
     $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", FALSE, FALSE);
     print "<h1>" . $row["issueName"] . "</h1>" ;
     print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
@@ -151,7 +152,7 @@ else {
     		print "<span style='font-size: 115%; font-weight: bold'>" . _('Date') . "</span><br/>" ;
     		print dateConvertBack($guid, $row["date"]) ;
   		print "</td>" ;
-  		if(isset($row4["createdByID"])) {
+  		if($createdByShow) {
    			print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
    				print "<span style='font-size: 115%; font-weight: bold'>" . _('Created By') . "</span><br/>" ;
     			print formatName($row4["title"] , $row4["preferredName"] , $row4["surname"] , "Student", FALSE, FALSE);
@@ -164,7 +165,6 @@ else {
    	  print "<tr>" ;
     	print "<td style='text-align: justify; padding-top: 5px; width: 33%; vertical-align: top'>". $row["description"] ."</td>" ;
       print "</tr>" ;
-  }
 
     if($array2[0]["technicianID"]==null && !relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
       print "<tr>";

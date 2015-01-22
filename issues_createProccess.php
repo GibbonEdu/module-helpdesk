@@ -61,15 +61,15 @@ else {
 	if(isset($_POST["priority"])) {
 	  $priority=$_POST["priority"] ;
 	}
-	$createdByID = 0;
+	
+	$createdByID = $_SESSION[$guid]["gibbonPersonID"];
 	$personID = $_SESSION[$guid]["gibbonPersonID"];
 	if(isset($_POST["createFor"])) {
-	  if($_POST["createFor"] != "") {
+	  if($_POST["createFor"] != 0) {
 		  $personID = $_POST["createFor"];
 		  $createdByID = $_SESSION[$guid]["gibbonPersonID"];
 	  }
 	}
-
 
 	if ($name=="" || $description=="") {
 		//Fail 3
