@@ -194,7 +194,7 @@ else {
 							<?php
 								try {
 									$data=array();
-									$sql="SELECT gibbonPersonID, surname, preferredName, title FROM gibbonPerson WHERE status='Full'" ;
+									$sql="SELECT gibbonPersonID, surname, preferredName, title FROM gibbonPerson WHERE status='Full' ORDER BY surname, preferredName" ;
 									$result=$connection2->prepare($sql);
 									$result->execute($data);
 								}
