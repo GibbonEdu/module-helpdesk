@@ -64,8 +64,10 @@ else {
 	$createdByID = 0;
 	$personID = $_SESSION[$guid]["gibbonPersonID"];
 	if(isset($_POST["createFor"])) {
-	  $personID = $_POST["createFor"];
-	  $createdByID = $_SESSION[$guid]["gibbonPersonID"];
+	  if($_POST["createFor"]) != "") {
+		  $personID = $_POST["createFor"];
+		  $createdByID = $_SESSION[$guid]["gibbonPersonID"];
+	  }
 	}
 
 
