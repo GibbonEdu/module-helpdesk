@@ -36,7 +36,7 @@ ALTER TABLE helpDeskIssueDiscuss ADD gibbonPersonID int(10) unsigned zerofill NO
 //v0.1.03
 $count++;
 $sql[$count][0]="0.1.03" ;
-$sql[$count][1]=""
+$sql[$count][1]="" ;
 
 //v0.1.04
 $count++;
