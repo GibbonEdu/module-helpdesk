@@ -78,6 +78,7 @@ Fixed multiple misc issues.
 
 v0.1.05
 -------
+Add Issue ID to top table in issues_discuss_view.php.
 Combine Title and Description, Date and Status in issues_view.php.
 Add Issue ID as column in issues_view.php.
 Add search for Issue ID in issues_view.php.
