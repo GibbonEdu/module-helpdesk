@@ -106,7 +106,7 @@ print "<div class='linkTop'>" ;
         if (strlen($issue) > 0) {
           print $issue;
         } else {
-          print "UNASSIGNED";
+          print "Nothing";
         }
         print "</td>";
         print "<td>". "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_technicianDeleteProcess.php?technicianID=". $row['technicianID'] ."'><img title=" . _('Delete Technician ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconCross.png'/></a>" ."</td>" ;

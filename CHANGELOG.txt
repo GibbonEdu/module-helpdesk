@@ -60,3 +60,12 @@ Changed URLList of View issues_All and View issues_All&Assign to "issues_view.ph
 Changed technicianPosted to gibbonPersonID in table helpDeskIssueDiscuss.
 Fixed an issue where admins would not show their name when posting.
 Added success and failure boxes at the tops of multiple pages.
+
+v0.1.03
+-------
+Fixed a bug where the gibbonPersonID would sometimes not be set in issues_createProcess.php.
+Fixed having double error/success boxes ons issues_discuss_view.php.
+Fixed buttons duplicating in issues_view.php.
+Fixed one redirect not working in issue_createProcess.php
+Fixed people sometimes showing twice in issues_create.php and issues_createTechnician.php along with ordering the lists by surname, preferredName.
+Ordered list in issues_assign.php.

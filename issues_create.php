@@ -192,16 +192,10 @@ else {
 						<select name='createFor' id='createFor' style='width:302px'>
 							<option value=''>Select...</option>
 							<?php
-								try {
-									$data=array();
-									$sql="SELECT gibbonPersonID, surname, preferredName, title FROM gibbonPerson WHERE status='Full'" ;
-									$result=$connection2->prepare($sql);
-									$result->execute($data);
-								}
-								catch(PDOException $e) { }
-								while(($row = $result->fetch())!=null) {
+								$allPeople = getAllPeople($connection2, false);
+								foreach($allPeople as $row) {
 									if(intval($row["gibbonPersonID"])!=$_SESSION[$guid]["gibbonPersonID"]) {
-										print "<option value='" . $row["gibbonPersonID"] . "'>". formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) ."</option>" ;
+										print "<option value='" . $row["gibbonPersonID"] . "'>". $row['surname'] . ", " . $row['preferredName'] ."</option>" ;
 									}
 								}
 							?>

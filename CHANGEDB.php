@@ -33,4 +33,9 @@ UPDATE gibbonAction SET URLList='issues_view.php, issues_assign.php, issues_disc
 ALTER TABLE helpDeskIssueDiscuss DROP COLUMN technicianPosted;end
 ALTER TABLE helpDeskIssueDiscuss ADD gibbonPersonID int(10) unsigned zerofill NOT NULL;end" ;
 
+//v0.1.03
+$count++;
+$sql[$count][0]="0.1.03" ;
+$sql[$count][1]=""
+
 ?>

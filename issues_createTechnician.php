@@ -33,34 +33,7 @@ else {
   print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Assign Issue') . "</div>" ;
   print "</div>" ;
 
-  try {
-    $data=array();
-    $sql="SELECT * FROM helpDeskTechnicians";
-    $result=$connection2->prepare($sql);
-    $result->execute($data);
-  } catch(PDOException $e) {
-    print $e;
-  }
-  $exists = false;
-  if($result->rowCount() > 0) {
-  	$exists = true;
-  }
-  else {
-  	$exists = false;
-  }
-
-  try {
-    $data=array();
-    $sql="SELECT gibbonPerson.* FROM gibbonPerson LEFT JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID!=0) WHERE status='Full'";
-    if($exists) {
-      $sql.=" AND NOT gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID";
-    }
-    $sql.=" ORDER BY surname, preferredName ASC";
-    $result=$connection2->prepare($sql);
-    $result->execute($data);
-  } catch(PDOException $e) {
-    print $e;
-  }
+	$allPeople = getAllPeople($connection2, true);
 
   ?>
 
@@ -75,7 +48,7 @@ else {
           <select name='person' id='person' style='width:302px'>
             <?php
 			print "<option value=''>Please select...</option>" ;						
-            foreach($result as $option) {
+            foreach($allPeople as $option) {
               print "<option value='" . $option['gibbonPersonID'] . "'>". $option['surname'] . ", " . $option['preferredName']."</option>" ;
             }
             ?>

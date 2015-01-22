@@ -74,7 +74,7 @@ else {
 		print "</div>" ;
 	} 
 	
-	$technicians = getAllTechnicians($connection2, TRUE);
+	$technicians = getAllTechnicians($connection2);
 	
 	?>
 	
@@ -93,7 +93,7 @@ else {
 								if ($option==$filter) {
 									$selected="selected" ;
 								}
-								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+								print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;
 							}
 						?>
 						</select>

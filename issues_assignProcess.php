@@ -48,14 +48,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.ph
 else {
 	//Proceed!
 	if(isset($_POST["technician"])) {
-		$technician = $_POST["technician"];
+		$technicianID = $_POST["technician"];
 	}
 	else {
     $URL = $URL."&addReturn=fail1" ;
 	  header("Location: {$URL}");
 	  exit();
 	}
-	$technicianID = getTechnicianIDViaName($connection2, $technician);
 	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_assign.php", $connection2) ;
 	if ($highestAction==FALSE) {
 		print "<div class='error'>" ;

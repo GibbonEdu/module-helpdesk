@@ -40,7 +40,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.php")==FALSE) {
-	$URL.= "&addReturn=fail0"
+	$URL.= "&addReturn=fail0";
 	header("Location: {$URL}");
 }
 else {
@@ -62,6 +62,7 @@ else {
 	  $priority=$_POST["priority"] ;
 	}
 	$createdByID = 0;
+	$personID = $_SESSION[$guid]["gibbonPersonID"];
 	if(isset($_POST["createFor"])) {
 	  $personID = $_POST["createFor"];
 	  $createdByID = $_SESSION[$guid]["gibbonPersonID"];

@@ -66,57 +66,21 @@ function hasTechnicianAssigned($issueID, $connection2)
   return ($id != null);
 }
 
-function getAllTechnicians($connection2, $returnName=FALSE)
+function getAllTechnicians($connection2)
 {
   try {
     $data=array();
-    $sql="SELECT helpDeskTechnicians.*, surname, preferredName
+    $sql="SELECT helpDeskTechnicians.gibbonPersonID, surname, preferredName
 	FROM helpDeskTechnicians
 	JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)
-	WHERE status='Full'";
+	WHERE status='Full' ORDER BY surname, preferredName ASC";
     $result=$connection2->prepare($sql);
     $result->execute($data);
   }
   catch(PDOException $e) {
 	print $e;
   }
-
-  if($returnName)
-  {
-  	$array = array();
-	while($row=$result->fetch()){
-	  array_push($array, ($row["preferredName"]. " " .$row["surname"]));
-	}
-	return $array;
-  }
-  else
-  {
-    $array = $result->fetchAll();
-    return $array;
-  }
-}
-
-function getTechnicianIDViaName($connection2, $name)
-{
-  try {
-    $data=array();
-    $sql="SELECT helpDeskTechnicians.*, surname, preferredName
-	FROM helpDeskTechnicians
-	JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)
-	WHERE status='Full'";
-    $result=$connection2->prepare($sql);
-    $result->execute($data);
-  }
-  catch(PDOException $e) {
-	print $e;
-  }
-  while($row=$result->fetch()){
-	  $name2 = $row["preferredName"]." ".$row["surname"];
-	  if($name == $name2){
-	  	return (int)$row["technicianID"];
-	  }
-  }
-  return null;
+  return $result->fetchAll();
 }
 
 function technicianExists($connection2, $technicianID)
@@ -236,7 +200,45 @@ function getTechWorkingOnIssue($connection2, $issueID) {
 	print $e;
   }
   
-  return $row["personID"];
-	
+  return $row["personID"];	
 }
+
+function getAllPeople($connection2, $excludeTechnicians = false) {
+	try {
+		$data=array();
+		$sql="SELECT gibbonPersonID, surname, preferredName FROM gibbonPerson WHERE status='Full'";
+		$sql.=" ORDER BY surname, preferredName ASC";
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	} catch(PDOException $e) {
+	print $e;
+	}
+	$allPeople = array();
+  if($excludeTechnicians) {
+		try {
+			$data2=array();
+			$sql2="SELECT * FROM helpDeskTechnicians";
+			$result2=$connection2->prepare($sql2);
+			$result2->execute($data2);
+		} catch(PDOException $e) {
+		print $e;
+		}
+		while($row = $result->fetch()) {
+			$gibbonPersonID = $row["gibbonPersonID"];
+			$match = false;
+			while($row2 = $result->fetch()) {
+				if($match) { break; }
+				$match = ($gibbonPersonID == $row2["gibbonPersonID"]);
+			}
+			if(!$match) {
+				array_push($allPeople, $row);
+			}
+		}
+  	} else {
+		while($row = $result->fetch()) {
+			array_push($allPeople, $row);
+		}	
+  	}
+  	 return $allPeople;
+  }
 ?>
