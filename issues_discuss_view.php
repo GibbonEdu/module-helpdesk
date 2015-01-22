@@ -99,7 +99,7 @@ else {
 			$addReturnMessage=_("Your request failed due to a database error.") ;	
 		}
 		else if ($addReturn=="success0") {
-			$addReturnMessage=_("Your issue was successfully created.") ;	
+			$addReturnMessage=_("Your issue was successfully created. Your unique issue ID is " . $issueID . ".") ;	
 			$class="success" ;
 		}
 		else if ($addReturn=="success1") {

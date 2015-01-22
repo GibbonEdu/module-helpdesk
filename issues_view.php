@@ -76,6 +76,8 @@ else {
 	$filter2=NULL ;
 	$filter3=NULL ;
 	$filter4=NULL ;
+	$IDFilter=NULL ;
+
 
 	if (isset($_POST["filter"])) {
 		$filter=$_POST["filter"] ;
@@ -88,6 +90,10 @@ else {
 	}
 	if (isset($_POST["filter4"])) {
 		$filter4=$_POST["filter4"] ;
+	}
+	
+	if (isset($_POST["IDFilter"])) {
+		$IDFilter=intval($_POST["IDFilter"]) ;
 	}
 
 	try {
@@ -182,6 +188,12 @@ else {
 		$dataIssue["helpDeskPriority"] = $filter4;
 		$whereIssue.= " AND helpDeskIssue.priority=:helpDeskPriority";
 	}
+	
+	if ($IDFilter>0) {
+		$dataIssue["issueID"] = $IDFilter;
+		$whereIssue.=" AND issueID=:issueID";
+	}
+	
 	print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "'>" ;
 		print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;
 			if(count($issueFilters)>1)
@@ -262,6 +274,15 @@ else {
 					print "</td>";
 				print "</tr>";
 			}
+			print "<tr>";
+				print "<td> ";
+					print "<b>Issue ID Filter</b><br/>";
+					print "<span style=\"font-size: 90%\"><i></i></span>";
+				print "</td>";
+				print "<td class='right'>";
+					print "<input type='number' value='". $IDFilter . "' name='IDFilter' min='1' style='width: 300px; height: 20px'>";
+				print "</td>";
+			print "</tr>";
 			print "<tr>" ;
 				print "<td class='right' colspan=2>" ;
 					print "<input type='submit' value='" . _('Go') . "'>" ;
@@ -284,19 +305,21 @@ else {
   print "</h3>" ;
   print "<div class='linkTop'>" ;
     print "<a style='position:relative; bottom:10px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php'><img title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php'>" .  _('Create') . "</a>";
+  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php'>" .  _('Create ') . "</a>";
   print "</div>" ;
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
    	print "<tr>";
-    print "<th>Title <br/>";
-    print "<span style='font-size: 85%; font-style: italic'>" . _('Date') . "</span>" ;
+   	print "<th>Issue ID</th>";
+    print "<th>Title<br/>";
+    print "<span style='font-size: 85%; font-style: italic'>" . _('Description') . "</span>" ;
     print "</th>";
-    print "<th>Description</th>";
-    print "<th>Owner <br/>";
-  	if($renderCategory) { print "<span style='font-size: 85%; font-style: italic'>" . _('Category') . "</span>"; }
+    print "<th>Owner";
+  	if($renderCategory) { print "<br/><span style='font-size: 85%; font-style: italic'>" . _('Category') . "</span>"; }
   	print "</th>";
   	if($renderPriority) { print "<th>$priorityName</th>"; }
-  	print "<th>Status</th>";
+  	print "<th>Status<br/>";
+  	print "<span style='font-size: 85%; font-style: italic'>" . _('Date') . "</span>";
+  	print "</th>";
     print "<th>Action</th> </tr>";
 	if ($resultIssue->rowCount()==0){
     	print "<tr>";
@@ -311,19 +334,19 @@ else {
     else {
 		foreach($resultIssue as $row){
 		  print "<tr>";
+		  print "<td style='text-align: center;'><b>" . intval($row['issueID']) . "</b></td>";
 		  $issueName = $row['issueName'];
 		  if(strlen($issueName)>15) $issueName = substr($issueName, 0, 15) . "...";
 		  printf("<td><b>" .$issueName . "</b><br/>");
-		  print "<span style='font-size: 85%; font-style: italic'>" . dateConvertBack($guid, $row["date"]) . "</span>" ;
-		  print "</td>";
 		  $descriptionText = $row['description'];
 		  if(strlen($descriptionText)>15) $descriptionText = substr($descriptionText, 0, 15) . "...";
-		  printf("<td><b>" .$descriptionText. "</b></td>");
-		  printf("<td><b>" .formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) . "</b>");
+		  print "<span style='font-size: 85%; font-style: italic'>" . $descriptionText . "</span></td>" ;
+		  		  printf("<td><b>" .formatName($row['title'],$row['preferredName'],$row['surname'], "Student", FALSE, FALSE) . "</b>");
 		  if($renderCategory) { print "<br/><span style='font-size: 85%; font-style: italic'>" . $row['category'] . "</span>" ;}
 		  print "</td>";
 		  if($renderPriority) { printf("<td><b>" .$row['priority']. "</b></td>"); }
-		  printf("<td><b>" .$row['status']. "</b></td>");
+		  printf("<td><b>" .$row['status']. "</b><br/>");
+		  print "<span style='font-size: 85%; font-style: italic'>" . dateConvertBack($guid, $row["date"]) . "</span></td>" ;
 		  print "<td>";
 		  $openCreated = false;
 		  $resolveCreated = false;
@@ -332,7 +355,7 @@ else {
 			  if($row['technicianID']==null && !($row['status']=="Resolved"))
 			  {
 				?><input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>"><?php
-				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
+				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
 			 	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
 			 	$openCreated = true;
 			  }

@@ -100,7 +100,7 @@ print "<div class='linkTop'>" ;
         print "<td> ";
         $issues = "";
           while($row2=$result2->fetch()){
-            $issues.=$row2["issueName"] . ", ";
+            $issues.= "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row2["issueID"] . "'>". $row2["issueName"] . "</a>, ";
           }
         $issue = substr($issues, 0, strlen($issues)-2);
         if (strlen($issue) > 0) {
