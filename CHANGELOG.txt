@@ -91,3 +91,9 @@ v0.2.00
 -------
 Changed "Issue ID" to "ID" in multiple places.
 Changed number input to text input with Live Validation in issues_view.php.
+
+v0.2.01
+-------
+Fixed a bug where assigning someone to an issue would give their gibbonPersonID instead of their technicianID.
+Fixed accept link not leading to the correct location in issues_discuss_view.php.
+Fixed a bug where a person could assign themselves to their own issues in issues_assign.php.

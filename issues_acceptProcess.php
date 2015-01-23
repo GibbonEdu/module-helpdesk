@@ -47,13 +47,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
 else {
 	//Proceed!
 	$issueID = intval($_GET["issueID"]) ;
-	if ($issueID=="") {
+	if ($issueID=="" || hasTechnicianAssigned($issueID, $connection2)) {
 		//Fail 3
 		$URL=$URL . "issues_view.php&addReturn=fail1" ;
 		header("Location: {$URL}");
 	}
 	else {
-		if (isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !(hasTechnicianAssigned($issueID, $connection2))) {
+		if (isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) {
 			$technicianID = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
 
 			//Write to database

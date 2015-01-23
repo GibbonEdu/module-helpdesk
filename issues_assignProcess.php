@@ -48,7 +48,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.ph
 else {
 	//Proceed!
 	if(isset($_POST["technician"])) {
-		$technicianID = $_POST["technician"];
+		$gibbonPersonID = $_POST["technician"];
+		$technicianID = getTechnicianID($gibbonPersonID, $connection2);
 	}
 	else {
     $URL = $URL."&addReturn=fail1" ;

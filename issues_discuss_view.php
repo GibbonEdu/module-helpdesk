@@ -173,14 +173,14 @@ else {
     if($array2[0]["technicianID"]==null && !relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
       print "<tr>";
         print "<td class='right'>";
-      	  print "<a href='" . $_SESSION[$guid]["absoluteURL"] . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $issueID . "'>" .  _('Accept');
+      	  print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $issueID . "'>" .  _('Accept');
           print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $issueID . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a>";
         print "</td>";
       print "</tr>";
     }
     print "</table>" ;
 
-	if(!($array2[0]["technicianID"]==null)) {
+	if($array2[0]["technicianID"]!=null) {
 	  print "<a name='discuss'></a>" ;
 	  print "<h2 style='padding-top: 30px'>" . _('Discuss') . "</h2>" ;
 	  print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;

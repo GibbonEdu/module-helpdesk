@@ -47,9 +47,6 @@ else {
 	if(isset($_GET["issueID"])){ 
 		$issueID = $_GET["issueID"]; 
 	} 
-	else { 
-		$issueID = null;
-	}
 	$updateReturnMessage="" ;
 	$class="error" ;
 	if (!($updateReturn=="")) {
@@ -89,11 +86,7 @@ else {
 						<select name='technician' id='technician' style='width:302px'>
 						<?php
 							foreach($technicians as $option) {
-								$selected="" ;
-								if ($option==$filter) {
-									$selected="selected" ;
-								}
-								print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;
+								if(!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) { print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ; }
 							}
 						?>
 						</select>
