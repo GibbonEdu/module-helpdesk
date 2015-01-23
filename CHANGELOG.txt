@@ -86,3 +86,8 @@ Give person ID when issue is created in issues_discuss_view.php.
 Add space to create in issues_view.php.
 Set Accept icon to page_new.png in issues_view.php.
 Add link to working on in issues_manage_technicians.
+
+v0.2.00
+-------
+Changed "Issue ID" to "ID" in multiple places.
+Changed number input to text input with Live Validation in issues_view.php.

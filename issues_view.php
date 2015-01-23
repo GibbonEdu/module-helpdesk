@@ -76,7 +76,7 @@ else {
 	$filter2=NULL ;
 	$filter3=NULL ;
 	$filter4=NULL ;
-	$IDFilter=NULL ;
+	$IDFilter="" ;
 
 
 	if (isset($_POST["filter"])) {
@@ -189,7 +189,7 @@ else {
 		$whereIssue.= " AND helpDeskIssue.priority=:helpDeskPriority";
 	}
 	
-	if ($IDFilter>0) {
+	if (intval($IDFilter)>0) {
 		$dataIssue["issueID"] = $IDFilter;
 		$whereIssue.=" AND issueID=:issueID";
 	}
@@ -280,12 +280,18 @@ else {
 					print "<span style=\"font-size: 90%\"><i></i></span>";
 				print "</td>";
 				print "<td class='right'>";
-					print "<input type='number' value='". $IDFilter . "' name='IDFilter' min='1' style='width: 300px; height: 20px'>";
+					print "<input type='text' value='". $IDFilter . "' id='IDFilter' name='IDFilter' style='width: 300px'>";
 				print "</td>";
 			print "</tr>";
 			print "<tr>" ;
 				print "<td class='right' colspan=2>" ;
 					print "<input type='submit' value='" . _('Go') . "'>" ;
+					?>
+					<script type="text/javascript">
+						var IDFilter=new LiveValidation('IDFilter');
+						IDFilter.add(Validate.Numericality);
+					</script>
+					<?php
 				print "</td>" ;
 			print "</tr>" ;
 		print"</table>" ;
@@ -309,7 +315,7 @@ else {
   print "</div>" ;
     print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
    	print "<tr>";
-   	print "<th>Issue ID</th>";
+   	print "<th>ID</th>";
     print "<th>Title<br/>";
     print "<span style='font-size: 85%; font-style: italic'>" . _('Description') . "</span>" ;
     print "</th>";

@@ -99,7 +99,7 @@ else {
 			$addReturnMessage=_("Your request failed due to a database error.") ;	
 		}
 		else if ($addReturn=="success0") {
-			$addReturnMessage=_("Your issue was successfully created. Your unique issue ID is " . intval($issueID) . ".") ;	
+			$addReturnMessage=_("Your issue was successfully created. Your unique ID is " . intval($issueID) . ".") ;	
 			$class="success" ;
 		}
 		else if ($addReturn=="success1") {
@@ -141,7 +141,7 @@ else {
     print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
       print "<tr>" ;
      	 print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
-    		print "<span style='font-size: 115%; font-weight: bold'>" . _('Issue ID') . "</span><br/>" ;
+    		print "<span style='font-size: 115%; font-weight: bold'>" . _('ID') . "</span><br/>" ;
     		print intval($issueID) ;
     	print "</td>" ;
    		print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
