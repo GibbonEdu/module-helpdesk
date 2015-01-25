@@ -25,7 +25,7 @@ $description="Gibbon Help Desk Module";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.2.01" ;
+$version="0.2.02" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/adrientremblay/helpdesk" ;
 

@@ -137,7 +137,7 @@ else {
 	$renderCategory = count($categoryFilters)>1;
 
 	$issueFilters = array();
-	if($highestAction=="View issues_All" || $highestAction=="View issues_All&Assign") array_push($issueFilters, "All");
+	if($highestAction=="View issues_All" || $highestAction=="View issues_All&Assign" || isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) array_push($issueFilters, "All");
 	if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) array_push($issueFilters, "My Working");
 	array_push($issueFilters, "My Issues");
 	$statusFilters = array("All", "Unassigned", "Pending", "Resolved");
