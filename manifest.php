@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //Basic variables
 $name="Help Desk" ;
-$description="Gibbon Help Desk Module";
+$description="A virtual Help Desk Moudle for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
@@ -86,27 +86,10 @@ $actionRows[$actionCount]["categoryPermissionParent"]="Y" ; //Should this action
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Create Issue_forOther" ;
-$actionRows[$actionCount]["precedence"]="1" ;
-$actionRows[$actionCount]["category"]="" ; 
-$actionRows[$actionCount]["description"]="Submits an IT related issue to be resolved by the help desk staff with an optional feature to create on the behalf of others." ; 
-$actionRows[$actionCount]["URLList"]="issues_create.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_create.php" ;
-$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ; 
-$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ; 
-$actionRows[$actionCount]["defaultPermissionStudent"]="N" ; 
-$actionRows[$actionCount]["defaultPermissionParent"]="N" ; 
-$actionRows[$actionCount]["defaultPermissionSupport"]="Y" ; 
-$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ; 
-$actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
-
-$actionCount++ ;
-$actionRows[$actionCount]["name"]="View issues_Mine" ;
+$actionRows[$actionCount]["name"]="Issues" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]= "Lists all active issues under my name" ;
+$actionRows[$actionCount]["description"]= "Shows issues depending on role/permissions." ;
 $actionRows[$actionCount]["URLList"]="issues_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
@@ -117,40 +100,6 @@ $actionRows[$actionCount]["defaultPermissionSupport"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
-
-$actionCount++ ;
-$actionRows[$actionCount]["name"]="View issues_All" ;
-$actionRows[$actionCount]["precedence"]="1" ;
-$actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Lists all existing issues." ;
-$actionRows[$actionCount]["URLList"]="issues_view.php, issues_discuss_view.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_view.php" ;
-$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
-$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
-$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
-$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
-
-$actionCount++ ;
-$actionRows[$actionCount]["name"]="View issues_All&Assign" ;
-$actionRows[$actionCount]["precedence"]="2" ;
-$actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Assign any tech an existing unresolved issue." ;
-$actionRows[$actionCount]["URLList"]="issues_view.php, issues_assign.php, issues_discuss_view.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_view.php" ;
-$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
-$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
-$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
-$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="N" ;
 
 $actionCount++ ;

@@ -61,6 +61,10 @@ $sql[$count][1]="" ;
 //v0.2.02
 $count++;
 $sql[$count][0]="0.2.02" ;
-$sql[$count][1]="" ;
+$sql[$count][1]="DELETE FROM gibbonAction WHERE name='View issues_All' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+DELETE FROM gibbonAction WHERE name='View issues_All&Assign' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET name='Issues', description='Shows issues depending on role/permissions.' WHERE name='View issues_Mine'AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+DELETE FROM gibbonAction WHERE name='Create Issue_forOther' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+" ;
 
 ?>
