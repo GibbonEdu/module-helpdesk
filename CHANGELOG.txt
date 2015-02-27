@@ -104,3 +104,6 @@ Fixed an issue where technicians could not see All issues.
 
 v0.3.00
 -------
+Renamed Multiple Files.
+Recoded the Technician System.
+Added Technician Groups.
