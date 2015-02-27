@@ -61,10 +61,21 @@ $sql[$count][1]="" ;
 //v0.2.02
 $count++;
 $sql[$count][0]="0.2.02" ;
-$sql[$count][1]="DELETE FROM gibbonAction WHERE name='View issues_All' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+$sql[$count][1]="" ;
+
+//v0.3.00
+$count++;
+$sql[$count][0]="0.3.00" ;
+$sql[$count][1]="
+DELETE FROM gibbonAction WHERE name='View issues_All' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 DELETE FROM gibbonAction WHERE name='View issues_All&Assign' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 UPDATE gibbonAction SET name='Issues', description='Shows issues depending on role/permissions.' WHERE name='View issues_Mine'AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 DELETE FROM gibbonAction WHERE name='Create Issue_forOther' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+CREATE TABLE `helpDeskTechGroups` (`groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT, `groupName` varchar(55) NOT NULL, `viewIssue` boolean DEFAULT 1, `viewIssueStatus` ENUM('All', 'UP', 'PR', 'Pending') DEFAULT 'All', `assignIssue` boolean DEFAULT 0, `acceptIssue` boolean DEFAULT 1, `resolveIssue` boolean DEFAULT 1, `createIssueForOther` boolean DEFAULT 1, `fullAccess` boolean DEFAULT 0, PRIMARY KEY (`groupID`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;end
+UPDATE gibbonAction SET URLList='helpDesk_settings.php', entryURL='helpDesk_settings.php' WHERE name='Help Desk Settings'AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET URLList='helpDesk_manageTechnicians.php', entryURL='helpDesk_manageTechnicians.php' WHERE name='Manage Technicians'AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+INSERT INTO gibbonAction SET name='Manage Technician Groups', precedence='0', category='', description='Manage Technician Groups.', URLList='helpDesk_manageTechnicianGroup.php', entryURL='helpDesk_manageTechnicianGroup.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+ALTER TABLE helpDeskTechnicians ADD groupID int(4) unsigned zerofill NOT NULL;end
 " ;
 
 ?>

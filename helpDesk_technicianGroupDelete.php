@@ -18,10 +18,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 @session_start() ;
+
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.php")==FALSE && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print _("You do not have access to this action.") ;
@@ -36,17 +37,30 @@ else {
 	
 	if (isset($_GET["updateReturn"])) { $updateReturn=$_GET["updateReturn"] ; } else { $updateReturn="" ; }
 	
-	$highestAction=getHighestGroupedAction($guid, $_GET["q"], $connection2) ;
+	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php", $connection2) ;
 	if ($highestAction==FALSE) {
 		print "<div class='error'>" ;
 		print _("The highest grouped action cannot be determined.") ;
 		print "</div>" ;
+		exit();
 	}
-	if(!($highestAction=="View issues_All&Assign")) { $updateReturn = "fail0"; }
-	$issueID = null;
-	if(isset($_GET["issueID"])){ 
-		$issueID = $_GET["issueID"]; 
+	if(!($highestAction=="Manage Technician Groups")) { $updateReturn = "fail0"; }
+	$groupID = null;
+	if(isset($_GET["groupID"])){ 
+		$groupID = $_GET["groupID"]; 
 	} 
+	try {
+		$data=array();
+		$sql="SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+  	} catch(PDOException $e) {
+		print $e;
+	}
+	if($result->rowcount() == 1) {
+		$updateReturn="&addReturn=fail4";
+	}
+	
 	$updateReturnMessage="" ;
 	$class="error" ;
 	if (!($updateReturn=="")) {
@@ -62,31 +76,43 @@ else {
 		else if ($updateReturn=="fail3") {
 			$updateReturnMessage=_("Your request failed because your inputs were invalid.") ;	
 		}
+		else if ($updateReturn=="fail4") {
+			$updateReturnMessage=_("Not enough groups to delete this group.") ;	
+		}
 		else if ($updateReturn=="success0") {
 			$updateReturnMessage=_("Your request was completed successfully.") ;	
 			$class="success" ;
 		}
-		print "<div class='class'>" ;
+		print "<div class='$class'>" ;
 			print $updateReturnMessage;
 		print "</div>" ;
+		if($updateReturn=="fail0" || $updateReturn=="fail4") { exit();}
 	} 
 	
-	$technicians = getAllTechnicians($connection2);
+	try {
+		$data=array();
+		$sql="SELECT * FROM helpDeskTechGroups";
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	  }
+	  catch(PDOException $e) {
+		   print $e;
+	  }
 	
 	?>
 	
-	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "	/modules/" . $_SESSION[$guid]["module"] . "/issues_assignProcess.php?issueID=" . $issueID ?>">
+	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "	/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID ?>">
 		<table class='smallIntBorder' cellspacing='0' style="width: 100%">	
 			<tr>
 					<td>
-						<?php print "<b>". _('Technicians') ." *</b><br/>";?>
+						<?php print "<b>". _('New Technician Group') ." *</b><br/>";?>
 						<span style=\"font-size: 90%\"><i></i></span>
 					</td>
 					<td class=\"right\">
-						<select name='technician' id='technician' style='width:302px'>
+						<select name='group' id='group' style='width:302px'>
 						<?php
-							foreach($technicians as $option) {
-								if(!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) { print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ; }
+							while($option=$result->fetch()) {
+								if($groupID != $option["groupID"])print "<option $selected value='" . $option["groupID"] . "'>". $option["groupName"] ."</option>" ;
 							}
 						?>
 						</select>

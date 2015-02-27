@@ -37,9 +37,9 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_manage_technicians.php" ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/helpDesk_manageTechnicians.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_createTechnician.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")==FALSE) {
 	$URL = $URL."&addReturn=fail0" ; 
   header("Location: {$URL}");
 }
@@ -48,8 +48,12 @@ else {
   if(isset($_POST["person"])) {
     $person=$_POST["person"] ;
   }
+  
+  if(isset($_POST["group"])) {
+    $group=$_POST["group"] ;
+  }
 
-  if ($person == "" || technicianExistsFromPersonID($connection2, $person)) {
+  if ($person == "" || $group == "" || isTechnician($person, $connection2)) {
   	$URL = $URL."&addReturn=fail1" ; 
     header("Location: {$URL}");
   }
@@ -57,14 +61,15 @@ else {
     //Write to database
 
     try {
-      $data=array("technicianID"=>0 , "gibbonPersonID"=> $person);
-      $sql="INSERT INTO helpDeskTechnicians SET technicianID = :technicianID , gibbonPersonID = :gibbonPersonID " ;
+      $data=array("technicianID"=>0 , "gibbonPersonID"=> $person, "groupID"=>$group);
+      $sql="INSERT INTO helpDeskTechnicians SET technicianID = :technicianID , gibbonPersonID = :gibbonPersonID, groupID=:groupID" ;
       $result=$connection2->prepare($sql);
       $result->execute($data);
     }
     catch(PDOException $e) {
       $URL = $URL."&addReturn=fail2" ; 
-      break ;
+      header("Location: {$URL}");
+      exit();
     }
 
     //Success 0

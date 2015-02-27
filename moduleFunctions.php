@@ -98,20 +98,6 @@ function technicianExists($connection2, $technicianID)
   return ($result->rowCount()==1);
 }
 
-function technicianExistsFromPersonID($connection2, $gibbonPersonID) {
-  try {
-    $data=array("gibbonPersonID"=> $gibbonPersonID);
-    $sql="SELECT * FROM helpDeskTechnicians WHERE gibbonPersonID=:gibbonPersonID";
-    $result=$connection2->prepare($sql);
-    $result->execute($data);
-  }
-  catch(PDOException $e) {
-    print $e;
-  }
-
-  return ($result->rowCount()==1);
-}
-
 function notifyTechnican($connection2, $guid, $issueID) {
   try {
     $data=array();
@@ -124,7 +110,7 @@ function notifyTechnican($connection2, $guid, $issueID) {
   }
 
   while($row = $result->fetch()) {
-  	setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
+  	setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
   }
 }
 
@@ -218,5 +204,23 @@ function getAllPeople($connection2, $excludeTechnicians = false) {
 		print $e;
 		}
   	 return $result->fetchAll();
+}
+
+function getPermissionValue($connection2, $gibbonPersonID, $permission) {
+	try {
+		$data=array("gibbonPersonID"=> $gibbonPersonID);
+		$sql="SELECT helpDeskTechnicians.groupID, helpDeskTechGroups.* FROM helpDeskTechnicians JOIN helpDeskTechGroups ON (helpDeskTechnicians.groupID=helpDeskTechGroups.groupID) WHERE helpDeskTechnicians.gibbonPersonID=:gibbonPersonID";
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+		$row = $result->fetch();
+  	}
+	catch(PDOException $e) {
+		print $e;
+  	}
+  	if($row['fullAccess'] == true) {
+  		if($permission=="viewIssueStatus") return "All";
+  		else return true;
+  	}
+  	return $row[$permission];	
 }
 ?>

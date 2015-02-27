@@ -39,7 +39,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_view.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.php")==FALSE && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
 	//Fail 0
   $URL = $URL."&addReturn=fail0" ;
 	header("Location: {$URL}");

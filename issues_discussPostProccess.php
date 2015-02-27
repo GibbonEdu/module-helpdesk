@@ -37,7 +37,7 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=".$_GET["issueID"] ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=".$_GET["issueID"] ;
 
 if(isset($_GET["issueID"])) {
   $issueID = $_GET["issueID"];
@@ -47,9 +47,8 @@ else {
   header("Location: {$URL}");
 }
 
-$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_discuss_view.php", $connection2);
 
-if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All")) {
+if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
   //Fail 0 aka No permission
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");
@@ -79,7 +78,7 @@ else {
     break ;
   }
 
-$isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || $highestAction=="View issues_All&Assign" || $highestAction=="View issues_All";
+$isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue");
 
   $message = "A new message has been left for you";
   if($isTech) {
@@ -96,7 +95,7 @@ $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isP
   else {
     	$personID = getTechWorkingOnIssue($connection2, $issueID);
   }
-  setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);  
+  setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);  
   
   //Success 2 aka Posted
   $URL=$URL . "&addReturn=success2" ;

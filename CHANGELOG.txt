@@ -101,3 +101,6 @@ Fixed a bug where a person could assign themselves to their own issues in issues
 v0.2.02
 -------
 Fixed an issue where technicians could not see All issues.
+
+v0.3.00
+-------

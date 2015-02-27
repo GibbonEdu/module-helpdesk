@@ -53,7 +53,7 @@ else {
 		header("Location: {$URL}");
 	}
 	else {
-		if (isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) {
+		if (isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue")) {
 			$technicianID = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
 
 			//Write to database
@@ -72,7 +72,7 @@ else {
 			}
 		
 			//Success 1 aka Accepted
-			$URL=$URL . "issues_discuss_view.php&issueID=" . $issueID . "&addReturn=success1" ;
+			$URL=$URL . "issues_discussView.php&issueID=" . $issueID . "&addReturn=success1" ;
 			header("Location: {$URL}");
 		}
 		else

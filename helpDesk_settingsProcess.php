@@ -35,9 +35,9 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/issues_settings.php" ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/helpDesk_settings.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_settings.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")==FALSE) {
 	//Fail 0
 	$URL=$URL . "&updateReturn=fail0" ;
 	header("Location: {$URL}");

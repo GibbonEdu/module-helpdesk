@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_createTechnician.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")==FALSE) {
   //Acess denied
   print "<div class='error'>" ;
   print _("You do not have access to this action.") ;
@@ -32,32 +32,21 @@ else {
   print "<div class='trail'>" ;
   print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Assign Issue') . "</div>" ;
   print "</div>" ;
-
-	$allPeople = getAllPeople($connection2, true);
-
   ?>
 
-  <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "	/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnicianProcess.php" ?>">
+  <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "	/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroupProcess.php" ?>">
     <table class='smallIntBorder' cellspacing='0' style="width: 100%">
       <tr>
-        <td>
-          <?php print "<b>". _('Person') ." *</b><br/>";?>
-          <span style=\"font-size: 90%\"><i></i></span>
-        </td>
-        <td class="right">
-          <select name='person' id='person' style='width:302px'>
-            <?php
-			print "<option value=''>Please select...</option>" ;						
-            foreach($allPeople as $option) {
-              print "<option value='" . $option['gibbonPersonID'] . "'>". $option['surname'] . ", " . $option['preferredName']."</option>" ;
-            }
-            ?>
-          </select>
-          <script type="text/javascript">
-            var name2=new LiveValidation('person');
-            name2.add(Validate.Presence);
-          </script>
-        </td>
+        <td style='width: 275px'>
+			<b><?php print _('Group Name') ?> *</b><br/>
+		</td>
+		<td class="right">
+			<input name="groupName" id="groupName" maxlength=55 value="" type="text" style="width: 300px">
+			<script type="text/javascript">
+				var name=new LiveValidation('groupName');
+				name.add(Validate.Presence);
+			</script>
+		</td>
       </tr>
       <tr>
         <td>

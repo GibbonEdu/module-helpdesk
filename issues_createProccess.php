@@ -64,7 +64,7 @@ else {
 	
 	$createdByID = $_SESSION[$guid]["gibbonPersonID"];
 	$personID = $_SESSION[$guid]["gibbonPersonID"];
-	if(isset($_POST["createFor"])) {
+	if(isset($_POST["createFor"]) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
 	  if($_POST["createFor"] != 0) {
 		  $personID = $_POST["createFor"];
 		  $createdByID = $_SESSION[$guid]["gibbonPersonID"];
@@ -91,10 +91,10 @@ else {
 		}
 
 		$issueID = $connection2->lastInsertId();
-		setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discuss_view.php&issueID=" . $issueID);
+		setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
 		notifyTechnican($connection2, $guid, $issueID);
 		//Success 0 aka Created
-		$URL=$URL . "/issues_discuss_view.php&issueID=" . $issueID . "&addReturn=success0" ;
+		$URL=$URL . "/issues_discussView.php&issueID=" . $issueID . "&addReturn=success0" ;
 		header("Location: {$URL}");
 
 	}

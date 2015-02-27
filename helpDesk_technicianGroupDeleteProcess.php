@@ -37,37 +37,64 @@ catch(PDOException $e) {
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_manage_technicians.php" ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicianGroup.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_manage_technicians.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")==FALSE) {
   //Fail 0
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");
 }
 else {
   //Proceed!
-  if(isset($_GET["technicianID"])) {
-    $technicianID=$_GET["technicianID"] ;
+  if(isset($_GET["groupID"])) {
+    $groupID=$_GET["groupID"] ;
   }
   else {
     $URL=$URL . "&addReturn=fail1" ;
     header("Location: {$URL}");
+    exit();
   }
+  
+  if(isset($_POST["group"])) {
+  	$newGroupID = $_POST["group"];
+  }
+  else {
+    $URL=$URL . "&addReturn=fail1" ;
+    header("Location: {$URL}");
+    exit();
+  }
+  
+  try {
+		$data3=array();
+		$sql3="SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
+		$result3=$connection2->prepare($sql3);
+		$result3->execute($data3);
+  	} catch(PDOException $e) {
+		print $e;
+	}
+	if($result3->rowcount() == 1) {
+		$URL=$URL . "&addReturn=fail4";
+		header("Location: {$URL}");
+		exit();
+	}
+  
   //Write to database
 
   try {
-    $data=array("technicianID" => $technicianID) ;
-    $sql="DELETE FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
+    $data=array("groupID" => $groupID) ;
+    $sql="DELETE FROM helpDeskTechGroups WHERE groupID=:groupID" ;
     $result=$connection2->prepare($sql);
     $result->execute($data);
 
-    $sql2="UPDATE helpDeskIssue SET helpDeskIssue.technicianID=null, helpDeskIssue.status='Unassigned' WHERE helpDeskIssue.technicianID=:technicianID" ;
+	$data2=array("groupID" => $groupID, "newGroupID" => $newGroupID) ;
+    $sql2="UPDATE helpDeskTechnicians SET groupID=:newGroupID WHERE groupID=:groupID" ;
     $result2=$connection2->prepare($sql2);
-    $result2->execute($data);
+    $result2->execute($data2);
   } catch(PDOException $e) {
     //Fail 2
     $URL = $URL."&addReturn=fail2" ; 
     header("Location: {$URL}");
+    exit();
   }
   //Success 0
   $URL=$URL . "&addReturn=success0" ;

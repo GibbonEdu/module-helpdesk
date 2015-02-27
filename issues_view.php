@@ -137,10 +137,18 @@ else {
 	$renderCategory = count($categoryFilters)>1;
 
 	$issueFilters = array();
-	if($highestAction=="View issues_All" || $highestAction=="View issues_All&Assign" || isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) array_push($issueFilters, "All");
+	if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssue")) array_push($issueFilters, "All");
 	if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) array_push($issueFilters, "My Working");
 	array_push($issueFilters, "My Issues");
-	$statusFilters = array("All", "Unassigned", "Pending", "Resolved");
+	if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) {	
+		$statusFilters = array("Pending");
+		if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="All") { $statusFilters = array("All", "Unassigned", "Pending", "Resolved"); }
+		else if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="UP") { $statusFilters = array("Unassigned and Pending", "Unassigned", "Pending"); }
+		else if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="PR") { $statusFilters = array("Pending and Resolved", "Pending", "Resolved"); }
+	}
+	else {
+		$statusFilters = array("All", "Unassigned", "Pending", "Resolved");
+	}
 	$dataIssue["gibbonSchoolYearID"]=$_SESSION[$guid]["gibbonSchoolYearID"];
 	$whereIssue = "";
 	if ($filter=="") {
@@ -171,6 +179,16 @@ else {
 	else if ($filter2=="Resolved") {
 		$dataIssue["helpDeskStatus"] = 'Resolved';
 		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
+	}
+	else if ($filter2=="Unassigned and Pending") {
+		$dataIssue["helpDeskStatus1"] = 'Unassigned';
+		$dataIssue["helpDeskStatus2"] = 'Pending';
+		$whereIssue.= " AND (helpDeskIssue.status=:helpDeskStatus1 OR helpDeskIssue.status=:helpDeskStatus2)";
+	}
+	else if ($filter2=="Pending and Resolved") {
+		$dataIssue["helpDeskStatus1"] = 'Pending';
+		$dataIssue["helpDeskStatus2"] = 'Resolved';
+		$whereIssue.= " AND (helpDeskIssue.status=:helpDeskStatus1 OR helpDeskIssue.status=:helpDeskStatus2)";
 	}
 
 	if ($filter3=="") {
@@ -361,26 +379,26 @@ else {
 			  if($row['technicianID']==null && !($row['status']=="Resolved"))
 			  {
 				?><input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>"><?php
-				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-			 	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+				if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>"; }
+			 	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
 			 	$openCreated = true;
 			  }
 		  }
 		  if(relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) && !($row['status']=="Resolved"))
 		  {
 		    if(!($row['status']=="Resolved")) {
-		      if(!$openCreated) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; }
-		      print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
+		      if(!$openCreated) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; }
+		      if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>"; }
 		      $openCreated = true;
 		      $resolveCreated = true;
 		    }
 		  }
 		  if($row['technicianID']==null && $highestAction=="View issues_All&Assign" && !($row['status']=="Resolved"))
 		  {
-		    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $row["issueID"] . "'><img title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";
+		    if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $row["issueID"] . "'><img title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>"; }
 		  }
-		  if($highestAction=="View issues_All&Assign" || $highestAction=="View issues_All") {
-		      if(!$openCreated && !($row['status']=="Resolved")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; }
+		  if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+		      if(!$openCreated && !($row['status']=="Resolved")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row["issueID"] . "'><img title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; }
 		      if(!$resolveCreated && !($row['status']=="Resolved")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>"; }
 		  }
 		  print "</td>";

@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 @session_start() ;
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_manage_technicians.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")==FALSE) {
   //Acess denied
   print "<div class='error'>" ;
     print _("You do not have access to this action.") ;
@@ -63,16 +63,17 @@ else {
 
   try {
     $data=array();
-    $sql="SELECT helpDeskTechnicians.* , surname, preferredName, title FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) ORDER BY helpDeskTechnicians.technicianID ASC";
+    $sql="SELECT helpDeskTechnicians.* , surname, preferredName, title, groupName FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN helpDeskTechGroups ON (helpDeskTechnicians.groupID=helpDeskTechGroups.groupID) ORDER BY helpDeskTechnicians.technicianID ASC";
     $result=$connection2->prepare($sql);
     $result->execute($data);
 
-    $sql2="SELECT helpDeskIssue.technicianID , issueName , issueID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskTechnicians.technicianID=helpDeskIssue.technicianID) ORDER BY helpDeskTechnicians.technicianID ASC";
+    $sql2="SELECT helpDeskIssue.technicianID , issueName , issueID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskTechnicians.technicianID=helpDeskIssue.technicianID) ORDER BY helpDeskIssue.issueID ASC";
     $result2=$connection2->prepare($sql2);
     $result2->execute($data);
   } catch(PDOException $e) {
     print $e;
   }
+  
   print "<h3>";
     print "Technicians" ;
   print "</h3>";
@@ -85,13 +86,16 @@ else {
         print _("Working On") ;
       print "</th>" ;
       print "<th>" ;
+        print _("Group") ;
+      print "</th>" ;
+      print "<th>" ;
         print _("Action") ;
       print "</th>" ;
   print "</tr>" ;
 
 print "<div class='linkTop'>" ;
-    print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnician.php'><img title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_createTechnician.php'>" .  _('Create') . "</a>";
+    print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php'><img title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
+  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php'>" .  _('Create') . "</a>";
   print "</div>" ;
   if (! $result->rowcount() == 0){
     while($row=$result->fetch()){
@@ -100,7 +104,7 @@ print "<div class='linkTop'>" ;
         print "<td> ";
         $issues = "";
           while($row2=$result2->fetch()){
-            $issues.= "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discuss_view.php&issueID=". $row2["issueID"] . "'>". $row2["issueName"] . "</a>, ";
+            $issues.= "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row2["issueID"] . "'>". $row2["issueName"] . "</a>, ";
           }
         $issue = substr($issues, 0, strlen($issues)-2);
         if (strlen($issue) > 0) {
@@ -109,8 +113,13 @@ print "<div class='linkTop'>" ;
           print "Nothing";
         }
         print "</td>";
-        print "<td>". "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_technicianDeleteProcess.php?technicianID=". $row['technicianID'] ."'><img title=" . _('Delete Technician ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconCross.png'/></a>" ."</td>" ;
-
+        print "<td>";
+        	print $row["groupName"];
+        print "</td>";
+        print "<td>";
+        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDeleteProcess.php?technicianID=". $row['technicianID'] ."'><img title=" . _('Delete  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconCross.png'/></a>";
+        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroup.php&technicianID=". $row['technicianID'] ."'><img title=" . _('Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
+		print "</td>";
       print "</tr>" ;
 
     }

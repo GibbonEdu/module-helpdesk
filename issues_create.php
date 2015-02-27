@@ -181,7 +181,7 @@ else {
 					print "</td>";
 				print "</tr>";
 			}
-			if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2)) {
+			if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
 			?>
 				<tr>
 					<td>

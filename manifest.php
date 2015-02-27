@@ -25,7 +25,7 @@ $description="A virtual Help Desk Moudle for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.2.02" ;
+$version="0.3.00" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/adrientremblay/helpdesk" ;
 
@@ -33,6 +33,7 @@ $url="https://github.com/adrientremblay/helpdesk" ;
 $moduleTables[0]="CREATE TABLE `helpDeskTechnicians` (
   `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+  `groupID` int(4) unsigned zerofill NOT NULL,
   PRIMARY KEY (`technicianID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
@@ -65,6 +66,19 @@ VALUES
 (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
 (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
 (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application')";
+
+$moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
+  `groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `groupName` varchar(55) NOT NULL,
+  `viewIssue` boolean DEFAULT 1,
+  `viewIssueStatus` ENUM('All', 'UP', 'PR', 'Pending') DEFAULT 'All',
+  `assignIssue` boolean DEFAULT 0,
+  `acceptIssue` boolean DEFAULT 1,
+  `resolveIssue` boolean DEFAULT 1,
+  `createIssueForOther` boolean DEFAULT 1,
+  `fullAccess` boolean DEFAULT 0,
+   PRIMARY KEY (`groupID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 //Action rows
 //One array per action
 $actionCount = 0 ;
@@ -107,8 +121,8 @@ $actionRows[$actionCount]["name"]="Help Desk Settings" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Edit the settings for the module" ;
-$actionRows[$actionCount]["URLList"]="issues_settings.php" ;
-$actionRows[$actionCount]["entryURL"]="issues_settings.php" ;
+$actionRows[$actionCount]["URLList"]="helpDesk_settings.php" ;
+$actionRows[$actionCount]["entryURL"]="helpDesk_settings.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
@@ -124,8 +138,25 @@ $actionRows[$actionCount]["name"]="Manage Technicians" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]="Manage Technicians." ;
-$actionRows[$actionCount]["URLList"]="issues_manage_technicians.php, issues_createTechnician.php" ;
+$actionRows[$actionCount]["URLList"]="issues_manage_technicians.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_manage_technicians.php" ;
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
+$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
+$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
+$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
+$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+
+$actionCount++ ;
+$actionRows[$actionCount]["name"]="Manage Technician Groups" ;
+$actionRows[$actionCount]["precedence"]="0" ;
+$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["description"]="Manage Technician Groups." ;
+$actionRows[$actionCount]["URLList"]="helpDesk_manageTechnicianGroup.php" ;
+$actionRows[$actionCount]["entryURL"]="helpDesk_manageTechnicianGroup.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
