@@ -86,7 +86,7 @@ $actionCount = 0 ;
 $actionRows[$actionCount]["name"]="Create Issue" ; //The name of the action (appears to user in the right hand side module menu)
 $actionRows[$actionCount]["precedence"]="0" ; //If it is a grouped action, the precedence controls which is highest action in group
 $actionRows[$actionCount]["category"]="" ; //Optional: subgroups for the right hand side module menu
-$actionRows[$actionCount]["description"]="Submits an IT related issue to be resolved by the help desk staff" ; //Text description
+$actionRows[$actionCount]["description"]="Allows the user to submit an issue to be resolved by the help desk staff." ; //Text description
 $actionRows[$actionCount]["URLList"]="issues_create.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_create.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
@@ -103,7 +103,7 @@ $actionCount++ ;
 $actionRows[$actionCount]["name"]="Issues" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]= "Shows issues depending on role/permissions." ;
+$actionRows[$actionCount]["description"]= "Gives the user access to the Issues Tab." ;
 $actionRows[$actionCount]["URLList"]="issues_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
@@ -120,7 +120,7 @@ $actionCount++ ;
 $actionRows[$actionCount]["name"]="Help Desk Settings" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Edit the settings for the module" ;
+$actionRows[$actionCount]["description"]="Allows the user to edit the settings for the module" ;
 $actionRows[$actionCount]["URLList"]="helpDesk_settings.php" ;
 $actionRows[$actionCount]["entryURL"]="helpDesk_settings.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
@@ -137,7 +137,7 @@ $actionCount++ ;
 $actionRows[$actionCount]["name"]="Manage Technicians" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Manage Technicians." ;
+$actionRows[$actionCount]["description"]="Allows the user to manage the Technicians." ;
 $actionRows[$actionCount]["URLList"]="issues_manage_technicians.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_manage_technicians.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
@@ -154,7 +154,7 @@ $actionCount++ ;
 $actionRows[$actionCount]["name"]="Manage Technician Groups" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Manage Technician Groups." ;
+$actionRows[$actionCount]["description"]="Allows the user to manage the Technicians Groups." ;
 $actionRows[$actionCount]["URLList"]="helpDesk_manageTechnicianGroup.php" ;
 $actionRows[$actionCount]["entryURL"]="helpDesk_manageTechnicianGroup.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
