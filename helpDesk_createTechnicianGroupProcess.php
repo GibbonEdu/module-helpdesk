@@ -69,7 +69,8 @@ else {
     }
 
     //Success 0
-    $URL = $URL."/helpDesk_editTechnicianGroup.php&addReturn=success0" ; 
+    $groupID = $connection2->lastInsertId();
+    $URL = $URL."/helpDesk_editTechnicianGroup.php&groupID=$groupID&addReturn=success0" ; 
     header("Location: {$URL}");
 
   }

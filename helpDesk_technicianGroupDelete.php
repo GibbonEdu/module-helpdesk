@@ -110,12 +110,17 @@ else {
 					</td>
 					<td class=\"right\">
 						<select name='group' id='group' style='width:302px'>
+							<option value=''>Please select...</option>
 						<?php
 							while($option=$result->fetch()) {
 								if($groupID != $option["groupID"])print "<option $selected value='" . $option["groupID"] . "'>". $option["groupName"] ."</option>" ;
 							}
 						?>
 						</select>
+						<script type="text/javascript">
+							var name2=new LiveValidation('group');
+							name2.add(Validate.Presence);
+						</script>
 					</td>
 				</tr>
 			<tr>

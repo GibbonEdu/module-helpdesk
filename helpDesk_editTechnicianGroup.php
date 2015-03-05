@@ -98,8 +98,8 @@ else {
 			</tr>
 			<tr>
 				<td style='width: 275px'>
-					<b>View Issues</b><br/>
-					<span style="font-size: 90%"><i></i></span>
+					<b>Allow View All Issues</b><br/>
+					<span style="font-size: 90%"><i>Allow the technician to see all the issues instead of just their issues and the issues they working on.</i></span>
 				</td>
 				<td class="right">
 					<?php
@@ -112,7 +112,7 @@ else {
 			<tr>
 				<td style='width: 275px'>
 					<b>View Issues Status</b><br/>
-					<span style="font-size: 90%"><i></i></span>
+					<span style="font-size: 90%"><i>Choose what issue statuses the technicians can view.</i></span>
 				</td>
 				<td class="right">
 					<select name='viewIssueStatus' id='viewIssueStatus' style='width:302px'>
@@ -131,8 +131,8 @@ else {
 			</tr>
 			<tr>
 				<td style='width: 275px'>
-					<b>Assign Issues</b><br/>
-					<span style="font-size: 90%"><i></i></span>
+					<b>Allow Assign Issues</b><br/>
+					<span style="font-size: 90%"><i>Allow the technician to assign issues to other technicians.</i></span>
 				</td>
 				<td class="right">
 					<?php
@@ -144,8 +144,8 @@ else {
 			</tr>
 			<tr>
 				<td style='width: 275px'>
-					<b>Accept Issues</b><br/>
-					<span style="font-size: 90%"><i></i></span>
+					<b>Allow Accept Issues</b><br/>
+					<span style="font-size: 90%"><i>Allow the technician to accept issues to work on.</i></span>
 				</td>
 				<td class="right">
 					<?php
@@ -157,8 +157,8 @@ else {
 			</tr>
 			<tr>
 				<td style='width: 275px'>
-					<b>Resolve Issues</b><br/>
-					<span style="font-size: 90%"><i></i></span>
+					<b>Allow Resolve Issues</b><br/>
+					<span style="font-size: 90%"><i>Allow the technician to resolve an issue they are working on.</i></span>
 				</td>
 				<td class="right">
 					<?php
@@ -170,8 +170,8 @@ else {
 			</tr>
 			<tr>
 				<td style='width: 275px'>
-					<b>Create Issues For Other</b><br/>
-					<span style="font-size: 90%"><i></i></span>
+					<b>Allow Create Issues For Other</b><br/>
+					<span style="font-size: 90%"><i>Allow the technician to create issues issues on behalf of others.</i></span>
 				</td>
 				<td class="right">
 					<?php
@@ -184,7 +184,7 @@ else {
 			<tr>
 				<td style='width: 275px'>
 					<b>Full Access</b><br/>
-					<span style="font-size: 90%"><i></i></span>
+					<span style="font-size: 90%"><i>Enabling this will give the technician full access. This will override almost all the checks the system has in place. It will allow the technician to resolve any issues, work on issues they are not assigned to and all the other things listed above.</i></span>
 				</td>
 				<td class="right">
 					<?php

@@ -63,8 +63,8 @@ else {
         </td>
         <td class="right">
           <select name='group' id='group' style='width:302px'>
+          	<option value=''>Please select...</option>
             <?php
-			print "<option value=''>Please select...</option>" ;						
             while($option=$result->fetch()) {
               print "<option value='" . $option['groupID'] . "'>". $option['groupName']."</option>" ;
             }

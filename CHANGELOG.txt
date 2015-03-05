@@ -104,6 +104,6 @@ Fixed an issue where technicians could not see All issues.
 
 v0.3.00
 -------
-Renamed Multiple Files.
-Recoded the Technician System.
-Added Technician Groups.
+Renamed Multiple Files to either have the prefix helpDesk or issues.
+Recoded the Technician System to allow for more control and in general better usage across the system.
+Added Technician Groups to allow for technician permission to be set and for easier control.
