@@ -78,4 +78,12 @@ INSERT INTO gibbonAction SET name='Manage Technician Groups', precedence='0', ca
 ALTER TABLE helpDeskTechnicians ADD groupID int(4) unsigned zerofill NOT NULL;end
 " ;
 
+//v0.3.01
+$count++;
+$sql[$count][0]="0.3.01" ;
+$sql[$count][1]="
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Help Desk' AND gibbonAction.name='Manage Technician Groups'));end
+UPDATE gibbonAction SET URLList='helpDesk_manageTechnicians.php', entryURL='helpDesk_manageTechnicians.php' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+" ;
+
 ?>

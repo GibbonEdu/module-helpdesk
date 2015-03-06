@@ -125,7 +125,7 @@ print "<div class='linkTop'>" ;
     }
   } else {
     print "<tr>";
-      print "<td colspan= 3>";
+      print "<td colspan= 4>";
         print _("There are no records to display.");
       print "</td>";
     print "</tr>";
