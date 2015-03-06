@@ -86,4 +86,12 @@ INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`
 UPDATE gibbonAction SET URLList='helpDesk_manageTechnicians.php', entryURL='helpDesk_manageTechnicians.php' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 " ;
 
+//v0.3.02
+$count++;
+$sql[$count][0]="0.3.02" ;
+$sql[$count][1]="
+UPDATE gibbonAction SET URLList='helpDesk_manageTechnicianGroup.php', entryURL='helpDesk_manageTechnicianGroup.php' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET URLList='helpDesk_manageTechnicians.php', entryURL='helpDesk_manageTechnicians.php' WHERE name='Manage Technician' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+" ;
+
 ?>
