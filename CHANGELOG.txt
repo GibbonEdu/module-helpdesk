@@ -114,6 +114,10 @@ Made Manage Technician Groups a default Permission.
 Fixed helpDesk_createTechnicianGroup using the wrong permission.
 Fixed Manage Technician having the wrong entry and URLList value.
 
-v0.3.01
+v0.3.02
 -------
 Fixed some permissions having the wrong URLs.
+
+v0.3.03
+-------
+Fixed one permission having the wrong URL.

@@ -94,4 +94,11 @@ UPDATE gibbonAction SET URLList='helpDesk_manageTechnicianGroup.php', entryURL='
 UPDATE gibbonAction SET URLList='helpDesk_manageTechnicians.php', entryURL='helpDesk_manageTechnicians.php' WHERE name='Manage Technician' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 " ;
 
+//v0.3.03
+$count++;
+$sql[$count][0]="0.3.03" ;
+$sql[$count][1]="
+UPDATE gibbonAction SET URLList='helpDesk_manageTechnicians.php', entryURL='helpDesk_manageTechnicians.php' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+" ;
+
 ?>
