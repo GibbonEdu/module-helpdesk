@@ -101,4 +101,16 @@ $sql[$count][1]="
 UPDATE gibbonAction SET URLList='helpDesk_manageTechnicians.php', entryURL='helpDesk_manageTechnicians.php' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 " ;
 
+//v0.3.04
+$count++;
+$sql[$count][0]="0.3.04" ;
+$sql[$count][1]="
+UPDATE gibbonAction SET description='Allows the user to submit an issue to be resolved by the help desk staff.' WHERE name='Create Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET description='Gives the user access to the Issues section' WHERE name='Issues' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET description='Allows the user to manage the Technicians.' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET description='Allows the user to manage the Technicians Groups.' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET description='Allows the user to edit the settings for the module.' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonModule SET url='https://github.com/raynichc/helpdesk' WHERE name='Help Desk';end
+" ;
+
 ?>

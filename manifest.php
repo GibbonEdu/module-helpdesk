@@ -25,9 +25,9 @@ $description="A virtual Help Desk Moudle for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.3.03" ;
+$version="0.3.04" ;
 $author="Adrien Tremblay & Ray Clark" ;
-$url="https://github.com/adrientremblay/helpdesk" ;
+$url="https://github.com/raynichc/helpdesk" ;
 
 //Module tables & gibbonSettings entries
 $moduleTables[0]="CREATE TABLE `helpDeskTechnicians` (
@@ -103,7 +103,7 @@ $actionCount++ ;
 $actionRows[$actionCount]["name"]="Issues" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]= "Gives the user access to the Issues Tab." ;
+$actionRows[$actionCount]["description"]= "Gives the user access to the Issues section." ;
 $actionRows[$actionCount]["URLList"]="issues_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
@@ -120,7 +120,7 @@ $actionCount++ ;
 $actionRows[$actionCount]["name"]="Help Desk Settings" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="" ;
-$actionRows[$actionCount]["description"]="Allows the user to edit the settings for the module" ;
+$actionRows[$actionCount]["description"]="Allows the user to edit the settings for the module." ;
 $actionRows[$actionCount]["URLList"]="helpDesk_settings.php" ;
 $actionRows[$actionCount]["entryURL"]="helpDesk_settings.php" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;

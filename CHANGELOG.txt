@@ -121,3 +121,8 @@ Fixed some permissions having the wrong URLs.
 v0.3.03
 -------
 Fixed one permission having the wrong URL.
+
+v0.3.04
+-------
+Fixed helpDesk_setTechGroup.php not having the technicians group as a default.
+Changed some icons to others to fit the theme of the rest of gibbon.

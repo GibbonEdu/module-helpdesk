@@ -48,10 +48,17 @@ else {
 		$sql="SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
+		
+		$data2=array("technicianID"=>$technicianID);
+		$sql2="SELECT * FROM helpDeskTechnicians WHERE technicianID=:technicianID";
+		$result2=$connection2->prepare($sql2);
+		$result2->execute($data2);
 	} catch(PDOException $e) {
 		print $e;
 	}
-
+	
+	$tech=$result2->fetch();
+	
   ?>
 
   <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "	/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroupProcess.php?technicianID=$technicianID" ?>">
@@ -63,10 +70,20 @@ else {
         </td>
         <td class="right">
           <select name='group' id='group' style='width:302px'>
-          	<option value=''>Please select...</option>
             <?php
+            $needDefault = true;
             while($option=$result->fetch()) {
-              print "<option value='" . $option['groupID'] . "'>". $option['groupName']."</option>" ;
+            	$selected = "";
+            	if($option['groupID']==$tech['groupID']) {
+            		$needDefault = false;
+            		$selected = "selected";
+            	}
+              print "<option value='" . $option['groupID'] . "' $selected>". $option['groupName']."</option>" ;
+            }
+            if($needDefault) {
+            ?>
+            	<option value=''>Please select...</option>
+            <?php
             }
             ?>
           </select>
