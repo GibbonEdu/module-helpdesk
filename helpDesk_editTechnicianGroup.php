@@ -29,7 +29,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 else {
   //Proceed!
   print "<div class='trail'>" ;
-  print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Assign Issue') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . _("Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . _('Edit Technician Group') . "</div>" ;
   print "</div>" ;  
   
   if (isset($_GET["addReturn"])) { $addReturn=$_GET["addReturn"] ; } else { $addReturn="" ; }
@@ -183,6 +183,19 @@ else {
 			</tr>
 			<tr>
 				<td style='width: 275px'>
+					<b>Reassign Issue</b><br/>
+					<span style="font-size: 90%"><i>This will allow the technician to reassign an issue to another technician.</i></span>
+				</td>
+				<td class="right">
+					<?php
+						$checked = '';
+						if($row['reassignIssue'] == TRUE) { $checked = 'checked'; }
+						print "<input type='checkbox' name='reassignIssue' id='reassignIssue' $checked />" ;
+					?>
+				</td>
+			</tr>
+			<tr>
+				<td style='width: 275px'>
 					<b>Full Access</b><br/>
 					<span style="font-size: 90%"><i>Enabling this will give the technician full access. This will override almost all the checks the system has in place. It will allow the technician to resolve any issues, work on issues they are not assigned to and all the other things listed above.</i></span>
 				</td>
@@ -205,46 +218,6 @@ else {
 			</tr>
 		</table>
 	</form>
-  	<!-- 
-
-print "<table cellspacing='0' style='width: 100%'>" ;
-   		print "<tr class='head'>" ;
-    		print "<th style='width:50%'>" ;
-        		print _("Permission Name") ;
-      		print "</th>" ;
-     		print "<th style='width:50%'>" ;
-       			print _("Setting") ;
-    		print "</th>" ;
- 		print "</tr>" ;
-      	print "<tr>" ;
-      		print "<td> ";
-				print "<b>View Issues</b>" ;
-				print "<span style='font-size: 90%'><i></i></span>";
-			print "</td>";
-        	print "<td>";
-        	
-        	print "</td>";
-      print "</tr>" ;
-      print "<tr>" ;
-      		print "<td> ";
-				print "<b>View Issues</b>" ;
-				print "<span style='font-size: 90%'><i></i></span>";
-			print "</td>";
-        	print "<td>";
-        	
-        	print "</td>";
-      print "</tr>" ;
-      print "<tr>" ;
-      		print "<td> ";
-				print "<b>View Issues</b>" ;
-				print "<span style='font-size: 90%'><i></i></span>";
-			print "</td>";
-        	print "<td>";
-        	
-        	print "</td>";
-      print "</tr>" ;
-  print "</table>" ;
- -->
 <?php
 }
 ?>

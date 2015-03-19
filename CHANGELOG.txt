@@ -131,3 +131,10 @@ v0.3.05
 -------
 Added row coloring to tables to fit with the rest of gibbon.
 Allowed Resolved issues to be viewed.
+
+v0.4.00
+-------
+Added ability to Reassign Issue.
+Added Reassign permision to Technician Groups.
+Fixed the assigning system.
+Fixed breadcrumbs on multiple files.

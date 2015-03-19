@@ -25,7 +25,7 @@ $description="A virtual Help Desk Moudle for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.3.05" ;
+$version="0.4.00" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/raynichc/helpdesk" ;
 
@@ -77,6 +77,7 @@ $moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
   `resolveIssue` boolean DEFAULT 1,
   `createIssueForOther` boolean DEFAULT 1,
   `fullAccess` boolean DEFAULT 0,
+  `reassignIssue` boolean DEFAULT 0,
    PRIMARY KEY (`groupID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 //Action rows

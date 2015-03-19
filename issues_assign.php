@@ -21,32 +21,48 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.php")==FALSE && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print _("You do not have access to this action.") ;
 	print "</div>" ;
 }
 else {
+	$issueID = null;
+	if(isset($_GET["issueID"])){ 
+		$issueID = $_GET["issueID"]; 
+	} 
+	$isReassign = false;
+	if(hasTechnicianAssigned($issueID, $connection2)) {
+		$isReassign = true;
+	}
+	
+	if($isReassign) {
+		if(!getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reassignIssue")) {
+			print "<div class='error'>" ;
+				print _("You do not have access to this action.") ;
+			print "</div>" ;
+			exit();
+		}
+	}
+	else {
+		if(!getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+			print "<div class='error'>" ;
+				print _("You do not have access to this action.") ;
+			print "</div>" ;
+			exit();
+		}
+	}
+	
 	//Proceed!
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Assign Issue') . "</div>" ;
+	if($isReassign) { print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Reassign Issue') . "</div>" ; }
+	else { print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Assign Issue') . "</div>" ; }
 	print "</div>" ;
 	
 	
 	if (isset($_GET["updateReturn"])) { $updateReturn=$_GET["updateReturn"] ; } else { $updateReturn="" ; }
 	
-	$highestAction=getHighestGroupedAction($guid, $_GET["q"], $connection2) ;
-	if ($highestAction==FALSE) {
-		print "<div class='error'>" ;
-		print _("The highest grouped action cannot be determined.") ;
-		print "</div>" ;
-	}
-	if(!($highestAction=="View issues_All&Assign")) { $updateReturn = "fail0"; }
-	$issueID = null;
-	if(isset($_GET["issueID"])){ 
-		$issueID = $_GET["issueID"]; 
-	} 
 	$updateReturnMessage="" ;
 	$class="error" ;
 	if (!($updateReturn=="")) {
@@ -86,7 +102,14 @@ else {
 						<select name='technician' id='technician' style='width:302px'>
 						<?php
 							foreach($technicians as $option) {
-								if(!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) { print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ; }
+								if(!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) { 
+									if($isReassign) {
+										if(getTechWorkingOnIssue($connection2, $issueID) != $option["gibbonPersonID"]) { print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;  }
+									}
+									else {								
+										print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ; 
+									}
+								}
 							}
 						?>
 						</select>

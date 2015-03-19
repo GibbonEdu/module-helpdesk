@@ -48,6 +48,10 @@ else {
 	  exit();
 	}
 
+  print "<div class='trail'>" ;
+  print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $_GET["issueID"] . "'>" . _("Discuss Issue") . "</a> > </div><div class='trailEnd'>" . _('Post Discuss') . "</div>" ;
+  print "</div>" ;
+
   ?>
 
   <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_discussPostProccess.php?issueID="  . $_GET["issueID"]?>">

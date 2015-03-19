@@ -56,19 +56,13 @@ else {
 	  header("Location: {$URL}");
 	  exit();
 	}
-	$highestAction=getHighestGroupedAction($guid, "/modules/Help Desk/issues_assign.php", $connection2) ;
-	if ($highestAction==FALSE) {
-		print "<div class='error'>" ;
-		print _("The highest grouped action cannot be determined.") ;
-		print "</div>" ;
-	}
-	if(!($highestAction=="View issues_All&Assign")) {
+	if(!getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue") && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reassignIssue")) {
     $URL = $URL."&addReturn=fail0" ;
 	  header("Location: {$URL}");
 	  exit();
 	}
 
-	if($technicianID==null){
+	if($technicianID==null && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reassignIssue")){
     $URL = $URL."&addReturn=fail1" ;
  	  header("Location: {$URL}");
  	  exit();
