@@ -142,6 +142,10 @@ function relatedToIssue($connection2, $issueID, $gibbonPersonID) {
     $isRelated = $row["gibbonPersonID"]==$gibbonPersonID;
   }
 
+  if(getPermissionValue($connection2, $gibbonPersonID, "fullAccess")) {
+  	$isRelated = true;
+  }
+
   return $isRelated;
 }
 
@@ -222,5 +226,19 @@ function getPermissionValue($connection2, $gibbonPersonID, $permission) {
   		else return true;
   	}
   	return $row[$permission];	
+}
+
+function getIssueStatus($connection2, $issueID) {
+	try {
+		$data=array("issueID"=> $issueID);
+		$sql="SELECT status FROM helpDeskIssue WHERE issueID:issueID";
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+		$row = $result->fetch();
+	}
+	catch(PDOException $e) {
+		print $e;
+	}
+	return $row["status"];
 }
 ?>

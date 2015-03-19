@@ -95,8 +95,14 @@ print "<div class='linkTop'>" ;
   	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php'>" .  _('Create') . "</a>";
   print "</div>" ;
   if (! $result->rowcount() == 0){
+  $rowCount = 0;
     while($row=$result->fetch()){
-      print "<tr>" ;
+    	if($rowCount%2 == 0) {
+		 	 print "<tr class='even'>";
+		  }
+		  else {
+		 	 print "<tr class='odd'>";
+		  }
         print "<td>" . $row['groupName'] . "</td>" ;
         print "<td> ";
         $techsIn = "";
@@ -117,7 +123,7 @@ print "<div class='linkTop'>" ;
         print"</td>" ;
 
       print "</tr>" ;
-
+	$rowCount++;
     }
   } else {
     print "<tr>";

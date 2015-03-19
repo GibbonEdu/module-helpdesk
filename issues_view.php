@@ -331,7 +331,7 @@ else {
     print "<a style='position:relative; bottom:10px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php'><img style='margin-left: 2px' title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
   	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php'>" .  _('Create ') . "</a>";
   print "</div>" ;
-    print "<table class = 'smallIntBorder' cellspacing = '0' style = 'width: 100% !important'>";
+    print "<table cellspacing = '0' style = 'width: 100% !important'>";
    	print "<tr>";
    	print "<th>ID</th>";
     print "<th>Title<br/>";
@@ -356,8 +356,15 @@ else {
 		print "</tr>";
     }
     else {
+    	$rowCount = 0;
 		foreach($resultIssue as $row){
-		  print "<tr>";
+		  if($rowCount%2 == 0) {
+		 	 print "<tr class='even'>";
+		  }
+		  else {
+		 	 print "<tr class='odd'>";
+		  }
+		  
 		  print "<td style='text-align: center;'><b>" . intval($row['issueID']) . "</b></td>";
 		  $issueName = $row['issueName'];
 		  if(strlen($issueName)>15) $issueName = substr($issueName, 0, 15) . "...";
@@ -371,7 +378,7 @@ else {
 		  if($renderPriority) { printf("<td><b>" .$row['priority']. "</b></td>"); }
 		  printf("<td><b>" .$row['status']. "</b><br/>");
 		  print "<span style='font-size: 85%; font-style: italic'>" . dateConvertBack($guid, $row["date"]) . "</span></td>" ;
-		  print "<td style='width:15%'>";
+		  print "<td style='width:16%'>";
 		  $openCreated = false;
 		  $resolveCreated = false;
 		  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]))
@@ -401,8 +408,13 @@ else {
 		      if(!$openCreated && !($row['status']=="Resolved")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; }
 		      if(!$resolveCreated && !($row['status']=="Resolved")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>"; }
 		  }
+		  if($row['status']=="Resolved" && relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"])) {
+		  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
+		 	$openCreated = true;
+		 }
 		  print "</td>";
 		  print "</tr>";
+		  $rowCount++;
 		}
 	}
     print "</table>";

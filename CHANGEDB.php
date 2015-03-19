@@ -113,4 +113,10 @@ UPDATE gibbonAction SET description='Allows the user to edit the settings for th
 UPDATE gibbonModule SET url='https://github.com/raynichc/helpdesk' WHERE name='Help Desk';end
 " ;
 
+//v0.3.05
+$count++;
+$sql[$count][0]="0.3.05" ;
+$sql[$count][1]="
+" ;
+
 ?>

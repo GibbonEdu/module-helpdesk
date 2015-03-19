@@ -48,7 +48,7 @@ else {
 }
 
 
-if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
+if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || getIssueStatus($connection2, $issueID)=="Resolved") {
   //Fail 0 aka No permission
   $URL=$URL . "&addReturn=fail0" ;
   header("Location: {$URL}");

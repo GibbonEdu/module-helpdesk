@@ -126,3 +126,8 @@ v0.3.04
 -------
 Fixed helpDesk_setTechGroup.php not having the technicians group as a default.
 Changed some icons to others to fit the theme of the rest of gibbon.
+
+v0.3.05
+-------
+Added row coloring to tables to fit with the rest of gibbon.
+Allowed Resolved issues to be viewed.
