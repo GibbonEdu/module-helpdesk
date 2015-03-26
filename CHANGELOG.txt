@@ -147,3 +147,7 @@ Added Issue Name to end of notification.
 
 v0.3.12
 -------
+Added Assign button to issues_discussView.php.
+Fixed a bug where technicians would not get a notification when a post was made.
+Added a feature where the creater of an issue would will no longer get a notification.
+Added spaces before the brackets in the notifications.
