@@ -110,7 +110,7 @@ function notifyTechnican($connection2, $guid, $issueID, $name) {
   }
 
   while($row = $result->fetch()) {
-  	setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added(" . $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+  	if($row["gibbonPersonID"] != $_SESSION[$guid]["gibbonPersonID"]) setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added (" . $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
   }
 }
 

@@ -141,6 +141,9 @@ Fixed breadcrumbs on multiple files.
 
 v0.3.11
 -------
-Combind text links with image links.
+Combined text links with image links.
 Fixed a double notification bug.
 Added Issue Name to end of notification.
+
+v0.3.12
+-------

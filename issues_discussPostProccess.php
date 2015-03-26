@@ -84,18 +84,18 @@ else {
     break ;
   }
 
-$isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue");
+$isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
-  $message = "A new message has been left for you";
+  $message = "A new message has been left for you ";
   if($isTech) {
-  	$message.= " by the technician working on your issue";
+  	$message.= "by the technician working on your issue";
   }
   else {
-  	$message.= " by the person who has the issue";
+  	$message.= "by the person who has the issue";
   }
   
   
-  $message.="(" . $row["issueName"] . ").";
+  $message.=" (" . $row["issueName"] . ").";
   $personID = 0000000000;
   if($isTech) {
       $personID = getOwnerOfIssue($connection2, $issueID);
