@@ -156,3 +156,6 @@ v0.3.13
 -------
 Added spaces before the brackets in the notifications.
 Fixed technicians who had issues created on their behalfs getting two notifications.
+
+v0.3.14
+-------
