@@ -98,7 +98,7 @@ function technicianExists($connection2, $technicianID)
   return ($result->rowCount()==1);
 }
 
-function notifyTechnican($connection2, $guid, $issueID) {
+function notifyTechnican($connection2, $guid, $issueID, $name) {
   try {
     $data=array();
     $sql="SELECT * FROM helpDeskTechnicians";
@@ -110,7 +110,7 @@ function notifyTechnican($connection2, $guid, $issueID) {
   }
 
   while($row = $result->fetch()) {
-  	setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+  	setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added(" . $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
   }
 }
 
@@ -231,13 +231,12 @@ function getPermissionValue($connection2, $gibbonPersonID, $permission) {
 function getIssueStatus($connection2, $issueID) {
 	try {
 		$data=array("issueID"=> $issueID);
-		$sql="SELECT status FROM helpDeskIssue WHERE issueID:issueID";
+		$sql="SELECT status FROM helpDeskIssue WHERE issueID=:issueID";
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
 		$row = $result->fetch();
 	}
 	catch(PDOException $e) {
-		print $e;
 	}
 	return $row["status"];
 }

@@ -71,6 +71,12 @@ else {
     $sql="INSERT INTO helpDeskIssueDiscuss SET issueDiscussID=:issueDiscussID, issueID=:issueID, comment=:comment, timestamp=:timestamp, gibbonPersonID=:gibbonPersonID" ;
     $result=$connection2->prepare($sql);
     $result->execute($data);
+    
+    $data2=array("issueID"=>$issueID) ;
+    $sql2="SELECT issueName FROM helpDeskIssue WHERE issueID=:issueID" ;
+    $result2=$connection2->prepare($sql2);
+    $result2->execute($data2);
+    $row = $result2->fetch();
   } catch(PDOException $e) {
     //Fail 2
     $URL=$URL . "&addReturn=fail2" ;
@@ -87,7 +93,9 @@ $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isP
   else {
   	$message.= " by the person who has the issue";
   }
-  $message.=".";
+  
+  
+  $message.="(" . $row["issueName"] . ").";
   $personID = 0000000000;
   if($isTech) {
       $personID = getOwnerOfIssue($connection2, $issueID);

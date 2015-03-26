@@ -126,4 +126,10 @@ $sql[$count][1]="
 ALTER TABLE helpDeskTechGroups ADD reassignIssue boolean DEFAULT 0;end
 " ;
 
+//v0.3.11
+$count++;
+$sql[$count][0]="0.3.11" ;
+$sql[$count][1]="
+" ;
+
 ?>
