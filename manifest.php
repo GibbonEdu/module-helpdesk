@@ -25,7 +25,7 @@ $description="A virtual Help Desk Moudle for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.3.12" ;
+$version="0.3.13" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/raynichc/helpdesk" ;
 

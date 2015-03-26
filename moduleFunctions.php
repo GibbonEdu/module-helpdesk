@@ -98,7 +98,7 @@ function technicianExists($connection2, $technicianID)
   return ($result->rowCount()==1);
 }
 
-function notifyTechnican($connection2, $guid, $issueID, $name) {
+function notifyTechnican($connection2, $guid, $issueID, $name, $personID) {
   try {
     $data=array();
     $sql="SELECT * FROM helpDeskTechnicians";
@@ -110,7 +110,7 @@ function notifyTechnican($connection2, $guid, $issueID, $name) {
   }
 
   while($row = $result->fetch()) {
-  	if($row["gibbonPersonID"] != $_SESSION[$guid]["gibbonPersonID"]) setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added (" . $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+  	if($row["gibbonPersonID"] != $_SESSION[$guid]["gibbonPersonID"] && $row["gibbonPersonID"] != $personID) setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added (" . $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
   }
 }
 
