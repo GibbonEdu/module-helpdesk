@@ -159,3 +159,6 @@ Fixed technicians who had issues created on their behalfs getting two notificati
 
 v0.3.14
 -------
+
+v0.3.15
+-------
