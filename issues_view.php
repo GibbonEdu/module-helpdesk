@@ -381,9 +381,9 @@ else {
 		  print "<td style='width:16%'>";
 		  $openCreated = false;
 		  $resolveCreated = false;
-		  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]))
+		  if(isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && (!relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")))
 		  {
-			  if($row['technicianID']==null && !($row['status']=="Resolved"))
+			  if($row['technicianID']==null && $row['status']!="Resolved")
 			  {
 				?><input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>"><?php
 				if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>"; }

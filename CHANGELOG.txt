@@ -162,3 +162,5 @@ v0.3.14
 
 v0.3.15
 -------
+Added notifications for accepting, assigning and reassigning issues.
+Fixed a bug which didn't allow people with Full Access to accept issues.

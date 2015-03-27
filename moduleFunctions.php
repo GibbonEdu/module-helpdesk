@@ -61,8 +61,8 @@ function hasTechnicianAssigned($issueID, $connection2)
   catch(PDOException $e) {
 	print $e;
   }
-  $array = $result->fetchAll();
-  $id = $array[0]["technicianID"];
+  $array = $result->fetch();
+  $id = $array["technicianID"];
   return ($id != null);
 }
 
@@ -128,7 +128,7 @@ function relatedToIssue($connection2, $issueID, $gibbonPersonID) {
   if($row['technicianID']!=null) {
     try {
       $data=array("issueID"=> $issueID);
-      $sql="SELECT helpDeskIssue.*, helpDeskTechnicians.technicianID, helpDeskTechnicians.gibbonPersonID AS personID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) WHERE issueID=:issueID";
+      $sql="SELECT helpDeskIssue.gibbonPersonID, helpDeskTechnicians.technicianID, helpDeskTechnicians.gibbonPersonID AS personID FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) WHERE issueID=:issueID";
       $result=$connection2->prepare($sql);
       $result->execute($data);
     }  

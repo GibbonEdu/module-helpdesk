@@ -71,6 +71,8 @@ else {
 				break ;
 			}
 		
+			setNotification($connection2, $guid, getOwnerOfIssue($connection2, $issueID), "A technician has started working on your isuse.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+			
 			//Success 1 aka Accepted
 			$URL=$URL . "issues_discussView.php&issueID=" . $issueID . "&addReturn=success1" ;
 			header("Location: {$URL}");

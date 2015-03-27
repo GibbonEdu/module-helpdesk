@@ -76,6 +76,11 @@ else {
 	  header("Location: {$URL}");
 	  exit();
 	}
+	
+	$isReassign = false;
+	if(hasTechnicianAssigned($issueID, $connection2)) {
+		$isReassign = true;
+	}
 
 	try {
 		$data=array("issueID"=> $issueID, "technicianID"=> $technicianID, "status"=> "Pending");
@@ -88,6 +93,11 @@ else {
     header("Location: {$URL}");
     exit();
 	}
+	
+	$assign = "assigned";
+	if($isReassign) { $assign = "reassigned"; }
+	setNotification($connection2, $guid, getOwnerOfIssue($connection2, $issueID), "Your issue has been " . $assign . " to a technician.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+	setNotification($connection2, $guid, getTechWorkingOnIssue($connection2, $issueID), "An issue has been " . $assign . " to you.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
 
   	$URL = $URL."&addReturn=success0" ; 
 	header("Location: {$URL}");
