@@ -53,7 +53,7 @@ else {
     $group=$_POST["group"] ;
   }
 
-  if ($person == "" || $group == "" || isTechnician($person, $connection2)) {
+  if ($person == "" || $group == "" || isTechnician($connection2, $person)) {
   	$URL = $URL."&addReturn=fail1" ; 
     header("Location: {$URL}");
   }

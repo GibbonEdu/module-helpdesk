@@ -47,14 +47,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
 else {
 	//Proceed!
 	$issueID = intval($_GET["issueID"]) ;
-	if ($issueID=="" || hasTechnicianAssigned($issueID, $connection2)) {
+	if ($issueID=="" || hasTechnicianAssigned($connection2, $issueID)) {
 		//Fail 3
 		$URL=$URL . "issues_view.php&addReturn=fail1" ;
 		header("Location: {$URL}");
 	}
 	else {
-		if (isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue")) {
-			$technicianID = getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2);
+		if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue")) {
+			$technicianID = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
 
 			//Write to database
 			try {
@@ -71,6 +71,8 @@ else {
 				break ;
 			}
 		
+			setNotification($connection2, $guid, getOwnerOfIssue($connection2, $issueID), "A technician has started working on your isuse.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+			
 			//Success 1 aka Accepted
 			$URL=$URL . "issues_discussView.php&issueID=" . $issueID . "&addReturn=success1" ;
 			header("Location: {$URL}");

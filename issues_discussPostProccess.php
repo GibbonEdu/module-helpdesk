@@ -64,7 +64,7 @@ else {
   }
   //Write to database
 
-  $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
+  $isTech = isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
   try {
     $data=array("issueDiscussID"=>0 , "issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "gibbonPersonID" => $_SESSION[$guid]["gibbonPersonID"]) ;
@@ -84,7 +84,7 @@ else {
     break ;
   }
 
-$isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
+$isTech = isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
   $message = "A new message has been left for you ";
   if($isTech) {

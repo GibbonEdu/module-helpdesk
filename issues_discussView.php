@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 include "./modules/Help Desk/moduleFunctions.php" ;
 
 $allowed = relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]);
-if(!hasTechnicianAssigned($_GET["issueID"], $connection2)) {
+if(!hasTechnicianAssigned($connection2, $_GET["issueID"])) {
   $allowed = true;
 }
 
@@ -120,7 +120,7 @@ else {
 
   if(technicianExists($connection2, $array2[0]["technicianID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue"))
   {
-    if(!($array2[0]["technicianID"]==getTechnicianID($_SESSION[$guid]["gibbonPersonID"], $connection2))) {
+    if(!($array2[0]["technicianID"]==getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]))) {
 	  print "<div class='error'>" ;
 	    print "You do not have access to this action." ;
 	  print "</div>" ;

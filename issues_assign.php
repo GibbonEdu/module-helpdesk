@@ -33,7 +33,7 @@ else {
 		$issueID = $_GET["issueID"]; 
 	} 
 	$isReassign = false;
-	if(hasTechnicianAssigned($issueID, $connection2)) {
+	if(hasTechnicianAssigned($connection2, $issueID)) {
 		$isReassign = true;
 	}
 	
