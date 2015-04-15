@@ -98,7 +98,7 @@ $actionRows[$actionCount]["defaultPermissionSupport"]="Y" ; //Default permission
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
 $actionRows[$actionCount]["categoryPermissionStudent"]="Y" ; //Should this action be available to user roles in the Student category?
 $actionRows[$actionCount]["categoryPermissionParent"]="Y" ; //Should this action be available to user roles in the Parent category?
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+$actionRows[$actionCount]["categoryPermissionOther"]="Y" ; //Should this action be available to user roles in the Other category?
 
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="Issues" ;
@@ -115,7 +115,7 @@ $actionRows[$actionCount]["defaultPermissionSupport"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStudent"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionParent"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="Help Desk Settings" ;
@@ -132,7 +132,7 @@ $actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="Manage Technicians" ;
@@ -149,7 +149,7 @@ $actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="Manage Technician Groups" ;
@@ -166,6 +166,6 @@ $actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
 $actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
 $actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="N" ;
+$actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 
 ?>
