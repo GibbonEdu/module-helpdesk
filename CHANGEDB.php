@@ -156,4 +156,15 @@ $sql[$count][0]="0.3.15" ;
 $sql[$count][1]="
 " ;
 
+//v0.3.16
+$count++;
+$sql[$count][0]="0.3.16" ;
+$sql[$count][1]="
+	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Create Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Issues' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+" ;
+
 ?>
