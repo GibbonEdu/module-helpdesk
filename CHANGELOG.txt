@@ -169,6 +169,9 @@ v0.3.16
 -------
 Allowed Other category to have Help Desk permissions.
 
+v0.3.17
+-------
+
 v0.4.00
 -------
 Cleaned up functions.
