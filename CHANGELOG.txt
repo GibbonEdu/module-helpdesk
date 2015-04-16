@@ -168,3 +168,6 @@ Fixed a bug which didn't allow people with Full Access to accept issues.
 v0.3.16
 -------
 Allowed Other category to have Help Desk permissions.
+
+v0.3.17
+-------

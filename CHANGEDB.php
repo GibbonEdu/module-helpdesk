@@ -167,4 +167,10 @@ $sql[$count][1]="
 	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 " ;
 
+//v0.3.17
+$count++;
+$sql[$count][0]="0.3.17" ;
+$sql[$count][1]="
+" ;
+
 ?>
