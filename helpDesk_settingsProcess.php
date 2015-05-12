@@ -44,7 +44,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_setting
 }
 else {
 
-	if(!(isset($_POST["issuePriority"]) || isset($_POST["issueCategory"]) || isset($_POST["issuePriorityName"]))) {
+	if(!(isset($_POST["issuePriority"]) || isset($_POST["issueCategory"]) || isset($_POST["issuePriorityName"]) || isset($_POST["resolvedIssuePrivacy"]))) {
 		$URL=$URL . "&updateReturn=fail1" ;
 		header("Location: {$URL}");
 	}
@@ -82,6 +82,15 @@ else {
 	try {
 		$data=array("value"=>$_POST["issuePriorityName"]); 
 		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriorityName'" ;
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+	}
+	catch(PDOException $e) { 
+		$fail=TRUE ;
+	}
+	try {
+		$data=array("value"=>$_POST["resolvedIssuePrivacy"]); 
+		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
 	}

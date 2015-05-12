@@ -39,27 +39,30 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_view.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php")==FALSE && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
+if(isset($_GET["issueID"])) {
+  $issueID = intval($_GET["issueID"]) ;
+}
+if ($issueID=="") {
+	//Fail 3
+	$URL=$URL . "&addReturn=fail1" ;
+	header("Location: {$URL}");
+}
+$allowed = isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || (relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reincarnateIssue"));
+
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php")==FALSE && !$allowed) {
 	//Fail 0
 	$URL=$URL . "&addReturn=fail0" ;
 	header("Location: {$URL}");
 }
 else {
 	//Proceed!
-	if(isset($_GET["issueID"])) {
-	  $issueID = intval($_GET["issueID"]) ;
-	}
-	if ($issueID=="") {
-		//Fail 3
-		$URL=$URL . "&addReturn=fail1" ;
-		header("Location: {$URL}");
-	}
-	else {
-		if (relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
+		if ($allowed) {
 
+			$status = "Pending";
+			if(!hasTechnicianAssigned($connection2, $issueID)) { $status = "Unassigned"; }
 			//Write to database
 			try {
-				$data=array("issueID"=> $issueID, "status"=> "Resolved");
+				$data=array("issueID"=> $issueID, "status"=> $status);
 				$sql="UPDATE helpDeskIssue SET status=:status WHERE issueID=:issueID" ;
 				$result=$connection2->prepare($sql);
 				$result->execute($data);
@@ -81,9 +84,9 @@ else {
 			}
 			$row = $result->fetch();
 			
-			$message = "Issue #";
+			 $message = "Issue #";
 			  $message.= $issueID;
-			  $message.= " (" . $row["issueName"] . ") has been resolved.";
+			  $message.= " (" . $row["issueName"] . ") has been reincarnated.";
  
 			  $personIDs = getPeopleInvolved($connection2, $issueID);
  
@@ -99,6 +102,5 @@ else {
 			$URL=$URL . "&addReturn=fail0" ;
 			header("Location: {$URL}");
 		}
-	}
 }
 ?>

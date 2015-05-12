@@ -176,3 +176,12 @@ v0.4.00
 -------
 Cleaned up functions.
 Changed textareas to a Wysiwyg.
+Made issues_view.php full width.
+Fixed bug where a table data would not take up all of the rows.
+Changed coloring of rows to represent the status of the issue
+Changed the ordering of the rows to order by status, priority, date, issueID.
+Added Assigned Technician column to issues_view.php.
+Fixed bug where issues_assignProcess.php would send you no where.
+Fixed and updated notifications along with adding new ones.
+Change order of buttons in helpDesk_manageTechnicians.php and helpDesk_manageTechnicianGroups.php.
+Added a Reincarnate Issue button and permission.

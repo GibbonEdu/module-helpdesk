@@ -49,6 +49,7 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `priority` varchar(100) DEFAULT NULL,
   `gibbonSchoolYearID` int(3) unsigned zerofill NOT NULL,
   `createdByID` int(12) unsigned zerofill NOT NULL,
+  `privacySetting` ENUM('Everyone', 'Related', 'Owner', 'No one') DEFAULT 'Everyone',
   PRIMARY KEY (`issueID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
@@ -65,7 +66,8 @@ $moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSystemSettingsID`, `scope`
 VALUES
 (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
 (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
-(NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application')";
+(NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
+(NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Everyone')";
 
 $moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
   `groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -78,6 +80,7 @@ $moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
   `createIssueForOther` boolean DEFAULT 1,
   `fullAccess` boolean DEFAULT 0,
   `reassignIssue` boolean DEFAULT 0,
+  `reincarnateIssue` boolean DEFAULT 1,
    PRIMARY KEY (`groupID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 //Action rows
@@ -107,6 +110,7 @@ $actionRows[$actionCount]["category"]="" ;
 $actionRows[$actionCount]["description"]= "Gives the user access to the Issues section." ;
 $actionRows[$actionCount]["URLList"]="issues_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
+$actionRows[$actionCount]["entrySidebar"]="N" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="Y" ;

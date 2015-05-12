@@ -174,7 +174,7 @@ else {
     if($array2[0]["technicianID"]==null && (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
       print "<tr>";
         print "<td class='right'>";
-      	  if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $issueID . "'>" .  _('Accept');
+      	  if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $issueID . "'>" .  _('Accept');
           	print "<img title=" . _('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>"; }
           if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $issueID . "'>" .  _('Assign');
           print "<img style='margin-left: 5px' title=" . _('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>"; }
@@ -209,10 +209,10 @@ else {
 			  print "<table class='noIntBorder' cellspacing='0' style='width: 100% ; padding: 1px 3px; margin-bottom: -2px; margin-top: 50; margin-left: 0px ; background-color: #f9f9f9'>" ;
 				print "<tr>" ;
 				  if (isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {
-					print "<td style='background-color:" . $bgc . "; color: #777'><i>". $studentName . " " . _('said') . "</i>:</td>" ;
+					print "<td style='width: 12%; background-color:" . $bgc . "; color: #777'><i>". $studentName . " " . _('said') . "</i>:</td>" ;
 				  } else {
 				    $techName = $technicianName;
-				  	if(!(getTechWorkingOnIssue($connection2, $issueID) == $row3["gibbonPersonID"])) { 
+				  	if(!(getTechWorkingOnIssue($connection2, $issueID)["personID"] == $row3["gibbonPersonID"])) { 
 					    $data2=array("gibbonPersonID"=>$row3["gibbonPersonID"]) ;
 
 					    try {
@@ -226,10 +226,10 @@ else {
 					    }
      					$techName = formatName($row5["title"] , $row5["preferredName"] , $row5["surname"] , "Student", FALSE, FALSE);
 				  	}
-					print "<td style='background-color:" . $bgc . "; color: #777'><i>". $techName . " " . _('said') . "</i>:</td>" ;
+					print "<td style='width: 12%; background-color:" . $bgc . "; color: #777'><i>". $techName . " " . _('said') . "</i>:</td>" ;
 				  }
 				  print "<td style='background-color:" . $bgc . ";'><div>" . $row3["comment"] . "</div></td>" ;
-				  print "<td style='background-color:" . $bgc . "; color: #777; text-align: right'><i>" . _('Posted at') . " <b>" . substr($row3["timestamp"],11,5) . "</b> on <b>" . dateConvertBack($guid, $row3["timestamp"]) . "</b></i></td>" ;
+				  print "<td style='width: 15%; background-color:" . $bgc . "; color: #777; text-align: right'><i>" . _('Posted at') . " <b>" . substr($row3["timestamp"],11,5) . "</b> on <b>" . dateConvertBack($guid, $row3["timestamp"]) . "</b></i></td>" ;
 				print "</tr>" ;
 			  print "</table>" ;
 			}
