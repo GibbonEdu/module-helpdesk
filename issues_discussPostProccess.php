@@ -64,7 +64,7 @@ else {
   }
   //Write to database
 
-  $isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
+  $isTech = isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
   try {
     $data=array("issueDiscussID"=>0 , "issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "gibbonPersonID" => $_SESSION[$guid]["gibbonPersonID"]) ;
@@ -84,27 +84,17 @@ else {
     break ;
   }
 
-$isTech = isTechnician($_SESSION[$guid]["gibbonPersonID"], $connection2) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
+  $isTech = isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
-  $message = "A new message has been left for you ";
-  if($isTech) {
-  	$message.= "by the technician working on your issue";
+  $message = "A new message has been added to Issue ";
+  $message.= $issueID;
+  $message.= " (" . $row["issueName"] . ").";
+ 
+  $personIDs = getPeopleInvolved($connection2, $issueID);
+ 
+  foreach($personIDs as $personID) {
+    if($personID != $_SESSION[$guid]["gibbonPersonID"]) { setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } 
   }
-  else {
-  	$message.= "by the person who has the issue";
-  }
-  
-  
-  $message.=" (" . $row["issueName"] . ").";
-  $personID = 0000000000;
-  if($isTech) {
-      $personID = getOwnerOfIssue($connection2, $issueID);
-  }
-  else {
-    	$personID = getTechWorkingOnIssue($connection2, $issueID);
-  }
-  setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);  
-  
   //Success 2 aka Posted
   $URL=$URL . "&addReturn=success2" ;
   header("Location: {$URL}");

@@ -196,6 +196,19 @@ else {
 			</tr>
 			<tr>
 				<td style='width: 275px'>
+					<b>Reincarnate Issue</b><br/>
+					<span style="font-size: 90%"><i>This will allow the technician to bring back an issue that has been resolved.</i></span>
+				</td>
+				<td class="right">
+					<?php
+						$checked = 'checked';
+						if($row['reincarnateIssue'] == FALSE) { $checked = ''; }
+						print "<input type='checkbox' name='reincarnateIssue' id='reincarnateIssue' $checked />" ;
+					?>
+				</td>
+			</tr>
+			<tr>
+				<td style='width: 275px'>
 					<b>Full Access</b><br/>
 					<span style="font-size: 90%"><i>Enabling this will give the technician full access. This will override almost all the checks the system has in place. It will allow the technician to resolve any issues, work on issues they are not assigned to and all the other things listed above.</i></span>
 				</td>

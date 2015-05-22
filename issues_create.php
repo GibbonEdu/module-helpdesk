@@ -106,7 +106,7 @@ else {
 				<td style='width: 275px'>
 					<b><?php print _('Issue Name') ?> *</b><br/>
 				</td>
-				<td class="right">
+				<td class="right" colspan=2>
 					<input name="name" id="name" maxlength=55 value="" type="text" style="width: 300px">
 					<script type="text/javascript">
 						var name=new LiveValidation('name');
@@ -121,7 +121,7 @@ else {
 						print "<b>". _('Category') ." *</b><br/>";
 						print "<span style=\"font-size: 90%\"><i></i></span>";
 					print "</td>";
-					print "<td class=\"right\">";
+					print "<td class=\"right\" colspan=2>";
 						print "<select name='category' id='category' style='width:302px'>" ;
 							print "<option value=''>Please select...</option>" ;
 							foreach($categoryOptions as $option) {
@@ -143,15 +143,15 @@ else {
 			}
 			?>
 			<tr>
-				<td>
+				<td colspan=2>
 					<b><?php print _('Description') ?> *</b><br/>
-				</td>
-				<td class="right">
-					<textarea name='description' id='description' maxlength=1000 rows=5 style='width: 300px'></textarea>
+					<?php print getEditor($guid, TRUE, "description", "", 5, true, true, false); ?>					<!-- 
+<textarea name='description' id='description' maxlength=1000 rows=5 style='width: 300px'></textarea>
 					<script type="text/javascript">
 						var name3=new LiveValidation('description');
 						name3.add(Validate.Presence);
 					</script>
+ -->
 				</td>
 			</tr>
 			<?php
@@ -161,7 +161,7 @@ else {
 						print "<b>". $priorityName ." *</b><br/>";
 						print "<span style=\"font-size: 90%\"><i></i></span>";
 					print "</td>";
-					print "<td class=\"right\">";
+					print "<td class=\"right\" colspan=2>";
 						print "<select name='priority' id='priority' style='width:302px'>" ;
 							print "<option value=''>Please select...</option>" ;
 							foreach($priorityOptions as $option) {

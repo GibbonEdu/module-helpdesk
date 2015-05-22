@@ -118,6 +118,36 @@ else {
 				</td>
 			</tr>
 			<tr>
+				<?php
+				try {
+					$data=array(); 
+					$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
+					$result=$connection2->prepare($sql);
+					$result->execute($data);
+				}
+				catch(PDOException $e) { }
+				$row=$result->fetch() ;
+				?>
+				<td style='width: 275px'>
+					<b><?php print _($row["nameDisplay"]) ?></b><br/>
+					<span style="font-size: 90%"><i><?php if ($row["description"]!="") { print _($row["description"]) ; } ?></i></span>
+				</td>
+				<td class="right">
+					<select name='<?php print $row["name"] ?>' id='<?php print $row["name"] ?>' style='width:302px'>
+						<?php
+							$options = array("Everyone", "Related", "Owner", "No one");
+							foreach($options as $option) {
+								$selected = "";
+								if($option == $row["value"]) {
+									$selected = "selected";
+								}
+								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+							}
+						?>
+					</select>
+				</td>
+			</tr>
+			<tr>
 				<td>
 					<span style="font-size: 90%"><i>* <?php print _("denotes a required field") ; ?></i></span>
 				</td>

@@ -91,7 +91,7 @@ else {
 		}
 
 		$issueID = $connection2->lastInsertId();
-		if($_POST["createFor"] != 0) { setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf (". $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); }
+		if(isset($_POST["createFor"])) { if($_POST["createFor"] != 0) { setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf (". $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } }
 		notifyTechnican($connection2, $guid, $issueID, $name, $personID);
 		//Success 0 aka Created
 		$URL=$URL . "/issues_discussView.php&issueID=" . $issueID . "&addReturn=success0" ;

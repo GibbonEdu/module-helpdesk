@@ -173,4 +173,16 @@ $sql[$count][0]="0.3.17" ;
 $sql[$count][1]="
 " ;
 
+//v0.4.00
+$count++;
+$sql[$count][0]="0.4.00" ;
+$sql[$count][1]="
+INSERT INTO `gibbonSetting` (`gibbonSystemSettingsID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
+VALUES
+(NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Everyone');end
+ALTER TABLE helpDeskIssue ADD `privacySetting` ENUM('Everyone', 'Related', 'Owner', 'No one') DEFAULT 'Everyone';end
+UPDATE gibbonAction SET entrySidebar='N' WHERE name='Issues' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+ALTER TABLE helpDeskTechGroups ADD reincarnateIssue boolean DEFAULT 1;end
+";
+
 ?>

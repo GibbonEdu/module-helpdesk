@@ -33,7 +33,7 @@ else {
 		$issueID = $_GET["issueID"]; 
 	} 
 	$isReassign = false;
-	if(hasTechnicianAssigned($issueID, $connection2)) {
+	if(hasTechnicianAssigned($connection2, $issueID)) {
 		$isReassign = true;
 	}
 	
@@ -104,7 +104,7 @@ else {
 							foreach($technicians as $option) {
 								if(!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) { 
 									if($isReassign) {
-										if(getTechWorkingOnIssue($connection2, $issueID) != $option["gibbonPersonID"]) { print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;  }
+										if(getTechWorkingOnIssue($connection2, $issueID)["personID"] != $option["gibbonPersonID"]) { print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;  }
 									}
 									else {								
 										print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ; 

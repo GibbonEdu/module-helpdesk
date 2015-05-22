@@ -49,7 +49,7 @@ else {
 	//Proceed!
 	if(isset($_POST["technician"])) {
 		$gibbonPersonID = $_POST["technician"];
-		$technicianID = getTechnicianID($gibbonPersonID, $connection2);
+		$technicianID = getTechnicianID($connection2, $gibbonPersonID);
 	}
 	else {
     $URL = $URL."&addReturn=fail1" ;
@@ -78,7 +78,7 @@ else {
 	}
 	
 	$isReassign = false;
-	if(hasTechnicianAssigned($issueID, $connection2)) {
+	if(hasTechnicianAssigned($connection2, $issueID)) {
 		$isReassign = true;
 	}
 
@@ -96,8 +96,18 @@ else {
 	
 	$assign = "assigned";
 	if($isReassign) { $assign = "reassigned"; }
-	setNotification($connection2, $guid, getOwnerOfIssue($connection2, $issueID), "Your issue has been " . $assign . " to a technician.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
-	setNotification($connection2, $guid, getTechWorkingOnIssue($connection2, $issueID), "An issue has been " . $assign . " to you.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+	$tech = getTechWorkingOnIssue($connection2, $issueID);
+	$message = $tech["preferredName"] . " " . $tech["surname"];
+	$message.= " has been $assign";
+	$message.= " Issue #";
+	$message.= $issueID;
+	$message.= " (" . $row["issueName"] . ").";
+
+	$personIDs = getPeopleInvolved($connection2, $issueID);
+
+	foreach($personIDs as $personID) {
+		if($personID != $_SESSION[$guid]["gibbonPersonID"]) { setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } 
+	}	
 
   	$URL = $URL."&addReturn=success0" ; 
 	header("Location: {$URL}");

@@ -57,11 +57,10 @@ else {
   <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_discussPostProccess.php?issueID="  . $_GET["issueID"]?>">
     <table class='smallIntBorder' cellspacing='0' style="width: 100%">
       <tr>
-        <td>
+        <td colspan=2>
           <b><?php print _('Comment') ?></b><br/>
-        </td>
-        <td class="right">
-          <textarea name='comment' id='comment' maxlength=1000 rows=5 style='width: 300px'></textarea>
+        	<?php print getEditor($guid, TRUE, "comment", "", 5, true, true, false); ?>
+<!--           <textarea name='comment' id='comment' maxlength=1000 rows=5 style='width: 300px'></textarea> -->
         </td>
       </tr>
       <tr>

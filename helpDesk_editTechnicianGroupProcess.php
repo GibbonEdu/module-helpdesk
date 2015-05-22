@@ -65,12 +65,14 @@ else {
 	if(!isset($_POST["createIssueForOther"])) { $createIssueForOther = false; }
 	$reassignIssue = false;
 	if(isset($_POST["reassignIssue"])) { $reassignIssue = true; }
+	$reincarnateIssue = true;
+	if(!isset($_POST["reincarnateIssue"])) { $reincarnateIssue = false; }
 	$fullAccess = false;
 	if(isset($_POST["fullAccess"])) { $fullAccess = true; }
 	$fail=FALSE;
 	try {
-		$data=array("groupID"=>$groupID, "groupName"=>$groupName, "viewIssue"=>$viewIssue, "viewIssueStatus"=>$viewIssueStatus, "assignIssue"=>$assignIssue, "acceptIssue"=>$acceptIssue, "resolveIssue"=>$resolveIssue, "createIssueForOther"=>$createIssueForOther, "fullAccess"=>$fullAccess, "reassignIssue"=>$reassignIssue); 
-		$sql="UPDATE helpDeskTechGroups SET viewIssue=:viewIssue, groupName=:groupName, viewIssueStatus=:viewIssueStatus, assignIssue=:assignIssue, acceptIssue=:acceptIssue, resolveIssue=:resolveIssue, createIssueForOther=:createIssueForOther, fullAccess=:fullAccess, reassignIssue=:reassignIssue WHERE groupID=:groupID" ;
+		$data=array("groupID"=>$groupID, "groupName"=>$groupName, "viewIssue"=>$viewIssue, "viewIssueStatus"=>$viewIssueStatus, "assignIssue"=>$assignIssue, "acceptIssue"=>$acceptIssue, "resolveIssue"=>$resolveIssue, "createIssueForOther"=>$createIssueForOther, "fullAccess"=>$fullAccess, "reassignIssue"=>$reassignIssue, "reincarnateIssue"=>$reincarnateIssue); 
+		$sql="UPDATE helpDeskTechGroups SET viewIssue=:viewIssue, groupName=:groupName, viewIssueStatus=:viewIssueStatus, assignIssue=:assignIssue, acceptIssue=:acceptIssue, resolveIssue=:resolveIssue, createIssueForOther=:createIssueForOther, fullAccess=:fullAccess, reassignIssue=:reassignIssue, reincarnateIssue=:reincarnateIssue WHERE groupID=:groupID" ;
 		$result=$connection2->prepare($sql);
 		$result->execute($data);
 	}
