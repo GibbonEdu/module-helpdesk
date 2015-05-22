@@ -186,3 +186,4 @@ Fixed and updated notifications along with adding new ones.
 Change order of buttons in helpDesk_manageTechnicians.php and helpDesk_manageTechnicianGroups.php.
 Added a Reincarnate Issue button and permission.
 Fixed users not being able to see their own resolved issue if they were a technician and they could not see Resolved issues.
+Added default privacy options for all issue (Privacy of specific issues coming soon!).
