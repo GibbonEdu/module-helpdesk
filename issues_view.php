@@ -364,7 +364,7 @@ else {
     	if(!$renderPriority) { $colspan-=1; }
     	print "<td colspan=$colspan>";
     	print _("There are no records to display.");
-		print "<td>";
+		print "</td>";
 		print "</tr>";
     }
     else {
