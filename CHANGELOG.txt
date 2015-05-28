@@ -197,3 +197,6 @@ Added privacy setting to issue_discussView.php.
 Added ability to change privacy setting by clicking on the privacy setting text in issue_disucssView.php.
 Made the privacy setting affect multiple areas.
 Made descriptions shorter and stripped the tags off in issues_view.php.
+
+v0.4.20
+-------
