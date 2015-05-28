@@ -319,6 +319,8 @@ else {
     $sqlIssue="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE gibbonSchoolYearID=:gibbonSchoolYearID " . $whereIssue;
    	$sqlIssue.=" UNION ";
    	$sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID AND gibbonSchoolYearID=:gibbonSchoolYearID";
+    $sqlIssue.=" UNION ";
+    $sqlIssue.="SELECT helpDeskIssue.* FROm helpDeskIssue WHERE helpDeskIssue.privacySetting='Everyone'";
     $sqlIssue.=" ORDER BY FIELD(status, 'Unassigned', 'Pending', 'Resolved'), ";
   	if($renderPriority) {
   		$sqlIssue.= "FIELD(priority";
@@ -370,15 +372,6 @@ else {
     else {
     	$nameLength = 15;
     	$descriptionLength = 50;
-    	try {
-			$data=array(); 
-			$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
-			$result=$connection2->prepare($sql);
-			$result->execute($data);
-		}
-		catch(PDOException $e) { }
-		$row=$result->fetch() ;
-		$privacySetting = $row["value"];
 		foreach($resultIssue as $row){
 			$person = getOwnerOfIssue($connection2, $row['issueID']);
 			$class = "error";
@@ -388,6 +381,15 @@ else {
 			else if($row['status']=='Resolved') {
 				$class = "current";
 			}
+			try {
+				$data=array("issueID"=>$row["issueID"]); 
+				$sql="SELECT privacySetting FROM helpDeskIssue WHERE issueID=:issueID" ;
+				$result=$connection2->prepare($sql);
+				$result->execute($data);
+			}
+			catch(PDOException $e) { }
+			$row2=$result->fetch() ;
+			$privacySetting = $row2['privacySetting'];
 		  print "<tr class='$class'>";
 			  print "<td style='text-align: center;'><b>" . intval($row['issueID']) . "</b></td>";
 			  $issueName = $row['issueName'];
