@@ -56,7 +56,7 @@ else {
     $result=$connection2->prepare($sql);
     $result->execute($data);
 
-    $sql2="SELECT helpDeskTechnicians.*, surname , title, preferredName, helpDeskIssue.createdByID, helpDeskIssue.status AS issueStatus FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
+    $sql2="SELECT helpDeskTechnicians.*, surname , title, preferredName, helpDeskIssue.createdByID, helpDeskIssue.status AS issueStatus, privacySetting FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
     $result2=$connection2->prepare($sql2);
     $result2->execute($data);
     $array2 = $result2->fetchall();
@@ -73,6 +73,29 @@ else {
   catch(PDOException $e) {
     print $e ;
   }
+
+	$privacySetting = $array2[0]["privacySetting"];
+  if($array2[0]["issueStatus"]=="Resolved" && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+  	if($privacySetting == "No one") {
+		print "<div class='error'>" ;
+			print "You do not have access to this action." ;
+		print "</div>" ;
+		exit();
+	}
+	else if($privacySetting == "Related" && !relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+		print "<div class='error'>" ;
+			print "You do not have access to this action." ;
+		print "</div>" ;
+		exit();
+	}
+	else if($privacySetting == "Owner" && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+		print "<div class='error'>" ;
+			print "You do not have access to this action." ;
+		print "</div>" ;
+		exit();
+	}
+  }
+
 
   if (!isset($array2[0]["gibbonPersonID"])) {
       $technicianName = "UNASSIGNED" ;
@@ -109,6 +132,10 @@ else {
 			$addReturnMessage=_("Your post has successfully been posted.") ;	
 			$class="success" ;
 		}
+		else if ($addReturn=="success3") {
+			$addReturnMessage=_("The privacy has successfully been changed.") ;	
+			$class="success" ;
+		}
 		print "<div class='$class'>" ;
 			print $addReturnMessage;
 		print "</div>" ;
@@ -130,12 +157,12 @@ else {
 
 	
 
-  $tdWidth = "25%" ;
+  $tdWidth = "20%" ;
   
     $row=$result->fetch();
     $createdByShow = isset($row["createdByID"]) && $row["createdByID"] != $row["gibbonPersonID"];
     if($createdByShow) {
-  		$tdWidth = "20%";
+  		$tdWidth = "16.7%";
   	}
     $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", FALSE, FALSE);
     print "<h1>" . $row["issueName"] . "</h1>" ;
@@ -163,6 +190,16 @@ else {
     			print formatName($row4["title"] , $row4["preferredName"] , $row4["surname"] , "Student", FALSE, FALSE);
    			print "</td>" ;
   		}
+  		print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
+    		print "<span style='font-size: 115%; font-weight: bold'>" . _('Privacy') . "</span><br/>" ;
+    		
+    		if(isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) { 
+    			print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussEdit.php&issueID=". $_GET["issueID"] . "&returnAddress=issues_discussView.php'>" .  _($row["privacySetting"]); 
+    		}
+    		else {
+    			print $row["privacySetting"];
+    		}
+  		print "</td>" ;
       print "</tr>" ;
     print "</table>" ;
     print "<h2 style='padding-top: 30px'>" . _('Description') . "</h2>" ;
@@ -181,6 +218,7 @@ else {
         print "</td>";
       print "</tr>";
     }
+   
     print "</table>" ;
 
 	if($array2[0]["technicianID"]!=null) {
@@ -192,8 +230,8 @@ else {
 		if($array2[0]["issueStatus"]!="Resolved") {
 		  print "<div style='margin: 0px' class='linkTop'>" ;
 		  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/issues_discussView.php&issueID=" . $_GET["issueID"] . "'>" . _('Refresh') . "<img style='margin-left: 5px' title='" . _('Refresh') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/refresh.png'/></a> <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussPost.php&issueID=" . $_GET["issueID"] . "'>" .  _('Add') . "<img style='margin-left: 5px' title='" . _('Add') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a> " ;
-		  	if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'>" .  _('Resolve'); 
-		  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>"; }
+		 	if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'>" .  _('Resolve'); 
+				print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'><img title=" . _('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>"; }
 		  print "</div>" ;
 		}
 		  if ($result3->rowCount()==0){

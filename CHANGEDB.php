@@ -185,4 +185,16 @@ UPDATE gibbonAction SET entrySidebar='N' WHERE name='Issues' AND gibbonModuleID=
 ALTER TABLE helpDeskTechGroups ADD reincarnateIssue boolean DEFAULT 1;end
 ";
 
+//v0.4.10
+$count++;
+$sql[$count][0]="0.4.10" ;
+$sql[$count][1]="
+	ALTER TABLE helpDeskIssue ALTER privacySetting SET DEFAULT 'Related';end
+	UPDATE gibbonAction SET category='Issues' WHERE name='Create Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+	UPDATE gibbonAction SET category='Issues' WHERE name='Issues' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+	UPDATE gibbonAction SET category='Settings' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+	UPDATE gibbonAction SET category='Settings' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+	UPDATE gibbonAction SET category='Settings' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+";
+
 ?>

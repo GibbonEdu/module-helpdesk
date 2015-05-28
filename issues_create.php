@@ -207,6 +207,36 @@ else {
 			?>
 			<tr>
 				<td>
+					<b>Privacy Setting *</b><br/>
+					<span style=\"font-size: 90%\"><i>If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.</i></span>
+				</td>
+				<td class="right">
+					<select name='privacySetting' id='privacySetting' style='width:302px'>
+						<?php
+							try {
+								$data=array(); 
+								$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
+								$result=$connection2->prepare($sql);
+								$result->execute($data);
+							}
+							catch(PDOException $e) { }
+							$row=$result->fetch() ;
+							$privacySetting = $row['value'];
+							print "<option value='" . $privacySetting . "'>". $privacySetting ."</option>" ;
+							$options = array("Everyone", "Related", "Owner", "No one");
+							foreach($options as $option) {
+								if($option != $privacySetting)print "<option value='" . $option . "'>". $option ."</option>" ;
+							}
+						?>
+					</select>
+					<script type="text/javascript">
+						var name5=new LiveValidation('privacySetting');
+						name5.add(Validate.Presence);
+					</script>
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<span style="font-size: 90%"><i>* <?php print _("denotes a required field") ; ?></i></span>
 				</td>
 				<td class="right">

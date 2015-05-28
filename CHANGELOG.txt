@@ -187,3 +187,13 @@ Change order of buttons in helpDesk_manageTechnicians.php and helpDesk_manageTec
 Added a Reincarnate Issue button and permission.
 Fixed users not being able to see their own resolved issue if they were a technician and they could not see Resolved issues.
 Added default privacy options for all issue (Privacy of specific issues coming soon!).
+
+v0.4.10
+-------
+Changed default privacy of issue to Related (Note: The system default are set to Everyone).
+Added a privacy drop down in issues_create.php.
+Arrange sidebar links into categories
+Added privacy setting to issue_discussView.php.
+Added ability to change privacy setting by clicking on the privacy setting text in issue_disucssView.php.
+Made the privacy setting affect multiple areas.
+Made descriptions shorter and stripped the tags off in issues_view.php.
