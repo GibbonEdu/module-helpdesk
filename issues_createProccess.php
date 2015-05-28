@@ -70,6 +70,21 @@ else {
 		  $createdByID = $_SESSION[$guid]["gibbonPersonID"];
 	  }
 	}
+	
+	if(isset($_POST["privacySetting"])) {
+		$privacySetting = $_POST["privacySetting"];
+	}
+	else {
+		try {
+			$data=array(); 
+			$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
+			$result=$connection2->prepare($sql);
+			$result->execute($data);
+		}
+		catch(PDOException $e) { }
+		$row=$result->fetch() ;
+		$privacySetting = $row['value'];
+	}
 
 	if ($name=="" || $description=="") {
 		//Fail 3
@@ -79,8 +94,8 @@ else {
 	else {
 		//Write to database
 		try {
-			$data=array("issueID"=> 0, "technicianID"=>null, "gibbonPersonID"=> $personID, "name"=> $name, "description"=> $description, "date" => date("Y-m-d"), "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID"=> $createdByID);
-			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID" ;
+			$data=array("issueID"=> 0, "technicianID"=>null, "gibbonPersonID"=> $personID, "name"=> $name, "description"=> $description, "date" => date("Y-m-d"), "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID"=> $createdByID, "privacySetting"=> $privacySetting);
+			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID, privacySetting=:privacySetting" ;
       		$result=$connection2->prepare($sql);
 			$result->execute($data);
 		}

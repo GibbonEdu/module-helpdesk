@@ -25,7 +25,7 @@ $description="A virtual Help Desk Moudle for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.4.00" ;
+$version="0.4.10" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/raynichc/helpdesk" ;
 
@@ -67,7 +67,7 @@ VALUES
 (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
 (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
 (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
-(NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Everyone')";
+(NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Related')";
 
 $moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
   `groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -89,7 +89,7 @@ $actionCount = 0 ;
 
 $actionRows[$actionCount]["name"]="Create Issue" ; //The name of the action (appears to user in the right hand side module menu)
 $actionRows[$actionCount]["precedence"]="0" ; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[$actionCount]["category"]="" ; //Optional: subgroups for the right hand side module menu
+$actionRows[$actionCount]["category"]="Issues" ; //Optional: subgroups for the right hand side module menu
 $actionRows[$actionCount]["description"]="Allows the user to submit an issue to be resolved by the help desk staff." ; //Text description
 $actionRows[$actionCount]["URLList"]="issues_create.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_create.php" ;
@@ -106,7 +106,7 @@ $actionRows[$actionCount]["categoryPermissionOther"]="Y" ; //Should this action 
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="Issues" ;
 $actionRows[$actionCount]["precedence"]="0" ;
-$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["category"]="Issues" ;
 $actionRows[$actionCount]["description"]= "Gives the user access to the Issues section." ;
 $actionRows[$actionCount]["URLList"]="issues_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
@@ -124,7 +124,7 @@ $actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="Help Desk Settings" ;
 $actionRows[$actionCount]["precedence"]="0" ;
-$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["category"]="Settings" ;
 $actionRows[$actionCount]["description"]="Allows the user to edit the settings for the module." ;
 $actionRows[$actionCount]["URLList"]="helpDesk_settings.php" ;
 $actionRows[$actionCount]["entryURL"]="helpDesk_settings.php" ;
@@ -141,7 +141,7 @@ $actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="Manage Technicians" ;
 $actionRows[$actionCount]["precedence"]="0" ;
-$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["category"]="Settings" ;
 $actionRows[$actionCount]["description"]="Allows the user to manage the Technicians." ;
 $actionRows[$actionCount]["URLList"]="helpDesk_manageTechnicians.php" ;
 $actionRows[$actionCount]["entryURL"]="helpDesk_manageTechnicians.php" ;
@@ -158,7 +158,7 @@ $actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 $actionCount++ ;
 $actionRows[$actionCount]["name"]="Manage Technician Groups" ;
 $actionRows[$actionCount]["precedence"]="0" ;
-$actionRows[$actionCount]["category"]="" ;
+$actionRows[$actionCount]["category"]="Settings" ;
 $actionRows[$actionCount]["description"]="Allows the user to manage the Technicians Groups." ;
 $actionRows[$actionCount]["URLList"]="helpDesk_manageTechnicianGroup.php" ;
 $actionRows[$actionCount]["entryURL"]="helpDesk_manageTechnicianGroup.php" ;

@@ -60,7 +60,6 @@ else {
         <td colspan=2>
           <b><?php print _('Comment') ?></b><br/>
         	<?php print getEditor($guid, TRUE, "comment", "", 5, true, true, false); ?>
-<!--           <textarea name='comment' id='comment' maxlength=1000 rows=5 style='width: 300px'></textarea> -->
         </td>
       </tr>
       <tr>

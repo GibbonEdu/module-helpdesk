@@ -319,6 +319,8 @@ else {
     $sqlIssue="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE gibbonSchoolYearID=:gibbonSchoolYearID " . $whereIssue;
    	$sqlIssue.=" UNION ";
    	$sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID AND gibbonSchoolYearID=:gibbonSchoolYearID";
+    $sqlIssue.=" UNION ";
+    $sqlIssue.="SELECT helpDeskIssue.* FROm helpDeskIssue WHERE helpDeskIssue.privacySetting='Everyone'";
     $sqlIssue.=" ORDER BY FIELD(status, 'Unassigned', 'Pending', 'Resolved'), ";
   	if($renderPriority) {
   		$sqlIssue.= "FIELD(priority";
@@ -369,16 +371,7 @@ else {
     }
     else {
     	$nameLength = 15;
-    	$descriptionLength = 30;
-    	try {
-			$data=array(); 
-			$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
-			$result=$connection2->prepare($sql);
-			$result->execute($data);
-		}
-		catch(PDOException $e) { }
-		$row=$result->fetch() ;
-		$privacySetting = $row["value"];
+    	$descriptionLength = 50;
 		foreach($resultIssue as $row){
 			$person = getOwnerOfIssue($connection2, $row['issueID']);
 			$class = "error";
@@ -388,14 +381,41 @@ else {
 			else if($row['status']=='Resolved') {
 				$class = "current";
 			}
+			try {
+				$data=array("issueID"=>$row["issueID"]); 
+				$sql="SELECT privacySetting FROM helpDeskIssue WHERE issueID=:issueID" ;
+				$result=$connection2->prepare($sql);
+				$result->execute($data);
+			}
+			catch(PDOException $e) { }
+			$row2=$result->fetch() ;
+			$privacySetting = $row2['privacySetting'];
 		  print "<tr class='$class'>";
 			  print "<td style='text-align: center;'><b>" . intval($row['issueID']) . "</b></td>";
 			  $issueName = $row['issueName'];
 			  if(strlen($issueName)>$nameLength) $issueName = substr($issueName, 0, $nameLength) . "...";
 			  print "<td><b>" .$issueName . "</b><br/>";
-			  $descriptionText = $row['description'];
+			  $descriptionText = strip_tags($row['description']);
 			  if(strlen($descriptionText)>$descriptionLength) $descriptionText = substr($descriptionText, 0, $descriptionLength) . "...";
-			  print "<span style='font-size: 85%; font-style: italic'>" . $descriptionText . "</span></td>" ;
+			  if($row['status']=="Resolved") {
+			  	if($privacySetting == "Everyone") {
+			 	 print "<span style='font-size: 85%; font-style: italic'>" . $descriptionText . "</span></td>" ;
+					$openCreated = true;
+				}
+				else if($privacySetting == "Related" && relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"])) {
+			 	 print "<span style='font-size: 85%; font-style: italic'>" . $descriptionText . "</span></td>" ;
+					$openCreated = true;
+				}
+				else if($privacySetting == "Owner" && isPersonsIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"])) {
+			 	 print "<span style='font-size: 85%; font-style: italic'>" . $descriptionText . "</span></td>" ;
+				}
+				else if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+					 print "<span style='font-size: 85%; font-style: italic'>" . $descriptionText . "</span></td>" ;
+				}
+			  }	
+			  else {
+				 print "<span style='font-size: 85%; font-style: italic'>" . $descriptionText . "</span></td>" ;
+			  }		 
 			  print "<td><b>" .formatName($person['title'],$person['preferredName'],$person['surname'], "Student", FALSE, FALSE) . "</b>";
 			  if($renderCategory) { print "<br/><span style='font-size: 85%; font-style: italic'>" . $row['category'] . "</span>" ;}
 			  print "</td>";
@@ -404,7 +424,7 @@ else {
 			  print "<td style='width: 15%'><b>" . $technician["preferredName"] . " " . $technician["surname"] . "</b></td>";
 			  print "<td style='width: 10%'><b>" .$row['status']. "</b><br/>";
 			  print "<span style='font-size: 85%; font-style: italic'>" . dateConvertBack($guid, $row["date"]) . "</span></td>" ;
-			  print "<td style='width:16%'>";
+			  print "<td style='width:17%'>";
 			  $openCreated = false;
 			  $resolveCreated = false; 
 			  
@@ -446,6 +466,10 @@ else {
 					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . _('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>"; 
 					$openCreated = true;
 				  }
+			  }
+			  
+			  if(isPersonsIssue($connection2, $row["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+			  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussEdit.php&issueID=". $row['issueID'] ."&returnAddress=issues_view.php'><img title=" . _('Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
 			  }
 			  
 			   if(isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))
