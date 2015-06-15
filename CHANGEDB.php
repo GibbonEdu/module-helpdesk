@@ -201,7 +201,7 @@ $sql[$count][1]="
 $count++;
 $sql[$count][0]="0.4.20" ;
 $sql[$count][1]="
-
+INSERT INTO gibbonAction SET name='Reports and Statistics', precedence='0', category='Admin', description='Reports and Statistics for the Help Desk.', URLList='helpDesk_reports.php', entryURL='helpDesk_reports.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 ";
 
 ?>

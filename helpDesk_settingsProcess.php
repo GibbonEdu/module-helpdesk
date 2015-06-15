@@ -60,6 +60,11 @@ else {
 	}
 	$issueCategory=substr($issueCategory,0,-1) ; 
 	$fail=FALSE ;
+	
+	$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+	if($gibbonModuleID == null) {
+		$fail=TRUE;
+	}
 
 	try {
 		$data=array("value"=>$issuePriority); 
@@ -105,6 +110,8 @@ else {
 	}
 	else {
 		//Success 0
+		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Help Desk Settings Edited", null);
+
 		getSystemSettings($guid, $connection2) ;
 		$URL=$URL . "&updateReturn=success0" ;
 		header("Location: {$URL}");

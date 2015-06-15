@@ -233,4 +233,17 @@ function getPeopleInvolved($connection2, $issueID) {
 	}
 	return $personIDs;
 }
+
+function getIssue($connection2, $issueID) {
+	try {
+		$data=array("issueID"=> $issueID);
+		$sql="SELECT * FROM helpDeskIssue WHERE issueID=:issueID";
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+		$row = $result->fetch();
+	}
+	catch(PDOException $e){
+	}
+	return $row;
+}
 ?>

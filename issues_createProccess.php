@@ -94,8 +94,12 @@ else {
 	else {
 		//Write to database
 		try {
-			$data=array("issueID"=> 0, "technicianID"=>null, "gibbonPersonID"=> $personID, "name"=> $name, "description"=> $description, "date" => date("Y-m-d"), "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID"=> $createdByID, "privacySetting"=> $privacySetting);
-			$sql="INSERT INTO helpDeskIssue SET issueID=:issueID, technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, date=:date, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID, privacySetting=:privacySetting" ;
+			$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+			if($gibbonModuleID == null) {
+				throw new PDOException("Invalid gibbonModuleID.");
+			}
+			$data=array("technicianID"=>null, "gibbonPersonID"=> $personID, "name"=> $name, "description"=> $description, "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID"=> $createdByID, "privacySetting"=> $privacySetting);
+			$sql="INSERT INTO helpDeskIssue SET technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID, privacySetting=:privacySetting" ;
       		$result=$connection2->prepare($sql);
 			$result->execute($data);
 		}
@@ -108,6 +112,8 @@ else {
 		$issueID = $connection2->lastInsertId();
 		if(isset($_POST["createFor"])) { if($_POST["createFor"] != 0) { setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf (". $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } }
 		notifyTechnican($connection2, $guid, $issueID, $name, $personID);
+		
+		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Created", array("issueID"=>$issueID));
 		//Success 0 aka Created
 		$URL=$URL . "/issues_discussView.php&issueID=" . $issueID . "&addReturn=success0" ;
 		header("Location: {$URL}");

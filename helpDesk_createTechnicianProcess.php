@@ -61,8 +61,12 @@ else {
     //Write to database
 
     try {
-      $data=array("technicianID"=>0 , "gibbonPersonID"=> $person, "groupID"=>$group);
-      $sql="INSERT INTO helpDeskTechnicians SET technicianID = :technicianID , gibbonPersonID = :gibbonPersonID, groupID=:groupID" ;
+		$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+		if($gibbonModuleID == null) {
+			throw new PDOException("Invalid gibbonModuleID.");
+		}
+      $data=array("gibbonPersonID"=> $person, "groupID"=>$group);
+      $sql="INSERT INTO helpDeskTechnicians SET gibbonPersonID = :gibbonPersonID, groupID=:groupID" ;
       $result=$connection2->prepare($sql);
       $result->execute($data);
     }
@@ -71,6 +75,10 @@ else {
       header("Location: {$URL}");
       exit();
     }
+    
+    $technicianID = $connection2->lastInsertId();
+
+	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Added", array("gibbonPersonID"=>$person, "technicianID"=>$technicianID));
 
     //Success 0
     $URL = $URL."&addReturn=success0" ; 
