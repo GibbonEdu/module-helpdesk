@@ -200,3 +200,9 @@ Made descriptions shorter and stripped the tags off in issues_view.php.
 
 v0.4.20
 -------
+Implemented Logs into Help Desk.
+Changed Category of Help Desk Settings to "Admin".
+Changed Category of Manage Technicians to "Technician".
+Changed Category of Manage Technician Groups to "Technician".
+Added Reports and Statistics action.
+Created helpDesk_statistics.php and helpDesk_reports.php

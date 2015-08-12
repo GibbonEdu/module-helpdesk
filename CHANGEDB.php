@@ -16,19 +16,22 @@ $sql[$count][1]="" ;
 //v0.1.00
 $count++;
 $sql[$count][0]="0.1.00" ;
-$sql[$count][1]="UPDATE gibbonAction SET name='Create Issue', URLList='issues_create.php', entryURL='issues_create.php' WHERE name='Submit Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+$sql[$count][1]="
+UPDATE gibbonAction SET name='Create Issue', URLList='issues_create.php', entryURL='issues_create.php' WHERE name='Submit Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 INSERT INTO gibbonAction SET name='Create Issue_forOther', precedence='1', category='', description='Submits an IT related issue to be resolved by the help desk staff with an optional feature to create on the behalf of others.', URLList='issues_create.php', entryURL='issues_create.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='Y', defaultPermissionStudent='Y', defaultPermissionParent='N', defaultPermissionSupport='Y', categoryPermissionStaff='Y', categoryPermissionStudent='Y', categoryPermissionParent='Y', categoryPermissionOther='N' WHERE name='Submit Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 ALTER TABLE helpDeskIssue ADD createdByID int(12) unsigned zerofill NOT NULL;end" ;
 
 //v0.1.01
 $count++;
 $sql[$count][0]="0.1.01" ;
-$sql[$count][1]="INSERT INTO gibbonAction SET name='Create Issue_forOther', precedence='1', category='', description='Submits an IT related issue to be resolved by the help desk staff with an optional feature to create on the behalf of others.', URLList='issues_create.php', entryURL='issues_create.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='Y', defaultPermissionStudent='Y', defaultPermissionParent='N', defaultPermissionSupport='Y', categoryPermissionStaff='Y', categoryPermissionStudent='Y', categoryPermissionParent='Y', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end" ;
+$sql[$count][1]="
+INSERT INTO gibbonAction SET name='Create Issue_forOther', precedence='1', category='', description='Submits an IT related issue to be resolved by the help desk staff with an optional feature to create on the behalf of others.', URLList='issues_create.php', entryURL='issues_create.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='Y', defaultPermissionStudent='Y', defaultPermissionParent='N', defaultPermissionSupport='Y', categoryPermissionStaff='Y', categoryPermissionStudent='Y', categoryPermissionParent='Y', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end" ;
 
 //v0.1.02
 $count++;
 $sql[$count][0]="0.1.02" ;
-$sql[$count][1]="UPDATE gibbonAction SET URLList='issues_view.php, issues_discuss_view.php' WHERE name='View issues_All' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+$sql[$count][1]="
+UPDATE gibbonAction SET URLList='issues_view.php, issues_discuss_view.php' WHERE name='View issues_All' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 UPDATE gibbonAction SET URLList='issues_view.php, issues_assign.php, issues_discuss_view.php' WHERE name='View issues_All&Assign' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 ALTER TABLE helpDeskIssueDiscuss DROP COLUMN technicianPosted;end
 ALTER TABLE helpDeskIssueDiscuss ADD gibbonPersonID int(10) unsigned zerofill NOT NULL;end" ;
@@ -116,8 +119,7 @@ UPDATE gibbonModule SET url='https://github.com/raynichc/helpdesk' WHERE name='H
 //v0.3.05
 $count++;
 $sql[$count][0]="0.3.05" ;
-$sql[$count][1]="
-" ;
+$sql[$count][1]="" ;
 
 //v0.3.10
 $count++;
@@ -129,49 +131,43 @@ ALTER TABLE helpDeskTechGroups ADD reassignIssue boolean DEFAULT 0;end
 //v0.3.11
 $count++;
 $sql[$count][0]="0.3.11" ;
-$sql[$count][1]="
-" ;
+$sql[$count][1]="" ;
 
 //v0.3.12
 $count++;
 $sql[$count][0]="0.3.12" ;
-$sql[$count][1]="
-" ;
+$sql[$count][1]="" ;
 
 //v0.3.13
 $count++;
 $sql[$count][0]="0.3.13" ;
-$sql[$count][1]="
-" ;
+$sql[$count][1]="" ;
 
 //v0.3.14
 $count++;
 $sql[$count][0]="0.3.14" ;
-$sql[$count][1]="
-" ;
+$sql[$count][1]="" ;
 
 //v0.3.15
 $count++;
 $sql[$count][0]="0.3.15" ;
-$sql[$count][1]="
-" ;
+$sql[$count][1]="" ;
 
 //v0.3.16
 $count++;
 $sql[$count][0]="0.3.16" ;
 $sql[$count][1]="
-	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Create Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
-	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Issues' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
-	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
-	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
-	UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Create Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Issues' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET categoryPermissionOther='Y' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 " ;
 
 //v0.3.17
 $count++;
 $sql[$count][0]="0.3.17" ;
-$sql[$count][1]="
-" ;
+$sql[$count][1]="" ;
 
 //v0.4.00
 $count++;
@@ -189,19 +185,25 @@ ALTER TABLE helpDeskTechGroups ADD reincarnateIssue boolean DEFAULT 1;end
 $count++;
 $sql[$count][0]="0.4.10" ;
 $sql[$count][1]="
-	ALTER TABLE helpDeskIssue ALTER privacySetting SET DEFAULT 'Related';end
-	UPDATE gibbonAction SET category='Issues' WHERE name='Create Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
-	UPDATE gibbonAction SET category='Issues' WHERE name='Issues' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
-	UPDATE gibbonAction SET category='Settings' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
-	UPDATE gibbonAction SET category='Settings' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
-	UPDATE gibbonAction SET category='Settings' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+ALTER TABLE helpDeskIssue ALTER privacySetting SET DEFAULT 'Related';end
+UPDATE gibbonAction SET category='Issues' WHERE name='Create Issue' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET category='Issues' WHERE name='Issues' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET category='Settings' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET category='Settings' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET category='Settings' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 ";
 
 //v0.4.20
 $count++;
 $sql[$count][0]="0.4.20" ;
 $sql[$count][1]="
-INSERT INTO gibbonAction SET name='Reports and Statistics', precedence='0', category='Admin', description='Reports and Statistics for the Help Desk.', URLList='helpDesk_reports.php', entryURL='helpDesk_reports.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+INSERT INTO gibbonAction SET name='Technician Report', precedence='0', category='Technician', description='Technician reports.', URLList='helpDesk_reports.php', entryURL='helpDesk_reports.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Help Desk' AND gibbonAction.name='Reports'));end
+INSERT INTO gibbonAction SET name='Statistics', precedence='0', category='Admin', description='Statistics for the Help Desk.', URLList='helpDesk_statistics.php', entryURL='helpDesk_statistics.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Help Desk' AND gibbonAction.name='Statistics'));end
+UPDATE gibbonAction SET category='Admin' WHERE name='Help Desk Settings' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET category='Technician' WHERE name='Manage Technicians' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+UPDATE gibbonAction SET category='Technician' WHERE name='Manage Technician Groups' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 ";
 
 ?>

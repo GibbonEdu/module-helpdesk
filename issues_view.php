@@ -320,7 +320,7 @@ else {
    	$sqlIssue.=" UNION ";
    	$sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID AND gibbonSchoolYearID=:gibbonSchoolYearID";
     $sqlIssue.=" UNION ";
-    $sqlIssue.="SELECT helpDeskIssue.* FROm helpDeskIssue WHERE helpDeskIssue.privacySetting='Everyone'";
+    $sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE helpDeskIssue.privacySetting='Everyone' AND gibbonSchoolYearID=:gibbonSchoolYearID";
     $sqlIssue.=" ORDER BY FIELD(status, 'Unassigned', 'Pending', 'Resolved'), ";
   	if($renderPriority) {
   		$sqlIssue.= "FIELD(priority";
