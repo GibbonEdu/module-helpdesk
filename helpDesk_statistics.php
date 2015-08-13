@@ -27,6 +27,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
   print "</div>" ;
 }
 else {
+	$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) ;
+
   //Proceed!
   print "<div class='trail'>" ;
   print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Statistics') . "</div>" ;
@@ -160,7 +162,7 @@ else {
 		}
         print "<tr class='$class'>";
         	print "<td>";
-        		print $key;
+        		print "<a href='" . $URL . "/helpDesk_statisticsDetail.php&title=" . $key . "&startDate=" . $startDate . "&endDate=" . $endDate . "'>" . $key . "</a>";
         	print "</td>";
         	print "<td>";
         		print $val;
@@ -170,7 +172,7 @@ else {
     }
   } else {
     print "<tr>";
-      print "<td colspan= 4>";
+      print "<td colspan= 2>";
         print _("There are no records to display.");
       print "</td>";
     print "</tr>";

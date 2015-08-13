@@ -152,7 +152,7 @@ else {
 	$dataIssue["gibbonSchoolYearID"]=$_SESSION[$guid]["gibbonSchoolYearID"];
 	$dataIssue["helpDeskGibbonPersonID"] = $_SESSION[$guid]["gibbonPersonID"];
 	$whereIssue = "";
-	if ($filter=="") {
+	if ($filter=="" || $filter==null) {
 		$filter=$issueFilters[0];
 	}
 

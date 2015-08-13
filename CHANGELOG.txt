@@ -204,5 +204,11 @@ Implemented Logs into Help Desk.
 Changed Category of Help Desk Settings to "Admin".
 Changed Category of Manage Technicians to "Technician".
 Changed Category of Manage Technician Groups to "Technician".
-Added Reports and Statistics action.
+Added Statistics action.
+Added Technician Report action.
 Created helpDesk_statistics.php and helpDesk_reports.php
+Fixed a bug where the Issue Filter was not being used.
+Added helpDesk_statisticsDetail.php.
+Added the ability to only have one Technician Group show up in helpDesk_manageTechnicianGroup.php.
+Changed text "No one" text in helpDesk_manageTechnicianGroup.php to "No one is currently in this group.".
+Added the ability to highlight(in red) a post in issues_discussView.php.

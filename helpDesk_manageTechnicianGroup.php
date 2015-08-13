@@ -59,15 +59,23 @@ else {
     print $addReturnMessage;
     print "</div>" ;
   }
-  
+
+    $groupID = null;  
+    $data=array();
+    $whereGroup = "";
+    if(isset($_GET['groupID'])) {
+      $groupID = $_GET['groupID'];
+      $data['groupID'] = $groupID;
+      $whereGroup = " WHERE groupID=:groupID";
+    }
 
   try {
-    $data=array();
-    $sql="SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
+    
+    $sql="SELECT * FROM helpDeskTechGroups" . $whereGroup . " ORDER BY helpDeskTechGroups.groupID ASC";
     $result=$connection2->prepare($sql);
     $result->execute($data);
     
-    $sql2="SELECT * FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)";
+    $sql2="SELECT * FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)" . $whereGroup;
     $result2=$connection2->prepare($sql2);
     $result2->execute($data);
   } catch(PDOException $e) {
@@ -113,7 +121,7 @@ print "<div class='linkTop'>" ;
         if (strlen($techsIn) > 0) {
           print $techsIn;
         } else {
-          print "No one";
+          print "No one is currently in this group.";
         }
         print "</td>";
         print "<td>";
