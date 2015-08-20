@@ -173,23 +173,6 @@ $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Technician Report" ;
-$actionRows[$actionCount]["precedence"]="0" ;
-$actionRows[$actionCount]["category"]="Technician" ;
-$actionRows[$actionCount]["description"]="Technician reports." ;
-$actionRows[$actionCount]["URLList"]="helpDesk_reports.php" ;
-$actionRows[$actionCount]["entryURL"]="helpDesk_reports.php" ;
-$actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
-$actionRows[$actionCount]["defaultPermissionTeacher"]="N" ;
-$actionRows[$actionCount]["defaultPermissionStudent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionParent"]="N" ;
-$actionRows[$actionCount]["defaultPermissionSupport"]="N" ;
-$actionRows[$actionCount]["categoryPermissionStaff"]="Y" ;
-$actionRows[$actionCount]["categoryPermissionStudent"]="N" ;
-$actionRows[$actionCount]["categoryPermissionParent"]="N" ;
-$actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
-
-$actionCount++ ;
 $actionRows[$actionCount]["name"]="Statistics" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="Admin" ;
