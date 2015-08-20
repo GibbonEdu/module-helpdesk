@@ -140,9 +140,11 @@ else {
       print "</tr>" ;
     print"</table>" ;
   print "</form>" ;
+
+  $techName = getTechnicianName($connection2, $technicianID);
   
   print "<h3>";
-    print "$title Statistics" ;
+    print $techName['preferredName'] . " " . $techName['surname'] . "'s' Statistics" ;
   print "</h3>";
   print "<table cellspacing='0' style='width: 100%'>" ;
     print "<tr class='head'>" ;
