@@ -81,6 +81,10 @@ else {
   //Write to database
 
   try {
+ 	 $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+	if($gibbonModuleID == null) {
+		throw new PDOException("Invalid gibbonModuleID.");
+	}
     $data=array("groupID" => $groupID) ;
     $sql="DELETE FROM helpDeskTechGroups WHERE groupID=:groupID" ;
     $result=$connection2->prepare($sql);
@@ -96,6 +100,9 @@ else {
     header("Location: {$URL}");
     exit();
   }
+	  
+	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Removed", array("newGroupID"=>$newGroupID));
+
   //Success 0
   $URL=$URL . "&addReturn=success0" ;
   header("Location: {$URL}");

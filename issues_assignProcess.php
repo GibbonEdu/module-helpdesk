@@ -83,6 +83,10 @@ else {
 	}
 
 	try {
+		$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+		if($gibbonModuleID == null) {
+			throw new PDOException("Invalid gibbonModuleID.");
+		}
 		$data=array("issueID"=> $issueID, "technicianID"=> $technicianID, "status"=> "Pending");
 		$sql="UPDATE helpDeskIssue SET technicianID=:technicianID, status=:status WHERE issueID=:issueID" ;
 		$result=$connection2->prepare($sql);
@@ -93,6 +97,8 @@ else {
     header("Location: {$URL}");
     exit();
 	}
+	
+	$row = getIssue($connection2, $issueID);
 	
 	$assign = "assigned";
 	if($isReassign) { $assign = "reassigned"; }
@@ -108,6 +114,8 @@ else {
 	foreach($personIDs as $personID) {
 		if($personID != $_SESSION[$guid]["gibbonPersonID"]) { setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } 
 	}	
+			
+	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Assigned", array("issueID"=>$issueID, "technicainID"=>$technicianID));
 
   	$URL = $URL."&addReturn=success0" ; 
 	header("Location: {$URL}");

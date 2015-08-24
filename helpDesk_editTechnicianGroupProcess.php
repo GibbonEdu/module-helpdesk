@@ -71,6 +71,10 @@ else {
 	if(isset($_POST["fullAccess"])) { $fullAccess = true; }
 	$fail=FALSE;
 	try {
+		$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+		if($gibbonModuleID == null) {
+			throw new PDOException("Invalid gibbonModuleID.");
+		}
 		$data=array("groupID"=>$groupID, "groupName"=>$groupName, "viewIssue"=>$viewIssue, "viewIssueStatus"=>$viewIssueStatus, "assignIssue"=>$assignIssue, "acceptIssue"=>$acceptIssue, "resolveIssue"=>$resolveIssue, "createIssueForOther"=>$createIssueForOther, "fullAccess"=>$fullAccess, "reassignIssue"=>$reassignIssue, "reincarnateIssue"=>$reincarnateIssue); 
 		$sql="UPDATE helpDeskTechGroups SET viewIssue=:viewIssue, groupName=:groupName, viewIssueStatus=:viewIssueStatus, assignIssue=:assignIssue, acceptIssue=:acceptIssue, resolveIssue=:resolveIssue, createIssueForOther=:createIssueForOther, fullAccess=:fullAccess, reassignIssue=:reassignIssue, reincarnateIssue=:reincarnateIssue WHERE groupID=:groupID" ;
 		$result=$connection2->prepare($sql);
@@ -80,6 +84,9 @@ else {
 		$fail=TRUE ;
 	}
 
+	
+
+
 	if ($fail==TRUE) {
 		//Fail 2
 		$URL=$URL . "&updateReturn=fail2" ;
@@ -87,6 +94,7 @@ else {
 	}
 	else {
 		//Success 0
+		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Edited", array("groupID"=>$groupID));
 		$URL=$URL . "&updateReturn=success0" ;
 		header("Location: {$URL}");
 	}

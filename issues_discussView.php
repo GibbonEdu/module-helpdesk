@@ -155,7 +155,9 @@ else {
     }
   }
 
-	
+	if(isset($_GET['issueDiscussID'])) {
+    $issueDiscussID = $_GET['issueDiscussID'];
+  }
 
   $tdWidth = "20%" ;
   
@@ -244,6 +246,9 @@ else {
 			  if(!isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {
 			  	$bgc = "#FFEDFE";
 			  }
+        if($row3['issueDiscussID'] == $issueDiscussID) {
+          $bgc = "#FFE3E3";
+        }
 			  print "<table class='noIntBorder' cellspacing='0' style='width: 100% ; padding: 1px 3px; margin-bottom: -2px; margin-top: 50; margin-left: 0px ; background-color: #f9f9f9'>" ;
 				print "<tr>" ;
 				  if (isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {

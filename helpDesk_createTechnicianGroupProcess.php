@@ -57,6 +57,11 @@ else {
     //Write to database
 
     try {
+    	$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+		if($gibbonModuleID == null) {
+			throw new PDOException("Invalid gibbonModuleID.");
+		}
+		
       $data=array("groupName"=>$groupName);
       $sql="INSERT INTO helpDeskTechGroups SET groupName=:groupName" ;
       $result=$connection2->prepare($sql);
@@ -67,9 +72,12 @@ else {
       header("Location: {$URL}");
       exit();
     }
+    
+    $groupID = $connection2->lastInsertId();
+
+	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID), null);
 
     //Success 0
-    $groupID = $connection2->lastInsertId();
     $URL = $URL."/helpDesk_editTechnicianGroup.php&groupID=$groupID&addReturn=success0" ; 
     header("Location: {$URL}");
 

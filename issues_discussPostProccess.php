@@ -67,10 +67,15 @@ else {
   $isTech = isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
   try {
-    $data=array("issueDiscussID"=>0 , "issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "gibbonPersonID" => $_SESSION[$guid]["gibbonPersonID"]) ;
-    $sql="INSERT INTO helpDeskIssueDiscuss SET issueDiscussID=:issueDiscussID, issueID=:issueID, comment=:comment, timestamp=:timestamp, gibbonPersonID=:gibbonPersonID" ;
+    $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+	if($gibbonModuleID == null) {
+		throw new PDOException("Invalid gibbonModuleID.");
+	}
+    $data=array("issueID"=>$issueID, "comment"=>$comment, "timestamp" => date("Y-m-d H:i:a"), "gibbonPersonID" => $_SESSION[$guid]["gibbonPersonID"]) ;
+    $sql="INSERT INTO helpDeskIssueDiscuss SET issueID=:issueID, comment=:comment, timestamp=:timestamp, gibbonPersonID=:gibbonPersonID" ;
     $result=$connection2->prepare($sql);
     $result->execute($data);
+    $issueDiscussID = $connection2->lastInsertId();
     
     $data2=array("issueID"=>$issueID) ;
     $sql2="SELECT issueName FROM helpDeskIssue WHERE issueID=:issueID" ;
@@ -95,6 +100,16 @@ else {
   foreach($personIDs as $personID) {
     if($personID != $_SESSION[$guid]["gibbonPersonID"]) { setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } 
   }
+
+  $array = array("issueDiscussID"=>$issueDiscussID);
+
+  if($isTech) {
+    $array['technicianID']=getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
+  }
+  
+	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Discussion Posted", $array);
+
+  
   //Success 2 aka Posted
   $URL=$URL . "&addReturn=success2" ;
   header("Location: {$URL}");

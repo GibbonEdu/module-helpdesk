@@ -56,7 +56,17 @@ else {
   //Write to database
 
   try {
-    $data=array("technicianID" => $technicianID) ;
+    $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+	if($gibbonModuleID == null) {
+		throw new PDOException("Invalid gibbonModuleID.");
+	}
+	
+	$data=array("technicianID" => $technicianID) ;
+    $sql3="SELECT gibbonPersonID FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
+    $result3=$connection2->prepare($sql3);
+    $result3->execute($data);
+	$row3=$result3->fetch();
+	
     $sql="DELETE FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
     $result=$connection2->prepare($sql);
     $result->execute($data);
@@ -69,6 +79,9 @@ else {
     $URL = $URL."&addReturn=fail2" ; 
     header("Location: {$URL}");
   }
+  
+	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID"=>$row3['gibbonPersonID']));
+
   //Success 0
   $URL=$URL . "&addReturn=success0" ;
   header("Location: {$URL}");

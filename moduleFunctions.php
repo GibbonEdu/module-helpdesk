@@ -122,7 +122,7 @@ function relatedToIssue($connection2, $issueID, $gibbonPersonID) {
 }
 
 function isPersonsIssue($connection2, $issueID, $gibbonPersonID) {
-	$ownerID = getOwnerOfIssue($connection2, $issueID);
+	$ownerID = getOwnerOfIssue($connection2, $issueID)['gibbonPersonID'];
   
   return ($ownerID == $gibbonPersonID);
 }
@@ -232,5 +232,70 @@ function getPeopleInvolved($connection2, $issueID) {
 		}
 	}
 	return $personIDs;
+}
+
+function getIssue($connection2, $issueID) {
+	try {
+		$data=array("issueID"=> $issueID);
+		$sql="SELECT * FROM helpDeskIssue WHERE issueID=:issueID";
+		$result=$connection2->prepare($sql);
+		$result->execute($data);
+		$row = $result->fetch();
+	}
+	catch(PDOException $e){
+	}
+	return $row;
+}
+
+function getGroup($connection2, $groupID) {
+  try {
+    $data=array("groupID"=> $groupID);
+    $sql="SELECT * FROM helpDeskTechGroups WHERE groupID=:groupID";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+    $row = $result->fetch();
+  }
+  catch(PDOException $e){
+  }
+  return $row;
+}
+
+function getPersonName($connection2, $gibbonPersonID) {
+  try {
+    $data=array("gibbonPersonID"=> $gibbonPersonID);
+    $sql="SELECT surname, preferredName FROM gibbonPerson WHERE gibbonPersonID=:gibbonPersonID";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+    $row = $result->fetch();
+  }
+  catch(PDOException $e){
+  }
+  return $row;
+}
+
+function getTechnicianName($connection2, $technicianID) {
+  try {
+    $data=array("technicianID"=> $technicianID);
+    $sql="SELECT surname, preferredName FROM gibbonPerson JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID) WHERE helpDeskTechnicians.technicianID=:technicianID";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+    $row = $result->fetch();
+  }
+  catch(PDOException $e){
+  }
+  return $row;
+}
+
+function getIssueIDFromPost($connection2, $issueDiscussID) {
+  try {
+    $data=array("issueDiscussID"=> $issueDiscussID);
+    $sql="SELECT issueID FROM helpDeskIssueDiscuss WHERE issueDiscussID=:issueDiscussID";
+    $result=$connection2->prepare($sql);
+    $result->execute($data);
+    $row = $result->fetch();
+  }
+  catch(PDOException $e){
+  }
+  return $row['issueID'];
 }
 ?>
