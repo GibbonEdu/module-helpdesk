@@ -75,7 +75,7 @@ else {
     
     $groupID = $connection2->lastInsertId();
 
-	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID));
+	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID), null);
 
     //Success 0
     $URL = $URL."/helpDesk_editTechnicianGroup.php&groupID=$groupID&addReturn=success0" ; 

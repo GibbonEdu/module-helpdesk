@@ -27,13 +27,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
   print "</div>" ;
 }
 else {
+  $noData = false;
   $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) ;
   if(isset($_GET["technicianID"])) {
     $technicianID = $_GET["technicianID"];
   }
   else {
-    $URL.="/helpDesk_manageTechnicians.php";
-    header("Location: {$URL}");
+    $noData = true;
   }
   //Proceed!
   print "<div class='trail'>" ;
@@ -86,12 +86,12 @@ else {
     $endDate = $_GET["endDate"];
   }
 
-  $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate);
-
+  $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate, null, array("technicianID"=>$technicianID));
+  $rArray = $result->fetchAll();
   print "<h3>" ;
     print _("Filter") ;
   print "</h3>" ;
-    print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "&title=$title'>" ;
+    print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "&technicianID=$technicianID'>" ;
     print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;
       print "<tr>";
         print "<td> ";
@@ -143,8 +143,68 @@ else {
 
   $techName = getTechnicianName($connection2, $technicianID);
   
+ print "<h3>";
+    $name = $techName['preferredName'] . " " . $techName['surname'] . "'";
+    if(substr($techName['surname'], -1) != 's') {
+      $name .= "s";
+    }
+    print "$name Simple Statistics" ;
+  print "</h3>";
+  print "<table cellspacing='0' style='width: 100%'>" ;
+    print "<tr class='head'>" ;
+      print "<th>" ;
+        print _("Action Title") ;
+      print "</th>" ;
+      print "<th>" ;
+        print _("Action Count") ;
+      print "</th>" ;
+  print "</tr>" ;
+
+  $times = array();
+
+  foreach($rArray as $row) {
+    if(!isset($items[$row['title']])) {
+       $items[$row['title']] = 1;
+    }
+    else {
+       $items[$row['title']] = $items[$row['title']]+1;
+    }
+  }
+
+  if (! $result->rowcount() == 0){
+    $rowCount=0;
+    foreach($items as $key=>$val){
+    $class = "odd";
+    if($rowCount%2 == 0) {
+      $class = "even";
+    }
+        print "<tr class='$class'>";
+          print "<td>";
+            print $key;
+          print "</td>";
+          print "<td>";
+            print $val;
+          print "</td>";         
+        print "</tr>" ;
+        $rowCount++;
+    }
+  } else {
+    $colspan = 2;
+    print "<tr>";
+      print "<td colspan= $colspan>";
+        print _("There are no records to display.");
+      print "</td>";
+    print "</tr>";
+  }
+
+  print "</table>" ;
+
   print "<h3>";
-    print $techName['preferredName'] . " " . $techName['surname'] . "'s' Statistics" ;
+    $name = $techName['preferredName'] . " " . $techName['surname'] . "'";
+    if(substr($techName['surname'], -1) != 's') {
+      $name .= "s";
+    }
+    print "$name Detailed Statistics" ;
   print "</h3>";
   print "<table cellspacing='0' style='width: 100%'>" ;
     print "<tr class='head'>" ;
@@ -152,14 +212,13 @@ else {
         print _("Timestamp") ;
       print "</th>" ;
       print "<th>" ;
-        print _("Person") ;
+        print _("Action Title") ;
       print "</th>" ;
-      }
   print "</tr>" ;
 
   if (! $result->rowcount() == 0){
     $rowCount=0;
-    while($row=$result->fetch()){
+    foreach($rArray as $row){
     $class = "odd";
     if($rowCount%2 == 0) {
       $class = "even";
@@ -169,11 +228,8 @@ else {
             print $row['timestamp'];
           print "</td>";
           print "<td>";
-            $row2 = getPersonName($connection2, $row['gibbonPersonID']);
-            print $row2['preferredName'] . " " . $row2['surname'];
-          print "</td>";
-          $array = unserialize($row['serialisedArray']);
-         
+            print $row['title'];
+          print "</td>";         
         print "</tr>" ;
         $rowCount++;
     }

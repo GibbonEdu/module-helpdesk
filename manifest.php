@@ -173,7 +173,7 @@ $actionRows[$actionCount]["categoryPermissionParent"]="N" ;
 $actionRows[$actionCount]["categoryPermissionOther"]="Y" ;
 
 $actionCount++ ;
-$actionRows[$actionCount]["name"]="Statistics" ;
+$actionRows[$actionCount]["name"]="Help Desk Statistics" ;
 $actionRows[$actionCount]["precedence"]="0" ;
 $actionRows[$actionCount]["category"]="Admin" ;
 $actionRows[$actionCount]["description"]="Statistics for the Help Desk." ;

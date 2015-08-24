@@ -113,7 +113,13 @@ else {
 		if(isset($_POST["createFor"])) { if($_POST["createFor"] != 0) { setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf (". $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } }
 		notifyTechnican($connection2, $guid, $issueID, $name, $personID);
 		
-		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Created", array("issueID"=>$issueID));
+		$array=array("issueID"=>$issueID);
+		$title = "Issue Created";
+		if(isset($_POST["createFor"])) { if($_POST["createFor"] != 0) {
+			$array['technicianID'] = getTechnicianID($connection2, $createdByID);
+			$title = "Issue Created (for Another Person)";
+		}
+		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], $title, $array);
 		//Success 0 aka Created
 		$URL=$URL . "/issues_discussView.php&issueID=" . $issueID . "&addReturn=success0" ;
 		header("Location: {$URL}");

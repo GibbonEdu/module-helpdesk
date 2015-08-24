@@ -88,8 +88,14 @@ else {
 			  foreach($personIDs as $personID) {
 				if($personID != $_SESSION[$guid]["gibbonPersonID"]) { setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } 
 			  }
+
+			  $array = array("issueID"=>$issueID);
+
+			if(isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
+				$array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
+			}
 			  
-			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Reincarnated", array("issueID"=>$issueID));
+			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Reincarnated", $array);
 
 		
 			//Success 0

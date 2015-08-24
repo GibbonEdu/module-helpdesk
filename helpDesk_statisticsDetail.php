@@ -77,6 +77,17 @@ else {
  		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%isssueName%</a>";
  		$extras[0] = array('extra'=>$extra, 'extraKey'=>$extraKey, 'extraString'=>$extraString);
  	}
+ 	else if($title = "Issue Created (for Another Person)") {
+		$extra = "Issue ID";
+ 		$extraKey = "issueID";
+ 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%isssueName%</a>";
+ 		$extras[0] = array('extra'=>$extra, 'extraKey'=>$extraKey, 'extraString'=>$extraString);
+		
+		$extra = "Technician Name";
+ 		$extraKey = "technicainID";
+ 		$extraString = "%techName%";
+ 		$extras[1] = array('extra'=>$extra, 'extraKey'=>$extraKey, 'extraString'=>$extraString);
+ 	}
  	else if($title == "Technician Assigned") {
  		$extra = "Issue ID";
  		$extraKey = "issueID";
