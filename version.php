@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Sets version information
  */
-$moduleVersion="0.4.20" ;
+$moduleVersion="1.0.00" ;
 
-/*
-*/
 ?>

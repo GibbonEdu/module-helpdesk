@@ -115,15 +115,18 @@ else {
 		
 		$array=array("issueID"=>$issueID);
 		$title = "Issue Created";
-		if(isset($_POST["createFor"])) { if($_POST["createFor"] != 0) {
-			$array['technicianID'] = getTechnicianID($connection2, $createdByID);
-			$title = "Issue Created (for Another Person)";
+		if(isset($_POST["createFor"])) { 
+			if($_POST["createFor"] != 0) {
+				$array['technicianID'] = getTechnicianID($connection2, $createdByID);
+				$title = "Issue Created (for Another Person)";
+			}
 		}
 		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], $title, $array);
 		//Success 0 aka Created
 		$URL=$URL . "/issues_discussView.php&issueID=" . $issueID . "&addReturn=success0" ;
 		header("Location: {$URL}");
 
+	
 	}
 }
 ?>

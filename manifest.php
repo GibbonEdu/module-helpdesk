@@ -25,7 +25,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="0.4.20" ;
+$version="1.0.00" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/raynichc/helpdesk" ;
 
@@ -83,6 +83,12 @@ $moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
   `reincarnateIssue` boolean DEFAULT 1,
    PRIMARY KEY (`groupID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
+
+$moduleTables[4]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue)
+VALUES
+(NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1),
+(NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1)";
+
 //Action rows
 //One array per action
 $actionCount = 0 ;

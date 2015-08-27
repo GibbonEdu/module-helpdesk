@@ -205,4 +205,9 @@ UPDATE gibbonAction SET category='Technician' WHERE name='Manage Technician Grou
 UPDATE gibbonModule SET description='A virtual help desk module for Gibbon.' WHERE name='Help Desk';end
 ";
 
+//v1.0.00
+$count++;
+$sql[$count][0]="1.0.00" ;
+$sql[$count][1]="
+";
 ?>

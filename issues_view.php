@@ -76,8 +76,10 @@ else {
 	$filter2=NULL ;
 	$filter3=NULL ;
 	$filter4=NULL ;
+	$yearFilter=Null;
 	$IDFilter="" ;
-
+	$whereYear="";
+	$whereUsed=false;
 
 	if (isset($_POST["filter"])) {
 		$filter=$_POST["filter"] ;
@@ -91,7 +93,10 @@ else {
 	if (isset($_POST["filter4"])) {
 		$filter4=$_POST["filter4"] ;
 	}
-	
+	if (isset($_POST["yearFilter"])) {
+		$yearFilter=$_POST["yearFilter"] ;
+	}
+
 	if (isset($_POST["IDFilter"])) {
 		$IDFilter=intval($_POST["IDFilter"]) ;
 	}
@@ -149,67 +154,149 @@ else {
 	else {
 		$statusFilters = array("All", "Unassigned", "Pending", "Resolved");
 	}
-	$dataIssue["gibbonSchoolYearID"]=$_SESSION[$guid]["gibbonSchoolYearID"];
 	$dataIssue["helpDeskGibbonPersonID"] = $_SESSION[$guid]["gibbonPersonID"];
 	$whereIssue = "";
+	
+	if($yearFilter=="" || $yearFilter==null) {
+		$yearFilter = $_SESSION[$guid]["gibbonSchoolYearID"];
+	}
+
+
+	if($yearFilter!="All Years") {
+		$dataIssue["gibbonSchoolYearID"]=$yearFilter;
+		$whereYear=" WHERE gibbonSchoolYearID=:gibbonSchoolYearID";
+		$whereUsed = true;
+	}
+
+
 	if ($filter=="" || $filter==null) {
 		$filter=$issueFilters[0];
 	}
 
 	if ($filter=="My Issues") {
-		$whereIssue.= " AND helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID";
+		if($whereUsed) {
+			$whereIssue.=" AND";;;
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
+		$whereIssue.= " helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID";
 	}
 	else if ($filter=="My Working") {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["helpDeskTechnicianID"] = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
 		$dataIssue["status"] = 'Resolved';
-		$whereIssue.= " AND helpDeskIssue.technicianID=:helpDeskTechnicianID AND NOT helpDeskIssue.status=:status";
+		$whereIssue.= " helpDeskIssue.technicianID=:helpDeskTechnicianID AND NOT helpDeskIssue.status=:status";
 	}
 
 	if ($filter2=="") {
 		$filter2=$statusFilters[0];
 	}
 	if ($filter2=="Unassigned") {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["helpDeskStatus"] = 'Unassigned';
-		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
+		$whereIssue.= " helpDeskIssue.status=:helpDeskStatus";
 	}
 	else if ($filter2=="Pending") {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["helpDeskStatus"] = 'Pending';
-		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
+		$whereIssue.= " helpDeskIssue.status=:helpDeskStatus";
 	}
 	else if ($filter2=="Resolved") {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["helpDeskStatus"] = 'Resolved';
-		$whereIssue.= " AND helpDeskIssue.status=:helpDeskStatus";
+		$whereIssue.= " helpDeskIssue.status=:helpDeskStatus";
 	}
 	else if ($filter2=="Unassigned and Pending") {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["helpDeskStatus1"] = 'Unassigned';
 		$dataIssue["helpDeskStatus2"] = 'Pending';
-		$whereIssue.= " AND (helpDeskIssue.status=:helpDeskStatus1 OR helpDeskIssue.status=:helpDeskStatus2)";
+		$whereIssue.= " (helpDeskIssue.status=:helpDeskStatus1 OR helpDeskIssue.status=:helpDeskStatus2)";
 	}
 	else if ($filter2=="Pending and Resolved") {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["helpDeskStatus1"] = 'Pending';
 		$dataIssue["helpDeskStatus2"] = 'Resolved';
-		$whereIssue.= " AND (helpDeskIssue.status=:helpDeskStatus1 OR helpDeskIssue.status=:helpDeskStatus2)";
+		$whereIssue.= " (helpDeskIssue.status=:helpDeskStatus1 OR helpDeskIssue.status=:helpDeskStatus2)";
 	}
 
 	if ($filter3=="") {
 		$filter3=$categoryFilters[0];
 	}
 	if ($filter3!="All") {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["helpDeskCategory"] = $filter3;
-		$whereIssue.= " AND helpDeskIssue.category=:helpDeskCategory";
+		$whereIssue.= " helpDeskIssue.category=:helpDeskCategory";
 	}
 
 	if ($filter4=="") {
 		$filter4=$priorityFilters[0];
 	}
 	if ($filter4!="All") {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["helpDeskPriority"] = $filter4;
-		$whereIssue.= " AND helpDeskIssue.priority=:helpDeskPriority";
+		$whereIssue.= " helpDeskIssue.priority=:helpDeskPriority";
 	}
 	
 	if (intval($IDFilter)>0) {
+		if($whereUsed) {
+			$whereIssue.=" AND";
+		}
+		else {
+			$whereIssue.=" WHERE";
+			$whereUsed = true;
+		}
 		$dataIssue["issueID"] = $IDFilter;
-		$whereIssue.=" AND issueID=:issueID";
+		$whereIssue.=" issueID=:issueID";
 	}
 	
 	print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "'>" ;
@@ -301,6 +388,33 @@ else {
 					print "<input type='text' value='". $IDFilter . "' id='IDFilter' name='IDFilter' style='width: 300px'>";
 				print "</td>";
 			print "</tr>";
+			print "<tr>";
+				print "<td> ";
+					print "<b>Year Filter</b><br/>";
+					print "<span style=\"font-size: 90%\"><i></i></span>";
+				print "</td>";
+				print "<td class=\"right\">";
+					print "<select name='yearFilter' id='yearFilter' style='width:302px'>" ;
+						print "<option value='All Years'>All Years</option>" ;
+						try {
+							$dataYear = array();
+						    $sqlYear="SELECT gibbonSchoolYearID, name FROM gibbonSchoolYear";
+						    $resultYear=$connection2->prepare($sqlYear);
+						    $resultYear->execute($dataYear);
+						  }
+						  catch(PDOException $e) {
+							print $e;
+						  }
+						while($row = $resultYear->fetch()) {
+							$selected="" ;
+							if ($row['gibbonSchoolYearID']==$yearFilter) {
+								$selected="selected" ;
+							}
+							print "<option $selected value='" . $row['gibbonSchoolYearID'] . "'>". $row['name'] ."</option>" ;
+						}
+					print "</select>" ;
+				print "</td>";
+			print "</tr>";
 			print "<tr>" ;
 				print "<td class='right' colspan=2>" ;
 					print "<input type='submit' value='" . _('Go') . "'>" ;
@@ -316,11 +430,13 @@ else {
 	print "</form>" ;
 
   try {
-    $sqlIssue="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE gibbonSchoolYearID=:gibbonSchoolYearID " . $whereIssue;
+    $sqlIssue="SELECT helpDeskIssue.* FROM helpDeskIssue" . $whereYear . $whereIssue;
    	$sqlIssue.=" UNION ";
-   	$sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID AND gibbonSchoolYearID=:gibbonSchoolYearID";
+   	if($whereYear != "" && $whereYear != null && $whereYear!="All Years") { $sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue" . $whereYear . " AND helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID"; }
+   	else { $sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE helpDeskIssue.gibbonPersonID=:helpDeskGibbonPersonID"; }
     $sqlIssue.=" UNION ";
-    $sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE helpDeskIssue.privacySetting='Everyone' AND gibbonSchoolYearID=:gibbonSchoolYearID";
+    if($whereYear != "" && $whereYear != null && $whereYear!="All Years") { $sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue" . $whereYear . " AND helpDeskIssue.privacySetting='Everyone'"; }
+   	else { $sqlIssue.="SELECT helpDeskIssue.* FROM helpDeskIssue WHERE helpDeskIssue.privacySetting='Everyone'"; }
     $sqlIssue.=" ORDER BY FIELD(status, 'Unassigned', 'Pending', 'Resolved'), ";
   	if($renderPriority) {
   		$sqlIssue.= "FIELD(priority";
