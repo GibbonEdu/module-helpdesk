@@ -213,3 +213,9 @@ Changed text "No one" text in helpDesk_manageTechnicianGroup.php to "No one is c
 Added the ability to highlight(in red) a post in issues_discussView.php.
 Added Stats button in helpDesk_technicianID.php.
 Added Technician Stats.
+
+v1.0.00
+-------
+Fixed an issue with issues_createProcess.php.
+Added Year Filter.
+Added Default groups when first installed.
