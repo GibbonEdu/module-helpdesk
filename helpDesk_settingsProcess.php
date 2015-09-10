@@ -109,8 +109,15 @@ else {
 		header("Location: {$URL}");
 	}
 	else {
+		include "./version.php";
+
 		//Success 0
-		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Help Desk Settings Edited", null);
+		if($version>=11) {
+			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Help Desk Settings Edited", null);
+	    }
+	    else if($version<11 && $version >=10) {
+			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Help Desk Settings Edited");
+	    }
 
 		getSystemSettings($guid, $connection2) ;
 		$URL=$URL . "&updateReturn=success0" ;

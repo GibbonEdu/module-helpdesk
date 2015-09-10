@@ -78,7 +78,13 @@ else {
 	}
 	
 	$stats = array();
-	$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate);
+	include "./version.php";
+	if($version>=11){
+		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate, null, null);
+	}
+	else if($version<11 && $version>=10) {
+		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate);
+	}
 
 	while($row = $result->fetch()) {
 		if(isset($stats[$row['title']])) {

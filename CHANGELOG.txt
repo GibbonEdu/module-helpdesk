@@ -219,3 +219,8 @@ v1.0.00
 Fixed an issue with issues_createProcess.php.
 Added Year Filter.
 Added Default groups when first installed.
+
+v1.0.01
+-------
+Fixed Default groups not being added when first installing.
+Added Gibbon v10 Compatibility.

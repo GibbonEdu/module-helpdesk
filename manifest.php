@@ -17,15 +17,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//This file describes the module, including database tables
-
 //Basic variables
 $name="Help Desk" ;
 $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="1.0.00" ;
+$version="1.0.01" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/raynichc/helpdesk" ;
 
@@ -84,7 +82,7 @@ $moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
    PRIMARY KEY (`groupID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[4]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue)
+$moduleTables[5]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue)
 VALUES
 (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1),
 (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1)";

@@ -161,7 +161,12 @@ else {
  		$endDate = $_GET["endDate"];
  	}
 
-	$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate);
+ 	if($version>=11){
+		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate, null, null);
+	}
+	else if($version<11 && $version>=10) {
+		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate);
+	}
 
 	print "<h3>" ;
 		print _("Filter") ;

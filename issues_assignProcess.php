@@ -114,8 +114,13 @@ else {
 	foreach($personIDs as $personID) {
 		if($personID != $_SESSION[$guid]["gibbonPersonID"]) { setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } 
 	}	
-			
-	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Assigned", array("issueID"=>$issueID, "technicainID"=>$technicianID));
+	include "./version.php";		
+	if($version>=11) {
+		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Assigned", array("issueID"=>$issueID, "technicainID"=>$technicianID), null);
+	}
+	else if($version<11 && $version >=10) {
+		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Assigned", array("issueID"=>$issueID, "technicainID"=>$technicianID));
+	}
 
   	$URL = $URL."&addReturn=success0" ; 
 	header("Location: {$URL}");

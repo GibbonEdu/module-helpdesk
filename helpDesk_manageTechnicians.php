@@ -92,7 +92,7 @@ else {
         print _("Action") ;
       print "</th>" ;
   print "</tr>" ;
-
+include "./version.php";
 print "<div class='linkTop'>" ;
     print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php'><img style='margin-left: 2px' title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
   	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php'>" .  _('Create') . "</a>";
@@ -124,7 +124,10 @@ print "<div class='linkTop'>" ;
         print "</td>";
         print "<td>";
         print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroup.php&technicianID=". $row['technicianID'] ."'><img title=" . _('Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
-        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianStats.php&technicianID=". $row['technicianID'] ."'><img title=" . _('Stats  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/internalAssessment.png'/></a>";
+        
+        if($version>=11) {
+          print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianStats.php&technicianID=". $row['technicianID'] ."'><img title=" . _('Stats  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/internalAssessment.png'/></a>";       
+        }
         print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDeleteProcess.php?technicianID=". $row['technicianID'] ."'><img title=" . _('Delete  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>";
     print "</td>";
       print "</tr>" ;

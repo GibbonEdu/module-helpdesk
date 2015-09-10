@@ -121,7 +121,14 @@ else {
 				$title = "Issue Created (for Another Person)";
 			}
 		}
-		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], $title, $array);
+		include "./version.php";
+		if($version>=11) {
+			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], $title, $array, null);
+		}
+		else if($version<11 && $version >=10) {
+			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], $title, $array);
+		}
+
 		//Success 0 aka Created
 		$URL=$URL . "/issues_discussView.php&issueID=" . $issueID . "&addReturn=success0" ;
 		header("Location: {$URL}");

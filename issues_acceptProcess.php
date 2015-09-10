@@ -77,7 +77,12 @@ else {
 			}
 		
 			setNotification($connection2, $guid, getOwnerOfIssue($connection2, $issueID)['gibbonPersonID'], "A technician has started working on your isuse.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
-			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Accepted", array("issueID"=>$issueID, "technicianID"=>$technicianID));
+			if($version>=11) {
+				setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Accepted", array("issueID"=>$issueID, "technicianID"=>$technicianID), null);
+			}
+			else if($version<11 && $version >=10) {
+				setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Accepted", array("issueID"=>$issueID, "technicianID"=>$technicianID));
+			}
 
 			//Success 1 aka Accepted
 			$URL=$URL . "issues_discussView.php&issueID=" . $issueID . "&addReturn=success1" ;

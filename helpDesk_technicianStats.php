@@ -35,6 +35,13 @@ else {
   else {
     $noData = true;
   }
+
+  include "./version.php";
+
+  if($version<11) {
+    $noData = true;
+  }
+
   //Proceed!
   print "<div class='trail'>" ;
   print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicians.php'> Manage Technicians</a> >    </div><div class='trailEnd'>" . _('Techncian Statistics') . "</div>" ;

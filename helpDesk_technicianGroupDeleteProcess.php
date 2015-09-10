@@ -100,8 +100,13 @@ else {
     header("Location: {$URL}");
     exit();
   }
-	  
-	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Removed", array("newGroupID"=>$newGroupID));
+  include "./version.php";
+  if($version>=11) {
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Removed", array("newGroupID"=>$newGroupID), null);
+  }
+  else if($version<11 && $version >=10) {
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Removed", array("newGroupID"=>$newGroupID));
+  }
 
   //Success 0
   $URL=$URL . "&addReturn=success0" ;
