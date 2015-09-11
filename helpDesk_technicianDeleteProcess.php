@@ -79,8 +79,14 @@ else {
     $URL = $URL."&addReturn=fail2" ; 
     header("Location: {$URL}");
   }
+  include "../../version.php";
   
-	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID"=>$row3['gibbonPersonID']));
+  if($version>=11) {
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID"=>$row3['gibbonPersonID']), null);
+  }
+  else if($version<11 && $version >=10) {
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID"=>$row3['gibbonPersonID']));
+  }
 
   //Success 0
   $URL=$URL . "&addReturn=success0" ;

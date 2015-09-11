@@ -74,9 +74,14 @@ else {
     }
     
     $groupID = $connection2->lastInsertId();
+    include "../../version.php";
 
-	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID), null);
-
+    if($version>=11) {
+      setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID), null);
+    }
+    else if($version<11 && $version >=10) {
+      setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID));
+    }
     //Success 0
     $URL = $URL."/helpDesk_editTechnicianGroup.php&groupID=$groupID&addReturn=success0" ; 
     header("Location: {$URL}");

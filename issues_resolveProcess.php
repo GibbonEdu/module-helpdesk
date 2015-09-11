@@ -88,8 +88,13 @@ else {
 			if(isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
 				$array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
 			}
-		
-			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Resolved", $array);
+			include "../../version.php";
+			if($version>=11) {
+				setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Resolved", $array, null);
+			}
+			else if($version<11 && $version >=10) {
+				setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Resolved", $array);
+			}
 
 			//Success 0
 			$URL=$URL . "&addReturn=success0" ;

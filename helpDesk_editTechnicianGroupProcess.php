@@ -93,8 +93,14 @@ else {
 		header("Location: {$URL}");
 	}
 	else {
+		include "../../version.php";
 		//Success 0
-		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Edited", array("groupID"=>$groupID));
+		if($version>=11) {
+			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Edited", array("groupID"=>$groupID), null);
+	    }
+	    else if($version<11 && $version >=10) {
+			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Edited", array("groupID"=>$groupID));
+	    }
 		$URL=$URL . "&updateReturn=success0" ;
 		header("Location: {$URL}");
 	}

@@ -74,13 +74,13 @@ else {
  	if($title == "Issue Created" || $title == "Issue Accepted" || $title == "Issue Reincarnated" || $title == "Issue Resolved") {
  		$extra = "Issue ID";
  		$extraKey = "issueID";
- 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%isssueName%</a>";
+ 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%extraInfo%</a>";
  		$extras[0] = array('extra'=>$extra, 'extraKey'=>$extraKey, 'extraString'=>$extraString);
  	}
  	else if($title = "Issue Created (for Another Person)") {
 		$extra = "Issue ID";
  		$extraKey = "issueID";
- 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%isssueName%</a>";
+ 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%extraInfo%</a>";
  		$extras[0] = array('extra'=>$extra, 'extraKey'=>$extraKey, 'extraString'=>$extraString);
 		
 		$extra = "Technician Name";
@@ -161,7 +161,12 @@ else {
  		$endDate = $_GET["endDate"];
  	}
 
-	$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate);
+ 	if($version>=11){
+		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate, null, null);
+	}
+	else if($version<11 && $version>=10) {
+		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate);
+	}
 
 	print "<h3>" ;
 		print _("Filter") ;

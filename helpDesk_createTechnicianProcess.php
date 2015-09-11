@@ -77,8 +77,15 @@ else {
     }
     
     $technicianID = $connection2->lastInsertId();
+    include "../../version.php";
 
-    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Added", array("gibbonPersonID"=>$person, "technicianID"=>$technicianID), null);
+    if($version>=11) {
+      setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Added", array("gibbonPersonID"=>$person, "technicianID"=>$technicianID), null);
+    }
+    else if($version<11 && $version >=10) {
+      setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Added", array("gibbonPersonID"=>$person, "technicianID"=>$technicianID));
+    }
+    
 
     //Success 0
     $URL = $URL."&addReturn=success0" ; 

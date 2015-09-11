@@ -106,8 +106,15 @@ else {
   if($isTech) {
     $array['technicianID']=getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
   }
+
+  include "../../version.php";
   
-	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Discussion Posted", $array);
+  if($version>=11) {
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Discussion Posted", $array, null);
+  }
+  else if($version<11 && $version >=10) {
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Discussion Posted", $array);
+  }
 
   
   //Success 2 aka Posted

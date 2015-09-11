@@ -77,8 +77,14 @@ else {
       exit();
     }
 
-	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Set", array("technicianID"=>$technicianID, "groupID"=>$group));
+    include "../../version.php";
 
+    if($version>=11) {
+      setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Set", array("technicianID"=>$technicianID, "groupID"=>$group), null);
+    }
+    else if($version<11 && $version >=10) {
+      setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Set", array("technicianID"=>$technicianID, "groupID"=>$group));
+    }
 
     //Success 0
     $URL = $URL."&addReturn=success0" ; 
