@@ -92,14 +92,15 @@ else {
 		header("Location: {$URL}");
 	}
 	else {
+		$date=date("Y-m-d") ;
 		//Write to database
 		try {
 			$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
 			if($gibbonModuleID == null) {
 				throw new PDOException("Invalid gibbonModuleID.");
 			}
-			$data=array("technicianID"=>null, "gibbonPersonID"=> $personID, "name"=> $name, "description"=> $description, "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID"=> $createdByID, "privacySetting"=> $privacySetting);
-			$sql="INSERT INTO helpDeskIssue SET technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID, privacySetting=:privacySetting" ;
+			$data=array("technicianID"=>null, "gibbonPersonID"=> $personID, "name"=> $name, "description"=> $description, "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID"=> $createdByID, "privacySetting"=> $privacySetting, "datee"=> $date);
+			$sql="INSERT INTO helpDeskIssue SET technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID, privacySetting=:privacySetting, `date`=:datee" ;
       		$result=$connection2->prepare($sql);
 			$result->execute($data);
 		}

@@ -74,13 +74,13 @@ else {
  	if($title == "Issue Created" || $title == "Issue Accepted" || $title == "Issue Reincarnated" || $title == "Issue Resolved") {
  		$extra = "Issue ID";
  		$extraKey = "issueID";
- 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%isssueName%</a>";
+ 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%extraInfo%</a>";
  		$extras[0] = array('extra'=>$extra, 'extraKey'=>$extraKey, 'extraString'=>$extraString);
  	}
  	else if($title = "Issue Created (for Another Person)") {
 		$extra = "Issue ID";
  		$extraKey = "issueID";
- 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%isssueName%</a>";
+ 		$extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%extraInfo%</a>";
  		$extras[0] = array('extra'=>$extra, 'extraKey'=>$extraKey, 'extraString'=>$extraString);
 		
 		$extra = "Technician Name";

@@ -67,8 +67,8 @@ else {
 	print "</h3>" ;
 
 	$d = new DateTime('first day of this month');
-	$startDate=dateConvertBack($guid, $d->format('Y-m-d H:i:s')) ;
-	$endDate=dateConvertBack($guid, date("Y-m-d H:i:s")) ;
+	$startDate=dateConvertBack($guid, $d->format('Y-m-d')) ;
+	$endDate=dateConvertBack($guid, date("Y-m-d")) ;
 
 	if (isset($_POST["startDate"])) {
 		$startDate=$_POST["startDate"] ;
@@ -83,7 +83,9 @@ else {
 		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate, null, null);
 	}
 	else if($version<11 && $version>=10) {
-		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate);
+		$tempEndDate = str_replace('/', '-', $endDate);
+		$tempEndDate = date("Y-m-d", strtotime($tempEndDate . " +1 day"));
+		$result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $tempEndDate);	
 	}
 
 	while($row = $result->fetch()) {
