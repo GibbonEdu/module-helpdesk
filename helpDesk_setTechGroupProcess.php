@@ -77,7 +77,7 @@ else {
       exit();
     }
 
-    include "./version.php";
+    include "../../version.php";
 
     if($version>=11) {
       setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Set", array("technicianID"=>$technicianID, "groupID"=>$group), null);

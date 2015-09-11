@@ -109,7 +109,7 @@ else {
 		header("Location: {$URL}");
 	}
 	else {
-		include "./version.php";
+		include "../../version.php";
 
 		//Success 0
 		if($version>=11) {

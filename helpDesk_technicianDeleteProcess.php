@@ -79,7 +79,7 @@ else {
     $URL = $URL."&addReturn=fail2" ; 
     header("Location: {$URL}");
   }
-  include "./version.php";  
+  include "../../version.php";
   
   if($version>=11) {
     setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID"=>$row3['gibbonPersonID']), null);

@@ -74,7 +74,7 @@ else {
     }
     
     $groupID = $connection2->lastInsertId();
-    include "./version.php";
+    include "../../version.php";
 
     if($version>=11) {
       setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID), null);

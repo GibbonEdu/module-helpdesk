@@ -106,6 +106,8 @@ else {
   if($isTech) {
     $array['technicianID']=getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
   }
+
+  include "../../version.php";
   
   if($version>=11) {
     setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Discussion Posted", $array, null);

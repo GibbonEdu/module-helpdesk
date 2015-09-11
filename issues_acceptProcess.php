@@ -75,6 +75,8 @@ else {
 				header("Location: {$URL}");
 				break ;
 			}
+
+			include "../../version.php";
 		
 			setNotification($connection2, $guid, getOwnerOfIssue($connection2, $issueID)['gibbonPersonID'], "A technician has started working on your isuse.", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
 			if($version>=11) {

@@ -93,7 +93,7 @@ else {
 		header("Location: {$URL}");
 	}
 	else {
-		include "./version.php";
+		include "../../version.php";
 		//Success 0
 		if($version>=11) {
 			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Edited", array("groupID"=>$groupID), null);
