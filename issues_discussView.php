@@ -184,7 +184,11 @@ else {
     	print "</td>" ;
    		print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
     		print "<span style='font-size: 115%; font-weight: bold'>" . _('Date') . "</span><br/>" ;
-    		print dateConvertBack($guid, $row["date"]) ;
+        $date2 =dateConvertBack($guid, $row['date']);
+        if($date2 == "30/11/-0001") {
+          $date2 = "No date";
+        }
+    		print $date2 ;
   		print "</td>" ;
   		if($createdByShow) {
    			print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;

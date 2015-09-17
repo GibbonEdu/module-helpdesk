@@ -226,3 +226,7 @@ Fixed Default groups not being added when first installing.
 Added Gibbon v10 Compatibility.
 Fixed date not passing through in when creating an issue.
 Fixed %issueName% showing up in helpDesk_statisticsDetail.php.
+
+v1.0.02
+-------
+If the date is null it will no longer show as "30/11/-0001".

@@ -539,7 +539,11 @@ else {
 			  $technician = getTechWorkingOnIssue($connection2, $row['issueID']);
 			  print "<td style='width: 15%'><b>" . $technician["preferredName"] . " " . $technician["surname"] . "</b></td>";
 			  print "<td style='width: 10%'><b>" .$row['status']. "</b><br/>";
-			  print "<span style='font-size: 85%; font-style: italic'>" . dateConvertBack($guid, $row["date"]) . "</span></td>" ;
+			  $date2 =dateConvertBack($guid, $row['date']);
+			  if($date2 == "30/11/-0001") {
+			  	$date2 = "No date";
+			  }
+			  print "<span style='font-size: 85%; font-style: italic'>" . $date2 . "</span></td>" ;
 			  print "<td style='width:17%'>";
 			  $openCreated = false;
 			  $resolveCreated = false; 
