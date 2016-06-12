@@ -21,106 +21,95 @@ include "../../functions.php" ;
 include "../../config.php" ;
 
 //New PDO DB connection
-try {
-  	$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-	$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}
-catch(PDOException $e) {
-  echo $e->getMessage();
-}
+$pdo = new Gibbon\sqlConnection();
+$connection2 = $pdo->getConnection();
 
 @session_start() ;
 
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/helpDesk_settings.php" ;
+$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_settings.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php") == FALSE) {
 	//Fail 0
-	$URL=$URL . "&updateReturn=fail0" ;
+	$URL = $URL . "&return=error0" ;
 	header("Location: {$URL}");
-}
-else {
+} else {
 
-	if(!(isset($_POST["issuePriority"]) || isset($_POST["issueCategory"]) || isset($_POST["issuePriorityName"]) || isset($_POST["resolvedIssuePrivacy"]))) {
-		$URL=$URL . "&updateReturn=fail1" ;
+	if (!(isset($_POST["issuePriority"]) || isset($_POST["issueCategory"]) || isset($_POST["issuePriorityName"]) || isset($_POST["resolvedIssuePrivacy"]))) {
+		$URL = $URL . "&return=error1" ;
 		header("Location: {$URL}");
 	}
 	//Proceed!
-	$issuePriority="" ; 
+	$issuePriority = "" ; 
 	foreach (explode(",", $_POST["issuePriority"]) as $type) {
-		$issuePriority.=trim($type) . "," ;
+		$issuePriority .= trim($type) . "," ;
 	}
-	$issuePriority=substr($issuePriority,0,-1) ; 	
-	$issueCategory="" ; 
+	$issuePriority = substr($issuePriority,0,-1) ; 	
+	$issueCategory = "" ; 
 	foreach (explode(",", $_POST["issueCategory"]) as $type) {
-		$issueCategory.=trim($type) . "," ;
+		$issueCategory .= trim($type) . "," ;
 	}
-	$issueCategory=substr($issueCategory,0,-1) ; 
-	$fail=FALSE ;
+	$issueCategory = substr($issueCategory,0,-1) ; 
+	$fails = 0;
 	
 	$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-	if($gibbonModuleID == null) {
-		$fail=TRUE;
-	}
-
-	try {
-		$data=array("value"=>$issuePriority); 
-		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriority'" ;
-		$result=$connection2->prepare($sql);
-		$result->execute($data);
-	}
-	catch(PDOException $e) { 
-		$fail=TRUE ;
-	}
-	try {
-		$data=array("value"=>$issueCategory); 
-		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issueCategory'" ;
-		$result=$connection2->prepare($sql);
-		$result->execute($data);
-	}
-	catch(PDOException $e) { 
-		$fail=TRUE ;
-	}
-	try {
-		$data=array("value"=>$_POST["issuePriorityName"]); 
-		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriorityName'" ;
-		$result=$connection2->prepare($sql);
-		$result->execute($data);
-	}
-	catch(PDOException $e) { 
-		$fail=TRUE ;
-	}
-	try {
-		$data=array("value"=>$_POST["resolvedIssuePrivacy"]); 
-		$sql="UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
-		$result=$connection2->prepare($sql);
-		$result->execute($data);
-	}
-	catch(PDOException $e) { 
-		$fail=TRUE ;
-	}
-
-	if ($fail==TRUE) {
-		//Fail 2
-		$URL=$URL . "&updateReturn=fail2" ;
+	if ($gibbonModuleID == null) {
+		$URL = $URL . "&return=error2" ;
 		header("Location: {$URL}");
 	}
-	else {
-		include "../../version.php";
 
-		//Success 0
-		if($version>=11) {
-			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Help Desk Settings Edited", null);
-	    }
-	    else if($version<11 && $version >=10) {
-			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Help Desk Settings Edited");
-	    }
+	try {
+		$data = array("value" => $issuePriority); 
+		$sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriority'" ;
+		$result = $connection2->prepare($sql);
+		$result->execute($data);
+	} catch (PDOException $e) { 
+		$fails++;
+	}
 
+	try {
+		$data = array("value" => $issueCategory); 
+		$sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issueCategory'" ;
+		$result = $connection2->prepare($sql);
+		$result->execute($data);
+	} catch (PDOException $e) { 
+		$fails++;
+	}
+
+	try {
+		$data = array("value" => $_POST["issuePriorityName"]); 
+		$sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriorityName'" ;
+		$result = $connection2->prepare($sql);
+		$result->execute($data);
+	} catch (PDOException $e) { 
+		$fails++;
+	}
+
+	try {
+		$data = array("value" => $_POST["resolvedIssuePrivacy"]); 
+		$sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
+		$result = $connection2->prepare($sql);
+		$result->execute($data);
+	} catch (PDOException $e) { 
+		$fails++;
+	}
+
+	if ($fails == 4) {
+		//Fail 2
+		$URL = $URL . "&return=error2" ;
+		header("Location: {$URL}");
+	} else {
+		
+		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Help Desk Settings Edited", null);
+	  
 		getSystemSettings($guid, $connection2) ;
-		$URL=$URL . "&updateReturn=success0" ;
+		$return = "success0";
+		if ($fails > 0) {
+			$return = "warning1";
+		}
+		$URL=$URL . "&return=$return" ;
 		header("Location: {$URL}");
 	}
 }

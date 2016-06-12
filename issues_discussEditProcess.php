@@ -23,86 +23,58 @@ include "../../config.php" ;
 include "./moduleFunctions.php" ;
 
 //New PDO DB connection
-try {
-  	$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-	$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}
-catch(PDOException $e) {
-  echo $e->getMessage();
-}
+$pdo = new Gibbon\sqlConnection();
+$connection2 = $pdo->getConnection();
 
 @session_start() ;
 
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
+$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
 
-
-if(isset($_GET["returnAddress"])) {
-	$URL = $URL.$_GET["returnAddress"] ;
-}
-else {
-	$URL = $URL."issues_view.php&addReturn=fail1" ;
-	header("Location: {$URL}");
-	exit();
-}
-
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.php")==FALSE && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == FALSE) {
 	//Fail 0
-  $URL = $URL."&addReturn=fail0" ;
+  	$URL = $URL . "issues_view.php&return=error0" ;
 	header("Location: {$URL}");
 	exit();
-}
-else {
-	//Proceed!
-	
-	if(isset($_POST["privacySetting"])) {
-		$privacySetting = $_POST["privacySetting"];
+} else {
+
+	if (isset($_GET["issueID"])) {
+		$issueID = $_GET["issueID"];
+		$URL = $URL . "issues_discussView.php&issueID=" . $issueID ;
+	} else {
+    	$URL = $URL . "issues_view.php&return=error1" ;
+		header("Location: {$URL}");
+		exit();
 	}
-	else {
-    	$URL = $URL."&addReturn=fail1" ;
+
+    if(!isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+        $URL = $URL . "issues_view.php&return=error0" ;
+        header("Location: {$URL}");
+        exit();
+    }
+
+	if (isset($_POST["privacySetting"])) {
+		$privacySetting = $_POST["privacySetting"];
+	} else {
+    	$URL = $URL . "&return=error1" ;
 		header("Location: {$URL}");
 	  	exit();
 	}
 	
-	if(!getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue") && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reassignIssue")) {
-    	$URL = $URL."&addReturn=fail0" ;
-		header("Location: {$URL}");
-		exit();
-	}
-
-	
-	if(isset($_GET["issueID"])) {
-		$issueID = $_GET["issueID"];
-		if($_GET["returnAddress"]=="issues_discussView.php") { $URL = $URL."&issueID=$issueID" ; }
-	}
-	else {
-    	$URL = $URL."&addReturn=fail1" ;
-		header("Location: {$URL}");
-		exit();
-	}
-		
-	
-	
-	
 	try {
-		$data=array("privacySetting"=> $privacySetting, "issueID"=>$issueID);
-		$sql="UPDATE helpDeskIssue SET privacySetting=:privacySetting WHERE issueID=:issueID" ;
-		$result=$connection2->prepare($sql);
+		$data = array("privacySetting" => $privacySetting, "issueID" => $issueID);
+		$sql = "UPDATE helpDeskIssue SET privacySetting=:privacySetting WHERE issueID=:issueID" ;
+		$result = $connection2->prepare($sql);
 		$result->execute($data);
-	}
-	catch(PDOException $e) {
-    	$URL = $URL."&addReturn=fail2" ;
+	} catch (PDOException $e) {
+    	$URL = $URL . "&return=error2" ;
     	header("Location: {$URL}");
     	exit();
 	}
 	
-  	$URL = $URL."&addReturn=success3" ; 
+  	$URL = $URL . "&return=success0" ; 
 	header("Location: {$URL}");
-
-
 }
 ?>

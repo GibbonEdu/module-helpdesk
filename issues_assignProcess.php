@@ -23,108 +23,93 @@ include "../../config.php" ;
 include "./moduleFunctions.php" ;
 
 //New PDO DB connection
-try {
-  	$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-	$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}
-catch(PDOException $e) {
-  echo $e->getMessage();
-}
+$pdo = new Gibbon\sqlConnection();
+$connection2 = $pdo->getConnection();
 
 @session_start() ;
 
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_view.php" ;
+$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_assign.php")==FALSE && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+if (isset($_GET["permission"])) {
+  	$permission = $_GET["permission"];
+} else {
+	$URL = $URL . "issues_view.php&return=error1" ;
+  	header("Location: {$URL}");
+  	exit();
+}
+
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == FALSE || !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], $permission)) {
 	//Fail 0
-  $URL = $URL."&addReturn=fail0" ;
+  	$URL = $URL . "issues_view.php&return=error0" ;
 	header("Location: {$URL}");
 	exit();
-}
-else {
-	//Proceed!
-	if(isset($_POST["technician"])) {
-		$gibbonPersonID = $_POST["technician"];
-		$technicianID = getTechnicianID($connection2, $gibbonPersonID);
-	}
-	else {
-    $URL = $URL."&addReturn=fail1" ;
-	  header("Location: {$URL}");
-	  exit();
-	}
-	if(!getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue") && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reassignIssue")) {
-    $URL = $URL."&addReturn=fail0" ;
-	  header("Location: {$URL}");
-	  exit();
+} else {
+	if (isset($_GET["issueID"])) {
+	  	$issueID = $_GET["issueID"];
+	} else {
+    	$URL = $URL . "issues_view.php&return=error1" ;
+	  	header("Location: {$URL}");
+	  	exit();
 	}
 
-	if($technicianID==null && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reassignIssue")){
-    $URL = $URL."&addReturn=fail1" ;
- 	  header("Location: {$URL}");
- 	  exit();
- 	}
+	// Proceed!
+	if (isset($_POST["technician"])) {
+		$technicianID = $_POST["technician"];
+	} else {
+    	$URL = $URL . "issues_assign.php&issueID=$issueID&return=error1" ;
+	  	header("Location: {$URL}");
+	  	exit();
+	}
 
-	if(isset($_GET["issueID"])) {
-	  $issueID = (int) $_GET["issueID"];
-	}
-	else {
-    $URL = $URL."&addReturn=fail1" ;
-	  header("Location: {$URL}");
-	  exit();
-	}
-	
-	$isReassign = false;
-	if(hasTechnicianAssigned($connection2, $issueID)) {
-		$isReassign = true;
+	if ($technicianID == null || $technicianID == "") {
+		$URL = $URL . "issues_assign.php&issueID=$issueID&return=error1" ;
+	  	header("Location: {$URL}");
+	  	exit();
 	}
 
 	try {
 		$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-		if($gibbonModuleID == null) {
+		if ($gibbonModuleID == null) {
 			throw new PDOException("Invalid gibbonModuleID.");
 		}
-		$data=array("issueID"=> $issueID, "technicianID"=> $technicianID, "status"=> "Pending");
-		$sql="UPDATE helpDeskIssue SET technicianID=:technicianID, status=:status WHERE issueID=:issueID" ;
-		$result=$connection2->prepare($sql);
+
+		$data = array("issueID" => $issueID, "technicianID" => $technicianID, "status" => "Pending");
+		$sql = "UPDATE helpDeskIssue SET technicianID=:technicianID, status=:status WHERE issueID=:issueID" ;
+		$result = $connection2->prepare($sql);
 		$result->execute($data);
-	}
-	catch(PDOException $e) {
-    $URL = $URL."&addReturn=fail2" ;
-    header("Location: {$URL}");
-    exit();
+	} catch (PDOException $e) {
+    	$URL = $URL . "issues_assign.php&issueID=$issueID&technicianID=$technicianID&return=error2" ;
+    	header("Location: {$URL}");
+    	exit();
 	}
 	
 	$row = getIssue($connection2, $issueID);
 	
 	$assign = "assigned";
-	if($isReassign) { $assign = "reassigned"; }
+	if($permission == "reassignIssue") {
+		$assign = "reassigned"; 
+	}
 	$tech = getTechWorkingOnIssue($connection2, $issueID);
-	$message = $tech["preferredName"] . " " . $tech["surname"];
-	$message.= " has been $assign";
-	$message.= " Issue #";
-	$message.= $issueID;
-	$message.= " (" . $row["issueName"] . ").";
+	$message  = $tech["preferredName"] . " " . $tech["surname"];
+	$message .= " has been $assign";
+	$message .= " Issue #";
+	$message .= $issueID;
+	$message .= " (" . $row["issueName"] . ").";
 
 	$personIDs = getPeopleInvolved($connection2, $issueID);
 
 	foreach($personIDs as $personID) {
-		if($personID != $_SESSION[$guid]["gibbonPersonID"]) { setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } 
+		if($personID != $_SESSION[$guid]["gibbonPersonID"]) {
+			setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+		} 
 	}	
-	include "../../version.php";		
-	if($version>=11) {
-		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Assigned", array("issueID"=>$issueID, "technicainID"=>$technicianID), null);
-	}
-	else if($version<11 && $version >=10) {
-		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Assigned", array("issueID"=>$issueID, "technicainID"=>$technicianID));
-	}
+	
+	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Assigned", array("issueID" => $issueID, "technicainID"=>$technicianID), null);
 
-  	$URL = $URL."&addReturn=success0" ; 
+  	$URL = $URL . "issues_view.php&return=success0" ; 
 	header("Location: {$URL}");
-
-
 }
 ?>

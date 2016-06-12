@@ -19,142 +19,104 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+include "./modules/Help Desk/moduleFunctions.php" ;
 
-if (isModuleAccessible($guid, $connection2)==FALSE) {
+if (isModuleAccessible($guid, $connection2) == FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print "You do not have access to this action." ;
 	print "</div>" ;
-}
-else {
-	//New PDO DB connection.
-	//Gibbon uses PDO to connect to databases, rather than the PHP mysql classes, as they provide paramaterised connections, which are more secure.
-	try {
-		$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-		$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-	}
-	catch(PDOException $e) {
-		echo $e->getMessage();
-	}
+	exit();
+} else {
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Create Issue') . "</div>" ;
+		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Create Issue') . "</div>" ;
 	print "</div>" ;
 
-	if (isset($_GET["addReturn"])) { $addReturn=$_GET["addReturn"] ; } else { $addReturn="" ; }
-	$addReturnMessage="" ;
-	$class="error" ;
-	if (!($addReturn=="")) {
-		if ($addReturn=="fail0") {
-			$addReturnMessage=_("You do not have access to this action.") ;	
+	if (isset($_GET['return'])) {
+		$editLink = null;
+		if (isset($_GET['issueID'])) {
+			$issueID = $_GET['issueID'];
+			$editLink = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID";
 		}
-		else if ($addReturn=="fail1") {
-			$addReturnMessage=_("Your request failed because your inputs were invalid.") ;	
-		}
-		else if ($addReturn=="fail2") {
-			$addReturnMessage=_("Your request failed due to a database error.") ;	
-		}
-		print "<div class='$class'>" ;
-			print $addReturnMessage;
-		print "</div>" ;
-	} 
+        returnProcess($guid, $_GET['return'], $editLink, null);
+    }
 
-	try {
-		$data=array();
-		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriority'" ;
-		$result=$connection2->prepare($sql);
-		$result->execute($data);
-	}
-	catch(PDOException $e) { }
-	$row=$result->fetch() ;
-	$priorityOptions = array();
-	foreach (explode(",", $row["value"]) as $type) {
-		if(!($type=="")) {
-			array_push($priorityOptions, $type);
-		}
-	}
-	try {
-		$data=array();
-		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issuePriorityName'" ;
-		$result=$connection2->prepare($sql);
-		$result->execute($data);
-	}
-	catch(PDOException $e) { }
-	$row=$result->fetch() ;
-	$priorityName = $row["value"];
-	try {
-		$data=array();
-		$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='issueCategory'" ;
-		$result=$connection2->prepare($sql);
-		$result->execute($data);
-	}
-	catch(PDOException $e) { }
-	$row=$result->fetch() ;
-	$categoryOptions = array();
-	foreach (explode(",", $row["value"]) as $type) {
-		if(!($type=="")) {
-			array_push($categoryOptions, $type);
-		}
-	}
+    $settings = getHelpDeskSettings($connection2);
+    $priorityOptions = array();
+    $priorityName = null;
+    $categoryOptions = array();
 
-	?>
-
-	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_createProccess.php" ?>">
-		<table class='smallIntBorder' cellspacing='0' style="width: 100%">
-			<tr>
-				<td style='width: 275px'>
-					<b><?php print _('Issue Name') ?> *</b><br/>
-				</td>
-				<td class="right" colspan=2>
-					<input name="name" id="name" maxlength=55 value="" type="text" style="width: 300px">
-					<script type="text/javascript">
-						var name=new LiveValidation('name');
-						name.add(Validate.Presence);
-					</script>
-				</td>
-			</tr>
-			<?php
+    while ($row = $settings->fetch()) {
+    	if ($row["name"] == "issuePriority") {
+			foreach (explode(",", $row["value"]) as $type) {
+				if ($type != "") {
+					array_push($priorityOptions, $type);
+				}
+			}
+    	} else if ($row["name"] == "issuePriorityName") {
+			$priorityName = $row["value"];
+    	} else if ($row["name"] == "issueCategory") {
+    		foreach (explode(",", $row["value"]) as $type) {
+				if ($type != "") {
+					array_push($categoryOptions, $type);
+				}
+			}
+    	}
+    }
+?>
+<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_createProccess.php" ?>">
+	<table class='smallIntBorder' cellspacing='0' style="width: 100%">
+		<tr>
+			<td style='width: 275px'>
+				<b>
+					<?php print __($guid, 'Issue Name') . " *" ?>
+				</b><br/>
+			</td>
+			<td class="right" colspan=2>
+				<input name="name" id="name" maxlength=55 value="" type="text" style="width: 300px">
+				<script type="text/javascript">
+					var name = new LiveValidation('name');
+					name.add(Validate.Presence);
+				</script>
+			</td>
+		</tr>
+		<?php
 			if(count($categoryOptions)>0) {
 				print "<tr>";
 					print "<td> ";
-						print "<b>". _('Category') ." *</b><br/>";
+						print "<b>". __($guid, 'Category') ." *</b><br/>";
 						print "<span style=\"font-size: 90%\"><i></i></span>";
 					print "</td>";
 					print "<td class=\"right\" colspan=2>";
 						print "<select name='category' id='category' style='width:302px'>" ;
 							print "<option value=''>Please select...</option>" ;
-							foreach($categoryOptions as $option) {
-								$selected="" ;
-								if ($option==$filter) {
-									$selected="selected" ;
+							foreach ($categoryOptions as $option) {
+								$selected = "" ;
+								if ($option == $filter) {
+									$selected = "selected" ;
 								}
 								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
 							}
 						print "</select>" ;
 						?>
-						<script type="text/javascript">
-							var name2=new LiveValidation('category');
-							name2.add(Validate.Presence);
-						</script>
+							<script type="text/javascript">
+								var name2=new LiveValidation('category');
+								name2.add(Validate.Presence);
+							</script>
 						<?php
 					print "</td>";
 				print "</tr>";
 			}
-			?>
-			<tr>
-				<td colspan=2>
-					<b><?php print _('Description') ?> *</b><br/>
-					<?php print getEditor($guid, TRUE, "description", "", 5, true, true, false); ?>					<!-- 
-<textarea name='description' id='description' maxlength=1000 rows=5 style='width: 300px'></textarea>
-					<script type="text/javascript">
-						var name3=new LiveValidation('description');
-						name3.add(Validate.Presence);
-					</script>
- -->
-				</td>
-			</tr>
-			<?php
+		?>
+		<tr>
+			<td colspan=2>
+				<b>
+					<?php print __($guid, 'Description') . " *" ?>
+				</b><br/>
+				<?php print getEditor($guid, TRUE, "description", "", 5, true, true, false); ?>
+			</td>
+		</tr>
+		<?php
 			if(count($priorityOptions)>0) {
 				print "<tr>";
 					print "<td> ";
@@ -164,89 +126,92 @@ else {
 					print "<td class=\"right\" colspan=2>";
 						print "<select name='priority' id='priority' style='width:302px'>" ;
 							print "<option value=''>Please select...</option>" ;
-							foreach($priorityOptions as $option) {
-								$selected="" ;
-								if ($option==$filter) {
-									$selected="selected" ;
+							foreach ($priorityOptions as $option) {
+								$selected = "" ;
+								if ($option == $filter) {
+									$selected = "selected" ;
 								}
 								print "<option $selected value='" . $option . "'>". $option ."</option>" ;
 							}
 						print "</select>" ;
 						?>
-						<script type="text/javascript">
-							var name4=new LiveValidation('priority');
-							name4.add(Validate.Presence);
-						</script>
+							<script type="text/javascript">
+								var name4=new LiveValidation('priority');
+								name4.add(Validate.Presence);
+							</script>
 						<?php
 					print "</td>";
 				print "</tr>";
 			}
 			if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
-			?>
-				<tr>
-					<td>
-						<b>Create on behalf of</b><br/>
-						<span style=\"font-size: 90%\"><i>Leave blank if creating issue for self.</i></span>
-					</td>
-					<td class="right">
-						<select name='createFor' id='createFor' style='width:302px'>
-							<option value=''>Select...</option>
-							<?php
-								$allPeople = getAllPeople($connection2, false);
-								foreach($allPeople as $row) {
-									if(intval($row["gibbonPersonID"])!=$_SESSION[$guid]["gibbonPersonID"]) {
-										print "<option value='" . $row["gibbonPersonID"] . "'>". $row['surname'] . ", " . $row['preferredName'] ."</option>" ;
+				?>
+					<tr>
+						<td>
+							<b>Create on behalf of</b><br/>
+							<span style=\"font-size: 90%\"><i>Leave blank if creating issue for self.</i></span>
+						</td>
+						<td class="right">
+							<select name='createFor' id='createFor' style='width:302px'>
+								<option value=''>Select...</option>
+								<?php
+									$allPeople = getAllPeople($connection2, false);
+									foreach ($allPeople as $row) {
+										if (intval($row["gibbonPersonID"]) != $_SESSION[$guid]["gibbonPersonID"]) {
+											print "<option value='" . $row["gibbonPersonID"] . "'>". $row['surname'] . ", " . $row['preferredName'] ."</option>" ;
+										}
 									}
-								}
-							?>
-						</select>
-					</td>
-				</tr>
-			<?php
+								?>
+							</select>
+						</td>
+					</tr>
+				<?php
 			}
-			?>
-			<tr>
-				<td>
-					<b>Privacy Setting *</b><br/>
-					<span style=\"font-size: 90%\"><i>If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.</i></span>
-				</td>
-				<td class="right">
-					<select name='privacySetting' id='privacySetting' style='width:302px'>
-						<?php
-							try {
-								$data=array(); 
-								$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
-								$result=$connection2->prepare($sql);
-								$result->execute($data);
-							}
-							catch(PDOException $e) { }
-							$row=$result->fetch() ;
-							$privacySetting = $row['value'];
-							print "<option value='" . $privacySetting . "'>". $privacySetting ."</option>" ;
-							$options = array("Everyone", "Related", "Owner", "No one");
-							foreach($options as $option) {
-								if($option != $privacySetting)print "<option value='" . $option . "'>". $option ."</option>" ;
-							}
-						?>
-					</select>
-					<script type="text/javascript">
-						var name5=new LiveValidation('privacySetting');
-						name5.add(Validate.Presence);
-					</script>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<span style="font-size: 90%"><i>* <?php print _("denotes a required field") ; ?></i></span>
-				</td>
-				<td class="right">
-					<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-					<input type="submit" value="<?php print _("Submit") ; ?>">
-				</td>
-			</tr>
-		</table>
-	</form>
+		?>
+		<tr>
+			<td>
+				<b>Privacy Setting *</b><br/>
+				<span style=\"font-size: 90%\"><i>If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.</i></span>
+			</td>
+			<td class="right">
+				<select name='privacySetting' id='privacySetting' style='width:302px'>
+					<?php
+						try {
+							$data = array(); 
+							$sql = "SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
+							$result = $connection2->prepare($sql);
+							$result->execute($data);
+						}
+						catch (PDOException $e) {
+						}
 
-	<?php
+						$row = $result->fetch() ;
+						$privacySetting = $row['value'];
+						print "<option value='" . $privacySetting . "'>". $privacySetting ."</option>" ;
+						$options = array("Everyone", "Related", "Owner", "No one");
+						foreach ($options as $option) {
+							if($option != $privacySetting) {
+								print "<option value='" . $option . "'>". $option ."</option>" ;
+							}
+						}
+					?>
+				</select>
+				<script type="text/javascript">
+					var name5=new LiveValidation('privacySetting');
+					name5.add(Validate.Presence);
+				</script>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<span style="font-size: 90%"><i>* <?php print __($guid, "denotes a required field") ; ?></i></span>
+			</td>
+			<td class="right">
+				<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
+				<input type="submit" value="<?php print __($guid, "Submit") ; ?>">
+			</td>
+		</tr>
+	</table>
+</form>
+<?php
 }
 ?>

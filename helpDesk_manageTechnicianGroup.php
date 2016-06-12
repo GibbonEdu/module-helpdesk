@@ -18,130 +18,101 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 @session_start() ;
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+
+include "./modules/Help Desk/moduleFunctions.php" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")==FALSE) {
-  //Acess denied
-  print "<div class='error'>" ;
-    print _("You do not have access to this action.") ;
-  print "</div>" ;
-}
-else {
-  //Proceed!
-  print "<div class='trail'>" ;
-  print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Manage Technician Groups') . "</div>" ;
-  print "</div>" ;
-  
-  if (isset($_GET["addReturn"])) { $addReturn=$_GET["addReturn"] ; } else { $addReturn="" ; }
-  $addReturnMessage="" ;
-  $class="error" ;
-  if (!($addReturn=="")) {
-    if ($addReturn=="fail0") {
-      $addReturnMessage=_("Your request failed because you do not have access to this action.") ;
-    }
-    else if ($addReturn=="fail2") {
-      $addReturnMessage=_("Your request failed due to a database error.") ;
-    }
-    else if ($addReturn=="fail3") {
-      $addReturnMessage=_("Your request failed because your inputs were invalid.") ;
-    }
-    else if ($addReturn=="fail4") {
-      $addReturnMessage="Your request failed because your inputs were invalid." ;
-    }
-    else if ($addReturn=="fail5") {
-      $addReturnMessage="Your request was successful, but some data was not properly saved." ;
-    }
-    else if ($addReturn=="success0") {
-      $addReturnMessage=_("Your request was completed successfully. You can now add another record if you wish.") ;
-      $class="success" ;
-    }
-    print "<div class='$class'>" ;
-    print $addReturnMessage;
+    //Acess denied
+    print "<div class='error'>" ;
+        print __($guid, "You do not have access to this action.") ;
     print "</div>" ;
-  }
+} else {
+    //Proceed!
+    print "<div class='trail'>" ;
+        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Technician Groups') . "</div>" ;
+    print "</div>" ;
+  
+    if (isset($_GET['return'])) {
+        returnProcess($guid, $_GET['return'], null, array("errorA" => "Cannot delete last technician group."));
+    }
 
     $groupID = null;  
     $data=array();
     $whereGroup = "";
     if(isset($_GET['groupID'])) {
-      $groupID = $_GET['groupID'];
-      $data['groupID'] = $groupID;
-      $whereGroup = " WHERE groupID=:groupID";
+        $groupID = $_GET['groupID'];
+        $data['groupID'] = $groupID;
+        $whereGroup = " WHERE groupID=:groupID";
     }
 
-  try {
+    try {
+        $sql="SELECT * FROM helpDeskTechGroups" . $whereGroup . " ORDER BY helpDeskTechGroups.groupID ASC";
+        $result=$connection2->prepare($sql);
+        $result->execute($data);
     
-    $sql="SELECT * FROM helpDeskTechGroups" . $whereGroup . " ORDER BY helpDeskTechGroups.groupID ASC";
-    $result=$connection2->prepare($sql);
-    $result->execute($data);
-    
-    $sql2="SELECT * FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)" . $whereGroup;
-    $result2=$connection2->prepare($sql2);
-    $result2->execute($data);
-  } catch(PDOException $e) {
-    print $e;
-  }
-  $techs = $result2->fetchAll();
-  print "<h3>";
-    print "Technician Groups" ;
-  print "</h3>";
-  print "<table cellspacing='0' style='width: 100%'>" ;
-    print "<tr class='head'>" ;
-      print "<th>" ;
-        print _("Group Name") ;
-      print "</th>" ;
-      print "<th>" ;
-        print _("Technicians in group") ;
-      print "</th>" ;
-      print "<th>" ;
-        print _("Actions") ;
-      print "</th>" ;
-  print "</tr>" ;
+        $sql2="SELECT * FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)" . $whereGroup;
+        $result2=$connection2->prepare($sql2);
+        $result2->execute($data);
+    } catch (PDOException $e) {
+    }
 
-print "<div class='linkTop'>" ;
-    print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php'><img style='margin-left: 2px' title=" . _('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-  	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php'>" .  _('Create') . "</a>";
-  print "</div>" ;
-  if (! $result->rowcount() == 0){
-  $rowCount = 0;
-    while($row=$result->fetch()){
-    	if($rowCount%2 == 0) {
-		 	 print "<tr class='even'>";
-		  }
-		  else {
-		 	 print "<tr class='odd'>";
-		  }
-        print "<td>" . $row['groupName'] . "</td>" ;
-        print "<td> ";
-        $techsIn = "";
-          foreach($techs as $row2){
-        	if($row['groupID'] == $row2['groupID']) { $techsIn.= formatName($row2['title'],$row2['preferredName'],$row2['surname'], "Student", FALSE, FALSE) . ", "; }
-          }
-        $techsIn = substr($techsIn, 0, strlen($techsIn)-2);
-        if (strlen($techsIn) > 0) {
-          print $techsIn;
+    $techs = $result2->fetchAll();
+    print "<h3>";
+        print "Technician Groups" ;
+    print "</h3>";
+    print "<div class='linkTop'>" ;
+        print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php'><img style='margin-left: 2px' title=" . __($guid, 'Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
+        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php'>" .  __($guid, 'Create') . "</a>";
+    print "</div>" ;
+    print "<table cellspacing='0' style='width: 100%'>" ;
+        print "<tr class='head'>" ;
+            print "<th>" ;
+                print __($guid, "Group Name") ;
+            print "</th>" ;
+            print "<th>" ;
+                print __($guid, "Technicians in group") ;
+            print "</th>" ;
+            print "<th>" ;
+                print __($guid, "Actions") ;
+            print "</th>" ;
+        print "</tr>" ;
+
+        if (!$result->rowcount() == 0) {
+            $rowCount = 0;
+            while ($row = $result->fetch()) {
+                if ($rowCount % 2 == 0) {
+                    $class = "even";
+                } else {
+                    $class = "odd";
+                }
+                print "<tr class='$class'>"
+                    print "<td>" . $row['groupName'] . "</td>" ;
+                    print "<td> ";
+                        $techsIn = "";
+                        foreach($techs as $row2){
+                            if($row['groupID'] == $row2['groupID']) { $techsIn.= formatName($row2['title'],$row2['preferredName'],$row2['surname'], "Student", FALSE, FALSE) . ", "; }
+                        }
+                        $techsIn = substr($techsIn, 0, strlen($techsIn)-2);
+                        if (strlen($techsIn) > 0) {
+                            print $techsIn;
+                        } else {
+                            print "No one is currently in this group.";
+                        }
+                    print "</td>";
+                    print "<td>";
+                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_editTechnicianGroup.php&groupID=". $row['groupID'] ."'><img title=" . __($guid, 'Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
+                        if($result->rowcount() > 1) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDelete.php&groupID=". $row['groupID'] ."'><img title=" . __($guid, 'Delete Technician Group ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>"; }
+                    print"</td>" ;
+                print "</tr>" ;
+                $rowCount++;
+            }
         } else {
-          print "No one is currently in this group.";
+            print "<tr>";
+                print "<td colspan= 3>";
+                    print __($guid, "There are no records to display.");
+                print "</td>";
+            print "</tr>";
         }
-        print "</td>";
-        print "<td>";
-        	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_editTechnicianGroup.php&groupID=". $row['groupID'] ."'><img title=" . _('Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
-        	if($result->rowcount() > 1) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDelete.php&groupID=". $row['groupID'] ."'><img title=" . _('Delete Technician Group ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>"; }
-//         	print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_addTechsToGroup.php&groupID=". $row['groupID'] ."'><img title=" . _('Add ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new_multi.png'/></a>";
-        print"</td>" ;
-
-      print "</tr>" ;
-	$rowCount++;
-    }
-  } else {
-    print "<tr>";
-      print "<td colspan= 3>";
-        print _("There are no records to display.");
-      print "</td>";
-    print "</tr>";
-  }
-
-  print "</table>" ;
-
+    print "</table>" ;
 }
 ?>

@@ -23,73 +23,80 @@ include "../../config.php" ;
 include "./moduleFunctions.php" ;
 
 //New PDO DB connection
-try {
-  $connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-  $connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  $connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}
-catch(PDOException $e) {
-  echo $e->getMessage();
-}
+$pdo = new Gibbon\sqlConnection();
+$connection2 = $pdo->getConnection();
 
 @session_start() ;
 
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/helpDesk_manageTechnicians.php" ;
+$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_setTechGroup.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")==FALSE) {
-	$URL = $URL."&addReturn=fail0" ; 
-  header("Location: {$URL}");
-}
-else {
-  //Proceed!
-  if(isset($_GET["technicianID"])) {
-    $technicianID=$_GET["technicianID"] ;
-  }
-  
-  if(isset($_POST["group"])) {
-    $group=$_POST["group"] ;
-  }
-
-  if ($technicianID == "" || $group == "") {
-  	$URL = $URL."&addReturn=fail1" ; 
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
+    $URL = $URL."&return=fail0" ; 
     header("Location: {$URL}");
-  }
-  else {
-    //Write to database
+} else {
+    //Proceed!
+    $techFail = false;
+    if (isset($_GET["technicianID"])) {
+        $technicianID=$_GET["technicianID"] ;
+        if ($group == "") {
+            $techFail = true;
+        }
+    }
+    else {
+        $techFail = true;
+    }
 
+    if ($techFail) {
+        $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php&return=error1";
+        header("Location: {$URL}");
+        exit();
+    }
+    else {
+        $URL .= "&technicianID=$technicianID";
+    }
+
+    $groupFail = false;
+    if (isset($_POST["group"])) {
+        $group = $_POST["group"] ;
+        if ($group == "") {
+            $groupFail = true;
+        }
+    }
+    else {
+        $groupFail = true;
+    }
+
+    if ($groupFail) {
+        $URL .= "&return=error1";
+        header("Location: {$URL}");
+        exit();
+    }
+
+    //Write to database
     try {
         $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-		if($gibbonModuleID == null) {
-			throw new PDOException("Invalid gibbonModuleID.");
-		}
-		
-      $data=array("technicianID"=> $technicianID, "groupID"=>$group);
-      $sql="UPDATE helpDeskTechnicians SET groupID=:groupID WHERE technicianID=:technicianID;" ;
-      $result=$connection2->prepare($sql);
-      $result->execute($data);
+        if ($gibbonModuleID == null) {
+            throw new PDOException("Invalid gibbonModuleID.");
+        }
+    
+        $data = array("technicianID" => $technicianID, "groupID" => $group);
+        $sql = "UPDATE helpDeskTechnicians SET groupID=:groupID WHERE technicianID=:technicianID;" ;
+        $result = $connection2->prepare($sql);
+        $result->execute($data);
     }
-    catch(PDOException $e) {
-      $URL = $URL."&addReturn=fail2" ; 
-      header("Location: {$URL}");
-      exit();
+    catch (PDOException $e) {
+        $URL .= "&return=fail2" ; 
+        header("Location: {$URL}");
+        exit();
     }
-
-    include "../../version.php";
-
-    if($version>=11) {
-      setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Set", array("technicianID"=>$technicianID, "groupID"=>$group), null);
-    }
-    else if($version<11 && $version >=10) {
-      setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Set", array("technicianID"=>$technicianID, "groupID"=>$group));
-    }
+    
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Set", array("technicianID"=>$technicianID, "groupID"=>$group), null);
 
     //Success 0
-    $URL = $URL."&addReturn=success0" ; 
+    $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php&return=success0" ; 
     header("Location: {$URL}");
-
-  }
 }
 ?>

@@ -23,73 +23,62 @@ include "../../config.php" ;
 include "./moduleFunctions.php" ;
 
 //New PDO DB connection
-try {
-  $connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-  $connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  $connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}
-catch(PDOException $e) {
-  echo $e->getMessage();
-}
+$pdo = new Gibbon\sqlConnection();
+$connection2 = $pdo->getConnection();
 
 @session_start() ;
 
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php" ;
+$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")==FALSE) {
-  //Fail 0
-  $URL=$URL . "&addReturn=fail0" ;
-  header("Location: {$URL}");
-}
-else {
-  //Proceed!
-  if(isset($_GET["technicianID"])) {
-    $technicianID=$_GET["technicianID"] ;
-  }
-  else {
-    $URL=$URL . "&addReturn=fail1" ;
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
+    //Fail 0
+    $URL = $URL . "&return=error0" ;
     header("Location: {$URL}");
-  }
-  //Write to database
+} else {
+    //Proceed!
+    if (isset($_GET["technicianID"])) {
+        $technicianID = $_GET["technicianID"] ;
+    } else {
+        $URL = $URL . "&return=error1" ;
+        header("Location: {$URL}");
+    }
+    
+    //Write to database
+    try {
+        $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+        if ($gibbonModuleID == null) {
+            throw new PDOException("Invalid gibbonModuleID.");
+        }
+    
+        $data = array("technicianID" => $technicianID);
+    
+        $sql = "SELECT gibbonPersonID FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
+        $result = $connection2->prepare($sql3);
+        $result->execute($data);
 
-  try {
-    $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-	if($gibbonModuleID == null) {
-		throw new PDOException("Invalid gibbonModuleID.");
-	}
-	
-	$data=array("technicianID" => $technicianID) ;
-    $sql3="SELECT gibbonPersonID FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
-    $result3=$connection2->prepare($sql3);
-    $result3->execute($data);
-	$row3=$result3->fetch();
-	
-    $sql="DELETE FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
-    $result=$connection2->prepare($sql);
-    $result->execute($data);
+        $sql2 = "DELETE FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
+        $result2 = $connection2->prepare($sql);
+        $result2->execute($data);
 
-    $sql2="UPDATE helpDeskIssue SET helpDeskIssue.technicianID=null, helpDeskIssue.status='Unassigned' WHERE helpDeskIssue.technicianID=:technicianID" ;
-    $result2=$connection2->prepare($sql2);
-    $result2->execute($data);
-  } catch(PDOException $e) {
-    //Fail 2
-    $URL = $URL."&addReturn=fail2" ; 
-    header("Location: {$URL}");
-  }
-  include "../../version.php";
+        $sql3 = "UPDATE helpDeskIssue SET helpDeskIssue.technicianID=null, helpDeskIssue.status='Unassigned' WHERE helpDeskIssue.technicianID=:technicianID" ;
+        $result3 = $connection2->prepare($sql2);
+        $result3->execute($data);
+
+        
+    } catch (PDOException $e) {
+        //Fail 2
+        $URL = $URL."&return=error2" ; 
+        header("Location: {$URL}");
+    }
   
-  if($version>=11) {
-    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID"=>$row3['gibbonPersonID']), null);
-  }
-  else if($version<11 && $version >=10) {
-    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID"=>$row3['gibbonPersonID']));
-  }
-
-  //Success 0
-  $URL=$URL . "&addReturn=success0" ;
-  header("Location: {$URL}");
+    $row = $result->fetch();
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID" => $row['gibbonPersonID']), null);
+  
+    //Success 0
+    $URL = $URL . "&return=success0" ;
+    header("Location: {$URL}");
 }
 ?>
