@@ -18,110 +18,93 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 @session_start() ;
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
+include "./modules/Help Desk/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print _("You do not have access to this action.") ;
+		print __($guid, "You do not have access to this action.") ;
 	print "</div>" ;
-}
-else {
+} else {
 	$issueID = null;
-	if(isset($_GET["issueID"])){ 
+	if (isset($_GET["issueID"])) { 
 		$issueID = $_GET["issueID"]; 
-	} 
+	} else {
+		print "<div class='error'>" ;
+			print __($guid, "No issue selected.") ;
+		print "</div>" ;
+		exit();
+	}
+
 	$isReassign = false;
-	if(hasTechnicianAssigned($connection2, $issueID)) {
+	if (hasTechnicianAssigned($connection2, $issueID)) {
 		$isReassign = true;
 	}
-	
-	if($isReassign) {
-		if(!getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reassignIssue")) {
-			print "<div class='error'>" ;
-				print _("You do not have access to this action.") ;
-			print "</div>" ;
-			exit();
-		}
+
+	$permission = "assignIssue";
+
+	if ($isReassign) {
+		$permission = "reassignIssue";
 	}
-	else {
-		if(!getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
-			print "<div class='error'>" ;
-				print _("You do not have access to this action.") ;
-			print "</div>" ;
-			exit();
-		}
+
+	if (!getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], $permission)) {
+		print "<div class='error'>" ;
+			print __($guid, "You do not have access to this action.") ;
+		print "</div>" ;
+		exit();
 	}
 	
 	//Proceed!
 	print "<div class='trail'>" ;
-	if($isReassign) { print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Reassign Issue') . "</div>" ; }
-	else { print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . _("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . _(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . _('Assign Issue') . "</div>" ; }
+		$title = "Assign Issue";
+		if ($isReassign) {
+			$title = "Reassign Issue";
+		}
+		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, $title) . "</div>" ;
 	print "</div>" ;
 	
 	
-	if (isset($_GET["updateReturn"])) { $updateReturn=$_GET["updateReturn"] ; } else { $updateReturn="" ; }
-	
-	$updateReturnMessage="" ;
-	$class="error" ;
-	if (!($updateReturn=="")) {
-		if ($updateReturn=="fail0") {
-			$updateReturnMessage=_("Your request failed because you do not have access to this action.") ;	
-		}
-		else if ($updateReturn=="fail1") {
-			$updateReturnMessage=_("Your request failed because your inputs were invalid.") ;	
-		}
-		else if ($updateReturn=="fail2") {
-			$updateReturnMessage=_("One or more of the fields in your request failed due to a database error.") ;	
-		}
-		else if ($updateReturn=="fail3") {
-			$updateReturnMessage=_("Your request failed because your inputs were invalid.") ;	
-		}
-		else if ($updateReturn=="success0") {
-			$updateReturnMessage=_("Your request was completed successfully.") ;	
-			$class="success" ;
-		}
-		print "<div class='class'>" ;
-			print $updateReturnMessage;
-		print "</div>" ;
-	} 
+	if (isset($_GET['return'])) {
+        returnProcess($guid, $_GET['return'], null, null);
+    }
 	
 	$technicians = getAllTechnicians($connection2);
-	
+
 	?>
 	
-	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "	/modules/" . $_SESSION[$guid]["module"] . "/issues_assignProcess.php?issueID=" . $issueID ?>">
+	<form method="post" action="<?php print $_SESSION[$guid]['absoluteURL'] . '/modules/Help Desk/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission ?>">
 		<table class='smallIntBorder' cellspacing='0' style="width: 100%">	
 			<tr>
-					<td>
-						<?php print "<b>". _('Technicians') ." *</b><br/>";?>
-						<span style=\"font-size: 90%\"><i></i></span>
-					</td>
-					<td class=\"right\">
-						<select name='technician' id='technician' style='width:302px'>
-						<?php
-							foreach($technicians as $option) {
-								if(!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) { 
-									if($isReassign) {
-										if(getTechWorkingOnIssue($connection2, $issueID)["personID"] != $option["gibbonPersonID"]) { print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;  }
-									}
-									else {								
-										print "<option $selected value='" . $option["gibbonPersonID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ; 
-									}
+				<td>
+					<b>
+						<?php print __($guid, 'Technicians') ." *"; ?>
+					</b><br/>
+				</td>
+				<td class=\"right\">
+					<select name='technician' id='technician' style='width:302px'>
+					<?php
+						foreach ($technicians as $option) {
+							if (!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) { 
+								if ($isReassign) {
+									if (getTechWorkingOnIssue($connection2, $issueID)["personID"] != $option["gibbonPersonID"]) {
+										print "<option value='" . $option["technicianID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;
+									} 
+								} else {								
+									print "<option value='" . $option["technicianID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ; 
 								}
 							}
-						?>
-						</select>
-					</td>
-				</tr>
+						}
+					?>
+					</select>
+				</td>
+			</tr>
 			<tr>
 				<td>
-					<span style="font-size: 90%"><i>* <?php print _("denotes a required field") ; ?></i></span>
+					<span style="font-size: 90%"><i>* <?php print __($guid, "denotes a required field") ; ?></i></span>
 				</td>
 				<td class="right">
-					<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-					<input type="submit" value="<?php print _("Submit") ; ?>">
+					<input type="submit" value="<?php print __($guid, "Submit") ; ?>">
 				</td>
 			</tr>
 		</table>

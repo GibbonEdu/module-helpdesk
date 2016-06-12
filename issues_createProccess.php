@@ -23,119 +23,112 @@ include "../../config.php" ;
 include "./moduleFunctions.php" ;
 
 //New PDO DB connection
-try {
-  $connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-	$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}
-catch(PDOException $e) {
-  echo $e->getMessage();
-}
+$pdo = new Gibbon\sqlConnection();
+$connection2 = $pdo->getConnection();
 
 @session_start() ;
 
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) ;
+$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.php")==FALSE) {
-	$URL.= "&addReturn=fail0";
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.php") == FALSE) {
+	$URL.= "issues_view.php&return=error0";
 	header("Location: {$URL}");
-}
-else {
+} else {
 
 	$personID = $_SESSION[$guid]["gibbonPersonID"];
 	//Proceed!
-	if(isset($_POST["name"])) {
-	  $name=$_POST["name"] ;
+	if (isset($_POST["name"])) {
+	  	$name = $_POST["name"] ;
 	}
+
 	$category = "";
-	if(isset($_POST["category"])) {
-	  $category=$_POST["category"] ;
+	if (isset($_POST["category"])) {
+	  	$category = $_POST["category"] ;
 	}
-	if(isset($_POST["description"])) {
-	  $description=$_POST["description"] ;
+
+	$description = "";
+	if (isset($_POST["description"])) {
+	  	$description = $_POST["description"] ;
 	}
+
 	$priority = "";
-	if(isset($_POST["priority"])) {
-	  $priority=$_POST["priority"] ;
+	if (isset($_POST["priority"])) {
+	  	$priority = $_POST["priority"] ;
 	}
 	
 	$createdByID = $_SESSION[$guid]["gibbonPersonID"];
 	$personID = $_SESSION[$guid]["gibbonPersonID"];
-	if(isset($_POST["createFor"]) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
-	  if($_POST["createFor"] != 0) {
-		  $personID = $_POST["createFor"];
-		  $createdByID = $_SESSION[$guid]["gibbonPersonID"];
-	  }
+	if (isset($_POST["createFor"]) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
+	  	if($_POST["createFor"] != 0) {
+		  	$personID = $_POST["createFor"];
+		  	$createdByID = $_SESSION[$guid]["gibbonPersonID"];
+	  	}
 	}
 	
-	if(isset($_POST["privacySetting"])) {
+	if (isset($_POST["privacySetting"])) {
 		$privacySetting = $_POST["privacySetting"];
-	}
-	else {
+	} else {
 		try {
-			$data=array(); 
-			$sql="SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
-			$result=$connection2->prepare($sql);
+			$data = array(); 
+			$sql = "SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
+			$result = $connection2->prepare($sql);
 			$result->execute($data);
+		} catch (PDOException $e) {
 		}
-		catch(PDOException $e) { }
-		$row=$result->fetch() ;
+
+		$row = $result->fetch() ;
 		$privacySetting = $row['value'];
 	}
 
-	if ($name=="" || $description=="") {
+	if ($name == "" || $description == "") {
 		//Fail 3
-		$URL=$URL  . "/issues_create.php&addReturn=fail1" ;
+		$URL = $URL  . "issues_create.php&return=error1" ;
 		header("Location: {$URL}");
-	}
-	else {
-		$date=date("Y-m-d") ;
+		exit();
+	} else {
+		$date = date("Y-m-d") ;
 		//Write to database
 		try {
 			$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
 			if($gibbonModuleID == null) {
 				throw new PDOException("Invalid gibbonModuleID.");
 			}
-			$data=array("technicianID"=>null, "gibbonPersonID"=> $personID, "name"=> $name, "description"=> $description, "status"=> "Unassigned", "category"=> $category, "priority"=> $priority, "gibbonSchoolYearID"=> $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID"=> $createdByID, "privacySetting"=> $privacySetting, "datee"=> $date);
-			$sql="INSERT INTO helpDeskIssue SET technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID, privacySetting=:privacySetting, `date`=:datee" ;
-      		$result=$connection2->prepare($sql);
+
+			$data = array("technicianID" => null, "gibbonPersonID" => $personID, "name" => $name, "description" => $description, "status" => "Unassigned", "category" => $category, "priority" => $priority, "gibbonSchoolYearID" => $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID" => $createdByID, "privacySetting" => $privacySetting, "datee" => $date);
+			$sql = "INSERT INTO helpDeskIssue SET technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID, privacySetting=:privacySetting, `date`=:datee" ;
+      		$result = $connection2->prepare($sql);
 			$result->execute($data);
-		}
-		catch(PDOException $e) {
-			$URL=$URL . "/issues_create.php&addReturn=fail2";
+		} catch (PDOException $e) {
+			$URL=$URL . "issues_create.php&return=error2";
 			header("Location: {$URL}");
 			break ;
 		}
 
 		$issueID = $connection2->lastInsertId();
-		if(isset($_POST["createFor"])) { if($_POST["createFor"] != 0) { setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf (". $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); } }
+		if (isset($_POST["createFor"])) {
+			if ($_POST["createFor"] != 0) {
+				setNotification($connection2, $guid, $personID, "A new issue has been created on your behalf (". $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID); 
+			}
+		}
 		notifyTechnican($connection2, $guid, $issueID, $name, $personID);
 		
-		$array=array("issueID"=>$issueID);
+		$array = array("issueID" =>$issueID);
 		$title = "Issue Created";
-		if(isset($_POST["createFor"])) { 
-			if($_POST["createFor"] != 0) {
+		if (isset($_POST["createFor"])) { 
+			if ($_POST["createFor"] != 0) {
 				$array['technicianID'] = getTechnicianID($connection2, $createdByID);
 				$title = "Issue Created (for Another Person)";
 			}
 		}
-		include "../../version.php";
-		if($version>=11) {
-			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], $title, $array, null);
-		}
-		else if($version<11 && $version >=10) {
-
-			setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], $title, $array);
-		}
-
-		//Success 0 aka Created
-		$URL=$URL . "/issues_discussView.php&issueID=" . $issueID . "&addReturn=success0" ;
-		header("Location: {$URL}");
-
+		
+		setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], $title, $array, null);
 	
+		//Success 0 aka Created
+		$URL = $URL . "issues_create.php&issueID=" . $issueID . "&return=success0" ;
+		header("Location: {$URL}");
 	}
 }
 ?>
