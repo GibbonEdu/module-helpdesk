@@ -237,3 +237,7 @@ Updated format to match Gibbon Core.
 Implemented new Return System.
 Removed Log compatibility
 Fixed an issue where helpDesk_statisticsDetail.php would default the title to the "Issue Created (for Another Person)".
+
+v1.1.01
+-------
+Fixed an installation bug.
