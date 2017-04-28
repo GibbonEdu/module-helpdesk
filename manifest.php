@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="1.1.01" ;
+$version="1.1.02" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/raynichc/helpdesk" ;
 
@@ -60,7 +60,7 @@ $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSettingsID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
+$moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
 VALUES
 (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
 (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
