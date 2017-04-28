@@ -234,4 +234,10 @@ $count++;
 $sql[$count][0]="1.1.01" ;
 $sql[$count][1]="
 ";
+
+//v1.1.02
+$count++;
+$sql[$count][0]="1.1.02" ;
+$sql[$count][1]="
+";
 ?>
