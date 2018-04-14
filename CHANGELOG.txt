@@ -245,3 +245,8 @@ Fixed an installation bug.
 v1.1.02
 -------
 Properly fixed the installation bug.
+
+v1.1.03
+-------
+Fixed a bug that would prevent a user from creating an issue.
+Fixed a bug that would prevent a user from viewing their own issue.

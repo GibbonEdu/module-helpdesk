@@ -104,7 +104,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.ph
 		} catch (PDOException $e) {
 			$URL=$URL . "issues_create.php&return=error2";
 			header("Location: {$URL}");
-			break ;
+			exit();
 		}
 
 		$issueID = $connection2->lastInsertId();
