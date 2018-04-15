@@ -85,7 +85,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 } else {
                     $class = "odd";
                 }
-                print "<tr class='$class'>"
+                print "<tr class='$class'>";
                     print "<td>" . $row['groupName'] . "</td>" ;
                     print "<td> ";
                         $techsIn = "";
