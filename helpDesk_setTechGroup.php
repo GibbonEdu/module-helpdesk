@@ -61,7 +61,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     $tech=$result2->fetch();
 ?>
 
-    <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . " /modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroupProcess.php?technicianID=$technicianID" ?>">
+    <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroupProcess.php?technicianID=$technicianID" ?>">
         <table class='smallIntBorder' cellspacing='0' style="width: 100%">
             <tr>
                 <td>
