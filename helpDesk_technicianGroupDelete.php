@@ -24,25 +24,25 @@ include "./modules/Help Desk/moduleFunctions.php" ;
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
     //Acess denied
     print "<div class='error'>" ;
-        print __($guid, "You do not have access to this action.") ;
+        print __("You do not have access to this action.") ;
     print "</div>" ;
 } else {
     //Proceed!
     print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . __($guid, "Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . __($guid, 'Delete Technician Group') . "</div>" ;
+        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . __("Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . __('Delete Technician Group') . "</div>" ;
     print "</div>" ;
     
     $highestAction = getHighestGroupedAction($guid, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php", $connection2) ;
     if ($highestAction == FALSE) {
         print "<div class='error'>" ;
-        print __($guid, "The highest grouped action cannot be determined.") ;
+        print __("The highest grouped action cannot be determined.") ;
         print "</div>" ;
         exit();
     }
 
     if ($highestAction != "Manage Technician Groups") { 
         print "<div class='error'>" ;
-            print __($guid, "You do not have access to this action.") ;
+            print __("You do not have access to this action.") ;
         print "</div>" ;
         exit();
     }
@@ -52,7 +52,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $groupID = $_GET["groupID"]; 
     } else {
         print "<div class='error'>" ;
-            print __($guid, "No group selected.") ;
+            print __("No group selected.") ;
         print "</div>" ;
         exit();
     }
@@ -67,7 +67,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     if ($result->rowcount() == 1) {
         print "<div class='error'>" ;
-            print __($guid, "Cannot delete last technician group.") ;
+            print __("Cannot delete last technician group.") ;
         print "</div>" ;
         exit();
     }
@@ -83,7 +83,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             <tr>
                 <td>
                     <b>
-                        <?php print __($guid, 'New Technician Group') . " *"; ?>
+                        <?php print __('New Technician Group') . " *"; ?>
                     </b><br/>
                 </td>
                 <td class="right">
@@ -113,11 +113,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             </tr>
             <tr>
                 <td>
-                    <span style="font-size: 90%"><i>* <?php print __($guid, "denotes a required field") ; ?></i></span>
+                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
                 </td>
                 <td class="right">
                     <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-                    <input type="submit" value="<?php print __($guid, "Submit") ; ?>">
+                    <input type="submit" value="<?php print __("Submit") ; ?>">
                 </td>
             </tr>
         </table>

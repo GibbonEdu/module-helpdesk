@@ -24,12 +24,12 @@ include "./modules/Help Desk/moduleFunctions.php" ;
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
     //Acess denied
     print "<div class='error'>" ;
-        print __($guid, "You do not have access to this action.") ;
+        print __("You do not have access to this action.") ;
     print "</div>" ;
 } else {
     //Proceed!
     print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Technicians') . "</div>" ;
+        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Technicians') . "</div>" ;
     print "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -49,8 +49,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     }
 
     print "<div class='linkTop'>" ;
-        print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php'><img style='margin-left: 2px' title=" . __($guid, 'Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_createTechnician.php'>" .  __($guid, 'Create') . "</a>";
+        print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php'><img style='margin-left: 2px' title=" . __('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
+        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_createTechnician.php'>" .  __('Create') . "</a>";
     print "</div>" ;
   
     print "<h3>";
@@ -59,16 +59,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     print "<table cellspacing='0' style='width: 100%'>" ;
         print "<tr class='head'>" ;
             print "<th>" ;
-                print __($guid, "Name") ;
+                print __("Name") ;
             print "</th>" ;
             print "<th>" ;
-                print __($guid, "Working On") ;
+                print __("Working On") ;
             print "</th>" ;
             print "<th>" ;
-                print __($guid, "Group") ;
+                print __("Group") ;
             print "</th>" ;
             print "<th>" ;
-                print __($guid, "Action") ;
+                print __("Action") ;
             print "</th>" ;
         print "</tr>" ;
 
@@ -98,9 +98,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                         print $row["groupName"];
                     print "</td>";
                     print "<td>";
-                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroup.php&technicianID=". $row['technicianID'] ."'><img title=" . __($guid, 'Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
-                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianStats.php&technicianID=". $row['technicianID'] ."'><img title=" . __($guid, 'Stats  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/internalAssessment.png'/></a>";       
-                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDeleteProcess.php?technicianID=". $row['technicianID'] ."'><img title=" . __($guid, 'Delete  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>";
+                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroup.php&technicianID=". $row['technicianID'] ."'><img title=" . __('Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
+                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianStats.php&technicianID=". $row['technicianID'] ."'><img title=" . __('Stats  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/internalAssessment.png'/></a>";       
+                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDeleteProcess.php?technicianID=". $row['technicianID'] ."'><img title=" . __('Delete  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>";
                     print "</td>";
                 print "</tr>" ;
                 $rowCount++;
@@ -108,7 +108,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         } else {
             print "<tr>";
                 print "<td colspan= 4>";
-                    print __($guid, "There are no records to display.");
+                    print __("There are no records to display.");
                 print "</td>";
             print "</tr>";
         }

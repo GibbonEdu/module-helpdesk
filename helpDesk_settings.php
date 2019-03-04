@@ -24,12 +24,12 @@ include './modules/Help Desk/moduleFunctions.php';
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 	print "</div>" ;
 } else {
 	//Proceed!
 	print "<div class='trail'>" ;
-		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Help Desk Settings') . "</div>" ;
+		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Help Desk Settings') . "</div>" ;
 	print "</div>" ;
 	
 	if (isset($_GET['return'])) {
@@ -44,9 +44,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_setting
 				while($row = $result->fetch()) {
 					print "<tr>";
 						print "<td style='width:275px'>";
-							print "<b>" . __($guid, $row["nameDisplay"]) . "</b><br/>";
+							print "<b>" . __($row["nameDisplay"]) . "</b><br/>";
 							if ($row["description"] != "") {
-								print "<span style='font-size: 90%''><i>" . __($guid, $row["description"]) . "</i></span>";
+								print "<span style='font-size: 90%''><i>" . __($row["description"]) . "</i></span>";
 							}
 						print "</td>";
 						print "<td class='right'>";
@@ -76,11 +76,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_setting
 			?>	
 			<tr>
 				<td>
-					<span style="font-size: 90%"><i>* <?php print __($guid, "denotes a required field") ; ?></i></span>
+					<span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
 				</td>
 				<td class="right">
 					<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-					<input type="submit" value="<?php print __($guid, "Submit") ; ?>">
+					<input type="submit" value="<?php print __("Submit") ; ?>">
 				</td>
 			</tr>
 		</table>

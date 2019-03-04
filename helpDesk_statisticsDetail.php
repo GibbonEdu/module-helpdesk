@@ -24,7 +24,7 @@ include "./modules/Help Desk/moduleFunctions.php" ;
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
     //Acess denied
     print "<div class='error'>" ;
-        print __($guid, "You do not have access to this action.") ;
+        print __("You do not have access to this action.") ;
     print "</div>" ;
 } else {
     $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk" ;
@@ -32,13 +32,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $title = $_GET["title"];
     } else {
         print "<div class='error'>" ;
-            print __($guid, "No statistics selected.") ;
+            print __("No statistics selected.") ;
         print "</div>" ;
         exit();
     }
     //Proceed!
     print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_statistics.php'> Statistics</a> >      </div><div class='trailEnd'>" . __($guid, 'Detailed Statistics') . "</div>" ;
+        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_statistics.php'> Statistics</a> >      </div><div class='trailEnd'>" . __('Detailed Statistics') . "</div>" ;
     print "</div>" ;
 
     $extras = array();
@@ -124,13 +124,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate, null, null);
     
     print "<h3>" ;
-        print __($guid, "Filter") ;
+        print __("Filter") ;
     print "</h3>" ;
         print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "&title=$title'>" ;
             print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;
                 print "<tr>";
                 print "<td> ";
-                    print "<b>". __($guid, 'Start Date Filter') ."</b><br/>";
+                    print "<b>". __('Start Date Filter') ."</b><br/>";
                     print "<span style=\"font-size: 90%\"><i></i></span>";
                 print "</td>";
                 print "<td class=\"right\">";
@@ -160,7 +160,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             print "</tr>";
             print "<tr>";
                 print "<td> ";
-                    print "<b>".  __($guid, 'End Date Filter') ."</b><br/>";
+                    print "<b>".  __('End Date Filter') ."</b><br/>";
                     print "<span style=\"font-size: 90%\"><i></i></span>";
                 print "</td>";
                 print "<td class=\"right\">";
@@ -190,7 +190,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             print "</tr>";
             print "<tr>" ;
                 print "<td class='right' colspan=2>" ;
-                    print "<input type='submit' value='" . __($guid, 'Go') . "'>" ;
+                    print "<input type='submit' value='" . __('Go') . "'>" ;
                 print "</td>" ;
             print "</tr>" ;
         print"</table>" ;
@@ -202,10 +202,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     print "<table cellspacing='0' style='width: 100%'>" ;
         print "<tr class='head'>" ;
             print "<th>" ;
-                print __($guid, "Timestamp") ;
+                print __("Timestamp") ;
             print "</th>" ;
             print "<th>" ;
-                print __($guid, "Person") ;
+                print __("Person") ;
             print "</th>" ;
             foreach ($extras as $extraArray) {
                 print "<th>" ;
@@ -265,7 +265,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             $colspan = 2 + count($extras);
             print "<tr>";
                 print "<td colspan= $colspan>";
-                    print __($guid, "There are no records to display.");
+                    print __("There are no records to display.");
                 print "</td>";
             print "</tr>";
         }

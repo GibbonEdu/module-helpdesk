@@ -24,12 +24,12 @@ include "./modules/Help Desk/moduleFunctions.php" ;
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
     //Acess denied
     print "<div class='error'>" ;
-    print __($guid, "You do not have access to this action.") ;
+    print __("You do not have access to this action.") ;
     print "</div>" ;
 } else {
     //Proceed!
     print "<div class='trail'>" ;
-       print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . __($guid, "Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . __($guid, 'Create Technician Group') . "</div>" ;
+       print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . __("Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . __('Create Technician Group') . "</div>" ;
     print "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -47,7 +47,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         <table class = 'smallIntBorder' cellspacing = '0' style = "width: 100%">
             <tr>
                 <td style = 'width: 275px'>
-                    <b><?php print __($guid, 'Group Name') ?> *</b><br/>
+                    <b><?php print __('Group Name') ?> *</b><br/>
                 </td>
                 <td class = "right">
                     <input name = "groupName" id = "groupName" maxlength = 55 value = "" type = "text" style = "width: 300px">
@@ -59,10 +59,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             </tr>
             <tr>
                 <td>
-                    <span style = "font-size: 90%"><i>* <?php print __($guid, "denotes a required field") ; ?></i></span>
+                    <span style = "font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
                 </td>
                 <td class="right">
-                    <input type = "submit" value  = "<?php print __($guid, "Submit") ; ?>">
+                    <input type = "submit" value  = "<?php print __("Submit") ; ?>">
                 </td>
             </tr>
         </table>
