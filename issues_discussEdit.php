@@ -18,8 +18,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 @session_start() ;
-include "./modules/Help Desk/moduleFunctions.php" ;
 
+include __DIR__ . '/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !(isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
     //Acess denied

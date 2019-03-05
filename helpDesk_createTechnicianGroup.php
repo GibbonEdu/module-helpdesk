@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-include "./modules/Help Desk/moduleFunctions.php" ;
+include __DIR__ . '/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
     //Acess denied

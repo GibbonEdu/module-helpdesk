@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 @session_start() ;
 
 //Module includes
-include "./modules/Help Desk/moduleFunctions.php" ;
+include __DIR__ . '/moduleFunctions.php';
 
 if (isModuleAccessible($guid, $connection2) == false) {
     //Acess denied
