@@ -39,7 +39,7 @@ if (isset($_GET["groupID"])) {
     header("Location: {$URL}");
 }
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
     //Fail 0
     $URL = $URL . "&return=error0" ;
     header("Location: {$URL}");

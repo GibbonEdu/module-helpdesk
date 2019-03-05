@@ -33,7 +33,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false) {
     //Fail 0
       $URL = $URL . "issues_view.php&return=error0" ;
     header("Location: {$URL}");

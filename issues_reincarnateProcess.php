@@ -45,7 +45,7 @@ if ($issueID == "") {
 
 $allowed = isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || (relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reincarnateIssue"));
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == FALSE || !$allowed) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !$allowed) {
     //Fail 0
     $URL = $URL . "&return=error0" ;
     header("Location: {$URL}");

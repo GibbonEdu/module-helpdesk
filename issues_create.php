@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 include "./modules/Help Desk/moduleFunctions.php" ;
 
-if (isModuleAccessible($guid, $connection2) == FALSE) {
+if (isModuleAccessible($guid, $connection2) == false) {
     //Acess denied
     print "<div class='error'>" ;
         print "You do not have access to this action." ;
@@ -113,7 +113,7 @@ if (isModuleAccessible($guid, $connection2) == FALSE) {
                 <b>
                     <?php print __('Description') . " *" ?>
                 </b><br/>
-                <?php print getEditor($guid, TRUE, "description", "", 5, true, true, false); ?>
+                <?php print getEditor($guid, true, "description", "", 5, true, true, false); ?>
             </td>
         </tr>
         <?php

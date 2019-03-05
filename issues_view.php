@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 include "./modules/Help Desk/moduleFunctions.php" ;
 
-if (isModuleAccessible($guid, $connection2) == FALSE) {
+if (isModuleAccessible($guid, $connection2) == false) {
     //Acess denied
     print "<div class='error'>" ;
         print "You do not have access to this action." ;
@@ -41,7 +41,7 @@ if (isModuleAccessible($guid, $connection2) == FALSE) {
     }
 
     $highestAction = getHighestGroupedAction($guid, $_GET["q"], $connection2) ;
-    if ($highestAction == FALSE) {
+    if ($highestAction == false) {
         print "<div class='error'>" ;
         print __("The highest grouped action cannot be determined.") ;
         print "</div>" ;
@@ -504,7 +504,7 @@ if (isModuleAccessible($guid, $connection2) == FALSE) {
                     } else {
                         print "<span style='font-size: 85%; font-style: italic'>" . $descriptionText . "</span></td>" ;
                     }      
-                    print "<td><b>" .formatName($person['title'],$person['preferredName'],$person['surname'], "Student", FALSE, FALSE) . "</b>";
+                    print "<td><b>" .formatName($person['title'],$person['preferredName'],$person['surname'], "Student", false, false) . "</b>";
                         if ($renderCategory) {
                             print "<br/><span style='font-size: 85%; font-style: italic'>" . $row['category'] . "</span>" ;
                         }

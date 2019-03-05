@@ -41,7 +41,7 @@ if (isset($_GET["permission"])) {
       exit();
 }
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == FALSE || !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], $permission)) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], $permission)) {
     //Fail 0
       $URL = $URL . "issues_view.php&return=error0" ;
     header("Location: {$URL}");

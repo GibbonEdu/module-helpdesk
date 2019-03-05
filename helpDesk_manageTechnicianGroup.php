@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 include "./modules/Help Desk/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")==false) {
     //Acess denied
     print "<div class='error'>" ;
         print __("You do not have access to this action.") ;
@@ -90,7 +90,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                     print "<td> ";
                         $techsIn = "";
                         foreach($techs as $row2){
-                            if($row['groupID'] == $row2['groupID']) { $techsIn.= formatName($row2['title'],$row2['preferredName'],$row2['surname'], "Student", FALSE, FALSE) . ", "; }
+                            if($row['groupID'] == $row2['groupID']) { $techsIn.= formatName($row2['title'],$row2['preferredName'],$row2['surname'], "Student", false, false) . ", "; }
                         }
                         $techsIn = substr($techsIn, 0, strlen($techsIn)-2);
                         if (strlen($techsIn) > 0) {

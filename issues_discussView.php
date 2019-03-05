@@ -26,7 +26,7 @@ if ((!hasTechnicianAssigned($connection2, $_GET["issueID"]) && isTechnician($con
     $allowed = true;
 }
 
-if (isModuleAccessible($guid, $connection2) == FALSE || !$allowed) {
+if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     //Acess denied
     print "<div class='error'>" ;
         print "You do not have access to this action." ;
@@ -82,7 +82,7 @@ if (isModuleAccessible($guid, $connection2) == FALSE || !$allowed) {
     if (!isset($array2["gibbonPersonID"])) {
         $technicianName = "Unassigned" ;
     } else {
-        $technicianName = formatName($array2["title"] , $array2["preferredName"] , $array2["surname"] , "Student", FALSE, FALSE);
+        $technicianName = formatName($array2["title"] , $array2["preferredName"] , $array2["surname"] , "Student", false, false);
     }
 
     print "<div class='trail'>" ;
@@ -120,7 +120,7 @@ if (isModuleAccessible($guid, $connection2) == FALSE || !$allowed) {
         $tdWidth = "16.7%";
     }
 
-    $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", FALSE, FALSE);
+    $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", false, false);
     print "<h1>" . $row["issueName"] . "</h1>" ;
     print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
         print "<tr>" ;
@@ -147,7 +147,7 @@ if (isModuleAccessible($guid, $connection2) == FALSE || !$allowed) {
             if ($createdByShow) {
                 print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
                     print "<span style='font-size: 115%; font-weight: bold'>" . __('Created By') . "</span><br/>" ;
-                    print formatName($row4["title"] , $row4["preferredName"] , $row4["surname"] , "Student", FALSE, FALSE);
+                    print formatName($row4["title"] , $row4["preferredName"] , $row4["surname"] , "Student", false, false);
                 print "</td>" ;
             }
             print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
@@ -229,7 +229,7 @@ if (isModuleAccessible($guid, $connection2) == FALSE || !$allowed) {
                                             } catch (PDOException $e) {
                                             }
 
-                                            $techName = formatName($row5["title"] , $row5["preferredName"] , $row5["surname"] , "Student", FALSE, FALSE);
+                                            $techName = formatName($row5["title"] , $row5["preferredName"] , $row5["surname"] , "Student", false, false);
                                         }
                                         print "<td style='width: 12%; background-color:" . $bgc . "; color: #777'><i>". $techName . " " . __('said') . "</i>:</td>" ;
                                     }

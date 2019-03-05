@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 include "./modules/Help Desk/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == FALSE || !relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
     //Acess denied
     print "<div class='error'>" ;
         print "You do not have access to this action." ;
@@ -39,7 +39,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
                     <b>
                         <?php print __('Comment') ?>
                     </b><br/>
-                    <?php print getEditor($guid, TRUE, "comment", "", 5, true, true, false); ?>
+                    <?php print getEditor($guid, true, "comment", "", 5, true, true, false); ?>
                 </td>
             </tr>
             <tr>

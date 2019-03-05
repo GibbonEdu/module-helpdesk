@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 include "./modules/Help Desk/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
     //Acess denied
     print "<div class='error'>" ;
         print __("You do not have access to this action.") ;
@@ -33,14 +33,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     print "</div>" ;
 
     $highestAction = getHighestGroupedAction($guid, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php", $connection2) ;
-    if ($highestAction == FALSE) {
+    if ($highestAction == false) {
         print "<div class='error'>" ;
         print __("The highest grouped action cannot be determined.") ;
         print "</div>" ;
         exit();
     }
 
-    if ($highestAction != "Manage Technician Groups") { 
+    if ($highestAction != "Manage Technician Groups") {
         print "<div class='error'>" ;
             print __("You do not have access to this action.") ;
         print "</div>" ;
@@ -48,7 +48,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     }
 
     $groupID = null;
-    if (isset($_GET["groupID"])){ 
+    if (isset($_GET["groupID"])) {
         $groupID = $_GET["groupID"];
     } else {
         print "<div class='error'>" ;
@@ -79,7 +79,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     ?>
 
     <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . " /modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID ?>">
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">  
+        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
             <tr>
                 <td>
                     <b>
@@ -90,19 +90,19 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                     <select name='group' id='group' style='width:302px'>
                         <option value=''>Please select...</option>
                             <?php
-                                $group = null;
-                                if (isset($_GET['group'])) {
-                                    $group = $_GET['group']
-                                }
-                                while ($option = $result->fetch()) {
-                                    if ($groupID != $option["groupID"]) {
-                                        $selected = "";
-                                        if($option["groupID"] == $group) {
-                                            $selected = "selected";
-                                        }
-                                        print "<option $selected value='" . $option["groupID"] . "'>". $option["groupName"] ."</option>" ;
+                            $group = null;
+                            if (isset($_GET['group'])) {
+                                $group = $_GET['group'];
+                            }
+                            while ($option = $result->fetch()) {
+                                if ($groupID != $option["groupID"]) {
+                                    $selected = "";
+                                    if ($option["groupID"] == $group) {
+                                        $selected = "selected";
                                     }
+                                    print "<option $selected value='" . $option["groupID"] . "'>". $option["groupName"] ."</option>" ;
                                 }
+                            }
                             ?>
                     </select>
                     <script type="text/javascript">
