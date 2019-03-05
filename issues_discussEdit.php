@@ -29,7 +29,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
 } else {
 
     $issueID = null;
-    if (isset($_GET["issueID"])){ 
+    if (isset($_GET["issueID"])) {
         $issueID = $_GET["issueID"];
     } else {
         print "<div class='error'>" ;

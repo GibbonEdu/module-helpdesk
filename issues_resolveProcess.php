@@ -51,7 +51,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
             //Write to database
             try {
                 $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-                if($gibbonModuleID == null) {
+                if ($gibbonModuleID == null) {
                     throw new PDOException("Invalid gibbonModuleID.");
                 }
 
@@ -78,7 +78,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
                 } 
             }
 
-            if(isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
+            if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
                 $array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
             }
 

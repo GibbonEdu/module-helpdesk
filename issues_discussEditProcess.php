@@ -49,7 +49,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
         exit();
     }
 
-    if(!isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+    if (!isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
         $URL = $URL . "issues_view.php&return=error0" ;
         header("Location: {$URL}");
         exit();

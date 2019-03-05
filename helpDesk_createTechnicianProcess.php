@@ -56,7 +56,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         //Write to database
         try {
             $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-            if($gibbonModuleID == null) {
+            if ($gibbonModuleID == null) {
                 throw new PDOException("Invalid gibbonModuleID.");
             }
             $data = array("gibbonPersonID" => $person, "groupID" => $group);

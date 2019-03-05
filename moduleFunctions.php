@@ -104,7 +104,7 @@ function relatedToIssue($connection2, $issueID, $gibbonPersonID)
 
     $personIDs = getPeopleInvolved($connection2, $issueID);
     foreach ($personIDs as $personID) {
-        if ($personID == $gibbonPersonID) { 
+        if ($personID == $gibbonPersonID) {
             $isRelated = true;
         }
     }

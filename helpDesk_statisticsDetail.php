@@ -214,7 +214,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             }
         print "</tr>" ;
 
-        if (!$result->rowcount() == 0){
+        if (!$result->rowcount() == 0) {
             $rowCount = 0;
             while ($row = $result->fetch()){
                 $class = "odd";
@@ -235,21 +235,21 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                             print "<td>";
                                 $eString = str_replace("%extraInfo%", $array[$extraArray['extraKey']], $extraArray['extraString']);
 
-                                if (strpos($eString, "%groupName%") !== false) { 
+                                if (strpos($eString, "%groupName%") !== false) {
                                     $eString = str_replace("%groupName%", getGroup($connection2, $array[$extraArray['extraKey']])['groupName'], $eString);
                                 }
 
-                                if (strpos($eString, "%techName%") !== false) { 
+                                if (strpos($eString, "%techName%") !== false) {
                                     $techName = getTechnicianName($connection2, $array[$extraArray['extraKey']]);
                                     $eString = str_replace("%techName%", $techName['preferredName'] . " " . $techName['surname'], $eString);
                                 }
 
-                                if (strpos($eString, "%personName%") !== false) { 
+                                if (strpos($eString, "%personName%") !== false) {
                                     $personName = getPersonName($connection2, $array[$extraArray['extraKey']]);
                                     $eString = str_replace("%personName%", $personName['preferredName'] . " " .$personName['surname'], $eString);
                                 }
 
-                                if (strpos($eString, "%IDfromPost%") !== false) { 
+                                if (strpos($eString, "%IDfromPost%") !== false) {
                                     $issueID = getIssueIDFromPost($connection2, $array[$extraArray['extraKey']]);
                                     $eString = str_replace("%IDfromPost%", $issueID, $eString);
                                 }

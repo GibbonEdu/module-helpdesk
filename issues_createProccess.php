@@ -62,7 +62,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.ph
     $createdByID = $_SESSION[$guid]["gibbonPersonID"];
     $personID = $_SESSION[$guid]["gibbonPersonID"];
     if (isset($_POST["createFor"]) && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
-          if($_POST["createFor"] != 0) {
+          if ($_POST["createFor"] != 0) {
               $personID = $_POST["createFor"];
               $createdByID = $_SESSION[$guid]["gibbonPersonID"];
           }
@@ -93,7 +93,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.ph
         //Write to database
         try {
             $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-            if($gibbonModuleID == null) {
+            if ($gibbonModuleID == null) {
                 throw new PDOException("Invalid gibbonModuleID.");
             }
 
@@ -117,7 +117,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.ph
 
         $array = array("issueID" =>$issueID);
         $title = "Issue Created";
-        if (isset($_POST["createFor"])) { 
+        if (isset($_POST["createFor"])) {
             if ($_POST["createFor"] != 0) {
                 $array['technicianID'] = getTechnicianID($connection2, $createdByID);
                 $title = "Issue Created (for Another Person)";

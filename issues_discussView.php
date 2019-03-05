@@ -58,19 +58,19 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     }
 
     $privacySetting = $array2["privacySetting"];
-    if($array2["issueStatus"]=="Resolved" && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
-        if($privacySetting == "No one") {
+    if ($array2["issueStatus"]=="Resolved" && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+        if ($privacySetting == "No one") {
             print "<div class='error'>" ;
                 print "You do not have access to this action." ;
             print "</div>" ;
             exit();
-        } else if($privacySetting == "Related" && !relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+        } else if ($privacySetting == "Related" && !relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
             print "<div class='error'>" ;
                 print "You do not have access to this action." ;
             print "</div>" ;
             exit();
         }
-        else if($privacySetting == "Owner" && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+        else if ($privacySetting == "Owner" && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
             print "<div class='error'>" ;
                 print "You do not have access to this action." ;
             print "</div>" ;
@@ -153,7 +153,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
             print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
                 print "<span style='font-size: 115%; font-weight: bold'>" . __('Privacy') . "</span><br/>" ;
 
-                if (isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) { 
+                if (isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
                     print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussEdit.php&issueID=". $_GET["issueID"] . "'>" .  __($row["privacySetting"]);
                 } else {
                     print $row["privacySetting"];
@@ -193,13 +193,13 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                         print "<div style='margin: 0px' class='linkTop'>" ;
                             print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/issues_discussView.php&issueID=" . $_GET["issueID"] . "'>" . __('Refresh') . "<img style='margin-left: 5px' title='" . __('Refresh') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/refresh.png'/></a>" ;
                             print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussPost.php&issueID=" . $_GET["issueID"] . "'>" .  __('Add') . "<img style='margin-left: 5px' title='" . __('Add') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-                            if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+                            if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
                                 print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'>" .  __('Resolve');
                                 print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'><img title=" . __('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
                             }
                         print "</div>" ;
                     }
-                    if ($result3->rowCount() == 0){
+                    if ($result3->rowCount() == 0) {
                         print "<div class = 'error'>" ;
                             print __("There are no records to display.");
                         print "</div>";
@@ -218,7 +218,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                                         print "<td style='width: 12%; background-color:" . $bgc . "; color: #777'><i>". $studentName . " " . __('said') . "</i>:</td>" ;
                                     } else {
                                         $techName = $technicianName;
-                                        if (getTechWorkingOnIssue($connection2, $issueID)["personID"] != $row3["gibbonPersonID"]) { 
+                                        if (getTechWorkingOnIssue($connection2, $issueID)["personID"] != $row3["gibbonPersonID"]) {
                                             $data2=array("gibbonPersonID"=>$row3["gibbonPersonID"]) ;
 
                                             try {

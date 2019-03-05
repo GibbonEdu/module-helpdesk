@@ -58,7 +58,7 @@ if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) 
 
     try {
         $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-        if($gibbonModuleID == null) {
+        if ($gibbonModuleID == null) {
             throw new PDOException("Invalid gibbonModuleID.");
         }
 
@@ -97,7 +97,7 @@ if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) 
 
     $array = array("issueDiscussID" => $issueDiscussID);
 
-    if($isTech) {
+    if ($isTech) {
         $array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
     } 
 

@@ -89,7 +89,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     $row = getIssue($connection2, $issueID);
 
     $assign = "assigned";
-    if($permission == "reassignIssue") {
+    if ($permission == "reassignIssue") {
         $assign = "reassigned";
     }
     $tech = getTechWorkingOnIssue($connection2, $issueID);
@@ -102,7 +102,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     $personIDs = getPeopleInvolved($connection2, $issueID);
 
     foreach($personIDs as $personID) {
-        if($personID != $_SESSION[$guid]["gibbonPersonID"]) {
+        if ($personID != $_SESSION[$guid]["gibbonPersonID"]) {
             setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
         } 
     }    

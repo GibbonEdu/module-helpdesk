@@ -63,7 +63,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_setting
                                     $options = array("Everyone", "Related", "Owner", "No one");
                                     foreach($options as $option) {
                                         $selected = "";
-                                        if($option == $row["value"]) {
+                                        if ($option == $row["value"]) {
                                             $selected = "selected";
                                         }
                                         print "<option $selected value='" . $option . "'>". $option ."</option>" ;

@@ -39,7 +39,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     $groupID = null;
     $data=array();
     $whereGroup = "";
-    if(isset($_GET['groupID'])) {
+    if (isset($_GET['groupID'])) {
         $groupID = $_GET['groupID'];
         $data['groupID'] = $groupID;
         $whereGroup = " WHERE groupID=:groupID";
@@ -90,7 +90,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                     print "<td> ";
                         $techsIn = "";
                         foreach($techs as $row2){
-                            if($row['groupID'] == $row2['groupID']) { $techsIn.= formatName($row2['title'],$row2['preferredName'],$row2['surname'], "Student", false, false) . ", "; }
+                            if ($row['groupID'] == $row2['groupID']) { $techsIn.= formatName($row2['title'],$row2['preferredName'],$row2['surname'], "Student", false, false) . ", "; }
                         }
                         $techsIn = substr($techsIn, 0, strlen($techsIn)-2);
                         if (strlen($techsIn) > 0) {
@@ -101,7 +101,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                     print "</td>";
                     print "<td>";
                         print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_editTechnicianGroup.php&groupID=". $row['groupID'] ."'><img title=" . __('Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
-                        if($result->rowcount() > 1) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDelete.php&groupID=". $row['groupID'] ."'><img title=" . __('Delete Technician Group ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>"; }
+                        if ($result->rowcount() > 1) { print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDelete.php&groupID=". $row['groupID'] ."'><img title=" . __('Delete Technician Group ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>"; }
                     print"</td>" ;
                 print "</tr>" ;
                 $rowCount++;

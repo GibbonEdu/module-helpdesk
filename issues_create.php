@@ -81,7 +81,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
             </td>
         </tr>
         <?php
-            if(count($categoryOptions)>0) {
+            if (count($categoryOptions)>0) {
                 print "<tr>";
                     print "<td> ";
                         print "<b>". __('Category') ." *</b><br/>";
@@ -117,7 +117,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
             </td>
         </tr>
         <?php
-            if(count($priorityOptions)>0) {
+            if (count($priorityOptions)>0) {
                 print "<tr>";
                     print "<td> ";
                         print "<b>". $priorityName ." *</b><br/>";
@@ -143,7 +143,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
                     print "</td>";
                 print "</tr>";
             }
-            if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
+            if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
                 ?>
                     <tr>
                         <td>
@@ -189,7 +189,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
                         print "<option value='" . $privacySetting . "'>". $privacySetting ."</option>" ;
                         $options = array("Everyone", "Related", "Owner", "No one");
                         foreach ($options as $option) {
-                            if($option != $privacySetting) {
+                            if ($option != $privacySetting) {
                                 print "<option value='" . $option . "'>". $option ."</option>" ;
                             }
                         }

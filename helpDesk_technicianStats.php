@@ -135,7 +135,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     $techName = getTechnicianName($connection2, $technicianID);
     $name = $techName['preferredName'] . " " . $techName['surname'] . "'";
-    if(substr($techName['surname'], -1) != 's') {
+    if (substr($techName['surname'], -1) != 's') {
         $name .= "s";
     }
 

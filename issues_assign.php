@@ -28,7 +28,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     print "</div>" ;
 } else {
     $issueID = null;
-    if (isset($_GET["issueID"])) { 
+    if (isset($_GET["issueID"])) {
         $issueID = $_GET["issueID"];
     } else {
         print "<div class='error'>" ;
@@ -85,7 +85,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
                     <select name='technician' id='technician' style='width:302px'>
                     <?php
                         foreach ($technicians as $option) {
-                            if (!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) { 
+                            if (!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) {
                                 if ($isReassign) {
                                     if (getTechWorkingOnIssue($connection2, $issueID)["personID"] != $option["gibbonPersonID"]) {
                                         print "<option value='" . $option["technicianID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;

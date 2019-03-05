@@ -116,7 +116,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
         array_push($issueFilters, "My Working");
     }
     array_push($issueFilters, "My Issues");
-    if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {   
+    if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
         $statusFilters = array("Pending");
         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="All") {
             $statusFilters = array("All", "Unassigned", "Pending", "Resolved");
@@ -443,7 +443,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
             print "</th>";
             print "<th>Action</th>";
         print "</tr>";
-        if ($resultIssue->rowCount()==0){
+        if ($resultIssue->rowCount()==0) {
             print "<tr>";
                 $colspan = 7;
                 if (!$renderCategory) {
@@ -526,7 +526,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
                         $resolveCreated = false;
 
                         if (relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) && !($row['status']=="Resolved")) {
-                            if (!$openCreated) { 
+                            if (!$openCreated) {
                                 print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . __('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
                                 $openCreated = true;
                             }
@@ -555,7 +555,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
                         }     
 
                         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
-                            if (!$openCreated && !($row['status'] == "Resolved")) { 
+                            if (!$openCreated && !($row['status'] == "Resolved")) {
                                 print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . __('Open ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/zoom.png'/></a>";
                                 $openCreated = true;
                             }
@@ -584,7 +584,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
                         }
 
                         if (relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) && !($row['status'] == "Resolved")) {
-                            if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") && $row['status'] == "Pending") { 
+                            if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") && $row['status'] == "Pending") {
                                 print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . __('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
                                 $resolveCreated = true;
                             }
@@ -592,7 +592,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
 
                         //Full Access
                         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
-                            if (!$resolveCreated && $row['status'] == "Pending") { 
+                            if (!$resolveCreated && $row['status'] == "Pending") {
                                 print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . __('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
                                 $resolveCreated = true;
                             }
