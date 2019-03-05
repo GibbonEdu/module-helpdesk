@@ -50,7 +50,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
                     <?php print __('Privacy Setting') ." *";?>
                 </b><br>
             </td>
-            <td class=\"right\">
+            <td class="right">
                 <select name='privacySetting' id='privacySetting' style='width:302px'>
                     <?php
                         try {

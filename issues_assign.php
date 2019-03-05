@@ -75,7 +75,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
                         <?php print __('Technicians') ." *"; ?>
                     </b><br/>
                 </td>
-                <td class=\"right\">
+                <td class="right">
                     <select name='technician' id='technician' style='width:302px'>
                     <?php
                         foreach ($technicians as $option) {
