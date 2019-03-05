@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     print "<div class='trail'>" ;
         print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . __("Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . __('Delete Technician Group') . "</div>" ;
     print "</div>" ;
-    
+
     $highestAction = getHighestGroupedAction($guid, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php", $connection2) ;
     if ($highestAction == FALSE) {
         print "<div class='error'>" ;
@@ -49,7 +49,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     $groupID = null;
     if (isset($_GET["groupID"])){ 
-        $groupID = $_GET["groupID"]; 
+        $groupID = $_GET["groupID"];
     } else {
         print "<div class='error'>" ;
             print __("No group selected.") ;
@@ -75,9 +75,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
-    
+
     ?>
-    
+
     <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . " /modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID ?>">
         <table class='smallIntBorder' cellspacing='0' style="width: 100%">  
             <tr>

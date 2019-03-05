@@ -50,14 +50,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $sql = "SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
         $result = $connection2->prepare($sql);
         $result->execute($data);
-    
+
         $data2 = array("technicianID"=>$technicianID);
         $sql2 = "SELECT * FROM helpDeskTechnicians WHERE technicianID = :technicianID";
         $result2 = $connection2->prepare($sql2);
         $result2->execute($data2);
     } catch (PDOException $e) {
     }
-  
+
     $tech=$result2->fetch();
 ?>
 

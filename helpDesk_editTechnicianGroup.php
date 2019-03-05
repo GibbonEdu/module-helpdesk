@@ -30,8 +30,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     //Proceed!
     print "<div class='trail'>" ;
         print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . __("Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . __('Edit Technician Group') . "</div>" ;
-    print "</div>" ;  
-  
+    print "</div>" ;
+
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
@@ -100,7 +100,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                             if ($row['viewIssueStatus'] == "UP") {
                                 print "<option selected value='UP'>Unassigned & Pending</option>";
                             } else { 
-                                print "<option value='UP'>Unassigned & Pending</option>"; 
+                                print "<option value='UP'>Unassigned & Pending</option>";
                             }
 
                             if ($row['viewIssueStatus'] == "PR") {

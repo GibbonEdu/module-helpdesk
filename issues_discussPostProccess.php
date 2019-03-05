@@ -55,7 +55,7 @@ if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) 
         header("Location: {$URL}");
         exit();
     }
-    
+
     try {
         $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
         if($gibbonModuleID == null) {
@@ -67,12 +67,12 @@ if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) 
         $result = $connection2->prepare($sql);
         $result->execute($data);
         $issueDiscussID = $connection2->lastInsertId();
-    
+
         $data2 = array("issueID" => $issueID) ;
         $sql2 = "SELECT issueName FROM helpDeskIssue WHERE issueID=:issueID" ;
         $result2 = $connection2->prepare($sql2);
         $result2->execute($data2);
-        
+
     } catch (PDOException $e) {
         //Fail 2
         $URL=$URL . "&return=error2" ;
@@ -86,9 +86,9 @@ if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) 
     $message = "A new message has been added to Issue ";
     $message .= $issueID;
     $message .= " (" . $row["issueName"] . ").";
- 
+
     $personIDs = getPeopleInvolved($connection2, $issueID);
- 
+
     foreach ($personIDs as $personID) {
         if ($personID != $_SESSION[$guid]["gibbonPersonID"]) {
             setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
@@ -102,7 +102,7 @@ if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) 
     } 
 
     setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Discussion Posted", $array, null);
-  
+
     $URL .= "&return=success0" ;
     header("Location: {$URL}");
 }

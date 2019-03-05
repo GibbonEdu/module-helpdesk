@@ -34,20 +34,20 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == FALSE) {
-	//Fail 0
-  	$URL = $URL . "issues_view.php&return=error0" ;
-	header("Location: {$URL}");
-	exit();
+    //Fail 0
+      $URL = $URL . "issues_view.php&return=error0" ;
+    header("Location: {$URL}");
+    exit();
 } else {
 
-	if (isset($_GET["issueID"])) {
-		$issueID = $_GET["issueID"];
-		$URL = $URL . "issues_discussView.php&issueID=" . $issueID ;
-	} else {
-    	$URL = $URL . "issues_view.php&return=error1" ;
-		header("Location: {$URL}");
-		exit();
-	}
+    if (isset($_GET["issueID"])) {
+        $issueID = $_GET["issueID"];
+        $URL = $URL . "issues_discussView.php&issueID=" . $issueID ;
+    } else {
+        $URL = $URL . "issues_view.php&return=error1" ;
+        header("Location: {$URL}");
+        exit();
+    }
 
     if(!isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
         $URL = $URL . "issues_view.php&return=error0" ;
@@ -55,26 +55,26 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
         exit();
     }
 
-	if (isset($_POST["privacySetting"])) {
-		$privacySetting = $_POST["privacySetting"];
-	} else {
-    	$URL = $URL . "&return=error1" ;
-		header("Location: {$URL}");
-	  	exit();
-	}
-	
-	try {
-		$data = array("privacySetting" => $privacySetting, "issueID" => $issueID);
-		$sql = "UPDATE helpDeskIssue SET privacySetting=:privacySetting WHERE issueID=:issueID" ;
-		$result = $connection2->prepare($sql);
-		$result->execute($data);
-	} catch (PDOException $e) {
-    	$URL = $URL . "&return=error2" ;
-    	header("Location: {$URL}");
-    	exit();
-	}
-	
-  	$URL = $URL . "&return=success0" ; 
-	header("Location: {$URL}");
+    if (isset($_POST["privacySetting"])) {
+        $privacySetting = $_POST["privacySetting"];
+    } else {
+        $URL = $URL . "&return=error1" ;
+        header("Location: {$URL}");
+          exit();
+    }
+
+    try {
+        $data = array("privacySetting" => $privacySetting, "issueID" => $issueID);
+        $sql = "UPDATE helpDeskIssue SET privacySetting=:privacySetting WHERE issueID=:issueID" ;
+        $result = $connection2->prepare($sql);
+        $result->execute($data);
+    } catch (PDOException $e) {
+        $URL = $URL . "&return=error2" ;
+        header("Location: {$URL}");
+        exit();
+    }
+
+      $URL = $URL . "&return=success0" ;
+    header("Location: {$URL}");
 }
 ?>

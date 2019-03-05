@@ -34,23 +34,23 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_createTechnician.php" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
-    $URL = $URL."&return=error0" ; 
+    $URL = $URL."&return=error0" ;
     header("Location: {$URL}");
 } else {
     //Proceed!
     if (isset($_POST["person"])) {
         $person = $_POST["person"] ;
     }
-  
+
     if (isset($_POST["group"])) {
         $group = $_POST["group"] ;
     }
 
     if ($person == "" || $group == "") {
-        $URL = $URL."&return=error1" ; 
+        $URL = $URL."&return=error1" ;
         header("Location: {$URL}");
     } elseif (isTechnician($connection2, $person)) {
-        $URL = $URL."&return=error3" ; 
+        $URL = $URL."&return=error3" ;
         header("Location: {$URL}");
     } else {
         //Write to database
@@ -65,16 +65,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             $result->execute($data);
         } catch (PDOException $e) {
             print $e;
-            $URL = $URL."&return=error2" ; 
+            $URL = $URL."&return=error2" ;
             header("Location: {$URL}");
             exit();
         }
-    
+
         $technicianID = $connection2->lastInsertId();
         setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Added", array("gibbonPersonID"=>$person, "technicianID"=>$technicianID), null);
-           
+
         //Success 0
-        $URL = $URL."&return=success0" ; 
+        $URL = $URL."&return=success0" ;
         header("Location: {$URL}");
     }
 }

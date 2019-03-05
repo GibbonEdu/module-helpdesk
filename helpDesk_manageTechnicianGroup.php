@@ -31,12 +31,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     print "<div class='trail'>" ;
         print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Technician Groups') . "</div>" ;
     print "</div>" ;
-  
+
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, array("errorA" => "Cannot delete last technician group."));
     }
 
-    $groupID = null;  
+    $groupID = null;
     $data=array();
     $whereGroup = "";
     if(isset($_GET['groupID'])) {
@@ -49,7 +49,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $sql="SELECT * FROM helpDeskTechGroups" . $whereGroup . " ORDER BY helpDeskTechGroups.groupID ASC";
         $result=$connection2->prepare($sql);
         $result->execute($data);
-    
+
         $sql2="SELECT * FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)" . $whereGroup;
         $result2=$connection2->prepare($sql2);
         $result2->execute($data);

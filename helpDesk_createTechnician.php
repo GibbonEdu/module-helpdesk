@@ -57,7 +57,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <select name = 'person' id = 'person' style = 'width:302px'>
                         <?php
-                            print "<option value=''>Please select...</option>";                        
+                            print "<option value=''>Please select...</option>";
                             foreach($allPeople as $option) {
                                 print "<option value='" . $option['gibbonPersonID'] . "'>". $option['surname'] . ", " . $option['preferredName']."</option>";
                             }
@@ -76,7 +76,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <select name = 'group' id='group' style='width:302px'>
                     <?php
-                        print "<option value = ''>Please select...</option>";                        
+                        print "<option value = ''>Please select...</option>";
                         while($option = $result->fetch()) {
                             print "<option value='" . $option['groupID'] . "'>". $option['groupName']."</option>";
                         }

@@ -46,7 +46,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         header("Location: {$URL}");
         exit();
     }
-  
+
     if (isset($_POST["group"])) {
         $newGroupID = $_POST["group"];
     } else {
@@ -54,7 +54,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         header("Location: {$URL}");
         exit();
     }
-  
+
     try {
         $data = array();
         $sql = "SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
@@ -68,7 +68,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         header("Location: {$URL}");
         exit();
     }
-  
+
     //Write to database
 
     try {
@@ -88,11 +88,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $result2->execute($data2);
     } catch (PDOException $e) {
         //Fail 2
-        $URL = $URL."helpdesk_technicianGroupDelete&groupID=$groupID&group=$group&return=error2" ; 
+        $URL = $URL."helpdesk_technicianGroupDelete&groupID=$groupID&group=$group&return=error2" ;
         header("Location: {$URL}");
         exit();
     }
-    
+
     setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Removed", array("newGroupID" => $newGroupID), null);
 
     //Success 0

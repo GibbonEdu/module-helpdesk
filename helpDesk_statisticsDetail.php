@@ -53,7 +53,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $extraKey = "issueID";
         $extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%extraInfo%</a>";
         $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        
+
         $extra = "Technician Name";
         $extraKey = "technicainID";
         $extraString = "%techName%";
@@ -122,7 +122,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     }
 
     $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate, null, null);
-    
+
     print "<h3>" ;
         print __("Filter") ;
     print "</h3>" ;
@@ -137,17 +137,17 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                     print "<input name='startDate' id='startDate' maxlength=10 value='" . $startDate . "' type='text' style='height: 22px; width:100px; margin-right: 0px; float: none'></input>" ;
                     print "<script type=\"text/javascript\">" ;
                         print "var ttDate1=new LiveValidation('startDate');" ;
-                        print "ttDate1.add( Validate.Format, {pattern:" ; 
+                        print "ttDate1.add( Validate.Format, {pattern:" ;
                             if ($_SESSION[$guid]["i18n"]["dateFormatRegEx"] == "") {
-                                print "/^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/i" ; 
+                                print "/^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/i" ;
                             } else { 
-                                print $_SESSION[$guid]["i18n"]["dateFormatRegEx"] ; 
+                                print $_SESSION[$guid]["i18n"]["dateFormatRegEx"] ;
                             } 
-                            print ", failureMessage: \"Use " ; 
+                            print ", failureMessage: \"Use " ;
                             if ($_SESSION[$guid]["i18n"]["dateFormat"] == "") {
-                                print "dd/mm/yyyy" ; 
+                                print "dd/mm/yyyy" ;
                             } else { 
-                                print $_SESSION[$guid]["i18n"]["dateFormat"] ; 
+                                print $_SESSION[$guid]["i18n"]["dateFormat"] ;
                             } 
                         print ".\" } );" ;
                     print "</script>" ;
@@ -167,19 +167,19 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                     print "<input name='endDate' id='endDate' maxlength=10 value='" . $endDate . "' type='text' style='height: 22px; width:100px; margin-right: 0px; float: none'></input>" ;
                     print "<script type=\"text/javascript\">" ;
                         print "var ttDate2=new LiveValidation('endDate');" ;
-                        print "ttDate2.add( Validate.Format, {pattern:" ; 
+                        print "ttDate2.add( Validate.Format, {pattern:" ;
                             if ($_SESSION[$guid]["i18n"]["dateFormatRegEx"] == "") {
-                                print "/^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/i" ; 
+                                print "/^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/i" ;
                             } else { 
-                                print $_SESSION[$guid]["i18n"]["dateFormatRegEx"] ; 
+                                print $_SESSION[$guid]["i18n"]["dateFormatRegEx"] ;
                             } 
-                            print ", failureMessage: \"Use " ; 
+                            print ", failureMessage: \"Use " ;
                             if ($_SESSION[$guid]["i18n"]["dateFormat"] == "") {
-                                print "dd/mm/yyyy" ; 
+                                print "dd/mm/yyyy" ;
                             } else { 
-                                print $_SESSION[$guid]["i18n"]["dateFormat"] ; 
+                                print $_SESSION[$guid]["i18n"]["dateFormat"] ;
                             } 
-                        print ".\" } );" ;                       
+                        print ".\" } );" ;
                     print "</script>" ;
                     print "<script type=\"text/javascript\">" ;
                         print "$(function() {" ;
@@ -195,7 +195,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             print "</tr>" ;
         print"</table>" ;
     print "</form>" ;
-  
+
     print "<h3>";
         print "$title Statistics" ;
     print "</h3>";
@@ -236,24 +236,24 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                                 $eString = str_replace("%extraInfo%", $array[$extraArray['extraKey']], $extraArray['extraString']);
 
                                 if (strpos($eString, "%groupName%") !== false) { 
-                                    $eString = str_replace("%groupName%", getGroup($connection2, $array[$extraArray['extraKey']])['groupName'], $eString); 
+                                    $eString = str_replace("%groupName%", getGroup($connection2, $array[$extraArray['extraKey']])['groupName'], $eString);
                                 }
 
                                 if (strpos($eString, "%techName%") !== false) { 
                                     $techName = getTechnicianName($connection2, $array[$extraArray['extraKey']]);
-                                    $eString = str_replace("%techName%", $techName['preferredName'] . " " . $techName['surname'], $eString); 
+                                    $eString = str_replace("%techName%", $techName['preferredName'] . " " . $techName['surname'], $eString);
                                 }
 
                                 if (strpos($eString, "%personName%") !== false) { 
                                     $personName = getPersonName($connection2, $array[$extraArray['extraKey']]);
-                                    $eString = str_replace("%personName%", $personName['preferredName'] . " " .$personName['surname'], $eString); 
+                                    $eString = str_replace("%personName%", $personName['preferredName'] . " " .$personName['surname'], $eString);
                                 }
-                        
+
                                 if (strpos($eString, "%IDfromPost%") !== false) { 
                                     $issueID = getIssueIDFromPost($connection2, $array[$extraArray['extraKey']]);
-                                    $eString = str_replace("%IDfromPost%", $issueID, $eString); 
+                                    $eString = str_replace("%IDfromPost%", $issueID, $eString);
                                 }
-                                
+
                                 print $eString;
                             print "</td>";
                         }

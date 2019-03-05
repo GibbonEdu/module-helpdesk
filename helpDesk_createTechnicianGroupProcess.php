@@ -34,7 +34,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_createTechnicianGroup.php" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
-    $URL = $URL . "&return=error0" ; 
+    $URL = $URL . "&return=error0" ;
     header("Location: {$URL}");
 } else {
     //Proceed!
@@ -43,7 +43,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     }
 
     if ($groupName == "") {
-        $URL = $URL . "&return=error1" ; 
+        $URL = $URL . "&return=error1" ;
         header("Location: {$URL}");
     } else {
         //Write to database
@@ -53,22 +53,22 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             if ($gibbonModuleID == null) {
                 throw new PDOException("Invalid gibbonModuleID.");
             }
-        
+
             $data = array("groupName" => $groupName);
             $sql = "INSERT INTO helpDeskTechGroups SET groupName = :groupName" ;
             $result = $connection2->prepare($sql);
             $result->execute($data);
         } catch (PDOException $e) {
-            $URL = $URL . "&return=error2" ; 
+            $URL = $URL . "&return=error2" ;
             header("Location: {$URL}");
             exit();
         }
-    
+
         $groupID = $connection2->lastInsertId();
         setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID), null);
-        
+
         //Success 0
-        $URL = $URL."&groupID=$groupID&return=success0" ; 
+        $URL = $URL."&groupID=$groupID&return=success0" ;
         header("Location: {$URL}");
     }
 }
