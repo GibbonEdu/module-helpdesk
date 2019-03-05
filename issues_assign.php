@@ -56,14 +56,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     }
 
     //Proceed!
-    print "<div class='trail'>" ;
-        $title = "Assign Issue";
-        if ($isReassign) {
-            $title = "Reassign Issue";
-        }
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($title) . "</div>" ;
-    print "</div>" ;
-
+    $title = $isReassign ? __('Reassign Issue') : __('Assign Issue');
+    $page->breadcrumbs->add($title);
 
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
@@ -74,7 +68,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     ?>
 
     <form method="post" action="<?php print $_SESSION[$guid]['absoluteURL'] . '/modules/Help Desk/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission ?>">
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">    
+        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
             <tr>
                 <td>
                     <b>
@@ -89,8 +83,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
                                 if ($isReassign) {
                                     if (getTechWorkingOnIssue($connection2, $issueID)["personID"] != $option["gibbonPersonID"]) {
                                         print "<option value='" . $option["technicianID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;
-                                    } 
-                                } else {                                
+                                    }
+                                } else {
                                     print "<option value='" . $option["technicianID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;
                                 }
                             }

@@ -38,9 +38,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     }
 
     //Proceed!
-    print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicians.php'> Manage Technicians</a> >    </div><div class='trailEnd'>" . __('Techncian Statistics') . "</div>" ;
-    print "</div>" ;
+    $page->breadcrumbs->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php');
+    $page->breadcrumbs->add(__('Techncian Statistics'));
 
     $d = new DateTime('first day of this month');
     $startDate = dateConvertBack($guid, $d->format('Y-m-d H:i:s')) ;

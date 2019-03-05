@@ -39,12 +39,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     }
 
     //Proceed!
-      print "<div class='trail'>" ;
-          print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $_GET["issueID"] . "'>" . __("Discuss Issue") . "</a> > </div><div class='trailEnd'>" . __('Edit Privacy') . "</div>" ;
-      print "</div>" ;
+    $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
+    $page->breadcrumbs->add(__('Edit Privacy'));
 ?>
 <form method="post" action="<?php print $_SESSION[$guid]['absoluteURL'] . '    /modules/Help Desk/issues_discussEditProcess.php?issueID=' . $issueID; ?>">
-    <table class='smallIntBorder' cellspacing='0' style="width: 100%">    
+    <table class='smallIntBorder' cellspacing='0' style="width: 100%">
         <tr>
             <td>
                 <b>

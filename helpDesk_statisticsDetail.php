@@ -37,9 +37,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         exit();
     }
     //Proceed!
-    print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_statistics.php'> Statistics</a> >      </div><div class='trailEnd'>" . __('Detailed Statistics') . "</div>" ;
-    print "</div>" ;
+    $page->breadcrumbs->add(__('Statistics'), 'helpDesk_statistics.php');
+    $page->breadcrumbs->add(__('Detailed Statistics'));
 
     $extras = array();
 

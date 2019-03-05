@@ -28,9 +28,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
         print "You do not have access to this action." ;
     print "</div>" ;
 } else {
-    print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Issues') . "</div>" ;
-    print "</div>" ;
+    $page->breadcrumbs->add(__('Issues'));
 
     if (isset($_GET['return'])) {
         $editLink = null;

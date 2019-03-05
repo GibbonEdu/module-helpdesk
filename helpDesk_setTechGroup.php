@@ -28,9 +28,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     print "</div>" ;
 } else {
     //Proceed!
-    print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicians.php'>" . __("Manage Technicians") . "</a> > </div><div class='trailEnd'>" . __('Edit Technician') . "</div>" ;
-    print "</div>" ;
+    $page->breadcrumbs->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php');
+    $page->breadcrumbs->add(__('Edit Technician'));
 
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
