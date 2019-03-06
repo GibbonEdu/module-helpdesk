@@ -21,70 +21,66 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 include './modules/Help Desk/moduleFunctions.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")==FALSE) {
-	//Acess denied
-	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
-	print "</div>" ;
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")==false) {
+    //Acess denied
+    $page->addError(__('You do not have access to this action.'));
 } else {
-	//Proceed!
-	print "<div class='trail'>" ;
-		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Help Desk Settings') . "</div>" ;
-	print "</div>" ;
-	
-	if (isset($_GET['return'])) {
+    //Proceed!
+    $page->breadcrumbs->add(__('Manage Help Desk Settings'));
+
+    if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
 ?>
-	
-	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_settingsProcess.php" ?>">
-		<table class='smallIntBorder' cellspacing='0' style="width: 100%">
-			<?php
-				$result = getHelpDeskSettings($connection2);
-				while($row = $result->fetch()) {
-					print "<tr>";
-						print "<td style='width:275px'>";
-							print "<b>" . __($guid, $row["nameDisplay"]) . "</b><br/>";
-							if ($row["description"] != "") {
-								print "<span style='font-size: 90%''><i>" . __($guid, $row["description"]) . "</i></span>";
-							}
-						print "</td>";
-						print "<td class='right'>";
-							if ($row['name'] == "issuePriorityName") {
-								print "<input name='" . $row["name"] . "' id='" . $row["name"] . "' maxlength=100 value='" . $row["value"] . "' type='text' data-minlength='1' style='width: 300px'></input>";
-								print "<script type='text/javascript'>";
-									print "var priorityName = new LiveValidation('issuePriorityName');";
-									print "priorityName.add(Validate.Presence);";
-								print "</script>";
-							} elseif ($row['name'] == "issuePriority" || $row['name'] == "issueCategory") {
-								print "<textarea name='" . $row["name"] . "' id='" . $row["name"] . "' rows=4 type='text' style='width: 300px'>" . $row["value"] . "</textarea>";
-							} elseif ($row['name'] == "resolvedIssuePrivacy") {
-								print "<select name='".  $row["name"] . "' id='" . $row["name"] . "' style='width:302px'>";
-									$options = array("Everyone", "Related", "Owner", "No one");
-									foreach($options as $option) {
-										$selected = "";
-										if($option == $row["value"]) {
-											$selected = "selected";
-										}
-										print "<option $selected value='" . $option . "'>". $option ."</option>" ;
-									}
-								print "</select>";
-							}
-						print "</td>";
-					print "</tr>";
-				}
-			?>	
-			<tr>
-				<td>
-					<span style="font-size: 90%"><i>* <?php print __($guid, "denotes a required field") ; ?></i></span>
-				</td>
-				<td class="right">
-					<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-					<input type="submit" value="<?php print __($guid, "Submit") ; ?>">
-				</td>
-			</tr>
-		</table>
-	</form>
+
+    <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_settingsProcess.php" ?>">
+        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
+            <?php
+                $result = getHelpDeskSettings($connection2);
+                while($row = $result->fetch()) {
+                    print "<tr>";
+                        print "<td style='width:275px'>";
+                            print "<b>" . __($row["nameDisplay"]) . "</b><br/>";
+                            if ($row["description"] != "") {
+                                print "<span style='font-size: 90%''><i>" . __($row["description"]) . "</i></span>";
+                            }
+                        print "</td>";
+                        print "<td class='right'>";
+                            if ($row['name'] == "issuePriorityName") {
+                                print "<input name='" . $row["name"] . "' id='" . $row["name"] . "' maxlength=100 value='" . $row["value"] . "' type='text' data-minlength='1' style='width: 300px'></input>";
+                                print "<script type='text/javascript'>";
+                                    print "var priorityName = new LiveValidation('issuePriorityName');";
+                                    print "priorityName.add(Validate.Presence);";
+                                print "</script>";
+                            } elseif ($row['name'] == "issuePriority" || $row['name'] == "issueCategory") {
+                                print "<textarea name='" . $row["name"] . "' id='" . $row["name"] . "' rows=4 type='text' style='width: 300px'>" . $row["value"] . "</textarea>";
+                            } elseif ($row['name'] == "resolvedIssuePrivacy") {
+                                print "<select name='".  $row["name"] . "' id='" . $row["name"] . "' style='width:302px'>";
+                                    $options = array("Everyone", "Related", "Owner", "No one");
+                                    foreach($options as $option) {
+                                        $selected = "";
+                                        if ($option == $row["value"]) {
+                                            $selected = "selected";
+                                        }
+                                        print "<option $selected value='" . $option . "'>". $option ."</option>" ;
+                                    }
+                                print "</select>";
+                            }
+                        print "</td>";
+                    print "</tr>";
+                }
+            ?>    
+            <tr>
+                <td>
+                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
+                </td>
+                <td class="right">
+                    <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
+                    <input type="submit" value="<?php print __("Submit") ; ?>">
+                </td>
+            </tr>
+        </table>
+    </form>
 <?php
 }
 ?>

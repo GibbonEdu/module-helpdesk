@@ -26,87 +26,87 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_editTechnicianGroup.php" ;
 
 if (isset($_GET["groupID"])) {
-	$groupID = $_GET["groupID"];
-	$URL = $URL . "&groupID=$groupID";
+    $groupID = $_GET["groupID"];
+    $URL = $URL . "&groupID=$groupID";
 } else {
-	$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicianGroup.php&return=error1";
-	header("Location: {$URL}");
+    $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicianGroup.php&return=error1";
+    header("Location: {$URL}");
 }
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
-	//Fail 0
-	$URL = $URL . "&return=error0" ;
-	header("Location: {$URL}");
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
+    //Fail 0
+    $URL = $URL . "&return=error0" ;
+    header("Location: {$URL}");
 } else {
 
-	if (!(isset($_POST["viewIssue"]) || isset($_POST["groupName"]) || isset($_POST["viewIssueStatus"]))) {
-		$URL = $URL . "&return=error1" ;
-		header("Location: {$URL}");
-		exit();
-	}
-	
-	$groupName = $_POST["groupName"];
-	$viewIssueStatus = $_POST["viewIssueStatus"];
+    if (!(isset($_POST["viewIssue"]) || isset($_POST["groupName"]) || isset($_POST["viewIssueStatus"]))) {
+        $URL = $URL . "&return=error1" ;
+        header("Location: {$URL}");
+        exit();
+    }
 
-	$viewIssue = true;
-	if (!isset($_POST["viewIssue"])) {
-		$viewIssue = false;
-	}
+    $groupName = $_POST["groupName"];
+    $viewIssueStatus = $_POST["viewIssueStatus"];
 
-	$assignIssue = false;
-	if (isset($_POST["assignIssue"])) {
-		$assignIssue = true;
-	}
+    $viewIssue = true;
+    if (!isset($_POST["viewIssue"])) {
+        $viewIssue = false;
+    }
 
-	$acceptIssue = true;
-	if (!isset($_POST["acceptIssue"])) {
-		$acceptIssue = false;
-	}
- 
-	$resolveIssue = true;
-	if (!isset($_POST["resolveIssue"])) {
-		$resolveIssue = false;
-	}
+    $assignIssue = false;
+    if (isset($_POST["assignIssue"])) {
+        $assignIssue = true;
+    }
 
-	$createIssueForOther = true;
-	if (!isset($_POST["createIssueForOther"])) {
-		$createIssueForOther = false;
-	}
+    $acceptIssue = true;
+    if (!isset($_POST["acceptIssue"])) {
+        $acceptIssue = false;
+    }
 
-	$reassignIssue = false;
-	if (isset($_POST["reassignIssue"])) {
-		$reassignIssue = true;
-	}
+    $resolveIssue = true;
+    if (!isset($_POST["resolveIssue"])) {
+        $resolveIssue = false;
+    }
 
-	$reincarnateIssue = true;
-	if (!isset($_POST["reincarnateIssue"])) {
-		$reincarnateIssue = false;
-	}
+    $createIssueForOther = true;
+    if (!isset($_POST["createIssueForOther"])) {
+        $createIssueForOther = false;
+    }
 
-	$fullAccess = false;
-	if (isset($_POST["fullAccess"])) {
-		$fullAccess = true;
-	}
+    $reassignIssue = false;
+    if (isset($_POST["reassignIssue"])) {
+        $reassignIssue = true;
+    }
 
-	try {
-		$gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-		if ($gibbonModuleID == null) {
-			throw new PDOException("Invalid gibbonModuleID.");
-		}
-		$data = array("groupID" => $groupID, "groupName" => $groupName, "viewIssue" => $viewIssue, "viewIssueStatus" => $viewIssueStatus, "assignIssue" => $assignIssue, "acceptIssue" => $acceptIssue, "resolveIssue" => $resolveIssue, "createIssueForOther" => $createIssueForOther, "fullAccess" => $fullAccess, "reassignIssue" => $reassignIssue, "reincarnateIssue" => $reincarnateIssue); 
-		$sql = "UPDATE helpDeskTechGroups SET viewIssue = :viewIssue, groupName = :groupName, viewIssueStatus = :viewIssueStatus, assignIssue = :assignIssue, acceptIssue = :acceptIssue, resolveIssue = :resolveIssue, createIssueForOther = :createIssueForOther, fullAccess = :fullAccess, reassignIssue = :reassignIssue, reincarnateIssue = :reincarnateIssue WHERE groupID = :groupID" ;
-		$result = $connection2->prepare($sql);
-		$result->execute($data);
-	} catch (PDOException $e) { 
-		$URL = $URL . "&return=error2" ;
-		header("Location: {$URL}");
-		exit();
-	}
+    $reincarnateIssue = true;
+    if (!isset($_POST["reincarnateIssue"])) {
+        $reincarnateIssue = false;
+    }
 
-	//Success 0
-	setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Edited", array("groupID" => $groupID), null);
-   	
-   	$URL = $URL . "&return=success0" ;
-	header("Location: {$URL}");
+    $fullAccess = false;
+    if (isset($_POST["fullAccess"])) {
+        $fullAccess = true;
+    }
+
+    try {
+        $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+        if ($gibbonModuleID == null) {
+            throw new PDOException("Invalid gibbonModuleID.");
+        }
+        $data = array("groupID" => $groupID, "groupName" => $groupName, "viewIssue" => $viewIssue, "viewIssueStatus" => $viewIssueStatus, "assignIssue" => $assignIssue, "acceptIssue" => $acceptIssue, "resolveIssue" => $resolveIssue, "createIssueForOther" => $createIssueForOther, "fullAccess" => $fullAccess, "reassignIssue" => $reassignIssue, "reincarnateIssue" => $reincarnateIssue);
+        $sql = "UPDATE helpDeskTechGroups SET viewIssue = :viewIssue, groupName = :groupName, viewIssueStatus = :viewIssueStatus, assignIssue = :assignIssue, acceptIssue = :acceptIssue, resolveIssue = :resolveIssue, createIssueForOther = :createIssueForOther, fullAccess = :fullAccess, reassignIssue = :reassignIssue, reincarnateIssue = :reincarnateIssue WHERE groupID = :groupID" ;
+        $result = $connection2->prepare($sql);
+        $result->execute($data);
+    } catch (PDOException $e) { 
+        $URL = $URL . "&return=error2" ;
+        header("Location: {$URL}");
+        exit();
+    }
+
+    //Success 0
+    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Edited", array("groupID" => $groupID), null);
+
+       $URL = $URL . "&return=success0" ;
+    header("Location: {$URL}");
 }
 ?>

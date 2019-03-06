@@ -39,7 +39,7 @@ function getTechnicianID($connection2, $gibbonPersonID)
         $result->execute($data);
     } catch (PDOException $e) {
     }
-    
+
     $id = null;
     if ($result->rowCount() == 1) {
         $array = $result->fetch();
@@ -63,7 +63,7 @@ function getAllTechnicians($connection2)
         $result->execute($data);
     } catch (PDOException $e) {
     }
-    
+
     return $result->fetchAll();
 }
 
@@ -101,11 +101,11 @@ function notifyTechnican($connection2, $guid, $issueID, $name, $personID)
 function relatedToIssue($connection2, $issueID, $gibbonPersonID)
 {
     $isRelated = false;
-  
+
     $personIDs = getPeopleInvolved($connection2, $issueID);
     foreach ($personIDs as $personID) {
-        if ($personID == $gibbonPersonID) { 
-            $isRelated = true; 
+        if ($personID == $gibbonPersonID) {
+            $isRelated = true;
         }
     }
 
@@ -132,8 +132,8 @@ function getOwnerOfIssue($connection2, $issueID)
         $row = $result->fetch();
     } catch (PDOException $e) {
     }
-  
-    return $row; 
+
+    return $row;
 }
 
 function getTechWorkingOnIssue($connection2, $issueID)
@@ -146,8 +146,8 @@ function getTechWorkingOnIssue($connection2, $issueID)
         $row = $result->fetch();
     } catch (PDOException $e) {
     }
-  
-    return $row;  
+
+    return $row;
 }
 
 function getAllPeople($connection2, $excludeTechnicians = false)
@@ -186,7 +186,7 @@ function getPermissionValue($connection2, $gibbonPersonID, $permission)
             return true;
         }
     }
-    return $row[$permission];   
+    return $row[$permission];
 }
 
 function getIssueStatus($connection2, $issueID)
@@ -210,7 +210,7 @@ function getPeopleInvolved($connection2, $issueID)
         $sql = "SELECT helpDeskIssue.gibbonPersonID AS personID1, helpDeskTechnicians.gibbonPersonID AS personID2 FROM helpDeskIssue LEFT JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID = helpDeskTechnicians.technicianID) WHERE issueID=:issueID";
         $result = $connection2->prepare($sql);
         $result->execute($data);
-        
+
         $sql2 = "SELECT gibbonPersonID AS personID FROM helpDeskIssueDiscuss WHERE issueID=:issueID;";
         $result2 = $connection2->prepare($sql2);
         $result2->execute($data);

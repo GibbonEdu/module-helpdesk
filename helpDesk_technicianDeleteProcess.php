@@ -27,7 +27,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
     //Fail 0
     $URL = $URL . "&return=error0" ;
     header("Location: {$URL}");
@@ -39,16 +39,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $URL = $URL . "&return=error1" ;
         header("Location: {$URL}");
     }
-    
+
     //Write to database
     try {
         $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
         if ($gibbonModuleID == null) {
             throw new PDOException("Invalid gibbonModuleID.");
         }
-    
+
         $data = array("technicianID" => $technicianID);
-    
+
         $sql = "SELECT gibbonPersonID FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
         $result = $connection2->prepare($sql3);
         $result->execute($data);
@@ -61,16 +61,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $result3 = $connection2->prepare($sql2);
         $result3->execute($data);
 
-        
+
     } catch (PDOException $e) {
         //Fail 2
-        $URL = $URL."&return=error2" ; 
+        $URL = $URL."&return=error2" ;
         header("Location: {$URL}");
     }
-  
+
     $row = $result->fetch();
     setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID" => $row['gibbonPersonID']), null);
-  
+
     //Success 0
     $URL = $URL . "&return=success0" ;
     header("Location: {$URL}");

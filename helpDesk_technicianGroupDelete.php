@@ -19,41 +19,32 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-include "./modules/Help Desk/moduleFunctions.php" ;
+include __DIR__ . '/moduleFunctions.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
     //Acess denied
-    print "<div class='error'>" ;
-        print __($guid, "You do not have access to this action.") ;
-    print "</div>" ;
+    $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . __($guid, "Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . __($guid, 'Delete Technician Group') . "</div>" ;
-    print "</div>" ;
-    
+    $page->breadcrumbs->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php');
+    $page->breadcrumbs->add(__('Delete Technician Group'));
+
     $highestAction = getHighestGroupedAction($guid, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php", $connection2) ;
-    if ($highestAction == FALSE) {
-        print "<div class='error'>" ;
-        print __($guid, "The highest grouped action cannot be determined.") ;
-        print "</div>" ;
+    if ($highestAction == false) {
+        $page->addError(__('The highest grouped action cannot be determined.'));
         exit();
     }
 
-    if ($highestAction != "Manage Technician Groups") { 
-        print "<div class='error'>" ;
-            print __($guid, "You do not have access to this action.") ;
-        print "</div>" ;
+    if ($highestAction != "Manage Technician Groups") {
+        $page->addError(__('You do not have access to this action.'));
         exit();
     }
 
     $groupID = null;
-    if (isset($_GET["groupID"])){ 
-        $groupID = $_GET["groupID"]; 
+    if (isset($_GET["groupID"])) {
+        $groupID = $_GET["groupID"];
     } else {
-        print "<div class='error'>" ;
-            print __($guid, "No group selected.") ;
-        print "</div>" ;
+        $page->addError(__('No group selected.'));
         exit();
     }
 
@@ -66,43 +57,41 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     }
 
     if ($result->rowcount() == 1) {
-        print "<div class='error'>" ;
-            print __($guid, "Cannot delete last technician group.") ;
-        print "</div>" ;
+        $page->addError(__('Cannot delete last technician group.'));
         exit();
     }
 
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
-    
+
     ?>
-    
+
     <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . " /modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID ?>">
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">  
+        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
             <tr>
                 <td>
                     <b>
-                        <?php print __($guid, 'New Technician Group') . " *"; ?>
+                        <?php print __('New Technician Group') . " *"; ?>
                     </b><br/>
                 </td>
                 <td class="right">
                     <select name='group' id='group' style='width:302px'>
                         <option value=''>Please select...</option>
                             <?php
-                                $group = null;
-                                if (isset($_GET['group'])) {
-                                    $group = $_GET['group']
-                                }
-                                while ($option = $result->fetch()) {
-                                    if ($groupID != $option["groupID"]) {
-                                        $selected = "";
-                                        if($option["groupID"] == $group) {
-                                            $selected = "selected";
-                                        }
-                                        print "<option $selected value='" . $option["groupID"] . "'>". $option["groupName"] ."</option>" ;
+                            $group = null;
+                            if (isset($_GET['group'])) {
+                                $group = $_GET['group'];
+                            }
+                            while ($option = $result->fetch()) {
+                                if ($groupID != $option["groupID"]) {
+                                    $selected = "";
+                                    if ($option["groupID"] == $group) {
+                                        $selected = "selected";
                                     }
+                                    print "<option $selected value='" . $option["groupID"] . "'>". $option["groupName"] ."</option>" ;
                                 }
+                            }
                             ?>
                     </select>
                     <script type="text/javascript">
@@ -113,11 +102,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             </tr>
             <tr>
                 <td>
-                    <span style="font-size: 90%"><i>* <?php print __($guid, "denotes a required field") ; ?></i></span>
+                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
                 </td>
                 <td class="right">
                     <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-                    <input type="submit" value="<?php print __($guid, "Submit") ; ?>">
+                    <input type="submit" value="<?php print __("Submit") ; ?>">
                 </td>
             </tr>
         </table>

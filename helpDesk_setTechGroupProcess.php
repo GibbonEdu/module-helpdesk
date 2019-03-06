@@ -27,8 +27,8 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_setTechGroup.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
-    $URL = $URL."&return=fail0" ; 
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+    $URL = $URL."&return=fail0" ;
     header("Location: {$URL}");
 } else {
     //Proceed!
@@ -75,22 +75,22 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         if ($gibbonModuleID == null) {
             throw new PDOException("Invalid gibbonModuleID.");
         }
-    
+
         $data = array("technicianID" => $technicianID, "groupID" => $group);
         $sql = "UPDATE helpDeskTechnicians SET groupID=:groupID WHERE technicianID=:technicianID;" ;
         $result = $connection2->prepare($sql);
         $result->execute($data);
     }
     catch (PDOException $e) {
-        $URL .= "&return=fail2" ; 
+        $URL .= "&return=fail2" ;
         header("Location: {$URL}");
         exit();
     }
-    
+
     setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Set", array("technicianID"=>$technicianID, "groupID"=>$group), null);
 
     //Success 0
-    $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php&return=success0" ; 
+    $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php&return=success0" ;
     header("Location: {$URL}");
 }
 ?>

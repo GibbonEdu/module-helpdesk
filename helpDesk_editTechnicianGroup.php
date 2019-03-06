@@ -19,19 +19,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-include "./modules/Help Desk/moduleFunctions.php" ;
+include __DIR__ . '/moduleFunctions.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
     //Acess denied
-    print "<div class='error'>" ;
-        print __($guid, "You do not have access to this action.") ;
-    print "</div>" ;
+    $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    print "<div class='trail'>" ;
-        print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_manageTechnicianGroup.php'>" . __($guid, "Manage Technician Groups") . "</a> > </div><div class='trailEnd'>" . __($guid, 'Edit Technician Group') . "</div>" ;
-    print "</div>" ;  
-  
+    $page->breadcrumbs->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php');
+    $page->breadcrumbs->add(__('Edit Technician Group'));
+
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
@@ -76,7 +73,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <?php
                         $checked = '';
-                        if ($row['viewIssue'] == TRUE) {
+                        if ($row['viewIssue'] == true) {
                             $checked = 'checked';
                         }
                         print "<input type='checkbox' name='viewIssue' id='viewIssue' $checked />" ;
@@ -100,7 +97,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                             if ($row['viewIssueStatus'] == "UP") {
                                 print "<option selected value='UP'>Unassigned & Pending</option>";
                             } else { 
-                                print "<option value='UP'>Unassigned & Pending</option>"; 
+                                print "<option value='UP'>Unassigned & Pending</option>";
                             }
 
                             if ($row['viewIssueStatus'] == "PR") {
@@ -126,7 +123,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <?php
                         $checked = '';
-                        if ($row['assignIssue'] == TRUE) { $checked = 'checked'; }
+                        if ($row['assignIssue'] == true) { $checked = 'checked'; }
                         print "<input type='checkbox' name='assignIssue' id='assignIssue' $checked />" ;
                     ?>
                 </td>
@@ -139,7 +136,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <?php
                         $checked = 'checked';
-                        if ($row['acceptIssue'] == FALSE) { $checked = ''; }
+                        if ($row['acceptIssue'] == false) { $checked = ''; }
                         print "<input type='checkbox' name='acceptIssue' id='acceptIssue' $checked />" ;
                     ?>
                 </td>
@@ -152,7 +149,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <?php
                         $checked = 'checked';
-                        if ($row['resolveIssue'] == FALSE) { $checked = ''; }
+                        if ($row['resolveIssue'] == false) { $checked = ''; }
                         print "<input type='checkbox' name='resolveIssue' id='resolveIssue' $checked />" ;
                     ?>
                 </td>
@@ -165,7 +162,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <?php
                         $checked = 'checked';
-                        if ($row['createIssueForOther'] == FALSE) { $checked = ''; }
+                        if ($row['createIssueForOther'] == false) { $checked = ''; }
                         print "<input type='checkbox' name='createIssueForOther' id='createIssueForOther' $checked />" ;
                     ?>
                 </td>
@@ -178,7 +175,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <?php
                         $checked = '';
-                        if ($row['reassignIssue'] == TRUE) { $checked = 'checked'; }
+                        if ($row['reassignIssue'] == true) { $checked = 'checked'; }
                         print "<input type='checkbox' name='reassignIssue' id='reassignIssue' $checked />" ;
                     ?>
                 </td>
@@ -191,7 +188,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <?php
                         $checked = 'checked';
-                        if ($row['reincarnateIssue'] == FALSE) { $checked = ''; }
+                        if ($row['reincarnateIssue'] == false) { $checked = ''; }
                         print "<input type='checkbox' name='reincarnateIssue' id='reincarnateIssue' $checked />" ;
                     ?>
                 </td>
@@ -204,18 +201,18 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 <td class="right">
                     <?php
                         $checked = '';
-                        if ($row['fullAccess'] == TRUE) { $checked = 'checked'; }
+                        if ($row['fullAccess'] == true) { $checked = 'checked'; }
                         print "<input type='checkbox' name='fullAccess' id='fullAccess' $checked />" ;
                     ?>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <span style="font-size: 90%"><i>* <?php print __($guid, "denotes a required field") ; ?></i></span>
+                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
                 </td>
                 <td class="right">
                     <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-                    <input type="submit" value="<?php print __($guid, "Submit") ; ?>">
+                    <input type="submit" value="<?php print __("Submit") ; ?>">
                 </td>
             </tr>
         </table>
