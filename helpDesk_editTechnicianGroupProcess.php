@@ -20,12 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 include "../../functions.php" ;
 include "../../config.php" ;
 
-//New PDO DB connection
-$pdo = new Gibbon\sqlConnection();
-$connection2 = $pdo->getConnection();
-
-@session_start() ;
-
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
