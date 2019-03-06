@@ -23,9 +23,7 @@ include __DIR__ . '/moduleFunctions.php';
 
 if (isModuleAccessible($guid, $connection2) == false) {
     //Acess denied
-    print "<div class='error'>" ;
-        print "You do not have access to this action." ;
-    print "</div>" ;
+    $page->addError('You do not have access to this action.');
     exit();
 } else {
     $page->breadcrumbs->add(__('Create Issue'));

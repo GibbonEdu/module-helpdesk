@@ -23,9 +23,7 @@ include __DIR__ . '/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
 //Acess denied
-    print "<div class='error'>";
-    print __("You do not have access to this action.");
-    print "</div>";
+    $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
     $page->breadcrumbs->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php');

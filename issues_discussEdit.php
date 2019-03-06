@@ -23,18 +23,14 @@ include __DIR__ . '/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !(isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
     //Acess denied
-    print "<div class='error'>" ;
-        print __("You do not have access to this action.") ;
-    print "</div>" ;
+    $page->addError(__('You do not have access to this action.'));
 } else {
 
     $issueID = null;
     if (isset($_GET["issueID"])) {
         $issueID = $_GET["issueID"];
     } else {
-        print "<div class='error'>" ;
-            print __("No issue selected.") ;
-        print "</div>" ;
+        $page->addError(__('No issue selected.'));
         exit();
     }
 

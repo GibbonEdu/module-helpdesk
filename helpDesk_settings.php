@@ -23,9 +23,7 @@ include './modules/Help Desk/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")==false) {
     //Acess denied
-    print "<div class='error'>" ;
-        print __("You do not have access to this action.") ;
-    print "</div>" ;
+    $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
     $page->breadcrumbs->add(__('Manage Help Desk Settings'));

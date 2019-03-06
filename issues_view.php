@@ -24,9 +24,7 @@ include __DIR__ . '/moduleFunctions.php';
 
 if (isModuleAccessible($guid, $connection2) == false) {
     //Acess denied
-    print "<div class='error'>" ;
-        print "You do not have access to this action." ;
-    print "</div>" ;
+    $page->addError('You do not have access to this action.');
 } else {
     $page->breadcrumbs->add(__('Issues'));
 
@@ -40,9 +38,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
 
     $highestAction = getHighestGroupedAction($guid, $_GET["q"], $connection2) ;
     if ($highestAction == false) {
-        print "<div class='error'>" ;
-        print __("The highest grouped action cannot be determined.") ;
-        print "</div>" ;
+        $page->addError(__('The highest grouped action cannot be determined.'));
         exit();
     }
 

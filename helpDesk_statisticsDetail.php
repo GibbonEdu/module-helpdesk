@@ -23,17 +23,14 @@ include __DIR__ . '/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
     //Acess denied
-    print "<div class='error'>" ;
-        print __("You do not have access to this action.") ;
+    $page->addError(__('You do not have access to this action.'));
     print "</div>" ;
 } else {
     $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk" ;
     if (isset($_GET["title"])) {
         $title = $_GET["title"];
     } else {
-        print "<div class='error'>" ;
-            print __("No statistics selected.") ;
-        print "</div>" ;
+        $page->addError(__('No statistics selected.'));
         exit();
     }
     //Proceed!

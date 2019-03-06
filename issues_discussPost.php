@@ -24,9 +24,7 @@ include __DIR__ . '/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
     //Acess denied
-    print "<div class='error'>" ;
-        print "You do not have access to this action." ;
-    print "</div>" ;
+    $page->addError('You do not have access to this action.');
 } else {
     $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
     $page->breadcrumbs->add(__('Post Discuss'));

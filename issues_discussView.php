@@ -28,9 +28,7 @@ if ((!hasTechnicianAssigned($connection2, $_GET["issueID"]) && isTechnician($con
 
 if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     //Acess denied
-    print "<div class='error'>" ;
-        print "You do not have access to this action." ;
-    print "</div>" ;
+    $page->addError('You do not have access to this action.');
     exit();
 } else {
     $issueID = $_GET["issueID"] ;
@@ -60,20 +58,14 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     $privacySetting = $array2["privacySetting"];
     if ($array2["issueStatus"]=="Resolved" && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
         if ($privacySetting == "No one") {
-            print "<div class='error'>" ;
-                print "You do not have access to this action." ;
-            print "</div>" ;
+            $page->addError('You do not have access to this action.');
             exit();
         } else if ($privacySetting == "Related" && !relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
-            print "<div class='error'>" ;
-                print "You do not have access to this action." ;
-            print "</div>" ;
+            $page->addError('You do not have access to this action.');
             exit();
         }
         else if ($privacySetting == "Owner" && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
-            print "<div class='error'>" ;
-                print "You do not have access to this action." ;
-            print "</div>" ;
+            $page->addError('You do not have access to this action.');
             exit();
         }
     }
@@ -97,9 +89,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
     if (technicianExists($connection2, $array2["technicianID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
         if (!($array2["technicianID"] == getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]))) {
-            print "<div class='error'>" ;
-                print "You do not have access to this action." ;
-            print "</div>" ;
+            $page->addError('You do not have access to this action.');
             exit();
         }
     }
@@ -198,9 +188,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                         print "</div>" ;
                     }
                     if ($result3->rowCount() == 0) {
-                        print "<div class = 'error'>" ;
-                            print __("There are no records to display.");
-                        print "</div>";
+                        $page->addError(__('There are no records to display.'));
                     } else {
                         while ($row3 = $result3->fetch()){
                             $bgc = "#EDF7FF";

@@ -23,9 +23,7 @@ include __DIR__ . '/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
     //Acess denied
-    print "<div class='error'>" ;
-        print __("You do not have access to this action.") ;
-    print "</div>" ;
+    $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
     $page->breadcrumbs->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php');
@@ -33,16 +31,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     $highestAction = getHighestGroupedAction($guid, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php", $connection2) ;
     if ($highestAction == false) {
-        print "<div class='error'>" ;
-        print __("The highest grouped action cannot be determined.") ;
-        print "</div>" ;
+        $page->addError(__('The highest grouped action cannot be determined.'));
         exit();
     }
 
     if ($highestAction != "Manage Technician Groups") {
-        print "<div class='error'>" ;
-            print __("You do not have access to this action.") ;
-        print "</div>" ;
+        $page->addError(__('You do not have access to this action.'));
         exit();
     }
 
@@ -50,9 +44,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     if (isset($_GET["groupID"])) {
         $groupID = $_GET["groupID"];
     } else {
-        print "<div class='error'>" ;
-            print __("No group selected.") ;
-        print "</div>" ;
+        $page->addError(__('No group selected.'));
         exit();
     }
 
@@ -65,9 +57,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     }
 
     if ($result->rowcount() == 1) {
-        print "<div class='error'>" ;
-            print __("Cannot delete last technician group.") ;
-        print "</div>" ;
+        $page->addError(__('Cannot delete last technician group.'));
         exit();
     }
 
