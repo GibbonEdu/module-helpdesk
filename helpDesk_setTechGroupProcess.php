@@ -32,43 +32,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     header("Location: {$URL}");
 } else {
     //Proceed!
-    $techFail = false;
-    if (isset($_GET["technicianID"])) {
-        $technicianID=$_GET["technicianID"] ;
-        if ($group == "") {
-            $techFail = true;
-        }
-    }
-    else {
-        $techFail = true;
-    }
 
-    if ($techFail) {
-        $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php&return=error1";
+    if (!(isset($_GET["technicianID"]) || isset($_POST["group"]))) {
+        $URL = $URL . "&return=error1" ;
         header("Location: {$URL}");
         exit();
     }
-    else {
-        $URL .= "&technicianID=$technicianID";
-    }
-
-    $groupFail = false;
-    if (isset($_POST["group"])) {
-        $group = $_POST["group"] ;
-        if ($group == "") {
-            $groupFail = true;
-        }
-    }
-    else {
-        $groupFail = true;
-    }
-
-    if ($groupFail) {
-        $URL .= "&return=error1";
-        header("Location: {$URL}");
-        exit();
-    }
-
+    $technicianID = $_GET["technicianID"];
+    $group = $_POST["group"];
     //Write to database
     try {
         $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
