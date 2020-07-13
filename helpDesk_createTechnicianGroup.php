@@ -17,17 +17,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
+
 @session_start() ;
 
-include __DIR__ . '/moduleFunctions.php';
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php');
-    $page->breadcrumbs->add(__('Create Technician Group'));
+    $page->breadcrumbs
+        ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
+        ->add(__('Create Technician Group'));
 
     if (isset($_GET['return'])) {
         $editLink = null;
@@ -38,32 +42,15 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
-?>
+    $form = Form::create('createTechnicianGroup',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_createTechnicianGroupProcess.php', 'post');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $row = $form->addRow();
+        $row->addLabel('groupName', __('Group Name'));
+        $row->addTextField('groupName')->isRequired();
+    $row = $form->addRow();
+    $row->addFooter();
+    $row->addSubmit();
 
-    <form method = "post" action = "<?php print $_SESSION[$guid]['absoluteURL'] . '/modules/Help Desk/helpDesk_createTechnicianGroupProcess.php' ?>">
-        <table class = 'smallIntBorder' cellspacing = '0' style = "width: 100%">
-            <tr>
-                <td style = 'width: 275px'>
-                    <b><?php print __('Group Name') ?> *</b><br/>
-                </td>
-                <td class = "right">
-                    <input name = "groupName" id = "groupName" maxlength = 55 value = "" type = "text" style = "width: 300px">
-                    <script type = "text/javascript">
-                        var name=new LiveValidation('groupName');
-                        name.add(Validate.Presence);
-                    </script>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span style = "font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
-                </td>
-                <td class="right">
-                    <input type = "submit" value  = "<?php print __("Submit") ; ?>">
-                </td>
-            </tr>
-        </table>
-    </form>
-<?php
+    echo $form->getOutput();
 }
 ?>
