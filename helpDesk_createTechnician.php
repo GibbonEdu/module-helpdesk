@@ -17,17 +17,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
+
 @session_start();
 
-include __DIR__ . '/moduleFunctions.php';
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
 //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php');
-    $page->breadcrumbs->add(__('Create Technician'));
+    $page->breadcrumbs
+        ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
+        ->add(__('Create Technician'));
 
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php", null);
@@ -35,67 +39,25 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     $allPeople = getAllPeople($connection2, true);
 
-    try {
+
         $data = array();
-        $sql = "SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
-    }
+        $sql = "SELECT groupID as value, groupName as name FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
 
-?>
+    
+    $form = Form::create('createTechnician',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_createTechnicianProcess.php', 'post');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->setFactory(DatabaseFormFactory::create($pdo));
+    $row = $form->addRow();
+        $row->addLabel('person', __('Person'));
+        $row->addSelectStaff('person')->placeholder()->isRequired();
+    $row = $form->addRow();
+        $row->addLabel('group', __('Technician Group'));
+        $row->addSelect('group')->fromQuery($pdo, $sql, $data)->placeholder()->isRequired(); 
 
-    <form method = "post" action = "<?php print $_SESSION[$guid]['absoluteURL'] . '/modules/Help Desk/helpDesk_createTechnicianProcess.php' ?>">
-        <table class = 'smallIntBorder' cellspacing = '0' style = "width: 100%">
-            <tr>
-                <td>
-                    <?php print "<b>". __('Person') ." *</b><br/>"; ?>
-                </td>
-                <td class="right">
-                    <select name = 'person' id = 'person' style = 'width:302px'>
-                        <?php
-                            print "<option value=''>Please select...</option>";
-                            foreach($allPeople as $option) {
-                                print "<option value='" . $option['gibbonPersonID'] . "'>". $option['surname'] . ", " . $option['preferredName']."</option>";
-                            }
-                        ?>
-                    </select>
-                    <script type = "text/javascript">
-                        var name2 = new LiveValidation('person');
-                        name2.add(Validate.Presence);
-                    </script>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <?php print "<b>". __('Technician Group') ." *</b><br/>";?>
-                </td>
-                <td class="right">
-                    <select name = 'group' id='group' style='width:302px'>
-                    <?php
-                        print "<option value = ''>Please select...</option>";
-                        while($option = $result->fetch()) {
-                            print "<option value='" . $option['groupID'] . "'>". $option['groupName']."</option>";
-                        }
-                    ?>
-                    </select>
-                    <script type = "text/javascript">
-                        var name2 = new LiveValidation('group');
-                        name2.add(Validate.Presence);
-                    </script>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span style = "font-size: 90%"><i>* <?php print __("denotes a required field"); ?></i></span>
-                </td>
-                <td class="right">
-                    <input type = "hidden" name = "address" value = "<?php print $_SESSION[$guid]['address'] ?>">
-                    <input type = "submit" value = "<?php print __('Submit'); ?>">
-                </td>
-            </tr>
-        </table>
-    </form>
-<?php
+    $row = $form->addRow();
+    $row->addFooter();
+    $row->addSubmit();
+
+    echo $form->getOutput();
 }
 ?>

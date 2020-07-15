@@ -17,18 +17,22 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start() ;
+use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
 
-include __DIR__ . '/moduleFunctions.php';
+@session_start();
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+
+if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php');
-    $page->breadcrumbs->add(__('Edit Technician Group'));
-
+    $page->breadcrumbs
+        ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
+        ->add(__('Edit Technician Group')); 
+  
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
@@ -42,181 +46,75 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $sql = "SELECT * FROM helpDeskTechGroups WHERE groupID = :groupID";
         $result = $connection2->prepare($sql);
         $result->execute($data);
-        $row = $result->fetch();
+        $values = $result->fetch();
     } catch (PDOException $e) {
     }
 
-    print "<h3>";
-        print "Permissons for Technician Group: " . $row["groupName"];
-    print "</h3>";
-    ?>
-    <form method = "post" action = "<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/Help Desk/helpDesk_editTechnicianGroupProcess.php?groupID=$groupID" ?>">
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">  
-            <tr>
-                <td style='width: 275px'>
-                    <b>Group Name</b><br/>
-                    <span style="font-size: 90%"><i></i></span>
-                </td>
-                <td class="right">
-                    <input name="groupName" id="groupName" maxlength=100 value="<?php print $row["groupName"] ?>" type="text" data-minlength="1" style="width: 300px">
-                    <script type="text/javascript">
-                        var groupName=new LiveValidation('groupName');
-                        groupName.add(Validate.Presence);
-                    </script>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>Allow View All Issues</b><br/>
-                    <span style="font-size: 90%"><i>Allow the technician to see all the issues instead of just their issues and the issues they working on.</i></span>
-                </td>
-                <td class="right">
-                    <?php
-                        $checked = '';
-                        if ($row['viewIssue'] == true) {
-                            $checked = 'checked';
-                        }
-                        print "<input type='checkbox' name='viewIssue' id='viewIssue' $checked />" ;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>View Issues Status</b><br/>
-                    <span style="font-size: 90%"><i>Choose what issue statuses the technicians can view.</i></span>
-                </td>
-                <td class="right">
-                    <select name='viewIssueStatus' id='viewIssueStatus' style='width:302px'>
-                    <?php
-                            if ($row['viewIssueStatus'] == "All") {
-                                print "<option selected value='All'>All</option>";
-                            } else {
-                                print "<option value='All'>All</option>";
-                            }
 
-                            if ($row['viewIssueStatus'] == "UP") {
-                                print "<option selected value='UP'>Unassigned & Pending</option>";
-                            } else { 
-                                print "<option value='UP'>Unassigned & Pending</option>";
-                            }
+    $form = Form::create('editTechnicianGroup',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
-                            if ($row['viewIssueStatus'] == "PR") {
-                                print "<option selected value='PR'>Pending & Resolved</option>";
-                            } else { 
-                                print "<option value='PR'>Pending & Resolved</option>";
-                            }
+    $form->addRow()->addHeading(__("Permissons for Technician Group: " . $values["groupName"]));
 
-                            if ($row['viewIssueStatus'] == "Pending") {
-                                print "<option selected value='Pending'>Pending</option>";
-                            } else { 
-                                print "<option value='Pending'>Pending</option>";
-                            }  
-                    ?>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>Allow Assign Issues</b><br/>
-                    <span style="font-size: 90%"><i>Allow the technician to assign issues to other technicians.</i></span>
-                </td>
-                <td class="right">
-                    <?php
-                        $checked = '';
-                        if ($row['assignIssue'] == true) { $checked = 'checked'; }
-                        print "<input type='checkbox' name='assignIssue' id='assignIssue' $checked />" ;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>Allow Accept Issues</b><br/>
-                    <span style="font-size: 90%"><i>Allow the technician to accept issues to work on.</i></span>
-                </td>
-                <td class="right">
-                    <?php
-                        $checked = 'checked';
-                        if ($row['acceptIssue'] == false) { $checked = ''; }
-                        print "<input type='checkbox' name='acceptIssue' id='acceptIssue' $checked />" ;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>Allow Resolve Issues</b><br/>
-                    <span style="font-size: 90%"><i>Allow the technician to resolve an issue they are working on.</i></span>
-                </td>
-                <td class="right">
-                    <?php
-                        $checked = 'checked';
-                        if ($row['resolveIssue'] == false) { $checked = ''; }
-                        print "<input type='checkbox' name='resolveIssue' id='resolveIssue' $checked />" ;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>Allow Create Issues For Other</b><br/>
-                    <span style="font-size: 90%"><i>Allow the technician to create issues issues on behalf of others.</i></span>
-                </td>
-                <td class="right">
-                    <?php
-                        $checked = 'checked';
-                        if ($row['createIssueForOther'] == false) { $checked = ''; }
-                        print "<input type='checkbox' name='createIssueForOther' id='createIssueForOther' $checked />" ;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>Reassign Issue</b><br/>
-                    <span style="font-size: 90%"><i>This will allow the technician to reassign an issue to another technician.</i></span>
-                </td>
-                <td class="right">
-                    <?php
-                        $checked = '';
-                        if ($row['reassignIssue'] == true) { $checked = 'checked'; }
-                        print "<input type='checkbox' name='reassignIssue' id='reassignIssue' $checked />" ;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>Reincarnate Issue</b><br/>
-                    <span style="font-size: 90%"><i>This will allow the technician to bring back an issue that has been resolved.</i></span>
-                </td>
-                <td class="right">
-                    <?php
-                        $checked = 'checked';
-                        if ($row['reincarnateIssue'] == false) { $checked = ''; }
-                        print "<input type='checkbox' name='reincarnateIssue' id='reincarnateIssue' $checked />" ;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td style='width: 275px'>
-                    <b>Full Access</b><br/>
-                    <span style="font-size: 90%"><i>Enabling this will give the technician full access. This will override almost all the checks the system has in place. It will allow the technician to resolve any issues, work on issues they are not assigned to and all the other things listed above.</i></span>
-                </td>
-                <td class="right">
-                    <?php
-                        $checked = '';
-                        if ($row['fullAccess'] == true) { $checked = 'checked'; }
-                        print "<input type='checkbox' name='fullAccess' id='fullAccess' $checked />" ;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
-                </td>
-                <td class="right">
-                    <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-                    <input type="submit" value="<?php print __("Submit") ; ?>">
-                </td>
-            </tr>
-        </table>
-    </form>
-<?php
+    $row = $form->addRow();
+        $row->addLabel('groupName', __('Group Name'));
+        $row->addTextField('groupName')->isRequired()->setValue($values["groupName"]);
+
+    $row = $form->addRow();
+        $row->addLabel('viewIssue', __('Allow View All Issues'))->description(__('Allow the technician to see all the issues instead of just their issues and the issues they working on.'));
+        $row->addCheckbox('viewIssue')->setValue($values["viewIssue"]);
+
+    $statuses = array(
+        "All" =>__("All"),
+        "UP" =>__("Unassigned & Pending"),
+        "PR" =>__("Pending & Resolved"), 
+        "Pending" =>__("Pending")
+    );
+
+    $row = $form->addRow();
+        $row->addLabel('viewIssueStatus', __('View Issues Status Name'))->description(__('Choose what issue statuses the technicians can view.'));
+        $row->addSelect('viewIssueStatus')->fromArray($statuses)->isRequired()->setValue($values["viewIssueStatus"]);
+
+
+$row = $form->addRow();
+        $row->addLabel('assignIssue', __('Allow Assign Issues'))->description(__('Allow the technician to assign issues to other technicians.'));
+        $row->addCheckbox('assignIssue')->setValue($values["assignIssue"]);
+
+
+$row = $form->addRow();
+        $row->addLabel('acceptIssue', __('Allow Accept Issues'))->description(__('Allow the technician to accept issues to work on. '));
+        $row->addCheckbox('acceptIssue')->setValue($values["acceptIssue"]);
+
+
+$row = $form->addRow();
+        $row->addLabel('resolveIssue', __('Allow Resolve Issues'))->description(__('Allow the technician to resolve an issue they are working on.'));
+        $row->addCheckbox('resolveIssue')->setValue($values["resolveIssue"]);
+
+
+$row = $form->addRow();
+        $row->addLabel('createIssueForOther', __('Allow Create Issues For Other'))->description(__('Allow the technician to create issues issues on behalf of others.'));
+        $row->addCheckbox('createIssueForOther')->setValue($values["createIssueForOther"]);
+
+
+$row = $form->addRow();
+        $row->addLabel('reassignIssue', __('Reassign Issue'))->description(__('This will allow the technician to reassign an issue to another technician.'));
+        $row->addCheckbox('reassignIssue')->setValue($values["reassignIssue"]);
+
+
+$row = $form->addRow();
+        $row->addLabel('reincarnateIssue', __('Reincarnate Issue'))->description(__('This will allow the technician to bring back an issue that has been resolved.'));
+        $row->addCheckbox('reincarnateIssue')->setValue($values["reincarnateIssue"]);
+
+$row = $form->addRow();
+        $row->addLabel('fullAccess', __('Full Access'))->description(__('Enabling this will give the technician full access. This will override almost all the checks the system has in place. It will allow the technician to resolve any issues, work on issues they are not assigned to and all the other things listed above.'));
+        $row->addCheckbox('fullAccess')->setValue($values["fullAccess"]);
+
+
+    $form->loadAllValuesFrom($values);
+    $row = $form->addRow();
+    $row->addFooter();
+    $row->addSubmit();
+
+    echo $form->getOutput();
 }
 ?>

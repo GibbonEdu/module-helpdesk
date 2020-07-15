@@ -16,7 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
+use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
 @session_start() ;
 
 include __DIR__ . '/moduleFunctions.php';
@@ -40,64 +41,29 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         exit();
     }
 
-    try {
+        $allPeople = getAllPeople($connection2, true);
         $data = array();
-        $sql = "SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-
+        $sql = "SELECT groupID as value, groupName as name FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
         $data2 = array("technicianID"=>$technicianID);
         $sql2 = "SELECT * FROM helpDeskTechnicians WHERE technicianID = :technicianID";
         $result2 = $connection2->prepare($sql2);
         $result2->execute($data2);
-    } catch (PDOException $e) {
-    }
+        $values=$result2->fetch();
 
-    $tech=$result2->fetch();
-?>
 
-    <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroupProcess.php?technicianID=$technicianID" ?>">
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
-            <tr>
-                <td>
-                    <?php print "<b>". __('Technician Group') ." *</b><br/>";?>
-                    <span style=\"font-size: 90%\"><i></i></span>
-                </td>
-                <td class="right">
-                    <select name='group' id='group' style='width:302px'>
-                        <?php
-                            $needDefault = true;
-                            while ($option = $result->fetch()) {
-                                $selected = "";
-                                if ($option['groupID'] == $tech['groupID']) {
-                                    $needDefault = false;
-                                    $selected = "selected";
-                                }
-                                print "<option value='" . $option['groupID'] . "' $selected>". $option['groupName']."</option>" ;
-                            }
+        $form = Form::create('setTechGroup',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_setTechGroupProcess.php?technicianID=' . $technicianID, 'post');
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->setFactory(DatabaseFormFactory::create($pdo));
 
-                            if ($needDefault) {
-                                print "<option value=''>Please select...</option>";
-                            }
-                        ?>
-                    </select>
-                    <script type="text/javascript">
-                        var name2 = new LiveValidation('group');
-                        name2.add(Validate.Presence);
-                    </script>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
-                </td>
-                <td class="right">
-                    <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-                    <input type="submit" value="<?php print __("Submit") ; ?>">
-                </td>
-            </tr>
-        </table>
-    </form>
-<?php
+        $row = $form->addRow();
+            $row->addLabel('group', __('Technician Group'));
+            $row->addSelect('group')->fromQuery($pdo, $sql, $data)->setValue($values['groupID'])->isRequired(); 
+
+        $form->loadAllValuesFrom($values);
+        $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
+
+        echo $form->getOutput();
 }
 ?>
