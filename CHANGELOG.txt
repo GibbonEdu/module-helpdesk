@@ -254,3 +254,7 @@ Fixed a bug that would prevent a user from viewing their own issue.
 v1.1.04
 -------
 Fixed a bug that would prevent helpDesk_manageTechnicianGroup.php from loading.
+
+v1.1.05
+-------
+Update manifest tables to use InnoDB storage engine

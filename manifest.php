@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="1.1.04" ;
+$version="1.1.05" ;
 $author="Adrien Tremblay & Ray Clark" ;
 $url="https://github.com/raynichc/helpdesk" ;
 
@@ -33,7 +33,7 @@ $moduleTables[0]="CREATE TABLE `helpDeskTechnicians` (
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   `groupID` int(4) unsigned zerofill NOT NULL,
   PRIMARY KEY (`technicianID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;" ;
 
 $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -49,7 +49,7 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   `createdByID` int(12) unsigned zerofill NOT NULL,
   `privacySetting` ENUM('Everyone', 'Related', 'Owner', 'No one') DEFAULT 'Everyone',
   PRIMARY KEY (`issueID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;" ;
 
 $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -58,7 +58,7 @@ $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   PRIMARY KEY (`issueDiscussID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;" ;
 
 $moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
 VALUES
@@ -80,7 +80,7 @@ $moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
   `reassignIssue` boolean DEFAULT 0,
   `reincarnateIssue` boolean DEFAULT 1,
    PRIMARY KEY (`groupID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;" ;
 
 $moduleTables[5]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue)
 VALUES
