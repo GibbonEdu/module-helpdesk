@@ -67,7 +67,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     ?>
 
-    <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . " /modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID ?>">
+    <form method="post" action='<?php print $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID ?>'>
         <table class='smallIntBorder' cellspacing='0' style="width: 100%">
             <tr>
                 <td>
