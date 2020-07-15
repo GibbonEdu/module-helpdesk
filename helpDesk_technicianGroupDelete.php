@@ -16,10 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
+use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
 @session_start() ;
 
-include __DIR__ . '/moduleFunctions.php';
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
     //Acess denied
@@ -47,70 +48,38 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $page->addError(__('No group selected.'));
         exit();
     }
-
-    try {
-        $data = array();
-        $sql = "SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
+    if (isset($_GET['return'])) {
+        returnProcess($guid, $_GET['return'], null, null);
     }
+   
+    //excludes selected group such that you can't migrate technicians to the group that you're deleting
+    $data = array("groupID" => $groupID);
+    $sql = "SELECT groupID as value, groupName as name FROM helpDeskTechGroups WHERE groupID!=:groupID ORDER BY helpDeskTechGroups.groupID ASC"; 
+    $result = $connection2->prepare($sql);
+    $result->execute($data);
 
-    if ($result->rowcount() == 1) {
+    //Make sure that there are other groups aside from the group being deleted
+    if ($result->rowcount() == 0) {
         $page->addError(__('Cannot delete last technician group.'));
         exit();
     }
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
+    //TODO: Add reference to the group that they have selected to delete, and the fancy red text warning that they're about to delete a group
+    //Also TODO: yell at ray and then regret the life decisions that led me to working on this
+    //Another possible function: Option to delete technicians entirely rather than migrate
+    $form = Form::create('groupDelete',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID, 'post');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
-    ?>
+    $form->setFactory(DatabaseFormFactory::create($pdo));
+    $row = $form->addRow();
+    $row = $form->addRow();
+        $row->addLabel('group', __('New Technician Group'))->description(__('The group to migrate any existing technicians of the old group to'));
+        $row->addSelect('group')->fromQuery($pdo, $sql, $data)->placeholder()->isRequired(); 
 
-    <form method="post" action='<?php print $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID ?>'>
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
-            <tr>
-                <td>
-                    <b>
-                        <?php print __('New Technician Group') . " *"; ?>
-                    </b><br/>
-                </td>
-                <td class="right">
-                    <select name='group' id='group' style='width:302px'>
-                        <option value=''>Please select...</option>
-                            <?php
-                            $group = null;
-                            if (isset($_GET['group'])) {
-                                $group = $_GET['group'];
-                            }
-                            while ($option = $result->fetch()) {
-                                if ($groupID != $option["groupID"]) {
-                                    $selected = "";
-                                    if ($option["groupID"] == $group) {
-                                        $selected = "selected";
-                                    }
-                                    print "<option $selected value='" . $option["groupID"] . "'>". $option["groupName"] ."</option>" ;
-                                }
-                            }
-                            ?>
-                    </select>
-                    <script type="text/javascript">
-                        var name2=new LiveValidation('group');
-                        name2.add(Validate.Presence);
-                    </script>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
-                </td>
-                <td class="right">
-                    <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-                    <input type="submit" value="<?php print __("Submit") ; ?>">
-                </td>
-            </tr>
-        </table>
-    </form>
-<?php
+    $row = $form->addRow();
+    $row->addFooter();
+    $row->addSubmit();
+
+    echo $form->getOutput();
 }
 ?>

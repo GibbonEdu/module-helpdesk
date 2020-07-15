@@ -70,12 +70,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         if ($gibbonModuleID == null) {
             throw new PDOException("Invalid gibbonModuleID.");
         }
-
+        //Delete techGroup
         $data1 = array("groupID" => $groupID) ;
         $sql1 = "DELETE FROM helpDeskTechGroups WHERE groupID=:groupID" ;
         $result1 = $connection2->prepare($sql1);
         $result1->execute($data1);
-
+        //Migrate Technicians assigned to deleted techGroup to new techGroup
         $data2=array("groupID" => $groupID, "newGroupID" => $newGroupID) ;
         $sql2="UPDATE helpDeskTechnicians SET groupID=:newGroupID WHERE groupID=:groupID" ;
         $result2=$connection2->prepare($sql2);
