@@ -17,15 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Forms\Form;
 @session_start() ;
 
-include __DIR__ . '/moduleFunctions.php';
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !(isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-
+    //Proceed!
+    $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
+    $page->breadcrumbs->add(__('Edit Privacy'));
+    
     $issueID = null;
     if (isset($_GET["issueID"])) {
         $issueID = $_GET["issueID"];
@@ -33,55 +37,21 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
         $page->addError(__('No issue selected.'));
         exit();
     }
+    //TODO: Figure out why does this require a ->setClass('fullWidth') to actually use the fullwidth of the page ??
+    $form = Form::create('editPrivacy', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_discussEditProcess.php?issueID=', $issueID, 'post')->setClass('fullWidth'); 
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']); 
+    
+    
+    $options = array("Everyone", "Related", "Owner", "No one");
+    //have a ->selected or setValue going on here          
+    $row = $form->addRow();
+        $row->addLabel('privacySetting', __('Privacy Settings'))->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
+        $row->addSelect('privacySetting')->fromArray($options)->placeholder()->isRequired(); 
+        
+    $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
 
-    //Proceed!
-    $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
-    $page->breadcrumbs->add(__('Edit Privacy'));
-?>
-<form method="post" action="<?php print $_SESSION[$guid]['absoluteURL'] . '    /modules/Help Desk/issues_discussEditProcess.php?issueID=' . $issueID; ?>">
-    <table class='smallIntBorder' cellspacing='0' style="width: 100%">
-        <tr>
-            <td>
-                <b>
-                    <?php print __('Privacy Setting') ." *";?>
-                </b><br>
-            </td>
-            <td class="right">
-                <select name='privacySetting' id='privacySetting' style='width:302px'>
-                    <?php
-                        try {
-                            $data = array("issueID"=>$issueID);
-                            $sql = "SELECT privacySetting FROM helpDeskIssue WHERE issueID=:issueID" ;
-                            $result = $connection2->prepare($sql);
-                            $result->execute($data);
-                        }
-                        catch (PDOException $e) {
-                        }
-
-                        $row = $result->fetch() ;
-                        $privacySetting = $row['privacySetting'];
-                        print "<option value='" . $privacySetting . "'>". $privacySetting ."</option>" ;
-                        $options = array("Everyone", "Related", "Owner", "No one");
-                        foreach ($options as $option) {
-                            if ($option != $privacySetting) {
-                                print "<option value='" . $option . "'>". $option ."</option>" ;
-                            }
-                        }
-                    ?>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
-            </td>
-            <td class="right">
-                <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-                <input type="submit" value="<?php print __("Submit") ; ?>">
-            </td>
-        </tr>
-    </table>
-</form>
-<?php
+    echo $form->getOutput();
 }
 ?>

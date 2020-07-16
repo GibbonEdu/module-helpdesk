@@ -16,10 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
+@session_start();
 
-@session_start() ;
-
-include __DIR__ . '/moduleFunctions.php';
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false) {
     //Acess denied
@@ -58,46 +59,24 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    $technicians = getAllTechnicians($connection2);
+    
 
-    ?>
 
-    <form method="post" action="<?php print $_SESSION[$guid]['absoluteURL'] . '/modules/Help Desk/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission ?>">
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
-            <tr>
-                <td>
-                    <b>
-                        <?php print __('Technicians') ." *"; ?>
-                    </b><br/>
-                </td>
-                <td class="right">
-                    <select name='technician' id='technician' style='width:302px'>
-                    <?php
-                        foreach ($technicians as $option) {
-                            if (!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) {
-                                if ($isReassign) {
-                                    if (getTechWorkingOnIssue($connection2, $issueID)["personID"] != $option["gibbonPersonID"]) {
-                                        print "<option value='" . $option["technicianID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;
-                                    }
-                                } else {
-                                    print "<option value='" . $option["technicianID"] . "'>". $option["surname"]. ", ". $option["preferredName"] ."</option>" ;
-                                }
-                            }
-                        }
-                    ?>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
-                </td>
-                <td class="right">
-                    <input type="submit" value="<?php print __("Submit") ; ?>">
-                </td>
-            </tr>
-        </table>
-    </form>
-<?php
+    $form = Form::create('assignIssue',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->setFactory(DatabaseFormFactory::create($pdo));
+
+        $data = array();
+        $sql = "SELECT helpDeskTechnicians.gibbonPersonID, technicianID as value, concat(surname, ', ' ,preferredName) as name FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE status='Full' ORDER BY surname, preferredName ASC";
+        //TODO: bring back if (!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) and if ($isReassign) using a ->selected()
+        $row = $form->addRow();
+            $row->addLabel('technician', __('Technicians'));
+            $row->addSelect('technician')->fromQuery($pdo, $sql, $data)->placeholder()->isRequired(); 
+
+        $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
+
+        echo $form->getOutput();
 }
 ?>

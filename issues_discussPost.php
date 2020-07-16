@@ -16,11 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
+use Gibbon\Forms\Form;
 @session_start() ;
 
 //Module includes
-include __DIR__ . '/moduleFunctions.php';
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
     //Acess denied
@@ -28,27 +28,19 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
 } else {
     $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
     $page->breadcrumbs->add(__('Post Discuss'));
-?>
-    <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_discussPostProccess.php?issueID="  . $_GET["issueID"]?>">
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
-            <tr>
-                <td colspan=2>
-                    <b>
-                        <?php print __('Comment') ?>
-                    </b><br/>
-                    <?php print getEditor($guid, true, "comment", "", 5, true, true, false); ?>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
-                </td>
-                <td class="right">
-                    <input type="submit" value="<?php print __("Submit") ; ?>">
-                </td>
-            </tr>
-        </table>
-    </form>
-<?php
+    
+     $form = Form::create('issueDiscuss',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_discussPostProccess.php?issueID=' . $_GET["issueID"], 'post');
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        
+        $row = $form->addRow();
+        $column = $row->addColumn();
+        $column->addLabel('comment', __('Comment'));
+        $column->addEditor('comment', $guid)->setRows(5)->showMedia()->isRequired();
+        
+        $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
+
+    echo $form->getOutput();
 }
 ?>
