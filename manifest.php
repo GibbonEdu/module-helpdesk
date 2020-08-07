@@ -114,7 +114,6 @@ $actionRows[$actionCount]["category"]="Issues" ;
 $actionRows[$actionCount]["description"]= "Gives the user access to the Issues section." ;
 $actionRows[$actionCount]["URLList"]="issues_view.php" ;
 $actionRows[$actionCount]["entryURL"]="issues_view.php" ;
-$actionRows[$actionCount]["entrySidebar"]="N" ;
 $actionRows[$actionCount]["defaultPermissionAdmin"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionTeacher"]="Y" ;
 $actionRows[$actionCount]["defaultPermissionStudent"]="Y" ;
