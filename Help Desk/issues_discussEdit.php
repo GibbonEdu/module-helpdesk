@@ -27,8 +27,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
-    $page->breadcrumbs->add(__('Edit Privacy'));
     
     $issueID = null;
     if (isset($_GET["issueID"])) {
@@ -37,8 +35,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
         $page->addError(__('No issue selected.'));
         exit();
     }
-    //TODO: Figure out why does this require a ->setClass('fullWidth') to actually use the fullwidth of the page ??
-    $form = Form::create('editPrivacy', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_discussEditProcess.php?issueID=', $issueID, 'post')->setClass('fullWidth'); 
+    $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
+    $page->breadcrumbs->add(__('Edit Privacy'));
+    
+    $form = Form::create('editPrivacy', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_discussEditProcess.php?issueID=' . $issueID, 'post'); 
     $form->addHiddenValue('address', $_SESSION[$guid]['address']); 
     
     

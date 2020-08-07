@@ -59,7 +59,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     }
     
     
-    $form = Form::create('assignIssue',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/modules/Help Desk/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
+    $form = Form::create('assignIssue',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
     
     $data = array("issueID"=>$issueID);

@@ -187,9 +187,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                             }
                         print "</div>" ;
                     }
-                    if ($result3->rowCount() == 0) {
-                        $page->addError(__('There are no records to display.'));
-                    } else {
+                    
                         while ($row3 = $result3->fetch()){
                             $bgc = "#EDF7FF";
                             if (!isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {
@@ -224,7 +222,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                                 print "</tr>" ;
                             print "</table>" ;
                         }
-                    }
+                    
                 print "</td>" ;
             print "</tr>" ;
         print "</table>" ;
