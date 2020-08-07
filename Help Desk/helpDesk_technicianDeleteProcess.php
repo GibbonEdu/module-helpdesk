@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 include "../../functions.php" ;
 include "../../config.php" ;
 
-include "./moduleFunctions.php" ;
+Include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
@@ -50,17 +50,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $data = array("technicianID" => $technicianID);
 
         $sql = "SELECT gibbonPersonID FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
-        $result = $connection2->prepare($sql3);
+        $result = $connection2->prepare($sql);
         $result->execute($data);
 
         $sql2 = "DELETE FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
-        $result2 = $connection2->prepare($sql);
+        $result2 = $connection2->prepare($sql2);
         $result2->execute($data);
 
-        $sql3 = "UPDATE helpDeskIssue SET helpDeskIssue.technicianID=null, helpDeskIssue.status='Unassigned' WHERE helpDeskIssue.technicianID=:technicianID" ;
-        $result3 = $connection2->prepare($sql2);
-        $result3->execute($data);
-
+     
 
     } catch (PDOException $e) {
         //Fail 2
