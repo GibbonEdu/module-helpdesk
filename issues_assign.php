@@ -17,8 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\Form;
-use Gibbon\Forms\DatabaseFormFactory;
-@session_start();
+@session_start() ;
 
 include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
@@ -58,25 +57,30 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
-
     
-
-
-    $form = Form::create('assignIssue',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
-        $form->setFactory(DatabaseFormFactory::create($pdo));
-
-        $data = array();
-        $sql = "SELECT helpDeskTechnicians.gibbonPersonID, technicianID as value, concat(surname, ', ' ,preferredName) as name FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE status='Full' ORDER BY surname, preferredName ASC";
-        //TODO: bring back if (!isPersonsIssue($connection2, $issueID, $option["gibbonPersonID"])) and if ($isReassign) using a ->selected()
-        $row = $form->addRow();
-            $row->addLabel('technician', __('Technicians'));
-            $row->addSelect('technician')->fromQuery($pdo, $sql, $data)->placeholder()->isRequired(); 
-
-        $row = $form->addRow();
+    
+    $form = Form::create('assignIssue',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/modules/Help Desk/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    
+    $data = array("issueID"=>$issueID);
+    
+    //TODO: Fix module_function getAllTechnicians to work here
+    $sql = "SELECT helpDeskTechnicians.gibbonPersonID, technicianID AS value, concat(surname, ', ', preferredName) AS name FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE status='Full' ORDER BY surname, preferredName ASC";
+    
+    //Find curently assigned technician TODO: fix the getTechWorkingOnIssue function in module_functions so that it actually works and this can be replaced
+    $sqlvalues = "SELECT helpDeskTechnicians.gibbonPersonID AS personID, helpDeskTechnicians.technicianID AS value, concat(surname, ', ', preferredName) AS name FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE gibbonPerson.status='Full' AND issueID=:issueID ORDER BY name ASC";
+    $result = $connection2->prepare($sqlvalues);
+        $result->execute($data);
+        $values = $result->fetch();
+        
+    $row = $form->addRow();
+        $row->addLabel('technician', __('Technician'));
+        $row->addSelect('technician')->fromQuery($pdo, $sql, $data)->placeholder()->isRequired()->selected($values['value']); 
+    
+    $row = $form->addRow();
         $row->addFooter();
         $row->addSubmit();
 
-        echo $form->getOutput();
+    echo $form->getOutput();
 }
 ?>
