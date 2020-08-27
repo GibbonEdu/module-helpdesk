@@ -17,6 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Tables\DataTable;
+use Gibbon\Services\Format;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+
 @session_start() ;
 
 include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
@@ -32,6 +37,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         returnProcess($guid, $_GET['return'], null, null);
     }
 
+    /*
     try {
         $data = array();
         $sql = "SELECT helpDeskTechnicians.* , surname, preferredName, title, groupName FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN helpDeskTechGroups ON (helpDeskTechnicians.groupID=helpDeskTechGroups.groupID) ORDER BY helpDeskTechnicians.technicianID ASC";
@@ -43,7 +49,55 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $result2->execute($data);
     } catch (PDOException $e) {
     }
+    */
 
+    $technicianGateway = $container->get(technicianGateway::class);
+    $issueGateway = $container->get(IssueGateway::class); 
+
+    $formatIssues = function($row) use ($guid, $issueGateway) {
+        $issues = $issueGateway->selectIssueByTechnician($row['technicianID'])->fetchAll();
+        if (count($issues) < 1) {
+            return __('None');
+        }
+
+        $issues = array_map(function($issue) use ($guid) {
+            return Format::link("./index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $issue["issueID"], $issue["issueName"]);
+        }, $issues);
+
+        return implode(", ", $issues);
+    };
+
+    $table = DataTable::create('technicians');
+    $table->setTitle("Technicians");
+
+    $table->addHeaderAction('add', __("Add"))
+            ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php")
+            ->displayLabel();
+
+    $table->addColumn('name', __("Name"))
+            ->format(Format::using('name', ['title', 'preferredName', 'surname', "Student", false, false]));
+    $table->addColumn('workingOn', __("Working On"))->format($formatIssues);
+    $table->addColumn('groupName', __("Group"));
+
+    $table->addActionColumn()
+            ->addParam('technicianID')
+            ->format(function ($technician, $actions) use ($guid) {
+                $actions->addAction('edit', __('Edit'))
+                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroup.php");
+
+                $actions->addAction('stats', __('Stats'))
+                        ->setIcon('internalAssessment')
+                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianStats.php");
+
+                $actions->addAction('delete', __('Delete'))
+                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDelete.php");
+            });
+
+
+
+    echo $table->render($technicianGateway->selectTechnicians()->toDataSet());
+
+    /*
     print "<div class='linkTop'>" ;
         print "<a style='position:relative; bottom:5px;float:right;' href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php'><img style='margin-left: 2px' title=" . __('Create ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
         print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_createTechnician.php'>" .  __('Create') . "</a>";
@@ -52,6 +106,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     print "<h3>";
         print "Technicians" ;
     print "</h3>";
+
     print "<table cellspacing='0' style='width: 100%'>" ;
         print "<tr class='head'>" ;
             print "<th>" ;
@@ -109,5 +164,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             print "</tr>";
         }
     print "</table>" ;
+    */
 }
 ?>
