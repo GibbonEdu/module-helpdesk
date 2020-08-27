@@ -23,7 +23,8 @@ class IssueGateway extends QueryableGateway
         $data = array('technicianID' => $technicianID);
         $sql = "SELECT issueID, gibbonPersonID, issueName, description, date, status, category, priority, gibbonSchoolYearID, createdByID, privacySetting
                 FROM helpDeskIssue
-                WHERE technicianID=:technicianID";
+                WHERE technicianID=:technicianID
+                ORDER BY issueID ASC";
 
         return $this->db()->select($sql, $data);
     }

@@ -24,7 +24,8 @@ class TechnicianGateway extends QueryableGateway
         $sql = "SELECT helpDeskTechnicians.technicianID, helpDeskTechnicians.groupID, helpDeskTechGroups.groupName, gibbonPerson.gibbonPersonID, gibbonPerson.title, gibbonPerson.preferredName, gibbonPerson.surname
                 FROM helpDeskTechnicians
                 JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)
-                JOIN helpDeskTechGroups ON (helpDeskTechnicians.groupID=helpDeskTechGroups.groupID)";
+                JOIN helpDeskTechGroups ON (helpDeskTechnicians.groupID=helpDeskTechGroups.groupID)
+                ORDER BY helpDeskTechnicians.technicianID ASC";
 
         return $this->db()->select($sql, $data);
     }
@@ -34,7 +35,8 @@ class TechnicianGateway extends QueryableGateway
         $sql = "SELECT helpDeskTechnicians.technicianID, gibbonPerson.gibbonPersonID, gibbonPerson.title, gibbonPerson.preferredName, gibbonPerson.surname
                 FROM helpDeskTechnicians
                 JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)
-                WHERE helpDeskTechnicians.groupID=:groupID";
+                WHERE helpDeskTechnicians.groupID=:groupID
+                ORDER BY helpDeskTechnicians.technicianID ASC";
 
         return $this->db()->select($sql, $data);
     }
