@@ -16,6 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+use Gibbon\Domain\DataSet;
+use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
+use Gibbon\Tables\DataTable;
 
 @session_start() ;
 
@@ -256,130 +261,47 @@ if (isModuleAccessible($guid, $connection2) == false) {
         $dataIssue["issueID"] = $IDFilter;
         $whereIssue .= " issueID=:issueID";
     }
+    
+    
+    //TODO: THE ORIGINAL FILTER DIDN'T WORK SO IN THEORY THIS ONE SHOULD WORK JUST GOTTA FIX... ALL THE STUFF ABOVE
+    $form = Form::create('search', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    $form->setFactory(DatabaseFormFactory::create($pdo));
+    $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/issues_view.php');
 
-    print "<form method='post' action='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=" . $_GET["q"] . "'>" ;
-        print"<table class='noIntBorder' cellspacing='0' style='width: 100%'>" ;
-            if (count($issueFilters)>1) {
-                print "<tr>";
-                    print "<td> ";
-                        print "<b>". __('Issue Filter') ."</b><br/>";
-                    print "</td>";
-                    print "<td class=\"right\">";
-                        print "<select name='filter' id='filter' style='width:302px'>" ;
-                            foreach ($issueFilters as $option) {
-                                $selected = "" ;
-                                if ($option == $filter) {
-                                    $selected = "selected" ;
-                                }
-                                print "<option $selected value='" . $option . "'>". $option ."</option>" ;
-                            }
-                        print "</select>" ;
-                    print "</td>";
-                print "</tr>";
-            }
-            print "<tr>";
-                print "<td> ";
-                    print "<b>".  __('Status Filter') ."</b><br/>";
-                    print "<span style=\"font-size: 90%\"><i></i></span>";
-                print "</td>";
-                print "<td class=\"right\">";
-                    print "<select name='filter2' id='filter2' style='width:302px'>" ;
-                        foreach ($statusFilters as $option) {
-                            $selected = "" ;
-                            if ($option == $filter2) {
-                                $selected = "selected" ;
-                            }
-                            print "<option $selected value='" . $option . "'>". $option ."</option>" ;
-                        }
-                    print "</select>" ;
-                print "</td>";
-            print "</tr>";
-            if (count($categoryFilters)>1) {
-                print "<tr>";
-                    print "<td> ";
-                        print "<b>". __('Category') ."</b><br/>";
-                        print "<span style=\"font-size: 90%\"><i></i></span>";
-                    print "</td>";
-                    print "<td class=\"right\">";
-                        print "<select name='filter3' id='filter3' style='width:302px'>" ;
-                            foreach ($categoryFilters as $option) {
-                                $selected = "" ;
-                                if ($option == $filter3) {
-                                    $selected = "selected" ;
-                                }
-                                print "<option $selected value='" . $option . "'>". $option ."</option>" ;
-                            }
-                        print "</select>" ;
-                    print "</td>";
-                print "</tr>";
-            }
-            if ($renderPriority) {
-                print "<tr>";
-                    print "<td> ";
-                        print "<b>". $priorityName ."</b><br/>";
-                        print "<span style=\"font-size: 90%\"><i></i></span>";
-                    print "</td>";
-                    print "<td class=\"right\">";
-                        print "<select name='filter4' id='filter4' style='width:302px'>" ;
-                            foreach ($priorityFilters as $option) {
-                                $selected = "" ;
-                                if ($option == $filter4) {
-                                    $selected = "selected" ;
-                                }
-                                print "<option $selected value='" . $option . "'>". $option ."</option>" ;
-                            }
-                        print "</select>" ;
-                    print "</td>";
-                print "</tr>";
-            }
-            print "<tr>";
-                print "<td> ";
-                    print "<b>Issue ID Filter</b><br/>";
-                    print "<span style=\"font-size: 90%\"><i></i></span>";
-                print "</td>";
-                print "<td class='right'>";
-                    print "<input type='text' value='". $IDFilter . "' id='IDFilter' name='IDFilter' style='width: 300px'>";
-                print "</td>";
-            print "</tr>";
-            print "<tr>";
-                print "<td> ";
-                    print "<b>Year Filter</b><br/>";
-                    print "<span style=\"font-size: 90%\"><i></i></span>";
-                print "</td>";
-                print "<td class=\"right\">";
-                    print "<select name='yearFilter' id='yearFilter' style='width:302px'>" ;
-                        print "<option value='All Years'>All Years</option>" ;
-                        try {
-                            $dataYear = array();
-                            $sqlYear = "SELECT gibbonSchoolYearID, name FROM gibbonSchoolYear";
-                            $resultYear = $connection2->prepare($sqlYear);
-                            $resultYear->execute($dataYear);
-                        } catch (PDOException $e) {
-                        }
+    if (count($issueFilters)>1) {  
+        $row = $form->addRow();
+            $row->addLabel('filter1', __('Issue Filter'));
+            $row->addSelect('filter1')->fromArray($issueFilters)->selected($option)->required();
+    }
 
-                        while($row = $resultYear->fetch()) {
-                            $selected = "" ;
-                            if ($row['gibbonSchoolYearID'] == $yearFilter) {
-                                $selected = "selected" ;
-                            }
-                            print "<option $selected value='" . $row['gibbonSchoolYearID'] . "'>". $row['name'] ."</option>" ;
-                        }
-                    print "</select>" ;
-                print "</td>";
-            print "</tr>";
-            print "<tr>" ;
-                print "<td class='right' colspan=2>" ;
-                    print "<input type='submit' value='" . __('Go') . "'>" ;
-                    ?>
-                        <script type="text/javascript">
-                            var IDFilter=new LiveValidation('IDFilter');
-                            IDFilter.add(Validate.Numericality);
-                        </script>
-                    <?php
-                print "</td>" ;
-            print "</tr>" ;
-        print"</table>" ;
-    print "</form>" ;
+        $row = $form->addRow();
+            $row->addLabel('filter2', __('Status Filter'));
+            $row->addSelect('filter2')->fromArray($statusFilters)->selected($option)->required();
+            
+    if (count($categoryFilters)>1) {  
+        $row = $form->addRow();
+            $row->addLabel('filter3', __('Category Filter'));
+            $row->addSelect('filter3')->fromArray($categoryFilters)->selected($option)->required();
+    }
+    if ($renderPriority) {
+        $row = $form->addRow();
+            $row->addLabel('filter4', __('Priority Filter'));
+            $row->addSelect('filter4')->fromArray($priorityFilters)->selected($option)->required();
+    }
+    
+    $row = $form->addRow();
+    $row->addLabel('IDFilter', __('Issue ID Filter'));
+    $row->addTextField('IDFilter')->setValue($option);
+    
+    $row = $form->addRow();
+    $row->addLabel('yearFilter', __('Year Filter'));
+    $row->addSelectSchoolYear('yearFilter', 'All')->selected($optionz;
+    
+    
+    $row = $form->addRow();
+        $row->addSearchSubmit($gibbon->session);
+
+    echo $form->getOutput();
 
     try {
         $sqlIssue = "SELECT helpDeskIssue.* FROM helpDeskIssue" . $whereYear . $whereIssue;
