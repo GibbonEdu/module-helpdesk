@@ -17,6 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Tables\DataTable;
+use Gibbon\Services\Format;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
+
 @session_start() ;
 
 include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
@@ -32,27 +36,53 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         returnProcess($guid, $_GET['return'], null, array("errorA" => "Cannot delete last technician group."));
     }
 
-    $groupID = null;
-    $data=array();
-    $whereGroup = "";
-    if (isset($_GET['groupID'])) {
-        $groupID = $_GET['groupID'];
-        $data['groupID'] = $groupID;
-        $whereGroup = " WHERE groupID=:groupID";
-    }
-
     try {
-        $sql="SELECT * FROM helpDeskTechGroups" . $whereGroup . " ORDER BY helpDeskTechGroups.groupID ASC";
+        $sql="SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
         $result=$connection2->prepare($sql);
-        $result->execute($data);
+        $result->execute();
 
-        $sql2="SELECT * FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)" . $whereGroup;
-        $result2=$connection2->prepare($sql2);
-        $result2->execute($data);
+//        $sql2="SELECT groupID, title, preferredName, surname FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)" . $whereGroup;
+  //      $result2=$connection2->prepare($sql2);
+    //    $result2->execute($data);
     } catch (PDOException $e) {
     }
+    
+    //$techs = $result2->fetchAll();
 
-    $techs = $result2->fetchAll();
+    $gateway = $container->get(TechnicianGateway::class);   
+
+    $formatTechnicianList = function($row) use ($gateway) {
+        $technicians = $gateway->selectTechniciansByTechGroup($row['groupID'])->fetchAll();
+        if (count($technicians) < 1) {
+            return __("No one is currently in this group.");
+        }
+        return Format::nameList($technicians, 'Student', false, false);
+    };
+
+    $table = DataTable::create('techGroups');
+    $table->setTitle("Technician Groups");
+
+    $table->addHeaderAction('add', __("Create"))
+            ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php")
+            ->displayLabel();
+
+    $table->addColumn('groupName', __("Group Name"));
+    $table->addColumn('techs', __("Technicians in group"))->format($formatTechnicianList);
+    $table->addActionColumn()
+            ->addParam('groupID')
+            ->format(function ($techGroup, $actions) use ($guid, $result) {
+                $actions->addAction('edit', __("Edit"))
+                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_editTechnicianGroup.php");
+
+                if ($result->rowCount() > 1) {
+                    $actions->addAction('delete', __("Delete"))
+                            ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDelete.php");
+                }
+            });
+
+    echo $table->render($result->toDataSet());    
+
+    /*
     print "<h3>";
         print "Technician Groups" ;
     print "</h3>";
@@ -110,5 +140,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             print "</tr>";
         }
     print "</table>" ;
+    */
 }
 ?>
