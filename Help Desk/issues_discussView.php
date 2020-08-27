@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-include __DIR__ . '/moduleFunctions.php';
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
 $allowed = relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]);
 if ((!hasTechnicianAssigned($connection2, $_GET["issueID"]) && isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
@@ -187,9 +187,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                             }
                         print "</div>" ;
                     }
-                    if ($result3->rowCount() == 0) {
-                        $page->addError(__('There are no records to display.'));
-                    } else {
+                    
                         while ($row3 = $result3->fetch()){
                             $bgc = "#EDF7FF";
                             if (!isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {
@@ -224,7 +222,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                                 print "</tr>" ;
                             print "</table>" ;
                         }
-                    }
+                    
                 print "</td>" ;
             print "</tr>" ;
         print "</table>" ;

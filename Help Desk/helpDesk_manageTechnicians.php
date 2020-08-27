@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-include __DIR__ . '/moduleFunctions.php';
+include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
     //Acess denied
@@ -96,7 +96,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                     print "<td>";
                         print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroup.php&technicianID=". $row['technicianID'] ."'><img title=" . __('Edit ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/config.png'/></a>";
                         print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianStats.php&technicianID=". $row['technicianID'] ."'><img title=" . __('Stats  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/internalAssessment.png'/></a>";
-                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDeleteProcess.php?technicianID=". $row['technicianID'] ."'><img title=" . __('Delete  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>";
+                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDelete.php&technicianID=". $row['technicianID'] ."'><img title=" . __('Delete  ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a>";
                     print "</td>";
                 print "</tr>" ;
                 $rowCount++;
