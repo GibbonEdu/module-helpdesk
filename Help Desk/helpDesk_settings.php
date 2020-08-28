@@ -66,8 +66,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_setting
     }
 
     $row = $form->addRow();
-    $row->addFooter();
-    $row->addSubmit();
+        $row->addFooter();
+        $row->addSubmit();
 
     echo $form->getOutput();
 }
