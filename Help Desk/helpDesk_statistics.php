@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 
@@ -28,32 +29,20 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-
     //Proceed!
+
+    //Breadcrumbs
     $page->breadcrumbs->add(__('Statistics'));
 
-    print "<h3>" ;
-        print __("Filter") ;
-    print "</h3>" ;
-
+    //Default Data
     $d = new DateTime('first day of this month');
     $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : $d->format('Y-m-d');
     $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date("Y-m-d");
 
-    $stats = array();
-    $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate, null, null);
-
-    while ($row = $result->fetch()) {
-        if (isset($stats[$row['title']])) {
-            $stats[$row['title']] = $stats[$row['title']]+1;
-        } else {
-            $stats[$row['title']] = 1;
-        }
-    }
-    ksort($stats);
-
+    //Filter
     $form = Form::create('helpDeskStatistics', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
 
+    $form->setTitle('Filter');
     $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/helpdesk_statistics.php');
 
     $row = $form->addRow();
@@ -74,45 +63,44 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     echo $form->getOutput();
 
-    print "<h3>";
-        print "Statistics" ;
-    print "</h3>";
-    print "<table cellspacing='0' style='width: 100%'>" ;
-        print "<tr class='head'>" ;
-            print "<th>" ;
-                print __("Name") ;
-            print "</th>" ;
-            print "<th>" ;
-                print __("Value") ;
-            print "</th>" ;
-        print "</tr>" ;
+    //Stat Collection
+    $stats = array();
+    $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate, null, null);
 
-
-        if (!$result->rowcount() == 0) {
-            $rowCount = 0;
-            $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_statisticsDetail.php" ;
-            foreach ($stats as $key => $val){
-                $class = "odd";
-                if ($rowCount%2 == 0) {
-                    $class = "even";
-                }
-                print "<tr class='$class'>";
-                    print "<td>";
-                        print "<a href='" . $URL . "&title=" . $key . "&startDate=" . $startDate . "&endDate=" . $endDate . "'>" . $key . "</a>";
-                    print "</td>";
-                    print "<td>";
-                        print $val;
-                    print "</td>";
-                print "</tr>" ;
-                $rowCount++;
-            }
+    while ($row = $result->fetch()) {
+        if (isset($stats[$row['title']])) {
+            $stats[$row['title']] = $stats[$row['title']]+1;
         } else {
-            print "<tr>";
-                print "<td colspan= 2>";
-                    print __("There are no records to display.");
-                print "</td>";
-            print "</tr>";
+            $stats[$row['title']] = 1;
         }
-    print "</table>" ;
+    }
+    ksort($stats);
+
+    $display = array();
+    foreach ($stats as $key => $value) {
+        array_push($display, ["name" => $key, "value" => $value]);
+    }
+
+    //Stat Table
+    $table = DataTable::create('statistics');
+    $table->setTitle("Statistics");
+    
+    $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?";
+    $data = array(
+        'q' => "/modules/" . $_SESSION[$guid]['module'] . "/helpDesk_statisticsDetail.php",
+        'title' => '', 
+        'startDate' => $startDate, 
+        'endDate' => $endDate
+    );
+
+    $table->addColumn('name', __("Name"))
+            ->format(function ($row) use ($URL, $data) {
+                $data['title'] = $row['name'];
+                return Format::link($URL . http_build_query($data), $row['name']);
+            });
+
+    $table->addColumn('value', __("Value"));
+
+    echo $table->render($display);
 }
 ?>
