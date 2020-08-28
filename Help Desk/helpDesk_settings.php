@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Forms\Form;
+
 @session_start() ;
 
 include './modules/Help Desk/moduleFunctions.php';
@@ -31,56 +33,42 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_setting
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
-?>
 
-    <form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_settingsProcess.php" ?>">
-        <table class='smallIntBorder' cellspacing='0' style="width: 100%">
-            <?php
-                $result = getHelpDeskSettings($connection2);
-                while($row = $result->fetch()) {
-                    print "<tr>";
-                        print "<td style='width:275px'>";
-                            print "<b>" . __($row["nameDisplay"]) . "</b><br/>";
-                            if ($row["description"] != "") {
-                                print "<span style='font-size: 90%''><i>" . __($row["description"]) . "</i></span>";
-                            }
-                        print "</td>";
-                        print "<td class='right'>";
-                            if ($row['name'] == "issuePriorityName") {
-                                print "<input name='" . $row["name"] . "' id='" . $row["name"] . "' maxlength=100 value='" . $row["value"] . "' type='text' data-minlength='1' style='width: 300px'></input>";
-                                print "<script type='text/javascript'>";
-                                    print "var priorityName = new LiveValidation('issuePriorityName');";
-                                    print "priorityName.add(Validate.Presence);";
-                                print "</script>";
-                            } elseif ($row['name'] == "issuePriority" || $row['name'] == "issueCategory") {
-                                print "<textarea name='" . $row["name"] . "' id='" . $row["name"] . "' rows=4 type='text' style='width: 300px'>" . $row["value"] . "</textarea>";
-                            } elseif ($row['name'] == "resolvedIssuePrivacy") {
-                                print "<select name='".  $row["name"] . "' id='" . $row["name"] . "' style='width:302px'>";
-                                    $options = array("Everyone", "Related", "Owner", "No one");
-                                    foreach($options as $option) {
-                                        $selected = "";
-                                        if ($option == $row["value"]) {
-                                            $selected = "selected";
-                                        }
-                                        print "<option $selected value='" . $option . "'>". $option ."</option>" ;
-                                    }
-                                print "</select>";
-                            }
-                        print "</td>";
-                    print "</tr>";
-                }
-            ?>    
-            <tr>
-                <td>
-                    <span style="font-size: 90%"><i>* <?php print __("denotes a required field") ; ?></i></span>
-                </td>
-                <td class="right">
-                    <input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-                    <input type="submit" value="<?php print __("Submit") ; ?>">
-                </td>
-            </tr>
-        </table>
-    </form>
-<?php
+    $form = Form::create('helpDeskSettings',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_settingsProcess.php');
+
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+
+    $settings = array('resolvedIssuePrivacy', 'issueCategory', 'issuePriority', 'issuePriorityName');
+
+    $privacyTypes = array(
+        "Everyone" => __("Everyone"),
+        "Related" => __("Related"),
+        "Owner" => __("Owner"),
+        "No one" => __("No one"),
+    );
+
+    foreach ($settings as $settingName) {
+        $setting = getSettingByScope($connection2, 'Help Desk', $settingName, true);
+        $row = $form->addRow();
+            $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
+            switch ($settingName) {
+                case 'resolvedIssuePrivacy':
+                    $row->addSelect($setting['name'])->fromArray($privacyTypes)->selected($setting['value']);
+                    break;
+                case 'issueCategory':
+                case 'issuePriority':
+                    $row->addTextArea($setting['name'])->setValue($setting['value']);
+                    break;
+                case 'issuePriorityName':
+                    $row->addTextField($setting['name'])->setValue($setting['value'])->required();
+                    break;
+            }
+    }
+
+    $row = $form->addRow();
+    $row->addFooter();
+    $row->addSubmit();
+
+    echo $form->getOutput();
 }
 ?>
