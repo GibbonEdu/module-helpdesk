@@ -49,13 +49,15 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $row->addLabel('startDate', __("Start Date Filter"));
         $row->addDate('startDate')
             ->setDateFromValue($startDate)
-            ->chainedTo('endDate');
+            ->chainedTo('endDate')
+            ->required();
 
     $row = $form->addRow();
         $row->addLabel('endDate', __("End Date Filter"));
         $row->addDate('endDate')
             ->setDateFromValue($endDate)
-            ->chainedFrom('startDate');
+            ->chainedFrom('startDate')
+            ->required();
 
     $row = $form->addRow();
         $row->addFooter();
