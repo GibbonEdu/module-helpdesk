@@ -281,7 +281,7 @@ function getTechnicianName($connection2, $technicianID)
 {
     try {
         $data = array("technicianID"=> $technicianID);
-        $sql = "SELECT surname, preferredName FROM gibbonPerson JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID) WHERE helpDeskTechnicians.technicianID=:technicianID";
+        $sql = "SELECT title, surname, preferredName FROM gibbonPerson JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID) WHERE helpDeskTechnicians.technicianID=:technicianID";
         $result = $connection2->prepare($sql);
         $result->execute($data);
         $row = $result->fetch();
