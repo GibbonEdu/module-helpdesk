@@ -40,6 +40,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $technicianGateway = $container->get(TechnicianGateway::class);   
 
+    $techGroupData = $techGroupGateway->selectTechGroups()->toDataSet();
+
     $formatTechnicianList = function($row) use ($technicianGateway) {
         $technicians = $technicianGateway->selectTechniciansByTechGroup($row['groupID'])->fetchAll();
         if (count($technicians) < 1) {
@@ -59,16 +61,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     $table->addColumn('techs', __("Technicians in group"))->format($formatTechnicianList);
     $table->addActionColumn()
             ->addParam('groupID')
-            ->format(function ($techGroup, $actions) use ($guid, $result) {
+            ->format(function ($techGroup, $actions) use ($guid, $techGroupData) {
                 $actions->addAction('edit', __("Edit"))
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_editTechnicianGroup.php");
 
-                if ($result->rowCount() > 1) {
+                if (count($techGroupData) > 1) {
                     $actions->addAction('delete', __("Delete"))
                             ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDelete.php");
                 }
             });
 
-    echo $table->render($techGroupGateway->selectTechGroups()->toDataSet());    
+    echo $table->render($techGroupData);    
 }
 ?>
