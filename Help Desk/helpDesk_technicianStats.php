@@ -76,93 +76,39 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate, null, array("technicianID"=>$technicianID));
         $rArray = $result->fetchAll();
 
-        print "<h3>";
-            print "Simple Statistics" ;
-        print "</h3>";
-        print "<table cellspacing='0' style='width: 100%'>" ;
-            print "<tr class='head'>" ;
-                print "<th>" ;
-                    print __("Action Title") ;
-                print "</th>" ;
-                print "<th>" ;
-                    print __("Action Count") ;
-                print "</th>" ;
-            print "</tr>" ;
+        $items = array();
 
-            $times = array();
-
-            foreach($rArray as $row) {
-                if (!isset($items[$row['title']])) {
-                    $items[$row['title']] = 1;
-                } else {
-                    $items[$row['title']] = $items[$row['title']]+1;
-                }
-            }
-
-            if (!$result->rowcount() == 0) {
-                $rowCount = 0;
-                foreach ($items as $key=>$val) {
-                    $class = "odd";
-                    if ($rowCount%2 == 0) {
-                        $class = "even";
-                    }
-                    print "<tr class='$class'>";
-                        print "<td>";
-                            print $key;
-                        print "</td>";
-                        print "<td>";
-                            print $val;
-                        print "</td>";
-                    print "</tr>" ;
-                    $rowCount++;
-                }
+        foreach($rArray as $row) {
+            if (!isset($items[$row['title']])) {
+                $items[$row['title']] = 1;
             } else {
-                print "<tr>";
-                    print "<td colspan=2>";
-                        print __("There are no records to display.");
-                    print "</td>";
-                print "</tr>";
+                $items[$row['title']] = $items[$row['title']]+1;
             }
-        print "</table>" ;
-
-        print "<h3>";
-            print "Detailed Statistics" ;
-        print "</h3>";
-        print "<table cellspacing='0' style='width: 100%'>" ;
-            print "<tr class='head'>" ;
-                print "<th>" ;
-                    print __("Timestamp") ;
-                print "</th>" ;
-                print "<th>" ;
-                    print __("Action Title") ;
-                print "</th>" ;
-            print "</tr>" ;
-
-            if (!$result->rowcount() == 0) {
-                $rowCount = 0;
-                foreach ($rArray as $row) {
-                $class = "odd";
-                if ($rowCount%2 == 0) {
-                    $class = "even";
-                }
-                print "<tr class='$class'>";
-                    print "<td>";
-                        print $row['timestamp'];
-                    print "</td>";
-                    print "<td>";
-                        print $row['title'];
-                    print "</td>";
-                print "</tr>" ;
-                $rowCount++;
-            }
-        } else {
-            print "<tr>";
-                print "<td colspan=2>";
-                    print __("There are no records to display.");
-                print "</td>";
-            print "</tr>";
         }
-        print "</table>" ;
+        ksort($items);
+
+        $display = array();
+        foreach ($items as $key => $value) {
+            array_push($display, ["name" => $key, "value" => $value]);
+        }
+
+        $table = DataTable::create('simpleStats');
+        $table->setTitle(__("Simple Statistics"));
+
+        $table->addColumn('name', __("Action Title"));
+
+        $table->addColumn('value', __("Action Count"));
+
+        echo $table->render($display);
+
+        $table = DataTable::create('detailedStats');
+        $table->setTitle("Detailed Statistics");
+
+        $table->addColumn('timestamp', __("Timestamp"))->format(Format::using('dateTime', ['timestamp']));
+
+        $table->addColumn('title', __("Action Title"));
+
+        echo $table->render($rArray);
     } else {
         $page->addError(__('No Technician Selected.'));
     }
