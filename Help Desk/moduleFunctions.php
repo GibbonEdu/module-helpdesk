@@ -267,7 +267,7 @@ function getPersonName($connection2, $gibbonPersonID)
 {
     try {
         $data = array("gibbonPersonID"=> $gibbonPersonID);
-        $sql = "SELECT surname, preferredName FROM gibbonPerson WHERE gibbonPersonID=:gibbonPersonID";
+        $sql = "SELECT title, surname, preferredName FROM gibbonPerson WHERE gibbonPersonID=:gibbonPersonID";
         $result = $connection2->prepare($sql);
         $result->execute($data);
         $row = $result->fetch();

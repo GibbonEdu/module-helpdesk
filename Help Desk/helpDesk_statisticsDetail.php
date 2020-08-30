@@ -135,80 +135,49 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
         $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate, null, null);
 
-        print "<h3>";
-            print "$title Statistics" ;
-        print "</h3>";
-        print "<table cellspacing='0' style='width: 100%'>" ;
-            print "<tr class='head'>" ;
-                print "<th>" ;
-                    print __("Timestamp") ;
-                print "</th>" ;
-                print "<th>" ;
-                    print __("Person") ;
-                print "</th>" ;
-                foreach ($extras as $extraArray) {
-                    print "<th>" ;
-                        print $extraArray['extra'] ;
-                    print "</th>" ;
-                }
-            print "</tr>" ;
+        $table = DataTable::create('detailedStats');
+        $table->setTitle(__($title));
 
-            if (!$result->rowcount() == 0) {
-                $rowCount = 0;
-                while ($row = $result->fetch()){
-                    $class = "odd";
-                    if ($rowCount%2 == 0) {
-                        $class = "even";
-                    }
-                    print "<tr class='$class'>";
-                        print "<td>";
-                            print $row['timestamp'];
-                        print "</td>";
-                        print "<td>";
-                            $row2 = getPersonName($connection2, $row['gibbonPersonID']);
-                            print $row2['preferredName'] . " " . $row2['surname'];
-                        print "</td>";
+        $table->addColumn('timestamp', __('Timestamp'))->format(Format::using('dateTime', ['timestamp']));
+
+        $table->addColumn('person', __('Person'))
+                ->format(function ($row) use ($connection2) {
+                    $name = getPersonName($connection2, $row['gibbonPersonID']);
+                    return Format::name($name['title'], $name['preferredName'], $name['surname'], 'Student');
+                });
+
+        //TODO: This is silly and doesn't seem to work for all things. Theres barely any error catching or really any good code here.
+        //At some point this needs to be scrapped or built up from the ground, until then, too bad!
+        foreach ($extras as $extra) {
+            $table->addColumn($extra['extraKey'], __($extra['extra']))
+                    ->format(function ($row) use ($connection2, $extra) {
                         $array = unserialize($row['serialisedArray']);
-                        if (!empty($array) && !empty($extras)) {
-                            foreach ($extras as $extraArray) {
-                                print "<td>";
-                                    $eString = str_replace("%extraInfo%", $array[$extraArray['extraKey']], $extraArray['extraString']);
+                        $eString = str_replace("%extraInfo%", $array[$extra['extraKey']], $extra['extraString']);
 
-                                    if (strpos($eString, "%groupName%") !== false) {
-                                        $eString = str_replace("%groupName%", getGroup($connection2, $array[$extraArray['extraKey']])['groupName'], $eString);
-                                    }
-
-                                    if (strpos($eString, "%techName%") !== false) {
-                                        $techName = getTechnicianName($connection2, $array[$extraArray['extraKey']]);
-                                        $eString = str_replace("%techName%", $techName['preferredName'] . " " . $techName['surname'], $eString);
-                                    }
-
-                                    if (strpos($eString, "%personName%") !== false) {
-                                        $personName = getPersonName($connection2, $array[$extraArray['extraKey']]);
-                                        $eString = str_replace("%personName%", $personName['preferredName'] . " " .$personName['surname'], $eString);
-                                    }
-
-                                    if (strpos($eString, "%IDfromPost%") !== false) {
-                                        $issueID = getIssueIDFromPost($connection2, $array[$extraArray['extraKey']]);
-                                        $eString = str_replace("%IDfromPost%", $issueID, $eString);
-                                    }
-
-                                    print $eString;
-                                print "</td>";
-                            }
+                        if (strpos($eString, "%groupName%") !== false) {
+                            $eString = str_replace("%groupName%", getGroup($connection2, $array[$extra['extraKey']])['groupName'], $eString);
                         }
-                    print "</tr>" ;
-                    $rowCount++;
-                }
-            } else {
-                $colspan = 2 + count($extras);
-                print "<tr>";
-                    print "<td colspan= $colspan>";
-                        print __("There are no records to display.");
-                    print "</td>";
-                print "</tr>";
-            }
-        print "</table>" ;
+
+                        if (strpos($eString, "%techName%") !== false) {
+                            $techName = getTechnicianName($connection2, $array[$extra['extraKey']]);
+                            $eString = str_replace("%techName%", Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student'), $eString);
+                        }
+
+                        if (strpos($eString, "%personName%") !== false) {
+                            $personName = getPersonName($connection2, $array[$extra['extraKey']]);
+                            $eString = str_replace("%personName%", Format::name($personName['title'], $personName['preferredName'], $personName['surname'], 'Student'), $eString);
+                        }
+
+                        if (strpos($eString, "%IDfromPost%") !== false) {
+                            $issueID = getIssueIDFromPost($connection2, $array[$extra['extraKey']]);
+                            $eString = str_replace("%IDfromPost%", $issueID, $eString);
+                        }
+
+                        return $eString;
+                    });
+        }
+
+        echo $table->render($result->toDataSet());
     } else {
         $page->addError(__('No statistics selected.'));
     }
