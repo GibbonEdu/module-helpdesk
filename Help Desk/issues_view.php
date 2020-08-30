@@ -174,8 +174,9 @@ if (isModuleAccessible($guid, $connection2) == false) {
 
     
     $issueGateway = $container->get(IssueGateway::class);
-   //TODO: add filter capability
-    
+    //TODO: add filter capability
+    //TODO: Fix tabs
+    //TODO: Colour by priority or find some other way to highlight the priority stuff
     $table = DataTable::create('issues');
     $table->setTitle("Issues");
 
