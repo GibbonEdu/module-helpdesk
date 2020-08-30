@@ -185,8 +185,16 @@ if (isModuleAccessible($guid, $connection2) == false) {
 
     $table->addColumn('issueID', __("Issue ID")); 
     $table->addColumn('issueName', __("Name")); //TODO: row within column, have a description
-    $table->addColumn('gibbonPersonID', __("Owner ID")); // TODO: row within column for category, GET PERSON NAME up instead of just the ID
-    $table->addColumn('technicianID', __("Technician ID")); //GET PERSON NAME FDSFDS
+    $table->addColumn('gibbonPersonID', __('Owner'))
+                ->format(function ($row) use ($connection2) {
+                    $owner = getPersonName($connection2, $row['gibbonPersonID']);
+                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff');
+                });
+    $table->addColumn('technicianID', __('Technician'))
+                ->format(function ($row) use ($connection2) {
+                    $tech = getPersonName($connection2, $row['techPersonID']);
+                    return Format::name($tech['title'], $tech['preferredName'], $tech['surname'], 'Staff');
+                });         
     $table->addColumn('status', __("Status"));
     //TODO: implement if functions for different cases and such.... eurgh
     $table->addActionColumn()
