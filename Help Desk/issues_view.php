@@ -184,18 +184,27 @@ if (isModuleAccessible($guid, $connection2) == false) {
             ->displayLabel();
 
     $table->addColumn('issueID', __("Issue ID")); 
-    $table->addColumn('issueName', __("Name")); //TODO: row within column, have a description
-    $table->addColumn('gibbonPersonID', __('Owner'))
+    $table->addColumn('issueName', __('Name'))
+          ->description(__('Description'))
+          ->format(function ($issue) {
+            return '<strong>' . __($issue['issueName']) . '</strong><br/><small><i>' . __($issue['description']) . '</i></small>';
+          });
+    $table->addColumn('gibbonPersonID', __('Owner')) 
+                ->description(__('Category'))
                 ->format(function ($row) use ($connection2) {
                     $owner = getPersonName($connection2, $row['gibbonPersonID']);
-                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff');
+                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/><small><i>'. __($row['category']) . '</i></small>';
                 });
     $table->addColumn('technicianID', __('Technician'))
                 ->format(function ($row) use ($connection2) {
                     $tech = getPersonName($connection2, $row['techPersonID']);
                     return Format::name($tech['title'], $tech['preferredName'], $tech['surname'], 'Staff');
                 });         
-    $table->addColumn('status', __("Status"));
+    $table->addColumn('status', __('Status'))
+          ->description(__('Date'))
+          ->format(function ($issue) {
+            return '<strong>' . __($issue['status']) . '</strong><br/><small><i>' . Format::date($issue['date']) . '</i></small>';
+            });
     //TODO: implement if functions for different cases and such.... eurgh
     $table->addActionColumn()
             ->addParam('issueID')

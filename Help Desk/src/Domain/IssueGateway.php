@@ -30,7 +30,6 @@ class IssueGateway extends QueryableGateway
     }
     
     
-    //TODO: Make it such that there's joins between the IDs and actual callable names
      public function selectIssues() {
         $data = array();
         $sql = "( 
