@@ -183,10 +183,10 @@ if (isModuleAccessible($guid, $connection2) == false) {
             ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php")
             ->displayLabel();
 
-    $table->addColumn('issueID', __("Issue ID")); //TODO: trim the leading zeroes
+    $table->addColumn('issueID', __("Issue ID")); 
     $table->addColumn('issueName', __("Name")); //TODO: row within column, have a description
-    $table->addColumn('gibbonPersonID', __("Owner ID")); // TODO: row within column for category, fix the gateway so that we can have the Owner/Creator's name show up instead of just the ID
-    $table->addColumn('technicianID', __("Technician ID")); //gateway gotta have it so it's a name and not an ID
+    $table->addColumn('gibbonPersonID', __("Owner ID")); // TODO: row within column for category, GET PERSON NAME up instead of just the ID
+    $table->addColumn('technicianID', __("Technician ID")); //GET PERSON NAME FDSFDS
     $table->addColumn('status', __("Status"));
     //TODO: implement if functions for different cases and such.... eurgh
     $table->addActionColumn()

@@ -28,11 +28,17 @@ class IssueGateway extends QueryableGateway
 
         return $this->db()->select($sql, $data);
     }
+    
+    
     //TODO: Make it such that there's joins between the IDs and actual callable names
      public function selectIssues() {
         $data = array();
-        $sql = "SELECT technicianID, issueID, gibbonPersonID, issueName, description, date, status, category, priority, gibbonSchoolYearID, createdByID, privacySetting
-                FROM helpDeskIssue
+        $sql = "( 
+                SELECT  helpDeskIssue.*, techID.gibbonPersonID AS techPersonID FROM helpDeskIssue 
+                LEFT JOIN helpDeskTechnicians AS techID ON helpDeskIssue.technicianID=techID.technicianID
+                ) UNION ( 
+                SELECT  helpDeskIssue.*, helpDeskIssue.technicianID as techPersonID FROM helpDeskIssue WHERE helpDeskIssue.technicianID IS NULL
+                )
                 ORDER BY issueID ASC";
 
         return $this->db()->select($sql, $data);
