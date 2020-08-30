@@ -72,6 +72,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
                 } 
             }
 
+            $array['issueID'] = $issueID;
+
             if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
                 $array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
             }
