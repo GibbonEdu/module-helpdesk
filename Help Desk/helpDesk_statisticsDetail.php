@@ -136,7 +136,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate, null, null);
 
         $table = DataTable::create('detailedStats');
-        //TODO: Title
+        $table->setTitle(__($title));
 
         $table->addColumn('timestamp', __('Timestamp'))->format(Format::using('dateTime', ['timestamp']));
 
