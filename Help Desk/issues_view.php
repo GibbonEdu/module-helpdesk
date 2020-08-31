@@ -48,40 +48,6 @@ if (isModuleAccessible($guid, $connection2) == false) {
         exit();
     }
 
-    print "<h3>" ;
-        print __("Filter") ;
-    print "</h3>" ;
-
-
-    $filter1=null ;
-    $filter2=null ;
-    $filter3=null ;
-    $filter4=null ;
-    $yearFilter=null;
-    $IDFilter="" ;
-    $whereYear="";
-    $whereUsed=false;
-
-    if (isset($_GET["filter1"])) {
-        $filter = $_GET["filter1"] ;
-    }
-    if (isset($_GET["filter2"])) {
-        $filter2 = $_GET["filter2"] ;
-    }
-    if (isset($_GET["filter3"])) {
-        $filter3 = $_GET["filter3"] ;
-    }
-    if (isset($_GET["filter4"])) {
-        $filter4 = $_GET["filter4"] ;
-    }
-    if (isset($_GET["yearFilter"])) {
-        $yearFilter = $_GET["yearFilter"] ;
-    }
-
-    if (isset($_GET["IDFilter"])) {
-        $IDFilter=intval($_GET["IDFilter"]) ;
-    }
-
     $settings = getHelpDeskSettings($connection2);
     $priorityFilters = array("All");
     $priorityName = null;
@@ -128,42 +94,49 @@ if (isModuleAccessible($guid, $connection2) == false) {
     } else {
         $statusFilters = array("All", "Unassigned", "Pending", "Resolved");
     }
-
+    
+$issue = isset($_GET['issue'])? $_GET['issue'] : '';
+$status = isset($_GET['status'])? $_GET['status'] : '';
+$category = isset($_GET['category'])? $_GET['category'] : '';
+$priority = isset($_GET['priority'])? $_GET['priority'] : '';
+$issueID = isset($_GET['issueID'])? $_GET['issueID'] : '';
+$year = isset($_GET['year'])? $_GET['year'] : '';
 
 //TODO: THE ORIGINAL FILTER DIDN'T WORK SO IN THEORY THIS ONE SHOULD WORK JUST GOTTA FIX... ALL THE STUFF ABOVE
     $form = Form::create('search', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    $form->setTitle(__('Filter'));
     $form->setFactory(DatabaseFormFactory::create($pdo));
     $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/issues_view.php');
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
     if (count($issueFilters)>1) {  
         $row = $form->addRow();
-            $row->addLabel('filter1', __('Issue Filter'));
-            $row->addSelect('filter1')->fromArray($issueFilters)->selected($option)->required();
+            $row->addLabel('issue', __('Issue Filter'));
+            $row->addSelect('issue')->fromArray($issueFilters)->selected($issue)->required();
     }
 
     $row = $form->addRow();
-        $row->addLabel('filter2', __('Status Filter'));
-        $row->addSelect('filter2')->fromArray($statusFilters)->selected($option)->required();
+        $row->addLabel('status', __('Status Filter'));
+        $row->addSelect('status')->fromArray($statusFilters)->selected($status)->required();
             
     if (count($categoryFilters)>1) {  
         $row = $form->addRow();
-            $row->addLabel('filter3', __('Category Filter'));
-            $row->addSelect('filter3')->fromArray($categoryFilters)->selected($option)->required();
+            $row->addLabel('category', __('Category Filter'));
+            $row->addSelect('category')->fromArray($categoryFilters)->selected($addSelect)->required();
     }
     if ($renderPriority) {
         $row = $form->addRow();
-            $row->addLabel('filter4', __('Priority Filter'));
-            $row->addSelect('filter4')->fromArray($priorityFilters)->selected($option)->required();
+            $row->addLabel('priority', __('Priority Filter'));
+            $row->addSelect('priority')->fromArray($priorityFilters)->selected($priority)->required();
     }
     
     $row = $form->addRow();
-        $row->addLabel('IDFilter', __('Issue ID Filter'));
-        $row->addTextField('IDFilter')->setValue($option);
+        $row->addLabel('issueID', __('Issue ID Filter'));
+        $row->addTextField('issueID')->setValue($issueID);
     
     $row = $form->addRow();
-        $row->addLabel('yearFilter', __('Year Filter'));
-        $row->addSelectSchoolYear('yearFilter', 'All')->selected($option);
+        $row->addLabel('year', __('Year Filter'));
+        $row->addSelectSchoolYear('year', 'All')->selected($year);
     
     
     $row = $form->addRow();

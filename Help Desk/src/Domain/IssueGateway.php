@@ -28,9 +28,22 @@ class IssueGateway extends QueryableGateway
 
         return $this->db()->select($sql, $data);
     }
-    
-    
+
+
      public function selectIssues() {
+//  TODO: MAKE THIS WORK        
+//      $query = $this
+//             ->newQuery()
+//             ->from('helpDeskIssue')
+//             ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
+//             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
+//             
+//     $query->union()
+//             ->from('helpDeskIssue')
+//             ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
+//             ->where('helpDeskIssue.technicianID IS NULL');
+//
+//        return $this->runQuery($query, $criteria);
         $data = array();
         $sql = "( 
                 SELECT  helpDeskIssue.*, techID.gibbonPersonID AS techPersonID FROM helpDeskIssue 
