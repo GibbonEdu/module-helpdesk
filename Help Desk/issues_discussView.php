@@ -223,13 +223,13 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
             $action = new Action('refresh', __('Refresh'));
             $action->setIcon('refresh')
-                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . 'issues_discussView.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_discussView.php')
                     ->addParam('issueID', $issueID);
             $headerActions[] = $action;
 
             $action = new Action('add', __('Add'));
             $action->modalWindow()
-                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . 'issues_discussPost.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_discussPost.php')
                     ->addParam('issueID', $issueID);
 
             $headerActions[] = $action;
@@ -238,7 +238,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                 $action = new Action('resolve', __('Resolve'));
                 $action->setIcon('iconTick')
                         ->directLink()
-                        ->setURL('/modules/' . $_SESSION[$guid]["module"] . 'issues_resolveProcess.php')
+                        ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_resolveProcess.php')
                         ->addParam('issueID', $issueID);
 
                 $headerActions[] = $action;
