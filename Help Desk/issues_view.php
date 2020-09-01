@@ -122,7 +122,7 @@ $year = isset($_GET['year'])? $_GET['year'] : '';
     if (count($categoryFilters)>1) {  
         $row = $form->addRow();
             $row->addLabel('category', __('Category Filter'));
-            $row->addSelect('category')->fromArray($categoryFilters)->selected($addSelect)->required();
+            $row->addSelect('category')->fromArray($categoryFilters)->selected($category)->required();
     }
     if ($renderPriority) {
         $row = $form->addRow();
@@ -182,7 +182,7 @@ $year = isset($_GET['year'])? $_GET['year'] : '';
     //TODO: implement if functions for different cases and such.... eurgh
     $table->addActionColumn()
             ->addParam('issueID')
-            ->format(function ($issues, $actions) use ($guid, $result) {
+            ->format(function ($issues, $actions) use ($guid) {
                 $actions->addAction('view', __("Open"))
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php");
                 $actions->addAction('edit', __("Edit"))

@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Tables\DataTable;
+use Gibbon\Tables\Action;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 use Gibbon\Domain\DataSet;
@@ -164,34 +165,51 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
     echo $table->render([$detailsData]);
 
+    $headerActions = array();
+
     $table = DataTable::createDetails('description');
     $table->setTitle(__('Description'));
 
-    //TODO: Headers don't render on Details tables, figure it out or something.
+    //Bit of a cheat, might change it later
     if ($array2["technicianID"] == null && (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
          if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
-            $table->addHeaderAction('accept', __('Accept'))
-                    ->setIcon('page_new')
+            $action =  new Action('accept', __('Accept'));
+            $action->setIcon('page_new')
                     ->directLink()
                     ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_acceptProcess.php')
                     ->addParam('issueID', $issueID);
+            $headerActions[] = $action;
         }
         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
-            $table->addHeaderAction('assign', __('Assign'))
-                    ->setIcon('attendance')
+            $action =  new Action('assign', __('Assign'));
+            $action->setIcon('attendance')
                     ->modalWindow()
                     ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_assign.php')
                     ->addParam('issueID', $issueID);
+            $headerActions[] = $action;
           }
     }
 
     $table->addColumn('description')
             ->width('100%');
 
+    if (count($headerActions) > 0) {
+        $table->addColumn('actions')
+                ->width('100%')
+                ->format(function ($row) use ($headerActions) {
+                    $output = '<div class="linkTop">';
+                        foreach ($headerActions as $action) {
+                            $output .= $action->getOutput();
+                        }
+                    $output .= '</div>';
+                    return $output;
+                });
+    }
     echo $table->render([$row]);
 
+    
+
     if ($array2["technicianID"] != null) {
-                        
             $IssueDiscussGateway = $container->get(IssueDiscussGateway::class);
             $logs = $IssueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
 
@@ -199,14 +217,38 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                 'title' => __('Comments'),
                 'discussion' => $logs
             ]); 
-            print "<div style='margin: 0px' class='linkTop'>" ;
-                            print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/issues_discussView.php&issueID=" . $_GET["issueID"] . "'>" . __('Refresh') . "<img style='margin-left: 5px' title='" . __('Refresh') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/refresh.png'/></a>" ;
-                            print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussPost.php&issueID=" . $_GET["issueID"] . "'>" .  __('Add') . "<img style='margin-left: 5px' title='" . __('Add') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-                            if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
-                                print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'>" .  __('Resolve');
-                                print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'><img title=" . __('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
-                            }
-            print "</div>" ;
+
+            //Again a bit of a cheat, we'll see how this goes.
+            $headerActions = array();
+
+            $action = new Action('refresh', __('Refresh'));
+            $action->setIcon('refresh')
+                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_discussView.php')
+                    ->addParam('issueID', $issueID);
+            $headerActions[] = $action;
+
+            $action = new Action('add', __('Add'));
+            $action->modalWindow()
+                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_discussPost.php')
+                    ->addParam('issueID', $issueID);
+
+            $headerActions[] = $action;
+
+            if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+                $action = new Action('resolve', __('Resolve'));
+                $action->setIcon('iconTick')
+                        ->directLink()
+                        ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_resolveProcess.php')
+                        ->addParam('issueID', $issueID);
+
+                $headerActions[] = $action;
+            }
+
+            echo '<div class="linkTop">';
+                foreach ($headerActions as $action) {
+                    echo $action->getOutput();
+                }
+            echo '</div>';
     }
 }
 ?>
