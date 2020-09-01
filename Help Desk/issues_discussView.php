@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Tables\DataTable;
+use Gibbon\Services\Format;
 
 @session_start() ;
 
@@ -159,27 +160,31 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
     echo $table->render([$detailsData]);
 
-    print "<h2 style='padding-top: 30px'>" . __('Description') . "</h2>" ;
-    print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
-        print "<tr>" ;
-            print "<td style='text-align: justify; padding-top: 5px; width: 33%; vertical-align: top'>". $row["description"] ."</td>" ;
-        print "</tr>" ;
+    $table = DataTable::createDetails('description');
+    $table->setTitle(__('Description'));
 
-        if ($array2["technicianID"] == null && (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
-            print "<tr>";
-                print "<td class='right'>";
-                    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
-                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $issueID . "'>" .  __('Accept');
-                        print "<img title=" . __('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-                    }
-                    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
-                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $issueID . "'>" .  __('Assign');
-                        print "<img style='margin-left: 5px' title=" . __('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";
-                    }
-                print "</td>";
-            print "</tr>";
+    //TODO: Headers don't render on Details tables, figure it out or something.
+    if ($array2["technicianID"] == null && (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
+         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+            $table->addHeaderAction('accept', __('Accept'))
+                    ->setIcon('page_new')
+                    ->directLink()
+                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_acceptProcess.php')
+                    ->addParam('issueID', $issueID);
         }
-    print "</table>" ;
+        if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+            $table->addHeaderAction('assign', __('Assign'))
+                    ->setIcon('attendance')
+                    ->modalWindow()
+                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_assign.php')
+                    ->addParam('issueID', $issueID);
+          }
+    }
+
+    $table->addColumn('description')
+            ->width('100%');
+
+    echo $table->render([$row]);
 
     if ($array2["technicianID"] != null) {
         print "<a name='discuss'></a>" ;
