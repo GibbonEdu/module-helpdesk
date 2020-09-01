@@ -19,6 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Tables\DataTable;
 use Gibbon\Services\Format;
+use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
+use Gibbon\Domain\DataSet;
+use Gibbon\Domain\System\DiscussionGateway;
+use Gibbon\View\View;
 
 @session_start() ;
 
@@ -187,60 +191,22 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     echo $table->render([$row]);
 
     if ($array2["technicianID"] != null) {
-        print "<a name='discuss'></a>" ;
-        print "<h2 style='padding-top: 30px'>" . __('Discuss') . "</h2>" ;
-        print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
-            print "<tr>" ;
-                print "<td style='text-align: justify; padding-top: 5px; width: 33%; vertical-align: top; max-width: 752px!important;' colspan=3>" ;
-                    if ($array2["issueStatus"] != "Resolved") {
-                        print "<div style='margin: 0px' class='linkTop'>" ;
+                        
+            $IssueDiscussGateway = $container->get(IssueDiscussGateway::class);
+            $logs = $IssueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
+
+            echo $page->fetchFromTemplate('ui/discussion.twig.html', [
+                'title' => __('Comments'),
+                'discussion' => $logs
+            ]); 
+            print "<div style='margin: 0px' class='linkTop'>" ;
                             print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/issues_discussView.php&issueID=" . $_GET["issueID"] . "'>" . __('Refresh') . "<img style='margin-left: 5px' title='" . __('Refresh') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/refresh.png'/></a>" ;
                             print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussPost.php&issueID=" . $_GET["issueID"] . "'>" .  __('Add') . "<img style='margin-left: 5px' title='" . __('Add') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
                             if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
                                 print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'>" .  __('Resolve');
                                 print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php?issueID=". $_GET["issueID"] . "'><img title=" . __('Resolve ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png'/></a>";
                             }
-                        print "</div>" ;
-                    }
-                    
-                        while ($row3 = $result3->fetch()){
-                            $bgc = "#EDF7FF";
-                            if (!isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {
-                                $bgc = "#FFEDFE";
-                            }
-                            if ($row3['issueDiscussID'] == $issueDiscussID) {
-                                $bgc = "#FFE3E3";
-                            }
-                            print "<table class='noIntBorder' cellspacing='0' style='width: 100% ; padding: 1px 3px; margin-bottom: -2px; margin-top: 50; margin-left: 0px ; background-color: #f9f9f9'>" ;
-                                print "<tr>" ;
-                                    if (isPersonsIssue($connection2, $issueID, $row3["gibbonPersonID"])) {
-                                        print "<td style='width: 12%; background-color:" . $bgc . "; color: #777'><i>". $studentName . " " . __('said') . "</i>:</td>" ;
-                                    } else {
-                                        $techName = $technicianName;
-                                        if (getTechWorkingOnIssue($connection2, $issueID)["personID"] != $row3["gibbonPersonID"]) {
-                                            $data2=array("gibbonPersonID"=>$row3["gibbonPersonID"]) ;
-
-                                            try {
-                                                $sql5="SELECT surname, preferredName, title FROM gibbonPerson WHERE gibbonPersonID=:gibbonPersonID" ;
-                                                $result5=$connection2->prepare($sql5);
-                                                $result5->execute($data2);
-                                                $row5 = $result5->fetch();
-                                            } catch (PDOException $e) {
-                                            }
-
-                                            $techName = formatName($row5["title"] , $row5["preferredName"] , $row5["surname"] , "Student", false, false);
-                                        }
-                                        print "<td style='width: 12%; background-color:" . $bgc . "; color: #777'><i>". $techName . " " . __('said') . "</i>:</td>" ;
-                                    }
-                                    print "<td style='background-color:" . $bgc . ";'><div>" . $row3["comment"] . "</div></td>" ;
-                                    print "<td style='width: 15%; background-color:" . $bgc . "; color: #777; text-align: right'><i>" . __('Posted at') . " <b>" . substr($row3["timestamp"],11,5) . "</b> on <b>" . dateConvertBack($guid, $row3["timestamp"]) . "</b></i></td>" ;
-                                print "</tr>" ;
-                            print "</table>" ;
-                        }
-                    
-                print "</td>" ;
-            print "</tr>" ;
-        print "</table>" ;
+            print "</div>" ;
     }
 }
 ?>
