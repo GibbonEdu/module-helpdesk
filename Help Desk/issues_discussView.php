@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Tables\DataTable;
+use Gibbon\Services\Format;
+
 @session_start() ;
 
 include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
@@ -31,6 +34,8 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     $page->addError('You do not have access to this action.');
     exit();
 } else {
+    $page->breadcrumbs->add(__('Discuss Issue'));
+    
     $issueID = $_GET["issueID"] ;
     $data = array("issueID" => $issueID) ;
 
@@ -70,14 +75,11 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
         }
     }
 
-
     if (!isset($array2["gibbonPersonID"])) {
         $technicianName = "Unassigned" ;
     } else {
         $technicianName = formatName($array2["title"] , $array2["preferredName"] , $array2["surname"] , "Student", false, false);
     }
-
-    $page->breadcrumbs->add(__('Discuss Issue'));
 
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
@@ -99,77 +101,90 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
         $issueDiscussID = $_GET['issueDiscussID'];
     }
 
-    $tdWidth = "20%" ;
-
     $row = $result->fetch();
 
     $createdByShow = $row["createdByID"] != $row["gibbonPersonID"];
-    if ($createdByShow) {
-        $tdWidth = "16.7%";
+
+    $date2 = dateConvertBack($guid, $row['date']);
+    if ($date2 == "30/11/-0001") {
+        $date2 = "No date";
     }
 
     $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", false, false);
-    print "<h1>" . $row["issueName"] . "</h1>" ;
-    print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
-        print "<tr>" ;
-            print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
-                print "<span style='font-size: 115%; font-weight: bold'>" . __('ID') . "</span><br/>" ;
-                print intval($issueID) ;
-            print "</td>" ;
-            print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
-                print "<span style='font-size: 115%; font-weight: bold'>" . __('Owner') . "</span><br/>" ;
-                print $studentName ;
-            print "</td>" ;
-            print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
-                print "<span style='font-size: 115%; font-weight: bold'>" . __('Technician') . "</span><br/>" ;
-                print $technicianName;
-            print "</td>" ;
-            print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
-                print "<span style='font-size: 115%; font-weight: bold'>" . __('Date') . "</span><br/>" ;
-                $date2 =dateConvertBack($guid, $row['date']);
-                if ($date2 == "30/11/-0001") {
-                    $date2 = "No date";
-                }
-                print $date2 ;
-            print "</td>" ;
-            if ($createdByShow) {
-                print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
-                    print "<span style='font-size: 115%; font-weight: bold'>" . __('Created By') . "</span><br/>" ;
-                    print formatName($row4["title"] , $row4["preferredName"] , $row4["surname"] , "Student", false, false);
-                print "</td>" ;
-            }
-            print "<td style='width: " . $tdWidth . "; vertical-align: top'>" ;
-                print "<span style='font-size: 115%; font-weight: bold'>" . __('Privacy') . "</span><br/>" ;
 
-                if (isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
-                    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussEdit.php&issueID=". $_GET["issueID"] . "'>" .  __($row["privacySetting"]);
+    $detailsData = array(
+        'issueID' => $issueID,
+        'owner' => $studentName,
+        'technician' => $technicianName,
+        'date' => $date2,
+        'privacySetting' => $row['privacySetting']
+    );
+
+    $tdWidth = count($detailsData);
+    if ($createdByShow) {
+        $tdWidth++;
+    }
+    $tdWidth = 100 / $tdWidth;
+    $tdWidth .= '%';
+
+    $table = DataTable::createDetails('details');
+    $table->setTitle($row["issueName"]);
+
+    $table->addColumn('issueID', __('ID'))
+            ->width($tdWidth);
+
+    $table->addColumn('owner', __('Owner'))
+            ->width($tdWidth);
+
+    $table->addColumn('technician', __('Technician'))
+            ->width($tdWidth);
+
+    $table->addColumn('date', __('Date'))
+            ->width($tdWidth);
+
+    if ($createdByShow) {
+        $detailsData['createdBy'] = formatName($row4["title"] , $row4["preferredName"] , $row4["surname"] , "Student", false, false);
+        $table->addColumn('createdBy', __('Created By'))
+            ->width($tdWidth);
+    }
+
+    $table->addColumn('privacySetting', __('Privacy'))
+            ->width($tdWidth)
+            ->format(function($row) use ($connection2, $guid) {
+                if (isPersonsIssue($connection2, $row['issueID'], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+                    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussEdit.php&issueID=". $row['issueID'] . "'>" .  __($row["privacySetting"]) . '</a>';
                 } else {
                     print $row["privacySetting"];
                 }
-            print "</td>" ;
-        print "</tr>" ;
-    print "</table>" ;
-    print "<h2 style='padding-top: 30px'>" . __('Description') . "</h2>" ;
-    print "<table class='smallIntBorder' cellspacing='0' style='width: 100%;'>" ;
-        print "<tr>" ;
-            print "<td style='text-align: justify; padding-top: 5px; width: 33%; vertical-align: top'>". $row["description"] ."</td>" ;
-        print "</tr>" ;
+            });
 
-        if ($array2["technicianID"] == null && (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
-            print "<tr>";
-                print "<td class='right'>";
-                    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
-                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php?issueID=". $issueID . "'>" .  __('Accept');
-                        print "<img title=" . __('Accept ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>";
-                    }
-                    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
-                        print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $issueID . "'>" .  __('Assign');
-                        print "<img style='margin-left: 5px' title=" . __('Assign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";
-                    }
-                print "</td>";
-            print "</tr>";
+    echo $table->render([$detailsData]);
+
+    $table = DataTable::createDetails('description');
+    $table->setTitle(__('Description'));
+
+    //TODO: Headers don't render on Details tables, figure it out or something.
+    if ($array2["technicianID"] == null && (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
+         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+            $table->addHeaderAction('accept', __('Accept'))
+                    ->setIcon('page_new')
+                    ->directLink()
+                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_acceptProcess.php')
+                    ->addParam('issueID', $issueID);
         }
-    print "</table>" ;
+        if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+            $table->addHeaderAction('assign', __('Assign'))
+                    ->setIcon('attendance')
+                    ->modalWindow()
+                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_assign.php')
+                    ->addParam('issueID', $issueID);
+          }
+    }
+
+    $table->addColumn('description')
+            ->width('100%');
+
+    echo $table->render([$row]);
 
     if ($array2["technicianID"] != null) {
         print "<a name='discuss'></a>" ;
