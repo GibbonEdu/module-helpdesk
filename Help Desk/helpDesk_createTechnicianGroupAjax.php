@@ -24,7 +24,13 @@ if (empty($_SESSION[$guid]['gibbonPersonID']) || empty($_SESSION[$guid]['gibbonR
 	|| !isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")) {
     die(__('Your request failed because you do not have access to this action.'));
 } else {
+	$currentGroupName = isset($_POST['currentGroupName']) ? $_POST['currentGroupName'] : null;
     $groupName = isset($_POST['groupName'])? $_POST['groupName'] : '';
+
+    if ($currentGroupName != null && $currentGroupName == $groupName) {
+    	echo 0;
+    	die();
+    }
 
     $data = array('groupName' => $groupName);
     $sql = "SELECT COUNT(*) FROM helpDeskTechGroups WHERE groupName=:groupName";

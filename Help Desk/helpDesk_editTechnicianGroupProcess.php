@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+
 include "../../functions.php" ;
 include "../../config.php" ;
 
@@ -25,67 +27,42 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
 $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_editTechnicianGroup.php" ;
 
+//Check that groupID is given
 if (isset($_GET["groupID"])) {
     $groupID = $_GET["groupID"];
     $URL = $URL . "&groupID=$groupID";
 } else {
     $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicianGroup.php&return=error1";
     header("Location: {$URL}");
+    exit();
 }
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
     //Fail 0
     $URL = $URL . "&return=error0" ;
     header("Location: {$URL}");
+    exit();
 } else {
 
-    if (!(isset($_POST["viewIssue"]) || isset($_POST["groupName"]) || isset($_POST["viewIssueStatus"]))) {
+    if (!isset($_POST["groupName"]) || !isset($_POST["viewIssueStatus"])) {
         $URL = $URL . "&return=error1" ;
         header("Location: {$URL}");
         exit();
     }
 
+
     $groupName = $_POST["groupName"];
     $viewIssueStatus = $_POST["viewIssueStatus"];
 
-    $viewIssue = true;
-    if (!isset($_POST["viewIssue"])) {
-        $viewIssue = false;
-    }
+    $settings = array('viewIssue', 'assignIssue', 'acceptIssue', 'resolveIssue', 'createIssueForOther', 'reassignIssue', 'reincarnateIssue', 'fullAccess');
 
-    $assignIssue = false;
-    if (isset($_POST["assignIssue"])) {
-        $assignIssue = true;
-    }
+    $data = array(
+        'groupName' => $groupName,
+        'viewIssueStatus' => $viewIssueStatus,
+    );
 
-    $acceptIssue = true;
-    if (!isset($_POST["acceptIssue"])) {
-        $acceptIssue = false;
-    }
-
-    $resolveIssue = true;
-    if (!isset($_POST["resolveIssue"])) {
-        $resolveIssue = false;
-    }
-
-    $createIssueForOther = true;
-    if (!isset($_POST["createIssueForOther"])) {
-        $createIssueForOther = false;
-    }
-
-    $reassignIssue = false;
-    if (isset($_POST["reassignIssue"])) {
-        $reassignIssue = true;
-    }
-
-    $reincarnateIssue = true;
-    if (!isset($_POST["reincarnateIssue"])) {
-        $reincarnateIssue = false;
-    }
-
-    $fullAccess = false;
-    if (isset($_POST["fullAccess"])) {
-        $fullAccess = true;
+    foreach ($settings as $setting) {
+        $data[$setting] = isset($_POST[$setting]);
     }
 
     try {
@@ -93,10 +70,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         if ($gibbonModuleID == null) {
             throw new PDOException("Invalid gibbonModuleID.");
         }
-        $data = array("groupID" => $groupID, "groupName" => $groupName, "viewIssue" => $viewIssue, "viewIssueStatus" => $viewIssueStatus, "assignIssue" => $assignIssue, "acceptIssue" => $acceptIssue, "resolveIssue" => $resolveIssue, "createIssueForOther" => $createIssueForOther, "fullAccess" => $fullAccess, "reassignIssue" => $reassignIssue, "reincarnateIssue" => $reincarnateIssue);
-        $sql = "UPDATE helpDeskTechGroups SET viewIssue = :viewIssue, groupName = :groupName, viewIssueStatus = :viewIssueStatus, assignIssue = :assignIssue, acceptIssue = :acceptIssue, resolveIssue = :resolveIssue, createIssueForOther = :createIssueForOther, fullAccess = :fullAccess, reassignIssue = :reassignIssue, reincarnateIssue = :reincarnateIssue WHERE groupID = :groupID" ;
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
+
+        $techGroupGateway = $container->get(TechGroupGateway::class);
+
+        if (!$techGroupGateway->unique($data, ['groupName'], $groupID)) {
+            $URL .= '&return=error7';
+            header("Location: {$URL}");
+            exit();
+        }
+
+        $techGroupGateway->update($groupID, $data);
     } catch (PDOException $e) { 
         $URL = $URL . "&return=error2" ;
         header("Location: {$URL}");
