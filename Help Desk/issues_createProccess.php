@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+
 
 include "../../functions.php" ;
 include "../../config.php" ;
@@ -91,15 +93,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.ph
                 throw new PDOException("Invalid gibbonModuleID.");
             }
 
-            $data = array("technicianID" => null, "gibbonPersonID" => $personID, "name" => $name, "description" => $description, "status" => "Unassigned", "category" => $category, "priority" => $priority, "gibbonSchoolYearID" => $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID" => $createdByID, "privacySetting" => $privacySetting, "datee" => $date);
-            $sql = "INSERT INTO helpDeskIssue SET technicianID=:technicianID, gibbonPersonID=:gibbonPersonID, issueName=:name, description=:description, status=:status, category=:category, priority=:priority, gibbonSchoolYearID=:gibbonSchoolYearID, createdByID=:createdByID, privacySetting=:privacySetting, `date`=:datee" ;
-              $result = $connection2->prepare($sql);
-            $result->execute($data);
+            $data = array("technicianID" => null, "gibbonPersonID" => $personID, "issueName" => $name, "description" => $description, "status" => "Unassigned", "category" => $category, "priority" => $priority, "gibbonSchoolYearID" => $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID" => $createdByID, "privacySetting" => $privacySetting, "date" => $date);
+            $IssueGateway = $container->get(IssueGateway::class);
+
+            $IssueGateway->insert($data);
         } catch (PDOException $e) {
-            $URL=$URL . "issues_create.php&return=error2";
+            $URL .= "&return=error2" ;
             header("Location: {$URL}");
             exit();
         }
+        
 
         $issueID = $connection2->lastInsertId();
         if (isset($_POST["createFor"])) {
