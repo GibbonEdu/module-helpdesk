@@ -22,8 +22,6 @@ use Gibbon\Forms\DatabaseFormFactory;
 
 @session_start() ;
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
-
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == FALSE) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
@@ -42,14 +40,18 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
-    $form = Form::create('createTechnicianGroup',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_createTechnicianGroupProcess.php', 'post');
+    $form = Form::create('createTechnicianGroup',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnicianGroupProcess.php', 'post');
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+
     $row = $form->addRow();
         $row->addLabel('groupName', __('Group Name'));
-        $row->addTextField('groupName')->isRequired();
+        $row->addTextField('groupName')
+            ->uniqueField('./modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnicianGroupAjax.php')
+            ->isRequired();
+
     $row = $form->addRow();
-    $row->addFooter();
-    $row->addSubmit();
+        $row->addFooter();
+        $row->addSubmit();
 
     echo $form->getOutput();
 }
