@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
+use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 include "../../functions.php" ;
 include "../../config.php" ;
 
@@ -57,24 +57,25 @@ if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) 
         }
 
         $data = array("issueID" => $issueID, "comment" => $comment, "timestamp" => date("Y-m-d H:i:a"), "gibbonPersonID" => $_SESSION[$guid]["gibbonPersonID"]) ;
-        $sql = "INSERT INTO helpDeskIssueDiscuss SET issueID=:issueID, comment=:comment, timestamp=:timestamp, gibbonPersonID=:gibbonPersonID" ;
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $issueDiscussID = $connection2->lastInsertId();
+        $IssueDiscussGateway = $container->get(IssueDiscussGateway::class);
 
-        $data2 = array("issueID" => $issueID) ;
-        $sql2 = "SELECT issueName FROM helpDeskIssue WHERE issueID=:issueID" ;
-        $result2 = $connection2->prepare($sql2);
-        $result2->execute($data2);
+        $IssueDiscussGateway->insert($data);
+        } catch (PDOException $e) {
+            $URL .= "&return=error2" ;
+            header("Location: {$URL}");
+            exit();
+        }
 
-    } catch (PDOException $e) {
-        //Fail 2
-        $URL=$URL . "&return=error2" ;
-        header("Location: {$URL}");
-        exit();
-    }
+        
+    $issueDiscussID = $connection2->lastInsertId();
 
+    $data2 = array("issueID" => $issueID) ;
+    $sql2 = "SELECT issueName FROM helpDeskIssue WHERE issueID=:issueID" ;
+    $result2 = $connection2->prepare($sql2);
+    $result2->execute($data2);
+    
     $row = $result2->fetch();
+    
     $isTech = isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
 
     $message = "A new message has been added to Issue ";

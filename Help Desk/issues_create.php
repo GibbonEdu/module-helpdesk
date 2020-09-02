@@ -60,7 +60,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
             }
         }
     }
-    $form = Form::create('createIssue', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_createProccess.php');
+    $form = Form::create('createIssue', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
     
