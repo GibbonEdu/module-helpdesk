@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+
 include "../../functions.php" ;
 include "../../config.php" ;
 
@@ -49,11 +51,18 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             }
 
             $data = array("groupName" => $groupName);
-            $sql = "INSERT INTO helpDeskTechGroups SET groupName = :groupName" ;
-            $result = $connection2->prepare($sql);
-            $result->execute($data);
+
+            $techGroupGateway = $container->get(TechGroupGateway::class);
+
+            if (!$techGroupGateway->unique($data, ['groupName'])) {
+                $URL .= '&return=error7';
+                header("Location: {$URL}");
+                exit();
+            }
+
+            $techGroupGateway->insert($data);
         } catch (PDOException $e) {
-            $URL = $URL . "&return=error2" ;
+            $URL .= "&return=error2" ;
             header("Location: {$URL}");
             exit();
         }
@@ -62,7 +71,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Added", array("groupID"=>$groupID), null);
 
         //Success 0
-        $URL = $URL."&groupID=$groupID&return=success0" ;
+        $URL .= "&groupID=$groupID&return=success0" ;
         header("Location: {$URL}");
     }
 }
