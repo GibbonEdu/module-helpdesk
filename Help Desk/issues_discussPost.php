@@ -22,25 +22,30 @@ use Gibbon\Forms\Form;
 //Module includes
 include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"])) {
-    //Acess denied
-    $page->addError('You do not have access to this action.');
-} else {
-    $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
-    $page->breadcrumbs->add(__('Post Discuss'));
-    
-     $form = Form::create('issueDiscuss',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_discussPostProccess.php?issueID=' . $_GET["issueID"], 'post');
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+if (isset($_GET['issueID'])) {
+    $issueID = $_GET["issueID"];
+    if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+        //Acess denied
+        $page->addError('You do not have access to this action.');
+    } else {
+        $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
+        $page->breadcrumbs->add(__('Post Discuss'));
         
-        $row = $form->addRow();
-        $column = $row->addColumn();
-        $column->addLabel('comment', __('Comment'));
-        $column->addEditor('comment', $guid)->setRows(5)->showMedia()->isRequired();
-        
-        $row = $form->addRow();
-        $row->addFooter();
-        $row->addSubmit();
+         $form = Form::create('issueDiscuss',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
+            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            
+            $row = $form->addRow();
+            $column = $row->addColumn();
+            $column->addLabel('comment', __('Comment'));
+            $column->addEditor('comment', $guid)->setRows(5)->showMedia()->isRequired();
+            
+            $row = $form->addRow();
+            $row->addFooter();
+            $row->addSubmit();
 
-    echo $form->getOutput();
+        echo $form->getOutput();
+    }
+} else {
+    $page->addError('No Issue Selected.');
 }
 ?>

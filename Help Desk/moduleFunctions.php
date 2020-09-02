@@ -150,23 +150,6 @@ function getTechWorkingOnIssue($connection2, $issueID)
     return $row;
 }
 
-function getAllPeople($connection2, $excludeTechnicians = false)
-{
-    try {
-        $data = array();
-        if (!$excludeTechnicians) {
-            $sql = "SELECT gibbonPersonID, surname, preferredName FROM gibbonPerson WHERE status='Full' ORDER BY surname, preferredName ASC";
-        } else {
-            $sql = "SELECT gibbonPerson.gibbonPersonID, surname, preferredName FROM gibbonPerson LEFT JOIN helpDeskTechnicians ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE status='Full' AND helpDeskTechnicians.gibbonPersonID IS NULL ORDER BY surname, preferredName ASC";
-        }
-        $result=$connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
-    }
-
-    return $result->fetchAll();
-}
-
 function getPermissionValue($connection2, $gibbonPersonID, $permission)
 {
     try {
