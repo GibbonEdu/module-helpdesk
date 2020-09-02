@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
+
 include "../../functions.php" ;
 include "../../config.php" ;
 
@@ -53,10 +55,18 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
             if ($gibbonModuleID == null) {
                 throw new PDOException("Invalid gibbonModuleID.");
             }
+
             $data = array("gibbonPersonID" => $person, "groupID" => $group);
-            $sql = "INSERT INTO helpDeskTechnicians SET gibbonPersonID = :gibbonPersonID, groupID = :groupID" ;
-            $result = $connection2->prepare($sql);
-            $result->execute($data);
+
+            $technicianGateway = $container->get(technicianGateway::class);
+
+            if (!$technicianGateway->unique($data, ['gibbonPersonID'])) {
+                $URL .= '&return=error7';
+                header("Location: {$URL}");
+                exit();
+            }
+
+            $technicianGateway->insert($data);
         } catch (PDOException $e) {
             print $e;
             $URL = $URL."&return=error2" ;
