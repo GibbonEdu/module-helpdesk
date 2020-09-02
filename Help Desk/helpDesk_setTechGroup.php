@@ -40,8 +40,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $page->addError(__('No Technician selected.'));
         exit();
     }
-
-        $allPeople = getAllPeople($connection2, true);
         $data = array();
         $sql = "SELECT groupID as value, groupName as name FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
         $data2 = array("technicianID"=>$technicianID);
