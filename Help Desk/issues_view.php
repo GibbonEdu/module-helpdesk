@@ -145,12 +145,16 @@ $year = isset($_GET['year'])? $_GET['year'] : '';
     echo $form->getOutput();
     
 
-    
+    //TODO: Filters
     $issueGateway = $container->get(IssueGateway::class);
-    //TODO: add filter capability
-    //TODO: Fix tabs
-    //TODO: Colour by priority or find some other way to highlight the priority stuff
-    $table = DataTable::create('issues');
+    $criteria = $issueGateway->newQueryCriteria(true)
+        ->sortBy('issueID')
+        ->fromPOST();
+        
+    $issues = $issueGateway->queryIssues($criteria);
+    
+    $table = DataTable::createPaginated('issues', $criteria);
+    
     $table->setTitle("Issues");
 
     $table->addHeaderAction('add', __("Create"))
@@ -192,7 +196,7 @@ $year = isset($_GET['year'])? $_GET['year'] : '';
                         
             });
      
-    echo $table->render($issueGateway->selectIssues()->toDataSet());    
+    echo $table->render($issues);    
  
 }
 ?>

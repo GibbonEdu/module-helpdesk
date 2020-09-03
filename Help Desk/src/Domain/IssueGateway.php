@@ -16,7 +16,7 @@ class IssueGateway extends QueryableGateway
     use TableAware;
 
     private static $tableName = 'helpDeskIssue';
-    private static $primaryKey = 'technicianID';
+    private static $primaryKey = 'issueID';
     private static $searchableColumns = [];
 
     public function selectIssueByTechnician($technicianID) {
@@ -30,29 +30,18 @@ class IssueGateway extends QueryableGateway
     }
 
 
-     public function selectIssues() {
-//  TODO: MAKE THIS WORK        
-//      $query = $this
-//             ->newQuery()
-//             ->from('helpDeskIssue')
-//             ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
-//             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
-//             
-//     $query->union()
-//             ->from('helpDeskIssue')
-//             ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
-//             ->where('helpDeskIssue.technicianID IS NULL');
-//
-//        return $this->runQuery($query, $criteria);
-        $data = array();
-        $sql = "( 
-                SELECT  helpDeskIssue.*, techID.gibbonPersonID AS techPersonID FROM helpDeskIssue 
-                LEFT JOIN helpDeskTechnicians AS techID ON helpDeskIssue.technicianID=techID.technicianID
-                ) UNION ( 
-                SELECT  helpDeskIssue.*, helpDeskIssue.technicianID as techPersonID FROM helpDeskIssue WHERE helpDeskIssue.technicianID IS NULL
-                )
-                ORDER BY issueID ASC";
+     public function queryIssues($criteria) {      
+     $query = $this
+            ->newQuery()
+            ->from('helpDeskIssue')
+            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
+            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
+            
+        $query->union()
+            ->from('helpDeskIssue')
+            ->cols(['helpDeskIssue.*', '"" AS techPersonID'])
+            ->where('helpDeskIssue.technicianID IS NULL');
 
-        return $this->db()->select($sql, $data);
+       return $this->runQuery($query, $criteria);
     }
 }
