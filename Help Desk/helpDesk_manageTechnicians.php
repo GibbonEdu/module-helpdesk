@@ -22,17 +22,13 @@ use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
-@session_start() ;
+$page->breadcrumbs->add(__('Manage Technicians'));
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Technicians'));
-
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
@@ -62,7 +58,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     $table->addColumn('name', __("Name"))
             ->format(Format::using('name', ['title', 'preferredName', 'surname', "Student", false, false]));
+    
     $table->addColumn('workingOn', __("Working On"))->format($formatIssues);
+    
     $table->addColumn('groupName', __("Group"));
 
     $table->addActionColumn()
@@ -78,8 +76,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
                 $actions->addAction('delete', __('Delete'))
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDelete.php");
             });
-
-
 
     echo $table->render($technicianGateway->selectTechnicians()->toDataSet());
 }
