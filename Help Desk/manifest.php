@@ -23,19 +23,21 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="1.1.05" ;
-$author="Adrien Tremblay & Ray Clark" ;
+$version="1.2.00" ;
+$author="Ray Clark, Ashton Power & Adrien Tremblay" ;
 $url="https://github.com/raynichc/helpdesk" ;
 
 //Module tables & gibbonSettings entries
-$moduleTables[0]="CREATE TABLE `helpDeskTechnicians` (
+$tables = 0;
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskTechnicians` (
   `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   `groupID` int(4) unsigned zerofill NOT NULL,
   PRIMARY KEY (`technicianID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[1]="CREATE TABLE `helpDeskIssue` (
+$moduleTables[$tables++]="CREATE TABLE `helpDeskIssue` (
   `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `technicianID` int(4) unsigned zerofill DEFAULT NULL,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
@@ -51,7 +53,7 @@ $moduleTables[1]="CREATE TABLE `helpDeskIssue` (
   PRIMARY KEY (`issueID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
+$moduleTables[$tables++]="CREATE TABLE `helpDeskIssueDiscuss` (
   `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `issueID` int(12) unsigned zerofill NOT NULL,
   `comment` text NOT NULL,
@@ -60,14 +62,14 @@ $moduleTables[2]="CREATE TABLE `helpDeskIssueDiscuss` (
   PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[3]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
+$moduleTables[$tables++]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
 VALUES
 (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
 (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
 (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
 (NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Related')";
 
-$moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
+$moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
   `groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `groupName` varchar(55) NOT NULL,
   `viewIssue` boolean DEFAULT 1,
@@ -82,7 +84,7 @@ $moduleTables[4]="CREATE TABLE `helpDeskTechGroups` (
    PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;" ;
 
-$moduleTables[5]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue)
+$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue)
 VALUES
 (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1),
 (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1)";
