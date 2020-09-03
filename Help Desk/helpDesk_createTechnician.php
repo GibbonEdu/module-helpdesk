@@ -19,23 +19,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
-use Gibbon\Forms\DatabaseFormFactory;
 
-@session_start();
-
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == FALSE) {
-//Acess denied
-    $page->addError(__('You do not have access to this action.'));
-} else {
-    //Proceed!
-    $page->breadcrumbs
+$page->breadcrumbs
         ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
         ->add(__('Create Technician'));
 
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
+    //Acess denied
+    $page->addError(__('You do not have access to this action.'));
+} else {
+    //Proceed!
     if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php", null);
+        returnProcess($guid, $_GET['return'], $_SESSION[$guid]["absoluteURL"] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php', null);
     }
 
     $data = array();
@@ -62,15 +57,21 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     $row = $form->addRow();
         $row->addLabel('person', __('Person'));
-        $row->addSelectPerson('person')->fromArray($users)->placeholder()->isRequired();
+        $row->addSelectPerson('person')
+            ->fromArray($users)
+            ->placeholder()
+            ->isRequired();
 
     $row = $form->addRow();
         $row->addLabel('group', __('Technician Group'));
-        $row->addSelect('group')->fromQuery($pdo, $groupSql, $data)->placeholder()->isRequired(); 
+        $row->addSelect('group')
+            ->fromQuery($pdo, $groupSql, $data)
+            ->placeholder()
+            ->isRequired(); 
 
     $row = $form->addRow();
-    $row->addFooter();
-    $row->addSubmit();
+        $row->addFooter();
+        $row->addSubmit();
 
     echo $form->getOutput();
 }
