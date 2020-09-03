@@ -18,22 +18,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Forms\Form;
-@session_start() ;
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
 
-if (isModuleAccessible($guid, $connection2) == false) {
+$page->breadcrumbs
+    ->add(__('Create Issue'));
+
+if (!isModuleAccessible($guid, $connection2)) {
     //Acess denied
     $page->addError('You do not have access to this action.');
-    exit();
 } else {
-    $page->breadcrumbs->add(__('Create Issue'));
-
     if (isset($_GET['return'])) {
         $editLink = null;
         if (isset($_GET['issueID'])) {
             $issueID = $_GET['issueID'];
-            $editLink = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID";
+            $editLink = $_SESSION[$guid]["absoluteURL"] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php&issueID=$issueID';
         }
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
@@ -60,35 +59,48 @@ if (isModuleAccessible($guid, $connection2) == false) {
             }
         }
     }
-    $form = Form::create('createIssue', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_createProccess.php', 'post');
+    $form = Form::create('createIssue', $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
     
     $row = $form->addRow();
-    $row->addLabel('name', __('Issue Name'));
-    $row->addTextField('name')->required()->maxLength(55);
+        $row->addLabel('name', __('Issue Name'));
+        $row->addTextField('name')
+            ->required()
+            ->maxLength(55);
     
     if (count($categoryOptions)>0) {
         $row = $form->addRow();
             $row->addLabel('category', __('Category'));
-            $row->addSelect('category')->fromArray($categoryOptions)->placeholder()->isRequired();
+            $row->addSelect('category')
+                ->fromArray($categoryOptions)
+                ->placeholder()
+                ->isRequired();
     }
     
     $row = $form->addRow();
         $column = $row->addColumn();
-        $column->addLabel('description', __('Description'));
-        $column->addEditor('description', $guid)->setRows(5)->showMedia()->isRequired();
+            $column->addLabel('description', __('Description'));
+            $column->addEditor('description', $guid)
+                    ->setRows(5)
+                    ->showMedia()
+                    ->isRequired();
         
     if (count($priorityOptions)>0) {
         $row = $form->addRow();
             $row->addLabel('priority', __('Priority'));
-            $row->addSelect('priority')->fromArray($priorityOptions)->placeholder()->isRequired();
+            $row->addSelect('priority')
+                ->fromArray($priorityOptions)
+                ->placeholder()
+                ->isRequired();
     }
     
     if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
         $row = $form->addRow();
-            $row->addLabel('createFor', __('Create on behalf of'))->description(__('Leave blank if creating issue for self.'));
-            $row->addSelectStaff('createFor')->placeholder();
+            $row->addLabel('createFor', __('Create on behalf of'))
+                ->description(__('Leave blank if creating issue for self.'));
+            $row->addSelectStaff('createFor')
+                ->placeholder();
     }
 
     //I'mma be honest, I only have a vague idea of what the legacy code was doing here, so I'm just hoping that the way I've adapted it works.
@@ -102,8 +114,12 @@ if (isModuleAccessible($guid, $connection2) == false) {
     $options = array("Everyone", "Related", "Owner", "No one");
                         
     $row = $form->addRow();
-        $row->addLabel('privacySetting', __('Privacy Settings'))->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
-        $row->addSelect('privacySetting')->fromArray($options)->setValue($privacySetting)->isRequired(); 
+        $row->addLabel('privacySetting', __('Privacy Settings'))
+            ->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
+        $row->addSelect('privacySetting')
+            ->fromArray($options)
+            ->setValue($privacySetting)
+            ->isRequired(); 
         
     $row = $form->addRow();
         $row->addFooter();
