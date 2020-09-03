@@ -18,40 +18,46 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
-@session_start() ;
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !(isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    
-    $issueID = null;
     if (isset($_GET["issueID"])) {
         $issueID = $_GET["issueID"];
+
+        $page->breadcrumbs
+            ->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID])
+            ->add(__('Edit Privacy'));
+
+        $options = array("Everyone", "Related", "Owner", "No one");
+
+        $issueGateway = $container->get(IssueGateway::class); 
+        $issue = $issueGateway->getByID($issueID);
+
+        $form = Form::create('editPrivacy', $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/issues_discussEditProcess.php?issueID=' . $issueID, 'post'); 
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']); 
+        
+        //have a ->selected or setValue going on here          
+        $row = $form->addRow();
+            $row->addLabel('privacySetting', __('Privacy Settings'))
+                ->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
+            $row->addSelect('privacySetting')
+                ->fromArray($options)
+                ->selected($issue['privacySetting'])
+                ->isRequired(); 
+            
+        $row = $form->addRow();
+            $row->addFooter();
+            $row->addSubmit();
+
+        echo $form->getOutput();
     } else {
         $page->addError(__('No issue selected.'));
-        exit();
     }
-    $page->breadcrumbs->add(__("Discuss Issue"), 'issues_discussView.php', ['issueID' => $issueID]);
-    $page->breadcrumbs->add(__('Edit Privacy'));
-    
-    $form = Form::create('editPrivacy', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/issues_discussEditProcess.php?issueID=' . $issueID, 'post'); 
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']); 
-    
-    
-    $options = array("Everyone", "Related", "Owner", "No one");
-    //have a ->selected or setValue going on here          
-    $row = $form->addRow();
-        $row->addLabel('privacySetting', __('Privacy Settings'))->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
-        $row->addSelect('privacySetting')->fromArray($options)->placeholder()->isRequired(); 
-        
-    $row = $form->addRow();
-        $row->addFooter();
-        $row->addSubmit();
-
-    echo $form->getOutput();
 }
 ?>
