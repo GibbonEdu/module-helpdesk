@@ -89,7 +89,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
     );
 
     $table->addColumn('name', __("Name"))
-            ->format(function ($row) use ($data) {
+            ->format(function ($row) use ($guid, $data) {
                 $data['title'] = $row['name'];
                 return Format::link($_SESSION[$guid]["absoluteURL"] . "/index.php?" . http_build_query($data), $row['name']);
             });
