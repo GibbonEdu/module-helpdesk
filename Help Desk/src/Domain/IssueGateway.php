@@ -16,7 +16,7 @@ class IssueGateway extends QueryableGateway
     use TableAware;
 
     private static $tableName = 'helpDeskIssue';
-    private static $primaryKey = 'technicianID';
+    private static $primaryKey = 'issueID';
     private static $searchableColumns = [];
 
     public function selectIssueByTechnician($technicianID) {
