@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
+use Gibbon\Domain\System\LogGateway;
 
 include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
 
@@ -133,8 +134,15 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
         echo $form->getOutput();
 
         $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate, null, null);
+        $logGateway = $container->get(LogGateway::class);
+        $criteria = $logGateway->newQueryCriteria(true)
+            ->sortBy('timestamp', 'DESC')
+            ->filterBy('module', 'Help Desk')
+            ->fromPOST();
 
-        $table = DataTable::create('detailedStats');
+    $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
+        
+        $table = DataTable::createPaginated('detailedStats', $criteria);
         $table->setTitle(__($title));
 
         $table->addColumn('timestamp', __('Timestamp'))->format(Format::using('dateTime', ['timestamp']));
