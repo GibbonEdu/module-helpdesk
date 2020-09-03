@@ -21,7 +21,7 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
 
 $page->breadcrumbs
     ->add(__('Statistics'), 'helpDesk_statistics.php')
