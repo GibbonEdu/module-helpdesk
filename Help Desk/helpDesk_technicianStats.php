@@ -21,24 +21,23 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 
-@session_start() ;
+include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+$page->breadcrumbs
+    ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
+    ->add(__('Techncian Statistics'));
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php');
-    $page->breadcrumbs->add(__('Techncian Statistics'));
-
     if (isset($_GET["technicianID"])) {
         $technicianID = $_GET["technicianID"];
 
         $techName = getTechnicianName($connection2, $technicianID);
         echo '<h3>';
-        echo Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student');
+            echo Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student');
         echo '</h3>';
 
         //Default Data
@@ -73,6 +72,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
         echo $form->getOutput();
 
+        //Stats collection
         $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate, null, array("technicianID"=>$technicianID));
         $rArray = $result->fetchAll();
 
@@ -104,7 +104,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
         $table = DataTable::create('detailedStats');
         $table->setTitle("Detailed Statistics");
 
-        $table->addColumn('timestamp', __("Timestamp"))->format(Format::using('dateTime', ['timestamp']));
+        $table->addColumn('timestamp', __("Timestamp"))
+            ->format(Format::using('dateTime', ['timestamp']));
 
         $table->addColumn('title', __("Action Title"));
 
