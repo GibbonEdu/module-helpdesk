@@ -19,24 +19,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 
-@session_start() ;
+$page->breadcrumbs->add(__('Manage Help Desk Settings'));
 
-include './modules/Help Desk/moduleFunctions.php';
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")==false) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Help Desk Settings'));
-
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
-
-    $form = Form::create('helpDeskSettings',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_settingsProcess.php');
-
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
     $settings = array('resolvedIssuePrivacy', 'issueCategory', 'issuePriority', 'issuePriorityName');
 
@@ -47,20 +39,28 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_setting
         "No one" => __("No one"),
     );
 
+    $form = Form::create('helpDeskSettings',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settingsProcess.php');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+
     foreach ($settings as $settingName) {
         $setting = getSettingByScope($connection2, 'Help Desk', $settingName, true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
             switch ($settingName) {
                 case 'resolvedIssuePrivacy':
-                    $row->addSelect($setting['name'])->fromArray($privacyTypes)->selected($setting['value']);
+                    $row->addSelect($setting['name'])
+                        ->fromArray($privacyTypes)
+                        ->selected($setting['value']);
                     break;
                 case 'issueCategory':
                 case 'issuePriority':
-                    $row->addTextArea($setting['name'])->setValue($setting['value']);
+                    $row->addTextArea($setting['name'])
+                        ->setValue($setting['value']);
                     break;
                 case 'issuePriorityName':
-                    $row->addTextField($setting['name'])->setValue($setting['value'])->required();
+                    $row->addTextField($setting['name'])
+                        ->setValue($setting['value'])
+                        ->required();
                     break;
             }
     }
