@@ -24,7 +24,7 @@ use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 $page->breadcrumbs->add(__('Manage Technician Groups'));
 
-if (isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicianGroup.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
