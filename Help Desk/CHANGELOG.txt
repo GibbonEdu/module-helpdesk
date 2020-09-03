@@ -258,3 +258,8 @@ Fixed a bug that would prevent helpDesk_manageTechnicianGroup.php from loading.
 v1.1.05
 -------
 Update manifest tables to use InnoDB storage engine
+
+v1.2.00
+-------
+OO Update
+hand full of bug fixes
