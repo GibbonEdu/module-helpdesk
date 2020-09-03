@@ -37,7 +37,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
     if (isset($_GET['return'])) {
         $editLink = null;
         if (isset($_GET['issueID'])) {
-            $editLink = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Deskissues_discussView.php&issueID=" . $_GET['issueID'];
+            $editLink = $_SESSION[$guid]["absoluteURL"] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php&issueID=' . $_GET['issueID'];
         }
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
