@@ -22,17 +22,13 @@ use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
-@session_start() ;
+$page->breadcrumbs->add(__('Manage Technician Groups'));
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")==false) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Technician Groups'));
-
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, array("errorA" => "Cannot delete last technician group."));
     }
@@ -54,11 +50,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     $table->setTitle("Technician Groups");
 
     $table->addHeaderAction('add', __("Create"))
-            ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php")
-            ->displayLabel();
+            ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php");
 
     $table->addColumn('groupName', __("Group Name"));
-    $table->addColumn('techs', __("Technicians in group"))->format($formatTechnicianList);
+
+    $table->addColumn('techs', __("Technicians in group"))
+            ->format($formatTechnicianList);
+
     $table->addActionColumn()
             ->addParam('groupID')
             ->format(function ($techGroup, $actions) use ($guid, $techGroupData) {

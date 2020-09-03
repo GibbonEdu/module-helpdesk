@@ -21,19 +21,14 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 
-@session_start() ;
+$page->breadcrumbs
+    ->add(__('Statistics'));
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-
-    //Breadcrumbs
-    $page->breadcrumbs->add(__('Statistics'));
-
     //Default Data
     $d = new DateTime('first day of this month');
     $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : $d->format('Y-m-d');
@@ -41,9 +36,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
     //Filter
     $form = Form::create('helpDeskStatistics', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
-
-    $form->setTitle('Filter');
     $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/helpdesk_statistics.php');
+    $form->setTitle('Filter');
 
     $row = $form->addRow();
         $row->addLabel('startDate', __("Start Date Filter"));
@@ -87,7 +81,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     $table = DataTable::create('statistics');
     $table->setTitle("Statistics");
     
-    $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?";
     $data = array(
         'q' => "/modules/" . $_SESSION[$guid]['module'] . "/helpDesk_statisticsDetail.php",
         'title' => '', 
@@ -96,9 +89,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     );
 
     $table->addColumn('name', __("Name"))
-            ->format(function ($row) use ($URL, $data) {
+            ->format(function ($row) use ($data) {
                 $data['title'] = $row['name'];
-                return Format::link($URL . http_build_query($data), $row['name']);
+                return Format::link($_SESSION[$guid]["absoluteURL"] . "/index.php?" . http_build_query($data), $row['name']);
             });
 
     $table->addColumn('value', __("Value"));
