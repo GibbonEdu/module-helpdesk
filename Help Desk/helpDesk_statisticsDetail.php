@@ -21,21 +21,18 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 
-@session_start() ;
+$page->breadcrumbs
+    ->add(__('Statistics'), 'helpDesk_statistics.php');
+    ->add(__('Detailed Statistics'));
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
-    print "</div>" ;
 } else {
-    $page->breadcrumbs->add(__('Statistics'), 'helpDesk_statistics.php');
-    $page->breadcrumbs->add(__('Detailed Statistics'));
-
+    //Proceed!
     if (isset($_GET["title"])) {
         $title = $_GET["title"];
-        $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk" ;
+        $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]['module'];
 
         $extras = array();
 

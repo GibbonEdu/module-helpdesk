@@ -21,7 +21,8 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 
-$page->breadcrumbs->add(__('Statistics'));
+$page->breadcrumbs
+    ->add(__('Statistics'));
 
 if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")) {
     //Acess denied
