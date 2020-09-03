@@ -165,49 +165,31 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
     echo $table->render([$detailsData]);
 
-    $headerActions = array();
-
+    //Description Table
     $table = DataTable::createDetails('description');
     $table->setTitle(__('Description'));
 
-    //Bit of a cheat, might change it later
     if ($array2["technicianID"] == null && (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
          if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
-            $action =  new Action('accept', __('Accept'));
-            $action->setIcon('page_new')
+            $table->addHeaderAction('accept', __('Accept'))
+                    ->setIcon('page_new')
                     ->directLink()
                     ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_acceptProcess.php')
                     ->addParam('issueID', $issueID);
-            $headerActions[] = $action;
         }
         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
-            $action =  new Action('assign', __('Assign'));
-            $action->setIcon('attendance')
+            $table->addHeaderAction('assign', __('Assign'))
+                    ->setIcon('attendance')
                     ->modalWindow()
                     ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_assign.php')
                     ->addParam('issueID', $issueID);
-            $headerActions[] = $action;
           }
     }
 
     $table->addColumn('description')
             ->width('100%');
 
-    if (count($headerActions) > 0) {
-        $table->addColumn('actions')
-                ->width('100%')
-                ->format(function ($row) use ($headerActions) {
-                    $output = '<div class="linkTop">';
-                        foreach ($headerActions as $action) {
-                            $output .= $action->getOutput();
-                        }
-                    $output .= '</div>';
-                    return $output;
-                });
-    }
     echo $table->render([$row]);
-
-    
 
     if ($array2["technicianID"] != null) {
             $IssueDiscussGateway = $container->get(IssueDiscussGateway::class);
