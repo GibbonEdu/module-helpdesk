@@ -199,7 +199,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
                 'title' => __('Comments'),
                 'discussion' => $logs
             ]); 
-
+            
             //Again a bit of a cheat, we'll see how this goes.
             $headerActions = array();
 
