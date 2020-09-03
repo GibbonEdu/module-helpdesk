@@ -18,41 +18,26 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\Form;
 use Gibbon\Forms\Prefab\DeleteForm;
-@session_start() ;
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+$page->breadcrumbs
+        ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
+        ->add(__('Delete Technician'));
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php');
-    $page->breadcrumbs->add(__('Delete Technician'));
-
-    $highestAction = getHighestGroupedAction($guid, "/modules/Help Desk/helpDesk_manageTechnicians.php", $connection2) ;
-    if ($highestAction == false) {
-        $page->addError(__('The highest grouped action cannot be determined.'));
-        exit();
-    }
-
-    if ($highestAction != "Manage Technicians") {
-        $page->addError(__('You do not have access to this action.'));
-        exit();
-    }
-
-    $technicianID = null;
-    if (isset($_GET["technicianID"])) {
-        $technicianID = $_GET["technicianID"];
-    } else {
-        $page->addError(__('No technician selected.'));
-        exit();
-    }
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
-   
-    $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/helpDesk_technicianDeleteProcess.php?technicianID=" . $technicianID);
-    echo $form->getOutput();
+
+    if (isset($_GET["technicianID"])) {
+        $technicianID = $_GET["technicianID"];
+        $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . "/helpDesk_technicianDeleteProcess.php?technicianID=" . $technicianID);
+        echo $form->getOutput();
+    } else {
+        $page->addError(__('No technician selected.'));
+    }
 }
 ?>
