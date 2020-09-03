@@ -16,52 +16,52 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 use Gibbon\Forms\Form;
-use Gibbon\Forms\DatabaseFormFactory;
-@session_start() ;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+$page->breadcrumbs
+    ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
+    ->add(__('Edit Technician'));
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->breadcrumbs->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php');
-    $page->breadcrumbs->add(__('Edit Technician'));
-
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
 
     if (isset($_GET["technicianID"])) {
         $technicianID = $_GET["technicianID"];
-    } else {
-        $page->addError(__('No Technician selected.'));
-        exit();
-    }
+
         $data = array();
         $sql = "SELECT groupID as value, groupName as name FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
-        $data2 = array("technicianID"=>$technicianID);
-        $sql2 = "SELECT * FROM helpDeskTechnicians WHERE technicianID = :technicianID";
-        $result2 = $connection2->prepare($sql2);
-        $result2->execute($data2);
-        $values=$result2->fetch();
+        
+        $technicianGateway = $container->get(TechnicianGateway::class);
 
+        $values = $technicianGateway->getByID($technicianID);
 
-        $form = Form::create('setTechGroup',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_setTechGroupProcess.php?technicianID=' . $technicianID, 'post');
+        $form = Form::create('setTechGroup',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_setTechGroupProcess.php?technicianID=' . $technicianID, 'post');
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
-        $form->setFactory(DatabaseFormFactory::create($pdo));
 
         $row = $form->addRow();
             $row->addLabel('group', __('Technician Group'));
-            $row->addSelect('group')->fromQuery($pdo, $sql, $data)->setValue($values['groupID'])->isRequired(); 
+            $row->addSelect('group')
+                ->fromQuery($pdo, $sql, $data)
+                ->selected($values['groupID'])
+                ->isRequired(); 
 
         $form->loadAllValuesFrom($values);
+        
         $row = $form->addRow();
-        $row->addFooter();
-        $row->addSubmit();
+            $row->addFooter();
+            $row->addSubmit();
 
         echo $form->getOutput();
+    } else {
+        $page->addError(__('No Technician selected.'));
+    }
 }
 ?>
