@@ -19,92 +19,88 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
-include "../../functions.php" ;
-include "../../config.php" ;
+require_once '../../gibbon.php';
 
-include "./moduleFunctions.php" ;
+require_once './moduleFunctions.php';
 
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]["timezone"]);
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'];
 
-$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
-
-if (isset($_GET["permission"])) {
-      $permission = $_GET["permission"];
+if (isset($_GET['permission'])) {
+    $permission = $_GET['permission'];
 } else {
-    $URL = $URL . "issues_view.php&return=error1" ;
-      header("Location: {$URL}");
-      exit();
+    $URL .= '/issues_view.php&return=error1';
+    header('Location: {$URL}');
+    exit();
 }
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], $permission)) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php') || !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], $permission)) {
     //Fail 0
-      $URL = $URL . "issues_view.php&return=error0" ;
-    header("Location: {$URL}");
+    $URL .= '/issues_view.php&return=error0';
+    header('Location: {$URL}');
     exit();
 } else {
-    if (isset($_GET["issueID"])) {
-          $issueID = $_GET["issueID"];
+    if (isset($_GET['issueID'])) {
+        $issueID = $_GET['issueID'];
     } else {
-        $URL = $URL . "issues_view.php&return=error1" ;
-          header("Location: {$URL}");
-          exit();
+        $URL .= '/issues_view.php&return=error1';
+        header('Location: {$URL}');
+        exit();
     }
 
     // Proceed!
-    if (isset($_POST["technician"])) {
-        $technicianID = $_POST["technician"];
+    if (isset($_POST['technician'])) {
+        $technicianID = $_POST['technician'];
     } else {
-        $URL = $URL . "issues_assign.php&issueID=$issueID&return=error1" ;
-          header("Location: {$URL}");
-          exit();
+        $URL .= '/issues_assign.php&issueID=$issueID&return=error1';
+        header('Location: {$URL}');
+        exit();
     }
 
-    if ($technicianID == null || $technicianID == "") {
-        $URL = $URL . "issues_assign.php&issueID=$issueID&return=error1" ;
-          header("Location: {$URL}");
-          exit();
+    if ($technicianID == null || $technicianID == '') {
+        $URL .= '/issues_assign.php&issueID=$issueID&return=error1';
+        header('Location: {$URL}');
+        exit();
     }
 
     try {
-        $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+        $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
         if ($gibbonModuleID == null) {
-            throw new PDOException("Invalid gibbonModuleID.");
+            throw new PDOException('Invalid gibbonModuleID.');
         }
-        $data = array("technicianID" => $technicianID, "status" => "Pending");
+        $data = array('technicianID' => $technicianID, 'status' => 'Pending');
 
         $issueGateway = $container->get(IssueGateway::class);
         $issueGateway->update($issueID, $data);
     } catch (PDOException $e) {
-        $URL = $URL . "issues_assign.php&issueID=$issueID&technicianID=$technicianID&return=error2" ;
-        header("Location: {$URL}");
+        $URL .= '/issues_assign.php&issueID=$issueID&technicianID=$technicianID&return=error2' ;
+        header('Location: {$URL}');
         exit();
     }
 
     $row = getIssue($connection2, $issueID);
 
-    $assign = "assigned";
-    if ($permission == "reassignIssue") {
-        $assign = "reassigned";
+    $assign = 'assigned';
+    if ($permission == 'reassignIssue') {
+        $assign = 'reassigned';
     }
     $tech = getTechWorkingOnIssue($connection2, $issueID);
-    $message  = $tech["preferredName"] . " " . $tech["surname"];
-    $message .= " has been $assign";
-    $message .= " Issue #";
+    $message  = $tech['preferredName'] . ' ' . $tech['surname'];
+    $message .= ' has been $assign';
+    $message .= ' Issue #';
     $message .= $issueID;
-    $message .= " (" . $row["issueName"] . ").";
+    $message .= ' (' . $row['issueName'] . ').';
 
     $personIDs = getPeopleInvolved($connection2, $issueID);
 
     foreach($personIDs as $personID) {
-        if ($personID != $_SESSION[$guid]["gibbonPersonID"]) {
-            setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+        if ($personID != $_SESSION[$guid]['gibbonPersonID']) {
+            setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
         } 
     }    
 
-    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Assigned", array("issueID" => $issueID, "technicainID"=>$technicianID), null);
+    setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Assigned', array('issueID' => $issueID, 'technicainID'=>$technicianID), null);
 
-      $URL = $URL . "issues_view.php&return=success0" ;
-    header("Location: {$URL}");
+    $URL .= '/issues_view.php&return=success0' ;
+    header('Location: {$URL}');
 }
 ?>
