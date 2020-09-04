@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Forms\Form;
 
-include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs
     ->add(__('Create Issue'));
@@ -37,28 +37,10 @@ if (!isModuleAccessible($guid, $connection2)) {
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
-    $settings = getHelpDeskSettings($connection2);
-    $priorityOptions = array();
-    $priorityName = null;
-    $categoryOptions = array();
+    $priorityOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issuePriority', false))));
+    $categoryOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issueCategory', false))));
+    $privacyOptions = array("Everyone", "Related", "Owner", "No one");
 
-    while ($value = $settings->fetch()) {
-        if ($value["name"] == "issuePriority") {
-            foreach (explode(",", $value["value"]) as $type) {
-                if ($type != "") {
-                    array_push($priorityOptions, $type);
-                }
-            }
-        } else if ($value["name"] == "issuePriorityName") {
-            $priorityName = $value["value"];
-        } else if ($value["name"] == "issueCategory") {
-            foreach (explode(",", $value["value"]) as $type) {
-                if ($type != "") {
-                    array_push($categoryOptions, $type);
-                }
-            }
-        }
-    }
     $form = Form::create('createIssue', $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
@@ -69,7 +51,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             ->required()
             ->maxLength(55);
     
-    if (count($categoryOptions)>0) {
+    if (count($categoryOptions) > 0) {
         $row = $form->addRow();
             $row->addLabel('category', __('Category'));
             $row->addSelect('category')
@@ -86,9 +68,9 @@ if (!isModuleAccessible($guid, $connection2)) {
                     ->showMedia()
                     ->isRequired();
         
-    if (count($priorityOptions)>0) {
+    if (count($priorityOptions) > 0) {
         $row = $form->addRow();
-            $row->addLabel('priority', __('Priority'));
+            $row->addLabel('priority', __(getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issuePriorityName', false)));
             $row->addSelect('priority')
                 ->fromArray($priorityOptions)
                 ->placeholder()
@@ -102,23 +84,13 @@ if (!isModuleAccessible($guid, $connection2)) {
             $row->addSelectStaff('createFor')
                 ->placeholder();
     }
-
-    //I'mma be honest, I only have a vague idea of what the legacy code was doing here, so I'm just hoping that the way I've adapted it works.
-    //TODO: Figure it out and perhaps improve idk               
-    $data = array();
-    $sql = "SELECT * FROM gibbonSetting WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
-    $result = $connection2->prepare($sql);
-    $result->execute($data);
-    $values = $result->fetch() ;
-    $privacySetting = $values['value'];
-    $options = array("Everyone", "Related", "Owner", "No one");
                         
     $row = $form->addRow();
         $row->addLabel('privacySetting', __('Privacy Settings'))
             ->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
         $row->addSelect('privacySetting')
-            ->fromArray($options)
-            ->setValue($privacySetting)
+            ->fromArray($privacyOptions)
+            ->selected(getSettingByScope($connection2, $_SESSION[$guid]['module'], 'resolvedIssuePrivacy', false))
             ->isRequired(); 
         
     $row = $form->addRow();
