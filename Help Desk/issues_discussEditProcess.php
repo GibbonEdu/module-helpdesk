@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+
 include "../../functions.php" ;
 include "../../config.php" ;
 
@@ -58,10 +60,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php"
     }
 
     try {
-        $data = array("privacySetting" => $privacySetting, "issueID" => $issueID);
-        $sql = "UPDATE helpDeskIssue SET privacySetting=:privacySetting WHERE issueID=:issueID" ;
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
+        $data = array("privacySetting" => $privacySetting);
+
+        $issueGateway = $container->get(IssueGateway::class);
+        $issueGateway->update($issueID, $data);
     } catch (PDOException $e) {
         $URL = $URL . "&return=error2" ;
         header("Location: {$URL}");
