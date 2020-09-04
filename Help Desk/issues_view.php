@@ -23,16 +23,15 @@ use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
-@session_start();
-
 //Module includes
 include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+
+$page->breadcrumbs->add(__('Issues'));
 
 if (isModuleAccessible($guid, $connection2) == false) {
     //Acess denied
     $page->addError('You do not have access to this action.');
 } else {
-    $page->breadcrumbs->add(__('Issues'));
 
     if (isset($_GET['return'])) {
         $editLink = null;
