@@ -94,9 +94,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.ph
             }
 
             $data = array("technicianID" => null, "gibbonPersonID" => $personID, "issueName" => $name, "description" => $description, "status" => "Unassigned", "category" => $category, "priority" => $priority, "gibbonSchoolYearID" => $_SESSION[$guid]["gibbonSchoolYearID"], "createdByID" => $createdByID, "privacySetting" => $privacySetting, "date" => $date);
-            $IssueGateway = $container->get(IssueGateway::class);
+            $issueGateway = $container->get(IssueGateway::class);
 
-            $IssueGateway->insert($data);
+            $issueGateway->insert($data);
         } catch (PDOException $e) {
             $URL .= "&return=error2" ;
             header("Location: {$URL}");
