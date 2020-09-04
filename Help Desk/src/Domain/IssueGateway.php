@@ -36,11 +36,6 @@ class IssueGateway extends QueryableGateway
             ->from('helpDeskIssue')
             ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
-            
-        $query->union()
-            ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.*', '"" AS techPersonID'])
-            ->where('helpDeskIssue.technicianID IS NULL');
 
        return $this->runQuery($query, $criteria);
     }
