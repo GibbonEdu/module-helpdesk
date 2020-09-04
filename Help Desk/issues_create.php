@@ -64,8 +64,8 @@ if (!isModuleAccessible($guid, $connection2)) {
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
     
     $row = $form->addRow();
-        $row->addLabel('name', __('Issue Name'));
-        $row->addTextField('name')
+        $row->addLabel('issueName', __('Issue Name'));
+        $row->addTextField('issueName')
             ->required()
             ->maxLength(55);
     
