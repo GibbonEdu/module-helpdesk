@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php" ;
 $type="Additional" ;
 $category="Other" ;
-$version="1.2.00" ;
+$version="1.2.01" ;
 $author="Ray Clark, Ashton Power & Adrien Tremblay" ;
 $url="https://github.com/raynichc/helpdesk" ;
 
@@ -88,6 +88,24 @@ $moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupNam
 VALUES
 (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1),
 (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1)";
+
+//Roles
+$roles[0]["name"]="Technician";
+$roles[0]["category"]="Other";
+$roles[0]["nameShort"]="Tch";
+$roles[0]["description"]="Gibbon HelpDesk Module Technician";
+$roles[0]["type"]="Additional";
+$roles[0]["canLoginRole"]="Y";
+$roles[0]["futureYearsLogin"]="Y";
+$roles[0]["pastYearsLogin"]="Y";
+
+if (isset($roles)) {
+    for ($i = 0;$i < count($roles);++$i) {
+            $moduleTables[$tables++]='INSERT INTO gibbonRole SET name="'.$roles[$i]['name'].'", category="'.$roles[$i]['category'].'", nameShort="'.$roles[$i]['nameShort'].'", description="'.$roles[$i]['description'].'", type="'.$roles[$i]['type'].'", canLoginRole="'.$roles[$i]['canLoginRole'].'", futureYearsLogin="'.$roles[$i]['futureYearsLogin'].'", pastYearsLogin="'.$roles[$i]['pastYearsLogin'].'"';
+        
+    }
+}
+
 
 //Action rows
 //One array per action
