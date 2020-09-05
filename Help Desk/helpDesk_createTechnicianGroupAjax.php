@@ -18,14 +18,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 //Gibbon system-wide include
-include '../../gibbon.php';
+require_once '../../gibbon.php';
 
 if (empty($_SESSION[$guid]['gibbonPersonID']) || empty($_SESSION[$guid]['gibbonRoleIDPrimary'])
 	|| !isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")) {
     die(__('Your request failed because you do not have access to this action.'));
 } else {
-	$currentGroupName = isset($_POST['currentGroupName']) ? $_POST['currentGroupName'] : null;
-    $groupName = isset($_POST['groupName'])? $_POST['groupName'] : '';
+	$currentGroupName = $_POST['currentGroupName'] ?? null;
+    $groupName = $_POST['groupName'] ?? '';
 
     if ($currentGroupName != null && $currentGroupName == $groupName) {
     	echo 0;
