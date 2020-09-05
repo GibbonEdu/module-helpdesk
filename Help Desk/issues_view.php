@@ -57,7 +57,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
         ->fromPOST();
         
     $criteria->addFilterRules([
-        'issue' => function ($query, $issue) use ($guid, $connection2) {
+        'issue' => function ($query, $issue) use ($guid) {
             if ($issue == 'My Issues') {
                 $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')
                         ->bindValue('gibbonPersonID', $_SESSION[$guid]['gibbonPersonID']);
@@ -68,6 +68,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
             return $query;
         },
     ]);
+
     $form = Form::create('searchForm', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
