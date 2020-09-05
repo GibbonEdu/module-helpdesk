@@ -21,8 +21,10 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Domain\System\LogGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 
-include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs
     ->add(__('Statistics'), 'helpDesk_statistics.php')
@@ -140,7 +142,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
             ->filterBy('module', 'Help Desk')
             ->fromPOST();
 
-    $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
+        $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
         
         $table = DataTable::createPaginated('detailedStats', $criteria);
         $table->setTitle(__($title));
@@ -153,16 +155,18 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
                     return Format::name($name['title'], $name['preferredName'], $name['surname'], 'Student');
                 });
 
+        $techGroupGateway = $container->get(TechGroupGateway::class);
+        $issueDisucssGateway = $container->get(IssueDiscussGateway::class);
         //TODO: This is silly and doesn't seem to work for all things. Theres barely any error catching or really any good code here.
         //At some point this needs to be scrapped or built up from the ground, until then, too bad!
         foreach ($extras as $extra) {
             $table->addColumn($extra['extraKey'], __($extra['extra']))
-                    ->format(function ($row) use ($connection2, $extra) {
+                    ->format(function ($row) use ($connection2, $extra, $techGroupGateway, $issueDisucssGateway) {
                         $array = unserialize($row['serialisedArray']);
                         $eString = str_replace("%extraInfo%", $array[$extra['extraKey']], $extra['extraString']);
 
                         if (strpos($eString, "%groupName%") !== false) {
-                            $eString = str_replace("%groupName%", getGroup($connection2, $array[$extra['extraKey']])['groupName'], $eString);
+                            $eString = str_replace("%groupName%", $techGroupGateway->getByID($array[$extra['extraKey']])['groupName'], $eString);
                         }
 
                         if (strpos($eString, "%techName%") !== false) {
@@ -176,7 +180,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
                         }
 
                         if (strpos($eString, "%IDfromPost%") !== false) {
-                            $issueID = getIssueIDFromPost($connection2, $array[$extra['extraKey']]);
+                            $issueID = $issueDisucssGateway->getByID($array[$extra['extraKey']])['issueID'];
                             $eString = str_replace("%IDfromPost%", $issueID, $eString);
                         }
 
