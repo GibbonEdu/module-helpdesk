@@ -190,6 +190,84 @@ if (isModuleAccessible($guid, $connection2) == false) {
             return '<strong>' . __($issue['status']) . '</strong><br/><small><i>' . Format::date($issue['date']) . '</i></small>';
             });
     //TODO: implement if functions for different cases and such.... eurgh
+    
+                        $openCreated = false;
+                        $resolveCreated = false;
+
+                        if (relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) && !($row['status']=="Resolved")) {
+                            if (!$openCreated) {
+                                //issues discuss view
+                                $openCreated = true;
+                                if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") && $row['status'] == "Pending") {
+                                    //issue resolve process
+                                    $resolveCreated = true;
+                                }
+                            }
+                        }
+                            
+
+                        if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+                            if ($row['technicianID'] == null && $row['status'] != "Resolved" ) {
+                                if (!$openCreated) {
+                                    //issuediscussview
+                                    $openCreated = true;
+                                }
+                                if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"])) {
+                                    //issue accept process
+                                }
+                            }
+                        }     
+
+                        if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+                            if (!$openCreated && !($row['status'] == "Resolved")) {
+                                //issuediscussview
+                                $openCreated = true;
+                                if (!$resolveCreated && $row['status'] == "Pending") {
+                                     //issue resolve process
+                                    $resolveCreated = true;
+                                }
+                            }
+                        }
+
+                        if (isPersonsIssue($connection2, $row["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+                            //issue discuss view edit
+                        }
+
+                        if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+                            if ($row['technicianID'] == null && $row['status'] != "Resolved" ) {
+                                print "<input type='hidden' name='address' value='". $_SESSION[$guid]["address"] . "'>";
+                                
+                            }
+                        } 
+
+
+                        //Resolved?
+                        if ($row['status'] != "Resolved") {
+                            if ($row['technicianID'] == null && getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+                                //issues_assign.php
+                                } else if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reassignIssue")) {
+                                //issues_assign.php but title is reassignprint "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php&issueID=". $row["issueID"] . "'><img style='margin-left: 5px' title=" . __('Reassign ') . "' src='" . $_SESSION[$guid]["absoluteURL"] . "/themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/attendance.png'/></a>";
+                            }
+                        } if ($row['status'] == "Resolved") {
+                            if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reincarnateIssue") || isPersonsIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"])) {
+                                //issue reincarnate process    
+                            }
+                            if ($privacySetting == "Everyone" && !$openCreated) {
+                                //issuediscussview
+                                $openCreated = true;
+                            } else if ($privacySetting == "Related" && relatedToIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) && !$openCreated) {
+                                //issuediscussview
+                                $openCreated = true;
+                            } else if ($privacySetting == "Owner" && isPersonsIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"]) && !$openCreated) {
+                                //issuediscussview
+                                $openCreated = true;
+                            }
+                        }      
+                        
+
+                        
+    
+    
     $table->addActionColumn()
             ->addParam('issueID')
             ->format(function ($issues, $actions) use ($guid) {
@@ -202,7 +280,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
                         ->setIcon('attendance');
                         
             });
-     
+    
     echo $table->render($issues);    
  
 }
