@@ -204,8 +204,9 @@ if (isModuleAccessible($guid, $connection2) == false) {
                 if ($issues['technicianID'] == null) { //issues_acceptProcess
                     if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
                         $actions->addAction('accept', __("Accept"))
+                        ->directLink()
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_acceptProcess.php")
-                        ->setIcon('iconTick');
+                        ->setIcon('page_new');
                     }
                     if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
                     $actions->addAction('assign', __("Assign"))
@@ -216,18 +217,22 @@ if (isModuleAccessible($guid, $connection2) == false) {
                     $actions->addAction('assign', __("Reassign"))
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php")
                         ->setIcon('attendance');
+                } //TODO: get these to work
+                if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
+                    $actions->addAction('resolve', __("Resolve"))
+                        ->directLink()
+                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php")
+                        ->setIcon('iconTick');
                 }
-                // else if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") {
-//                     $actions->addAction('resolve', __("Resolve"))
-//                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php");
-//                 }
-            // } else if ($issues['status'] == "Resolved") {
-//                 if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reincarnateIssue") || isPersonsIssue($connection2, intval($row['issueID']), $_SESSION[$guid]["gibbonPersonID"])) {
-//                     $actions->addAction('reincarnate', __("Reincarnate"))
-//                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_reincarnateProcess.php");
-//                 }
-//             }
-            }});
+            }  if ($issues['status'] == "Resolved") {
+                if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reincarnateIssue") || isPersonsIssue($connection2, $issues['issueID'], $_SESSION[$guid]["gibbonPersonID"])) {
+                    $actions->addAction('reincarnate', __("Reincarnate"))
+                        ->directLink()
+                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_reincarnateProcess.php")
+                        ->setIcon('upload');
+                }
+            }
+            });
     
     echo $table->render($issues);    
  
