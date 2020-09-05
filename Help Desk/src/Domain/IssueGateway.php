@@ -38,10 +38,6 @@ class IssueGateway extends QueryableGateway
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
 
         $criteria->addFilterRules([
-            'issue' => function($query, $status) {
-                //TODO: Figure this out
-                return $query;
-            },
             'status' => function ($query, $status) {
                 return $query
                     ->where('helpDeskIssue.status = :status')
