@@ -54,19 +54,6 @@ function hasTechnicianAssigned($connection2, $issueID)
     return ($id != null);
 }
 
-function getAllTechnicians($connection2)
-{
-    try {
-        $data = array();
-        $sql = "SELECT helpDeskTechnicians.gibbonPersonID, technicianID, surname, preferredName FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE status='Full' ORDER BY surname, preferredName ASC";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
-    }
-
-    return $result->fetchAll();
-}
-
 function technicianExists($connection2, $technicianID)
 {
     try {
@@ -232,20 +219,6 @@ function getIssue($connection2, $issueID)
     return $row;
 }
 
-function getGroup($connection2, $groupID)
-{
-    try {
-        $data = array("groupID"=> $groupID);
-        $sql = "SELECT * FROM helpDeskTechGroups WHERE groupID=:groupID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $row = $result->fetch();
-    } catch (PDOException $e) {
-    }
-
-    return $row;
-}
-
 function getPersonName($connection2, $gibbonPersonID)
 {
     try {
@@ -272,32 +245,5 @@ function getTechnicianName($connection2, $technicianID)
     }
 
     return $row;
-}
-
-function getIssueIDFromPost($connection2, $issueDiscussID)
-{
-    try {
-        $data = array("issueDiscussID"=> $issueDiscussID);
-        $sql = "SELECT issueID FROM helpDeskIssueDiscuss WHERE issueDiscussID=:issueDiscussID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $row = $result->fetch();
-    } catch (PDOException $e) {
-    }
-
-    return $row['issueID'];
-}
-
-function getHelpDeskSettings($connection2)
-{
-    try {
-        $sql = "SELECT * FROM gibbonSetting WHERE scope = 'Help Desk'" ;
-        $result = $connection2->prepare($sql);
-        $result->execute(array());
-    }
-    catch (PDOException $e) {
-    }
-
-    return $result;
 }
 ?>
