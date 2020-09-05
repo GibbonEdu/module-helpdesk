@@ -55,17 +55,19 @@ if (isModuleAccessible($guid, $connection2) == false) {
         ->filterBy('year', $year)
         ->sortBy('issueID')
         ->fromPOST();
-
+        
     $criteria->addFilterRules([
-        'issue' => function ($query, $issue) use ($guid) {
+        'issue' => function ($query, $issue) use ($guid, $connection2) {
             if ($issue == 'My Issues') {
                 $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')
                         ->bindValue('gibbonPersonID', $_SESSION[$guid]['gibbonPersonID']);
+            } else if ($issue == "My Assigned") {
+                $query->where('techID.gibbonPersonID=:techPersonID')
+                        ->bindValue('techPersonID', $_SESSION[$guid]["gibbonPersonID"]);
             }
             return $query;
         },
     ]);
- 
     $form = Form::create('searchForm', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
@@ -100,7 +102,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
         $table->addMetaData('filterOptions', ['issue:All'    => __('Issues').': '.__('All')]);
     }
     if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
-        $table->addMetaData('filterOptions', ['issue:My Working'    => __('Issues').': '.__('My Working')]);
+        $table->addMetaData('filterOptions', ['issue:My Assigned'    => __('Issues').': '.__('My Assigned')]);
     }
     $table->addMetaData('filterOptions', ['issue:My Issues'    => __('Issues').': '.__('My Issues')]);
     if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
