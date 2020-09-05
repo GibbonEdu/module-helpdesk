@@ -46,61 +46,40 @@ if (isModuleAccessible($guid, $connection2) == false) {
         $page->addError(__('The highest grouped action cannot be determined.'));
         exit();
     }
- 
-// $issue = isset($_GET['issue'])? $_GET['issue'] : '';
-// $status = isset($_GET['status'])? $_GET['status'] : '';
-// $category = isset($_GET['category'])? $_GET['category'] : '';
-// $priority = isset($_GET['priority'])? $_GET['priority'] : '';
-// $issueID = isset($_GET['issueID'])? $_GET['issueID'] : '';
-// $year = isset($_GET['year'])? $_GET['year'] : '';
 
-// TODO: THE ORIGINAL FILTER DIDN'T WORK SO IN THEORY THIS ONE SHOULD WORK JUST GOTTA FIX... ALL THE STUFF ABOVE
-//     $form = Form::create('filter', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
-//     $form->setClass('noIntBorder fullWidth standardForm');
-//     $form->setTitle(__('Filter'));
-//     $form->setFactory(DatabaseFormFactory::create($pdo));
-//     $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/issues_view.php');
-//     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
-// 
-//     if (count($issueFilters)>1) {  
-//         $row = $form->addRow();
-//             $row->addLabel('issue', __('Issue Filter'));
-//             $row->addSelect('issue')->fromArray($issueFilters)->selected($issue)->required();
-//     }
-// 
-//     $row = $form->addRow();
-//         $row->addLabel('status', __('Status Filter'));
-//         $row->addSelect('status')->fromArray($statusFilters)->selected($status)->required();
-//             
-//     if (count($categoryFilters)>1) {  
-//         $row = $form->addRow();
-//             $row->addLabel('category', __('Category Filter'));
-//             $row->addSelect('category')->fromArray($categoryFilters)->selected($category)->required();
-//     }
-//     if ($renderPriority) {
-//         $row = $form->addRow();
-//             $row->addLabel('priority', __('Priority Filter'));
-//             $row->addSelect('priority')->fromArray($priorityFilters)->selected($priority)->required();
-//     }
-//     
-//     $row = $form->addRow();
-//         $row->addLabel('issueID', __('Issue ID Filter'));
-//         $row->addTextField('issueID')->setValue($issueID);
-//     
-//     $row = $form->addRow();
-//         $row->addLabel('year', __('Year Filter'));
-//         $row->addSelectSchoolYear('year', 'All')->selected($year);
-//     
-//     
-//     $row = $form->addRow();
-//         $row->addSearchSubmit($gibbon->session, __('Clear Filters'));
-// 
-//     echo $form->getOutput();   
-    
+    $year = $_GET['year'] ?? $_SESSION[$guid]['gibbonSchoolYearID'];
+
     $issueGateway = $container->get(IssueGateway::class);
     $criteria = $issueGateway->newQueryCriteria(true)
+        ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
+        ->filterBy('year', $year)
         ->sortBy('issueID')
         ->fromPOST();
+ 
+    $form = Form::create('searchForm', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    $form->setFactory(DatabaseFormFactory::create($pdo));
+
+    $form->addHiddenValue('q', '/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+
+    $form->setClass('noIntBorder fullWidth standardForm');
+    $form->setTitle(__('Search & Filter'));
+
+    $row = $form->addRow();
+        $row->addLabel('search', __('Search'))
+            ->description(__('Issue ID, Name or Description.'));
+        $row->addTextField('search')
+            ->setValue($criteria->getSearchText());
+    
+    $row = $form->addRow();
+        $row->addLabel('year', __('Year Filter'));
+        $row->addSelectSchoolYear('year', 'All')
+            ->selected($year);
+    
+    $row = $form->addRow();
+        $row->addSearchSubmit($gibbon->session, __('Clear Filters'));
+
+    echo $form->getOutput();   
         
     $issues = $issueGateway->queryIssues($criteria);
     $table = DataTable::createPaginated('issues', $criteria);
