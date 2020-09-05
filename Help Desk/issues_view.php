@@ -155,11 +155,23 @@ if (isModuleAccessible($guid, $connection2) == false) {
     }
     //FILTERS END
     
+    $table->modifyRows(function($issue, $row) {
+        if ($issue['status'] == 'Resolved') {
+            $row->addClass('current');
+        } else if ($issue['status'] == 'Unassigned') {
+            $row->addClass('error');
+        } else if ($issue['status'] == 'Pending') {
+            $row->addClass('warning');
+        }
+        return $row;
+    });
+
     $table->addHeaderAction('add', __("Create"))
             ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php")
             ->displayLabel();
 
-    $table->addColumn('issueID', __("Issue ID")); 
+    $table->addColumn('issueID', __("Issue ID"))
+            ->format(Format::using('number', ['issueID'])); 
     $table->addColumn('issueName', __('Name'))
           ->description(__('Description'))
           ->format(function ($issue) {
@@ -171,6 +183,11 @@ if (isModuleAccessible($guid, $connection2) == false) {
                     $owner = getPersonName($connection2, $row['gibbonPersonID']);
                     return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/><small><i>'. __($row['category']) . '</i></small>';
                 });
+
+    if (!empty($priorityFilters)) {
+        $table->addColumn('priority', __(getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issuePriorityName', false)));
+    }
+    
     $table->addColumn('technicianID', __('Technician'))
                 ->format(function ($row) use ($connection2) {
                     $tech = getPersonName($connection2, $row['techPersonID']);
