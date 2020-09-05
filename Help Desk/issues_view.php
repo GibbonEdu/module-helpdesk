@@ -73,75 +73,56 @@ if (isModuleAccessible($guid, $connection2) == false) {
     $renderPriority = count($priorityFilters)>1;
     $renderCategory = count($categoryFilters)>1;
 
-    $issueFilters = array();
-    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssue")) {
-        array_push($issueFilters, "All");
-    }
-    if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
-        array_push($issueFilters, "My Working");
-    }
-    array_push($issueFilters, "My Issues");
-    if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
-        $statusFilters = array("Pending");
-        if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="All") {
-            $statusFilters = array("All", "Unassigned", "Pending", "Resolved");
-        } else if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="UP") {
-            $statusFilters = array("Unassigned and Pending", "Unassigned", "Pending");
-        } else if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="PR") {
-            $statusFilters = array("Pending and Resolved", "Pending", "Resolved");
-        }
-    } else {
-        $statusFilters = array("All", "Unassigned", "Pending", "Resolved");
-    }
-    
-$issue = isset($_GET['issue'])? $_GET['issue'] : '';
-$status = isset($_GET['status'])? $_GET['status'] : '';
-$category = isset($_GET['category'])? $_GET['category'] : '';
-$priority = isset($_GET['priority'])? $_GET['priority'] : '';
-$issueID = isset($_GET['issueID'])? $_GET['issueID'] : '';
-$year = isset($_GET['year'])? $_GET['year'] : '';
+ 
+// $issue = isset($_GET['issue'])? $_GET['issue'] : '';
+// $status = isset($_GET['status'])? $_GET['status'] : '';
+// $category = isset($_GET['category'])? $_GET['category'] : '';
+// $priority = isset($_GET['priority'])? $_GET['priority'] : '';
+// $issueID = isset($_GET['issueID'])? $_GET['issueID'] : '';
+// $year = isset($_GET['year'])? $_GET['year'] : '';
 
-//TODO: THE ORIGINAL FILTER DIDN'T WORK SO IN THEORY THIS ONE SHOULD WORK JUST GOTTA FIX... ALL THE STUFF ABOVE
-    $form = Form::create('search', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
-    $form->setTitle(__('Filter'));
-    $form->setFactory(DatabaseFormFactory::create($pdo));
-    $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/issues_view.php');
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
-
-    if (count($issueFilters)>1) {  
-        $row = $form->addRow();
-            $row->addLabel('issue', __('Issue Filter'));
-            $row->addSelect('issue')->fromArray($issueFilters)->selected($issue)->required();
-    }
-
-    $row = $form->addRow();
-        $row->addLabel('status', __('Status Filter'));
-        $row->addSelect('status')->fromArray($statusFilters)->selected($status)->required();
-            
-    if (count($categoryFilters)>1) {  
-        $row = $form->addRow();
-            $row->addLabel('category', __('Category Filter'));
-            $row->addSelect('category')->fromArray($categoryFilters)->selected($category)->required();
-    }
-    if ($renderPriority) {
-        $row = $form->addRow();
-            $row->addLabel('priority', __('Priority Filter'));
-            $row->addSelect('priority')->fromArray($priorityFilters)->selected($priority)->required();
-    }
-    
-    $row = $form->addRow();
-        $row->addLabel('issueID', __('Issue ID Filter'));
-        $row->addTextField('issueID')->setValue($issueID);
-    
-    $row = $form->addRow();
-        $row->addLabel('year', __('Year Filter'));
-        $row->addSelectSchoolYear('year', 'All')->selected($year);
-    
-    
-    $row = $form->addRow();
-        $row->addSearchSubmit($gibbon->session);
-
-    echo $form->getOutput();
+// TODO: THE ORIGINAL FILTER DIDN'T WORK SO IN THEORY THIS ONE SHOULD WORK JUST GOTTA FIX... ALL THE STUFF ABOVE
+//     $form = Form::create('filter', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+//     $form->setClass('noIntBorder fullWidth standardForm');
+//     $form->setTitle(__('Filter'));
+//     $form->setFactory(DatabaseFormFactory::create($pdo));
+//     $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/issues_view.php');
+//     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+// 
+//     if (count($issueFilters)>1) {  
+//         $row = $form->addRow();
+//             $row->addLabel('issue', __('Issue Filter'));
+//             $row->addSelect('issue')->fromArray($issueFilters)->selected($issue)->required();
+//     }
+// 
+//     $row = $form->addRow();
+//         $row->addLabel('status', __('Status Filter'));
+//         $row->addSelect('status')->fromArray($statusFilters)->selected($status)->required();
+//             
+//     if (count($categoryFilters)>1) {  
+//         $row = $form->addRow();
+//             $row->addLabel('category', __('Category Filter'));
+//             $row->addSelect('category')->fromArray($categoryFilters)->selected($category)->required();
+//     }
+//     if ($renderPriority) {
+//         $row = $form->addRow();
+//             $row->addLabel('priority', __('Priority Filter'));
+//             $row->addSelect('priority')->fromArray($priorityFilters)->selected($priority)->required();
+//     }
+//     
+//     $row = $form->addRow();
+//         $row->addLabel('issueID', __('Issue ID Filter'));
+//         $row->addTextField('issueID')->setValue($issueID);
+//     
+//     $row = $form->addRow();
+//         $row->addLabel('year', __('Year Filter'));
+//         $row->addSelectSchoolYear('year', 'All')->selected($year);
+//     
+//     
+//     $row = $form->addRow();
+//         $row->addSearchSubmit($gibbon->session, __('Clear Filters'));
+// 
+//     echo $form->getOutput();
     
 
     //TODO: Filters
@@ -151,8 +132,44 @@ $year = isset($_GET['year'])? $_GET['year'] : '';
         ->fromPOST();
         
     $issues = $issueGateway->queryIssues($criteria);
-    
     $table = DataTable::createPaginated('issues', $criteria);
+    
+    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssue")) {
+        $table->addMetaData('filterOptions', ['issue:All'    => __('Issues').': '.__('All')]);
+    }
+    if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
+        $table->addMetaData('filterOptions', ['issue:My Working'    => __('Issues').': '.__('My Working')]);
+    }
+    $table->addMetaData('filterOptions', ['issue:My Issues'    => __('Issues').': '.__('My Issues')]);
+    if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
+        if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="All") {        
+            $table->addMetaData('filterOptions', [
+                'status:All'          => __('Status').': '.__('All'),
+                'status:Unassigned'           => __('Status').': '.__('Unassigned'),
+                'status:Pending'          => __('Status').': '.__('Pending'),
+                'status:Resolved'           => __('Status').': '.__('Resolved')
+            ]);
+        } else if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="UP") {            
+            $table->addMetaData('filterOptions', [
+                'status:Unassigned and Pending'          => __('Status').': '.__('Unassigned and Pending'),
+                'status:Unassigned'           => __('Status').': '.__('Unassigned'),
+                'status:Pending'          => __('Status').': '.__('Pending')
+            ]);            
+        } else if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="PR") {                    
+            $table->addMetaData('filterOptions', [
+                'status:Pending and Resolved'           => __('Status').': '.__('Pending and Resolved'),
+                'status:Pending'          => __('Status').': '.__('Pending'),
+                'status:Resolved'           => __('Status').': '.__('Resolved')
+            ]);
+        }
+    } else {
+        $table->addMetaData('filterOptions', [
+                'status:All'          => __('Status').': '.__('All'),
+                'status:Unassigned'           => __('Status').': '.__('Unassigned'),
+                'status:Pending'          => __('Status').': '.__('Pending'),
+                'status:Resolved'           => __('Status').': '.__('Resolved')
+            ]);
+    }
     
     $table->setTitle("Issues");
 
