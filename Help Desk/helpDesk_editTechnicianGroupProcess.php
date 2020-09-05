@@ -19,77 +19,71 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
-include "../../functions.php" ;
-include "../../config.php" ;
+require_once '../../gibbon.php';
 
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]["timezone"]);
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_editTechnicianGroup.php' ;
 
-$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_editTechnicianGroup.php" ;
-
-//Check that groupID is given
-if (isset($_GET["groupID"])) {
-    $groupID = $_GET["groupID"];
-    $URL = $URL . "&groupID=$groupID";
-} else {
-    $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicianGroup.php&return=error1";
-    header("Location: {$URL}");
-    exit();
-}
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php") == false) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     //Fail 0
-    $URL = $URL . "&return=error0" ;
+    $URL .= '&return=error0' ;
     header("Location: {$URL}");
     exit();
 } else {
+    $groupID = $_GET['groupID'] ?? '';
 
-    if (!isset($_POST["groupName"]) || !isset($_POST["viewIssueStatus"])) {
-        $URL = $URL . "&return=error1" ;
+    if (empty($groupID)) {
+        $URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicianGroup.php&return=error1';
         header("Location: {$URL}");
         exit();
-    }
+    } else {
+        $URL .= '&groupID=$groupID';
 
+        $groupName = $_POST['groupName'] ?? '';
+        $viewIssueStatus =  $_POST['viewIssueStatus' ?? '';
 
-    $groupName = $_POST["groupName"];
-    $viewIssueStatus = $_POST["viewIssueStatus"];
-
-    $settings = array('viewIssue', 'assignIssue', 'acceptIssue', 'resolveIssue', 'createIssueForOther', 'reassignIssue', 'reincarnateIssue', 'fullAccess');
-
-    $data = array(
-        'groupName' => $groupName,
-        'viewIssueStatus' => $viewIssueStatus,
-    );
-
-    foreach ($settings as $setting) {
-        $data[$setting] = isset($_POST[$setting]);
-    }
-
-    try {
-        $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-        if ($gibbonModuleID == null) {
-            throw new PDOException("Invalid gibbonModuleID.");
-        }
-
-        $techGroupGateway = $container->get(TechGroupGateway::class);
-
-        if (!$techGroupGateway->unique($data, ['groupName'], $groupID)) {
-            $URL .= '&return=error7';
+        if (empty($groupName) || empty($viewIssueStatus)) {
+            $URL .= '&return=error1' ;
             header("Location: {$URL}");
             exit();
+        } else {
+            $settings = array('viewIssue', 'assignIssue', 'acceptIssue', 'resolveIssue', 'createIssueForOther', 'reassignIssue', 'reincarnateIssue', 'fullAccess');
+
+            $data = array(
+                'groupName' => $groupName,
+                'viewIssueStatus' => $viewIssueStatus,
+            );
+
+            foreach ($settings as $setting) {
+                $data[$setting] = isset($_POST[$setting]);
+            }
+
+            try {
+                $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
+                if ($gibbonModuleID == null) {
+                    throw new PDOException('Invalid gibbonModuleID.');
+                }
+
+                $techGroupGateway = $container->get(TechGroupGateway::class);
+
+                if (!$techGroupGateway->unique($data, ['groupName'], $groupID)) {
+                    $URL .= '&return=error7';
+                    header("Location: {$URL}");
+                    exit();
+                }
+
+                $techGroupGateway->update($groupID, $data);
+            } catch (PDOException $e) { 
+                $URL .= '&return=error2' ;
+                header("Location: {$URL}");
+                exit();
+            }
+
+            //Success 0
+            setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Group Edited', array('groupID' => $groupID), null);
+
+            $URL .= '&return=success0' ;
+            header("Location: {$URL}");
         }
-
-        $techGroupGateway->update($groupID, $data);
-    } catch (PDOException $e) { 
-        $URL = $URL . "&return=error2" ;
-        header("Location: {$URL}");
-        exit();
     }
-
-    //Success 0
-    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Edited", array("groupID" => $groupID), null);
-
-       $URL = $URL . "&return=success0" ;
-    header("Location: {$URL}");
 }
 ?>

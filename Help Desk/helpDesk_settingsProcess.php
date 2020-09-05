@@ -17,94 +17,72 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-include "../../functions.php" ;
-include "../../config.php" ;
+use Gibbon\Domain\System\SettingGateway;
 
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]["timezone"]);
+require_once '../../gibbon.php';
 
-$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_settings.php" ;
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settings.php' ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php") == false) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settings.php')) {
     //Fail 0
-    $URL = $URL . "&return=error0" ;
+    $URL .= '&return=error0' ;
     header("Location: {$URL}");
 } else {
+    //Not a fan, but too bad!
+    $settings = array(
+        'resolvedIssuePrivacy',
+        'issuePriorityName',
+        'issueCategory',
+        'issuePriority',
+    );
 
-    if (!(isset($_POST["issuePriority"]) || isset($_POST["issueCategory"]) || isset($_POST["issuePriorityName"]) || isset($_POST["resolvedIssuePrivacy"]))) {
-        $URL = $URL . "&return=error1" ;
-        header("Location: {$URL}");
-    }
-    //Proceed!
-    $issuePriority = "" ;
-    foreach (explode(",", $_POST["issuePriority"]) as $type) {
-        $issuePriority .= trim($type) . "," ;
-    }
-    $issuePriority = substr($issuePriority,0,-1) ;
-    $issueCategory = "" ;
-    foreach (explode(",", $_POST["issueCategory"]) as $type) {
-        $issueCategory .= trim($type) . "," ;
-    }
-    $issueCategory = substr($issueCategory,0,-1) ;
-    $fails = 0;
+    $privacyTypes = array(
+        'Everyone',
+        'Related',
+        'Owner',
+        'No one',
+    );
 
-    $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-    if ($gibbonModuleID == null) {
-        $URL = $URL . "&return=error2" ;
-        header("Location: {$URL}");
-    }
+    $settingGateway = $container->get(SettingGateway::class);
 
-    try {
-        $data = array("value" => $issuePriority);
-        $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriority'" ;
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) { 
-        $fails++;
-    }
+    $dbFail = false;
 
-    try {
-        $data = array("value" => $issueCategory);
-        $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issueCategory'" ;
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) { 
-        $fails++;
-    }
-
-    try {
-        $data = array("value" => $_POST["issuePriorityName"]);
-        $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='issuePriorityName'" ;
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) { 
-        $fails++;
-    }
-
-    try {
-        $data = array("value" => $_POST["resolvedIssuePrivacy"]);
-        $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Help Desk' AND name='resolvedIssuePrivacy'" ;
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) { 
-        $fails++;
-    }
-
-    if ($fails == 4) {
-        //Fail 2
-        $URL = $URL . "&return=error2" ;
-        header("Location: {$URL}");
-    } else {
-
-        setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Help Desk Settings Edited", null);
-
-        getSystemSettings($guid, $connection2) ;
-        $return = "success0";
-        if ($fails > 0) {
-            $return = "warning1";
+    //Is this really better, potentially, but I'm not going to worry about it too much
+    foreach ($settings as $setting) {
+        if (isset($_POST[$setting])) {
+            $value = '';
+            switch ($setting) {
+                case 'issueCategory':
+                case 'issuePriority':
+                    $value = implode(',', array_filter(array_map('trim', explode(',', $_POST[$setting]))));
+                    break;
+                case 'resolvedIssuePrivacy':
+                    if (!in_array($_POST[$setting], $privacyTypes)) {
+                        $URL .= '&return=error1';
+                        header("Location: {$URL}");
+                        exit();
+                    }
+                case 'issuePriorityName':
+                    $value = $_POST[$setting];
+                    if (empty($value)) {
+                        $URL .= '&return=error1';
+                        header("Location: {$URL}");
+                        exit();
+                    }
+                    break;
+            }
+            $dbFail |= !$settingGateway->updateSettingByScope('Help Desk', $setting, $value);
         }
-        $URL=$URL . "&return=$return" ;
-        header("Location: {$URL}");
     }
+
+    setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Help Desk Settings Edited', null);
+
+    getSystemSettings($guid, $connection2) ;
+    $return = 'success0';
+    if ($dbFail) {
+        $return = 'warning1';
+    }
+    $URL .= "&return=$return" ;
+    header("Location: {$URL}");
 }
 ?>
