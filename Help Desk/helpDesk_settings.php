@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\Form;
 
 $page->breadcrumbs->add(__('Manage Help Desk Settings'));
@@ -30,7 +31,13 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settin
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    $settings = array('resolvedIssuePrivacy', 'issueCategory', 'issuePriority', 'issuePriorityName');
+    //I do this to control the order, there is probably another way, until then, too bad!
+    $settings = array(
+        'resolvedIssuePrivacy',
+        'issueCategory',
+        'issuePriority',
+        'issuePriorityName',
+    );
 
     $privacyTypes = array(
         "Everyone" => __("Everyone"),
@@ -39,11 +46,13 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settin
         "No one" => __("No one"),
     );
 
+    $settingGateway = $container->get(SettingGateway::class);
+
     $form = Form::create('helpDeskSettings',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settingsProcess.php');
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
     foreach ($settings as $settingName) {
-        $setting = getSettingByScope($connection2, 'Help Desk', $settingName, true);
+        $setting = $settingGateway->getSettingByScope('Help Desk', $settingName, true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
             switch ($settingName) {
