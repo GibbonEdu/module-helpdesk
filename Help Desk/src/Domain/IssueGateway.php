@@ -17,7 +17,7 @@ class IssueGateway extends QueryableGateway
 
     private static $tableName = 'helpDeskIssue';
     private static $primaryKey = 'issueID';
-    private static $searchableColumns = [];
+    private static $searchableColumns = ['issueID', 'issueName', 'description'];
 
     public function selectIssueByTechnician($technicianID) {
         $data = array('technicianID' => $technicianID);
@@ -57,6 +57,11 @@ class IssueGateway extends QueryableGateway
                     ->where('helpDeskIssue.priority = :priority')
                     ->bindValue('priority', $priority);
             },
+            'year' => function($query, $year) {
+                return $query
+                    ->where('helpDeskIssue.gibbonSchoolYearID = :year')
+                    ->bindValue('year', $year);
+            }
         ]);
 
        return $this->runQuery($query, $criteria);
