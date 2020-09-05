@@ -24,7 +24,7 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs->add(__('Issues'));
 
@@ -144,32 +144,35 @@ if (isModuleAccessible($guid, $connection2) == false) {
     if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="All") {        
             $table->addMetaData('filterOptions', [
-                'status:All'          => __('Status').': '.__('All'),
                 'status:Unassigned'           => __('Status').': '.__('Unassigned'),
                 'status:Pending'          => __('Status').': '.__('Pending'),
                 'status:Resolved'           => __('Status').': '.__('Resolved')
             ]);
         } else if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="UP") {            
             $table->addMetaData('filterOptions', [
-                'status:Unassigned and Pending'          => __('Status').': '.__('Unassigned and Pending'),
                 'status:Unassigned'           => __('Status').': '.__('Unassigned'),
                 'status:Pending'          => __('Status').': '.__('Pending')
             ]);            
         } else if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssueStatus")=="PR") {                    
             $table->addMetaData('filterOptions', [
-                'status:Pending and Resolved'           => __('Status').': '.__('Pending and Resolved'),
                 'status:Pending'          => __('Status').': '.__('Pending'),
                 'status:Resolved'           => __('Status').': '.__('Resolved')
             ]);
         }
     } else {
         $table->addMetaData('filterOptions', [
-                'status:All'          => __('Status').': '.__('All'),
                 'status:Unassigned'           => __('Status').': '.__('Unassigned'),
                 'status:Pending'          => __('Status').': '.__('Pending'),
                 'status:Resolved'           => __('Status').': '.__('Resolved')
             ]);
     }
+
+    $categoryOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issueCategory', false))));
+    if (count($categoryOptions) > 0) {
+        //$table->addMetaData('filterOptions', []);
+    }
+
+    $priorityOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issuePriority', false))));
     
     $table->setTitle("Issues");
 
@@ -208,7 +211,8 @@ if (isModuleAccessible($guid, $connection2) == false) {
                 $actions->addAction('edit', __("Edit"))
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_discussEdit.php");
                 $actions->addAction('assign', __("Assign"))
-                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php")->setIcon('attendance');;
+                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php")
+                        ->setIcon('attendance');
                         
             });
      
