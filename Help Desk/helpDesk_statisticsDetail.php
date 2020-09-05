@@ -109,10 +109,10 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
         $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date("Y-m-d");
 
         //Filter
-        $form = Form::create('helpDeskStatistics', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+        $form = Form::create('helpDeskStatistics', $_SESSION[$guid]['absoluteURL'] . '/index.php', 'get');
 
         $form->setTitle('Filter');
-        $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/helpdesk_statisticsDetail.php');
+        $form->addHiddenValue('q', '/modules/' . $_SESSION[$guid]['module'] . '/helpdesk_statisticsDetail.php');
         $form->addHiddenValue('title', $title);
 
         $row = $form->addRow();
@@ -135,25 +135,43 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
 
         echo $form->getOutput();
 
-        $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, $title, $startDate, $endDate, null, null);
         $logGateway = $container->get(LogGateway::class);
         $criteria = $logGateway->newQueryCriteria(true)
             ->sortBy('timestamp', 'DESC')
             ->filterBy('module', 'Help Desk')
+            ->filterBy('title', $title)
+            ->filterBy('startDate', $startDate)
+            ->filterBy('endDate', date('Y-m-d 23:59:59', strtotime($endDate)))
             ->fromPOST();
+
+        $criteria->addFilterRules([
+            'module' => function ($query, $module) {
+                return $query
+                    ->where('gibbonModule.name = :module')
+                    ->bindValue('module', $module);
+            },
+            'startDate' => function ($query, $startDate) {
+                return $query
+                    ->where('timestamp >= :startDate')
+                    ->bindValue('startDate', $startDate);
+            },
+            'endDate' => function ($query, $endDate) {
+                return $query
+                    ->where('timestamp <= :endDate')
+                    ->bindValue('endDate', $endDate);
+            },
+        ]);
 
         $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
         
         $table = DataTable::createPaginated('detailedStats', $criteria);
         $table->setTitle(__($title));
 
-        $table->addColumn('timestamp', __('Timestamp'))->format(Format::using('dateTime', ['timestamp']));
+        $table->addColumn('timestamp', __('Timestamp'))
+                ->format(Format::using('dateTime', ['timestamp']));
 
         $table->addColumn('person', __('Person'))
-                ->format(function ($row) use ($connection2) {
-                    $name = getPersonName($connection2, $row['gibbonPersonID']);
-                    return Format::name($name['title'], $name['preferredName'], $name['surname'], 'Student');
-                });
+                ->format(Format::using('name', ['title', 'preferredName', 'surname', 'Student']));
 
         $techGroupGateway = $container->get(TechGroupGateway::class);
         $issueDisucssGateway = $container->get(IssueDiscussGateway::class);
@@ -188,7 +206,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
                     });
         }
 
-        echo $table->render($result->toDataSet());
+        echo $table->render($logs);
     } else {
         $page->addError(__('No statistics selected.'));
     }
