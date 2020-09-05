@@ -46,33 +46,6 @@ if (isModuleAccessible($guid, $connection2) == false) {
         $page->addError(__('The highest grouped action cannot be determined.'));
         exit();
     }
-
-    $settings = getHelpDeskSettings($connection2);
-    $priorityFilters = array("All");
-    $priorityName = null;
-    $categoryFilters = array("All");
-
-    while ($row = $settings->fetch()) {
-        if ($row["name"] == "issuePriority") {
-            foreach (explode(",", $row["value"]) as $type) {
-                if ($type != "") {
-                    array_push($priorityFilters, $type);
-                }
-            }
-        } else if ($row["name"] == "issuePriorityName") {
-            $priorityName = $row["value"];
-        } else if ($row["name"] == "issueCategory") {
-            foreach (explode(",", $row["value"]) as $type) {
-                if ($type != "") {
-                    array_push($categoryFilters, $type);
-                }
-            }
-        }
-    }
-
-    $renderPriority = count($priorityFilters)>1;
-    $renderCategory = count($categoryFilters)>1;
-
  
 // $issue = isset($_GET['issue'])? $_GET['issue'] : '';
 // $status = isset($_GET['status'])? $_GET['status'] : '';
@@ -122,10 +95,8 @@ if (isModuleAccessible($guid, $connection2) == false) {
 //     $row = $form->addRow();
 //         $row->addSearchSubmit($gibbon->session, __('Clear Filters'));
 // 
-//     echo $form->getOutput();
+//     echo $form->getOutput();   
     
-
-    //TODO: Filters
     $issueGateway = $container->get(IssueGateway::class);
     $criteria = $issueGateway->newQueryCriteria(true)
         ->sortBy('issueID')
@@ -133,7 +104,9 @@ if (isModuleAccessible($guid, $connection2) == false) {
         
     $issues = $issueGateway->queryIssues($criteria);
     $table = DataTable::createPaginated('issues', $criteria);
+    $table->setTitle("Issues");
     
+    //FILTERS START
     if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssue")) {
         $table->addMetaData('filterOptions', ['issue:All'    => __('Issues').': '.__('All')]);
     }
@@ -167,15 +140,21 @@ if (isModuleAccessible($guid, $connection2) == false) {
             ]);
     }
 
-    $categoryOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issueCategory', false))));
-    if (count($categoryOptions) > 0) {
-        //$table->addMetaData('filterOptions', []);
+    $categoryFilters = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issueCategory', false))));
+    foreach  ($categoryFilters as $category) {
+        $table->addMetaData('filterOptions', [
+            'category:'.$category => __('Category').': '.$category,
+        ]);
     }
 
-    $priorityOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issuePriority', false))));
+    $priorityFilters = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issuePriority', false))));
+    foreach  ($priorityFilters as $priority) {
+        $table->addMetaData('filterOptions', [
+            'priority:'.$priority => __('Priority').': '.$priority,
+        ]);
+    }
+    //FILTERS END
     
-    $table->setTitle("Issues");
-
     $table->addHeaderAction('add', __("Create"))
             ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_create.php")
             ->displayLabel();
