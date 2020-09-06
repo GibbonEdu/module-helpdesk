@@ -21,7 +21,8 @@ use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
 //Module includes
-include __DIR__ . '/moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
+
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
@@ -35,7 +36,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             $page->breadcrumbs
                 ->add(__('Discuss Issue'), 'issues_discussView.php', ['issueID' => $issueID])
                 ->add(__('Post Discuss'));
-                
+
             if (relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
                 $form = Form::create('issueDiscuss',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
                 $form->addHiddenValue('address', $_SESSION[$guid]['address']);
