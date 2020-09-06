@@ -39,20 +39,20 @@ if (!isModuleAccessible($guid, $connection2) || !$allowed) {
 } else {
     $page->breadcrumbs->add(__('Discuss Issue'));
     
-    $issueID = $_GET['issueID'];
-    $data = array('issueID' => $issueID);
+    $issueID = $_GET['issueID'] ;
+    $data = array('issueID' => $issueID) ;
 
     try {
-        $sql = 'SELECT helpDeskIssue.* , surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID ';
+        $sql = 'SELECT helpDeskIssue.* , surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID ' ;
         $result=$connection2->prepare($sql);
         $result->execute($data);
 
-        $sql2 = 'SELECT helpDeskTechnicians.*, surname , title, preferredName, helpDeskIssue.createdByID, helpDeskIssue.status AS issueStatus, privacySetting FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID ';
+        $sql2 = 'SELECT helpDeskTechnicians.*, surname , title, preferredName, helpDeskIssue.createdByID, helpDeskIssue.status AS issueStatus, privacySetting FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID ' ;
         $result2 = $connection2->prepare($sql2);
         $result2->execute($data);
         $array2 = $result2->fetch();
 
-        $sql3 = 'SELECT issueDiscussID, comment, timestamp, gibbonPersonID FROM helpDeskIssueDiscuss WHERE issueID=:issueID ORDER BY timestamp ASC';
+        $sql3 = 'SELECT issueDiscussID, comment, timestamp, gibbonPersonID FROM helpDeskIssueDiscuss WHERE issueID=:issueID ORDER BY timestamp ASC' ;
         $result3 = $connection2->prepare($sql3);
         $result3->execute($data);
 
@@ -79,7 +79,7 @@ if (!isModuleAccessible($guid, $connection2) || !$allowed) {
     }
 
     if (!isset($array2['gibbonPersonID'])) {
-        $technicianName = 'Unassigned';
+        $technicianName = 'Unassigned' ;
     } else {
         $technicianName = formatName($array2['title'] , $array2['preferredName'] , $array2['surname'] , 'Student', false, false);
     }
