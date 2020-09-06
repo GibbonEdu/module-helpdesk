@@ -94,7 +94,15 @@ if (isModuleAccessible($guid, $connection2) == false) {
 
     echo $form->getOutput();   
         
-    $issues = $issueGateway->queryIssues($criteria);
+    
+    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssue") || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+        $issues = $issueGateway->queryIssues($criteria);
+    } else if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
+        $issues = $issueGateway->queryIssuesTechnician($criteria, $gibbon->session->get('gibbonPersonID'));
+    } else {
+         $issues = $issueGateway->queryIssuesOwner($criteria, $gibbon->session->get('gibbonPersonID'));
+    }
+    
     $table = DataTable::createPaginated('issues', $criteria);
     $table->setTitle("Issues");
     
