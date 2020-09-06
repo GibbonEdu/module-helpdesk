@@ -58,12 +58,15 @@ if (isModuleAccessible($guid, $connection2) == false) {
         
     $criteria->addFilterRules([
         'issue' => function ($query, $issue) use ($guid) {
-            if ($issue == 'My Issues') {
-                $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')
+            switch($issue) {
+                case 'My Issues':
+                    $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')
                         ->bindValue('gibbonPersonID', $_SESSION[$guid]['gibbonPersonID']);
-            } else if ($issue == "My Assigned") {
-                $query->where('techID.gibbonPersonID=:techPersonID')
+                    break;
+                case 'My Assigned':
+                    $query->where('techID.gibbonPersonID=:techPersonID')
                         ->bindValue('techPersonID', $_SESSION[$guid]["gibbonPersonID"]);
+                    break;
             }
             return $query;
         },
@@ -92,15 +95,14 @@ if (isModuleAccessible($guid, $connection2) == false) {
     $row = $form->addRow();
         $row->addSearchSubmit($gibbon->session, __('Clear Filters'));
 
-    echo $form->getOutput();   
-        
+    echo $form->getOutput();      
     
     if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssue") || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
         $issues = $issueGateway->queryIssues($criteria);
     } else if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
-        $issues = $issueGateway->queryIssuesTechnician($criteria, $gibbon->session->get('gibbonPersonID'));
+        $issues = $issueGateway->queryIssues($criteria, 'technician', $gibbon->session->get('gibbonPersonID'));
     } else {
-         $issues = $issueGateway->queryIssuesOwner($criteria, $gibbon->session->get('gibbonPersonID'));
+        $issues = $issueGateway->queryIssues($criteria, 'owner', $gibbon->session->get('gibbonPersonID'));
     }
     
     $table = DataTable::createPaginated('issues', $criteria);

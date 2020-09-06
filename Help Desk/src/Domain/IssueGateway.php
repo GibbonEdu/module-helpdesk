@@ -30,82 +30,23 @@ class IssueGateway extends QueryableGateway
     }
 
 
-     public function queryIssues($criteria) {      
+     public function queryIssues($criteria, $mode='all', $gibbonPersonID='') {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
             ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
 
-        $criteria->addFilterRules([
-            'status' => function ($query, $status) {
-                return $query
-                    ->where('helpDeskIssue.status = :status')
-                    ->bindValue('status', $status);
-            },
-            'category' => function ($query, $category) {
-                return $query
-                    ->where('helpDeskIssue.category = :category')
-                    ->bindValue('category', $category);
-            },
-            'priority' => function ($query, $priority) {
-                return $query
-                    ->where('helpDeskIssue.priority = :priority')
-                    ->bindValue('priority', $priority);
-            },
-            'year' => function($query, $year) {
-                return $query
-                    ->where('helpDeskIssue.gibbonSchoolYearID = :year')
-                    ->bindValue('year', $year);
-            }
-        ]);
-
-       return $this->runQuery($query, $criteria);
-    }
-    
-    public function queryIssuesTechnician($criteria, $gibbonPersonID) {      
-        $query = $this
-            ->newQuery()
-            ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
-            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
-            ->where('techID.gibbonPersonID=:gibbonPersonID')
-            ->bindValue('gibbonPersonID', $gibbonPersonID);
-
-        $criteria->addFilterRules([
-            'status' => function ($query, $status) {
-                return $query
-                    ->where('helpDeskIssue.status = :status')
-                    ->bindValue('status', $status);
-            },
-            'category' => function ($query, $category) {
-                return $query
-                    ->where('helpDeskIssue.category = :category')
-                    ->bindValue('category', $category);
-            },
-            'priority' => function ($query, $priority) {
-                return $query
-                    ->where('helpDeskIssue.priority = :priority')
-                    ->bindValue('priority', $priority);
-            },
-            'year' => function($query, $year) {
-                return $query
-                    ->where('helpDeskIssue.gibbonSchoolYearID = :year')
-                    ->bindValue('year', $year);
-            }
-        ]);
-
-       return $this->runQuery($query, $criteria);
-    }
-    
-    public function queryIssuesOwner($criteria, $gibbonPersonID) {      
-        $query = $this
-            ->newQuery()
-            ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
-            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
-            ->where('helpDeskIssue.gibbonPersonID=:gibbonPersonID')
-            ->bindValue('gibbonPersonID', $gibbonPersonID);
+        switch($mode) {
+            case 'technician':
+                $query->where('techID.gibbonPersonID=:gibbonPersonID')
+                    ->bindValue('gibbonPersonID', $gibbonPersonID);
+                break;
+            case 'owner':
+                $query->where('helpDeskIssue.gibbonPersonID=:gibbonPersonID')
+                    ->bindValue('gibbonPersonID', $gibbonPersonID);
+                break;
+        }
 
         $criteria->addFilterRules([
             'status' => function ($query, $status) {
