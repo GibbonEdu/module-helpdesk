@@ -32,8 +32,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    if (isset($_GET["technicianID"])) {
-        $technicianID = $_GET["technicianID"];
+    if (isset($_GET['technicianID'])) {
+        $technicianID = $_GET['technicianID'];
 
         $techName = getTechnicianName($connection2, $technicianID);
         echo '<h3>';
@@ -43,7 +43,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         //Default Data
         $d = new DateTime('first day of this month');
         $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : $d->format('Y-m-d');
-        $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date("Y-m-d");
+        $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date('Y-m-d');
 
         //Filter
         $form = Form::create('helpDeskStatistics', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
@@ -53,14 +53,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         $form->addHiddenValue('technicianID', $technicianID);
 
         $row = $form->addRow();
-            $row->addLabel('startDate', __("Start Date Filter"));
+            $row->addLabel('startDate', __('Start Date Filter'));
             $row->addDate('startDate')
                 ->setDateFromValue($startDate)
                 ->chainedTo('endDate')
                 ->required();
 
         $row = $form->addRow();
-            $row->addLabel('endDate', __("End Date Filter"));
+            $row->addLabel('endDate', __('End Date Filter'));
             $row->addDate('endDate')
                 ->setDateFromValue($endDate)
                 ->chainedFrom('startDate')
@@ -73,7 +73,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         echo $form->getOutput();
 
         //Stats collection
-        $result = getLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], getModuleIDFromName($connection2, "Help Desk"), null, null, $startDate, $endDate, null, array("technicianID"=>$technicianID));
+        $result = getLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], getModuleIDFromName($connection2, 'Help Desk'), null, null, $startDate, $endDate, null, array('technicianID'=>$technicianID));
         $rArray = $result->fetchAll();
 
         $items = array();
@@ -89,25 +89,25 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
 
         $display = array();
         foreach ($items as $key => $value) {
-            array_push($display, ["name" => $key, "value" => $value]);
+            array_push($display, ['name' => $key, 'value' => $value]);
         }
 
         $table = DataTable::create('simpleStats');
-        $table->setTitle(__("Simple Statistics"));
+        $table->setTitle(__('Simple Statistics'));
 
-        $table->addColumn('name', __("Action Title"));
+        $table->addColumn('name', __('Action Title'));
 
-        $table->addColumn('value', __("Action Count"));
+        $table->addColumn('value', __('Action Count'));
 
         echo $table->render($display);
 
         $table = DataTable::create('detailedStats');
-        $table->setTitle("Detailed Statistics");
+        $table->setTitle('Detailed Statistics');
 
-        $table->addColumn('timestamp', __("Timestamp"))
+        $table->addColumn('timestamp', __('Timestamp'))
             ->format(Format::using('dateTime', ['timestamp']));
 
-        $table->addColumn('title', __("Action Title"));
+        $table->addColumn('title', __('Action Title'));
 
         echo $table->render($rArray);
     } else {

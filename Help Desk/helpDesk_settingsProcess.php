@@ -82,7 +82,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     if ($dbFail) {
         $return = 'warning1';
     }
-    $URL .= "&return=$return" ;
+    $URL .= '&return=$return' ;
     header("Location: {$URL}");
 }
 ?>
