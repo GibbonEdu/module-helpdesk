@@ -19,18 +19,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
-include '../../gibbon.php' ;
+require_once '../../gibbon.php';
 
-include './moduleFunctions.php' ;
-
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+require_once './moduleFunctions.php';
 
 $URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'];
 
 if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/issues_create.php')) {
     $URL .= '/issues_view.php&return=error0';
-    header('Location: {$URL}');
+    header("Location: {$URL}");
     exit();
 } else {
     //Proceed!    
@@ -70,7 +67,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     if (empty($data['issueName']) || empty($data['description'])) {
         //Fail 3
         $URL .= '&return=error1' ;
-        header('Location: {$URL}');
+        header("Location: {$URL}");
         exit();
     } else {
         //Write to database
@@ -84,13 +81,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
             $issueGateway->insert($data);
         } catch (PDOException $e) {
             $URL .= '&return=error2' ;
-            header('Location: {$URL}');
+            header("Location: {$URL}");
             exit();
         }
 
         $issueID = $connection2->lastInsertId();
         if ($createdOnBehalf) {
-            setNotification($connection2, $guid, $data['gibbonPersonID'], 'A new issue has been created on your behalf (' . $data['issueName'] . ').', 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+            setNotification($connection2, $guid, $data['gibbonPersonID'], 'A new issue has been created on your behalf (' . $data['issueName'] . ').', 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
         }
         notifyTechnican($connection2, $guid, $issueID, $data['issueName'], $data['gibbonPersonID']);
 
@@ -105,7 +102,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
 
         //Success 0 aka Created
         $URL .= '&issueID=' . $issueID . '&return=success0' ;
-        header('Location: {$URL}');
+        header("Location: {$URL}");
     }
 }
 ?>
