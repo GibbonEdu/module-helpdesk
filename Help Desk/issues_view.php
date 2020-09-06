@@ -203,9 +203,9 @@ if (!isModuleAccessible($guid, $connection2)) {
     
     $table->addActionColumn()
             ->addParam('issueID')
-            ->format(function ($issues, $actions) use ($guid, $connection2, $gibbon) {
+            ->format(function ($issues, $actions) use ($connection2, $gibbon) {
             $actions->addAction('view', __('Open'))
-                ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php');
+                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php');
                 
             if (isPersonsIssue($connection2, ($issues['issueID']), $gibbon->session->get('gibbonPersonID')) || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'fullAccess')) { 
                 $actions->addAction('edit', __('Edit'))
