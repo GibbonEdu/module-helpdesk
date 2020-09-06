@@ -26,7 +26,7 @@ $page->breadcrumbs
 
 include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
-if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php') == FALSE) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {

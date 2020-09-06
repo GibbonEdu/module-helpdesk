@@ -26,7 +26,7 @@ $page->breadcrumbs
 
 if (!isModuleAccessible($guid, $connection2)) {
     //Acess denied
-    $page->addError('You do not have access to this action.');
+    $page->addError(__('You do not have access to this action.'));
 } else {
     if (isset($_GET['return'])) {
         $editLink = null;

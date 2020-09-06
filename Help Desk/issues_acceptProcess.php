@@ -22,25 +22,25 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 //Bit of a cheat, but needed for gateway to work
 $_POST['address'] = '/modules/Help Desk/issues_acceptProcess.php';
 
-include '../../gibbon.php';
+require_once '../../gibbon.php';
 
-include './moduleFunctions.php' ;
+require_once "./moduleFunctions.php" 
 
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]['timezone']);
 
 $URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/Help Desk/issues_view.php' ;
 
-if (isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php') == false) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php') {
     //Fail 0
-    $URL = $URL . '&return=error0' ;
+    $URL .= . '&return=error0' ;
     header("Location: {$URL}");
 } else {
     //Proceed!
     $issueID = $_GET['issueID'];
     if ($issueID == '' || hasTechnicianAssigned($connection2, $issueID)) {
         //Fail 3
-        $URL = $URL . '&return=error1' ;
+        $URL .= . '&return=error1' ;
         header("Location: {$URL}");
     } else {
         if (isTechnician($connection2, $_SESSION[$guid]['gibbonPersonID']) && getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'acceptIssue')) {
@@ -59,7 +59,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php'
                 $issueGateway->update($issueID, $data);
             } catch (PDOException $e) {
                 //Fail 2
-                $URL = $URL . '&return=error2' ;
+                $URL .= . '&return=error2' ;
                 header("Location: {$URL}");
                 exit();
             }
@@ -68,10 +68,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php'
             setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Issue Accepted', array('issueID' => $issueID, 'technicianID'=>$technicianID), null);
 
             //Success 1 aka Accepted
-            $URL = $URL . '&issueID=$issueID&return=success0' ;
+            $URL .= . '&issueID=$issueID&return=success0' ;
             header("Location: {$URL}");
         } else {
-            $URL = $URL . '&return=error0' ;
+            $URL .= . '&return=error0' ;
             header("Location: {$URL}");
         }
     }
