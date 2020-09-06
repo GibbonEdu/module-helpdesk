@@ -16,89 +16,100 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
-include "../../functions.php" ;
-include "../../config.php" ;
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
-include "./moduleFunctions.php" ;
+require_once '../../gibbon.php';
 
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]["timezone"]);
+require_once './moduleFunctions.php';
 
-$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
-if (isset($_GET["issueID"])) {
-    $issueID = $_GET["issueID"];
-    $URL .= "issues_discussView.php&issueID=" . $issueID;
-} else {
-    $URL .= "issues_view.php&return=error1" ;
+$issueID = $_GET['issueID'] ?? '';
+
+if (empty($issueID)) {
+    $URL .= '/issues_view.php&return=error1';
     header("Location: {$URL}");
     exit();
 }
 
-if (!relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || getIssueStatus($connection2, $issueID) == "Resolved") {
-    //Fail 0 aka No permission
-    $URL .= "&return=error0" ;
+$issueGateway = $container->get(IssueGateway::class);
+
+if (!$issueGateway->exists($issueID)) {
+    $URL .= '/issues_view.php&return=error1';
     header("Location: {$URL}");
+    exit();
+} 
+
+$issue = $issueGateway->getByID($issueID);
+
+$URL .= "/issues_discussView.php&issueID=$issueID";
+$gibbonPersonID = $gibobn->session->get('gibbonPersonID');
+
+if (!relatedToIssue($connection2, $issueID, $gibbonPersonID) || $issueGateway == 'Resolved') {
+    //Fail 0 aka No permission
+    $URL .= '&return=error0';
+    header("Location: {$URL}");
+    exit();
 } else {
   //Proceed!
-    if (isset($_POST["comment"])) {
-        $comment = $_POST["comment"] ;
-    } else {
-        $URL .= "&return=error1" ;
+    $comment = $_POST['comment'] ?? '';
+
+    if (empty($comment)) {
+        $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     }
 
     try {
-        $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+        $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
         if ($gibbonModuleID == null) {
-            throw new PDOException("Invalid gibbonModuleID.");
+            throw new PDOException('Invalid gibbonModuleID.');
         }
 
-        $data = array("issueID" => $issueID, "comment" => $comment, "timestamp" => date("Y-m-d H:i:a"), "gibbonPersonID" => $_SESSION[$guid]["gibbonPersonID"]) ;
-        $IssueDiscussGateway = $container->get(IssueDiscussGateway::class);
+        $data = array('issueID' => $issueID, 'comment' => $comment, 'timestamp' => date('Y-m-d H:i:a'), 'gibbonPersonID' => $gibbonPersonID) ;
+        $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
 
-        $IssueDiscussGateway->insert($data);
-        } catch (PDOException $e) {
-            $URL .= "&return=error2" ;
-            header("Location: {$URL}");
-            exit();
+        if (!$issueDiscussGateway->insert($data)) {
+            throw new PDOException('Could not insert comment.');
         }
+    } catch (PDOException $e) {
+        $URL .= '&return=error2';
+        header("Location: {$URL}");
+        exit();
+    }
 
-        
     $issueDiscussID = $connection2->lastInsertId();
+   
+    $technicianGateway = $container->get(TechnicianGateway::class);
+    $technician = $technicianGateway->selectBy(array('gibbonPersonID' => $gibbonPersonID));
 
-    $data2 = array("issueID" => $issueID) ;
-    $sql2 = "SELECT issueName FROM helpDeskIssue WHERE issueID=:issueID" ;
-    $result2 = $connection2->prepare($sql2);
-    $result2->execute($data2);
-    
-    $row = $result2->fetch();
-    
-    $isTech = isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]);
+    $isTech = $technician->isNotEmpty() && ($issue['gibbonPersonID'] != $gibbonPersonID);
 
-    $message = "A new message has been added to Issue ";
+    $message = 'A new message has been added to Issue ';
     $message .= $issueID;
-    $message .= " (" . $row["issueName"] . ").";
+    $message .= ' (' . $issue['issueName'] . ').';
 
     $personIDs = getPeopleInvolved($connection2, $issueID);
 
     foreach ($personIDs as $personID) {
-        if ($personID != $_SESSION[$guid]["gibbonPersonID"]) {
-            setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+        if ($personID != $_SESSION[$guid]['gibbonPersonID']) {
+            setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
         } 
     }
 
-    $array = array("issueDiscussID" => $issueDiscussID);
+    $array = array('issueDiscussID' => $issueDiscussID);
 
     if ($isTech) {
-        $array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
+        $array['technicianID'] = $technician->fetch()['technicianID'];
     } 
 
-    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Discussion Posted", $array, null);
+    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Discussion Posted', $array, null);
 
-    $URL .= "&return=success0" ;
+    $URL .= '&return=success0';
     header("Location: {$URL}");
+    exit();
 }
 ?>
