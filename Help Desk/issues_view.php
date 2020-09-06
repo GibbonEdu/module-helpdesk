@@ -226,8 +226,8 @@ if (isModuleAccessible($guid, $connection2) == false) {
                     $actions->addAction('assign', __("Reassign"))
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php")
                         ->setIcon('attendance');
-                } //TODO: get these to work
-                if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
+                }
+                if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issues['issueID'], $_SESSION[$guid]["gibbonPersonID"])) {
                     $actions->addAction('resolve', __("Resolve"))
                         ->directLink()
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php")
