@@ -72,7 +72,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         $issueGateway = $container->get(IssueGateway::class);
         $issueGateway->update($issueID, $data);
     } catch (PDOException $e) {
-        $URL .= '/issues_assign.php&issueID=$issueID&technicianID=$technicianID&return=error2' ;
+        $URL .= '/issues_assign.php&issueID=$issueID&technicianID=$technicianID&return=error2';
         header("Location: {$URL}";
         exit();
     }
@@ -100,7 +100,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
 
     setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Assigned', array('issueID' => $issueID, 'technicainID'=>$technicianID), null);
 
-    $URL .= '/issues_view.php&return=success0' ;
+    $URL .= '/issues_view.php&return=success0';
     header("Location: {$URL}";
 }
 ?>
