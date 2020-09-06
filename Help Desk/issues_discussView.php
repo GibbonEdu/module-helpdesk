@@ -25,7 +25,6 @@ use Gibbon\Domain\DataSet;
 use Gibbon\Domain\System\DiscussionGateway;
 use Gibbon\View\View;
 
-@session_start() ;
 require_once __DIR__ . '/moduleFunctions.php';
 
 $allowed = relatedToIssue($connection2, $_GET['issueID'], $_SESSION[$guid]['gibbonPersonID']);
