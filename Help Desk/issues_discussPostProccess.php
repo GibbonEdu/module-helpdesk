@@ -72,7 +72,8 @@ if (!relatedToIssue($connection2, $issueID, $gibbonPersonID) || $issue['status']
         $data = array('issueID' => $issueID, 'comment' => $comment, 'timestamp' => date('Y-m-d H:i:a'), 'gibbonPersonID' => $gibbonPersonID) ;
         $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
 
-        if (!$issueDiscussGateway->insert($data)) {
+        $issueDiscussID = $issueDiscussGateway->insert($data);
+        if ($issueDiscussID === false) {
             throw new PDOException('Could not insert comment.');
         }
     } catch (PDOException $e) {
@@ -80,8 +81,6 @@ if (!relatedToIssue($connection2, $issueID, $gibbonPersonID) || $issue['status']
         header("Location: {$URL}");
         exit();
     }
-
-    $issueDiscussID = $connection2->lastInsertId();
    
     $technicianGateway = $container->get(TechnicianGateway::class);
     $technician = $technicianGateway->selectBy(array('gibbonPersonID' => $gibbonPersonID));
