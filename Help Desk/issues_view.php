@@ -94,7 +94,15 @@ if (isModuleAccessible($guid, $connection2) == false) {
 
     echo $form->getOutput();   
         
-    $issues = $issueGateway->queryIssues($criteria);
+    
+    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "viewIssue") || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+        $issues = $issueGateway->queryIssues($criteria);
+    } else if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
+        $issues = $issueGateway->queryIssuesTechnician($criteria, $gibbon->session->get('gibbonPersonID'));
+    } else {
+         $issues = $issueGateway->queryIssuesOwner($criteria, $gibbon->session->get('gibbonPersonID'));
+    }
+    
     $table = DataTable::createPaginated('issues', $criteria);
     $table->setTitle("Issues");
     
@@ -218,8 +226,8 @@ if (isModuleAccessible($guid, $connection2) == false) {
                     $actions->addAction('assign', __("Reassign"))
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_assign.php")
                         ->setIcon('attendance');
-                } //TODO: get these to work
-                if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
+                }
+                if(getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issues['issueID'], $_SESSION[$guid]["gibbonPersonID"])) {
                     $actions->addAction('resolve', __("Resolve"))
                         ->directLink()
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_resolveProcess.php")

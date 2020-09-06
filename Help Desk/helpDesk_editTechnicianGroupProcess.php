@@ -36,7 +36,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         header("Location: {$URL}");
         exit();
     } else {
-        $URL .= '&groupID=$groupID';
+        $URL .= '&groupID='.$groupID;
 
         $groupName = $_POST['groupName'] ?? '';
         $viewIssueStatus =  $_POST['viewIssueStatus' ?? '';
