@@ -19,6 +19,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
+//Bit of a cheat, but needed for gateway to work
+$_POST['address'] = '/modules/Help Desk/issues_acceptProcess.php';
+
 include "../../functions.php" ;
 include "../../config.php" ;
 
