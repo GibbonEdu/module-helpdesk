@@ -46,7 +46,7 @@ if (!$issueGateway->exists($issueID)) {
 $issue = $issueGateway->getByID($issueID);
 
 $URL .= "/issues_discussView.php&issueID=$issueID";
-$gibbonPersonID = $gibobn->session->get('gibbonPersonID');
+$gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
 if (!relatedToIssue($connection2, $issueID, $gibbonPersonID) || $issueGateway == 'Resolved') {
     //Fail 0 aka No permission
