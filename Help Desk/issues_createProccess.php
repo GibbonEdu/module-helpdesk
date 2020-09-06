@@ -23,9 +23,9 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'];
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/issues_create.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/issues_create.php')) {
     $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
@@ -35,10 +35,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
 
     $data = array(
         //Default data
-        'gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'],
-        'createdByID' => $_SESSION[$guid]['gibbonPersonID'],
+        'gibbonPersonID' => $gibbon->session->get('gibbonPersonID'),
+        'createdByID' => $gibbon->session->get('gibbonPersonID'),
         'status' => 'Unassigned',
-        'gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'],
+        'gibbonSchoolYearID' => $gibbon->session->get('gibbonSchoolYearID'),
         'date' => date('Y-m-d'),
         //Data to get from Post or getSettingByScope
         'issueName' => '',
@@ -55,7 +55,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     }
 
     $createdOnBehalf = false;
-    if (isset($_POST['createFor']) && $_POST['createFor'] != 0 && getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'createIssueForOther')) {
+    if (isset($_POST['createFor']) && $_POST['createFor'] != 0 && getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'createIssueForOther')) {
         $data['gibbonPersonID'] = $_POST['createFor'];
         $createdOnBehalf = true;
     }
@@ -98,7 +98,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
             $title = 'Issue Created (for Another Person)';
         }
 
-        setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], $title, $array, null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), $title, $array, null);
 
         //Success 0 aka Created
         $URL .= '&issueID=' . $issueID . '&return=success0' ;

@@ -23,9 +23,9 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php' ;
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_setTechGroup.php' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_setTechGroup.php' ;
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
     $URL .= '&return=fail0';
     header("Location: {$URL}");
     exit();
@@ -64,10 +64,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
             exit();
         }
 
-        setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Group Set', array('technicianID' => $technicianID, 'groupID' => $group), null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Set', array('technicianID' => $technicianID, 'groupID' => $group), null);
 
         //Success 0
-        $URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php&return=success0';
+        $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php&return=success0';
         header("Location: {$URL}");
         exit();
     }

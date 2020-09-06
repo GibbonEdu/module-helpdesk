@@ -23,7 +23,7 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'];
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (isset($_GET['permission'])) {
     $permission = $_GET['permission'];
@@ -33,7 +33,7 @@ if (isset($_GET['permission'])) {
     exit();
 }
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php') || !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], $permission)) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/issues_view.php') || !getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), $permission)) {
     //Fail 0
     $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}";
@@ -93,12 +93,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     $personIDs = getPeopleInvolved($connection2, $issueID);
 
     foreach($personIDs as $personID) {
-        if ($personID != $_SESSION[$guid]['gibbonPersonID']) {
+        if ($personID != $gibbon->session->get('gibbonPersonID')) {
             setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
         } 
     }    
 
-    setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Assigned', array('issueID' => $issueID, 'technicainID'=>$technicianID), null);
+    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Assigned', array('issueID' => $issueID, 'technicainID'=>$technicianID), null);
 
     $URL .= '/issues_view.php&return=success0' ;
     header("Location: {$URL}";

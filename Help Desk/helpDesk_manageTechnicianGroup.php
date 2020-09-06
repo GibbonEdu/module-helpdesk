@@ -24,7 +24,7 @@ use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 $page->breadcrumbs->add(__('Manage Technician Groups'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicianGroup.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -50,7 +50,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     $table->setTitle('Technician Groups');
 
     $table->addHeaderAction('add', __('Create'))
-            ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnicianGroup.php');
+            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroup.php');
 
     $table->addColumn('groupName', __('Group Name'));
 
@@ -61,11 +61,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
             ->addParam('groupID')
             ->format(function ($techGroup, $actions) use ($guid, $techGroupData) {
                 $actions->addAction('edit', __('Edit'))
-                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_editTechnicianGroup.php');
+                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroup.php');
 
                 if (count($techGroupData) > 1) {
                     $actions->addAction('delete', __('Delete'))
-                            ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_technicianGroupDelete.php');
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianGroupDelete.php');
                 }
             });
 

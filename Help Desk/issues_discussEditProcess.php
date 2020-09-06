@@ -24,7 +24,7 @@ require_once '../../gibbon.php';
 require_once './moduleFunctions.php';
 
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/Help Desk/' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/Help Desk/' ;
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
@@ -42,7 +42,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         exit();
     }
 
-    if (!isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
+    if (!isPersonsIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
         $URL .= 'issues_view.php&return=error0' ;
         header("Location: {$URL}");
         exit();

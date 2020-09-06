@@ -21,7 +21,7 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php' ;
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/Help Desk/' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/Help Desk/' ;
 
 if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')==false) {
     //Fail 0
@@ -83,7 +83,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
         exit();
     }
 
-    setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Group Removed', array('newGroupID' => $newGroupID), null);
+    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Removed', array('newGroupID' => $newGroupID), null);
 
     //Success 0
     $URL .= 'helpDesk_manageTechnicianGroup.php&return=success0' ;

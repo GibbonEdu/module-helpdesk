@@ -27,7 +27,7 @@ $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
     ->add(__('Techncian Statistics'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -46,10 +46,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date('Y-m-d');
 
         //Filter
-        $form = Form::create('helpDeskStatistics', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+        $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL').'/index.php', 'get');
 
         $form->setTitle('Filter');
-        $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/helpdesk_technicianStats.php');
+        $form->addHiddenValue('q', '/modules/'.$gibbon->session->get('module').'/helpdesk_technicianStats.php');
         $form->addHiddenValue('technicianID', $technicianID);
 
         $row = $form->addRow();
@@ -73,7 +73,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         echo $form->getOutput();
 
         //Stats collection
-        $result = getLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], getModuleIDFromName($connection2, 'Help Desk'), null, null, $startDate, $endDate, null, array('technicianID'=>$technicianID));
+        $result = getLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), getModuleIDFromName($connection2, 'Help Desk'), null, null, $startDate, $endDate, null, array('technicianID'=>$technicianID));
         $rArray = $result->fetchAll();
 
         $items = array();
