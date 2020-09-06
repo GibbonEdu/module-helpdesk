@@ -34,17 +34,17 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     }
 
     $data = array();
-    $groupSql = "SELECT groupID as value, groupName as name 
+    $groupSql = 'SELECT groupID as value, groupName as name 
                     FROM helpDeskTechGroups 
-                    ORDER BY helpDeskTechGroups.groupID ASC";
+                    ORDER BY helpDeskTechGroups.groupID ASC';
 
-    $peopleSql = "SELECT gibbonPerson.gibbonPersonID, title, surname, preferredName, username, gibbonRole.category
+    $peopleSql = 'SELECT gibbonPerson.gibbonPersonID, title, surname, preferredName, username, gibbonRole.category
                         FROM gibbonPerson 
                         JOIN gibbonRole ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary)
                         LEFT JOIN helpDeskTechnicians ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) 
-                        WHERE status='Full' 
+                        WHERE status="Full"
                         AND helpDeskTechnicians.gibbonPersonID IS NULL
-                        ORDER BY surname, preferredName";
+                        ORDER BY surname, preferredName';
 
     $result = $pdo->executeQuery(array(), $peopleSql);
     $users = array_reduce($result->fetchAll(), function ($group, $item) {

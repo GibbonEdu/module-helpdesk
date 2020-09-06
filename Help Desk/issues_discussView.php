@@ -29,8 +29,8 @@ use Gibbon\View\View;
 
 include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
 
-$allowed = relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]);
-if ((!hasTechnicianAssigned($connection2, $_GET["issueID"]) && isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+$allowed = relatedToIssue($connection2, $_GET['issueID'], $_SESSION[$guid]['gibbonPersonID']);
+if ((!hasTechnicianAssigned($connection2, $_GET['issueID']) && isTechnician($connection2, $_SESSION[$guid]['gibbonPersonID'])) || getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'fullAccess')) {
     $allowed = true;
 }
 
@@ -41,61 +41,61 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 } else {
     $page->breadcrumbs->add(__('Discuss Issue'));
     
-    $issueID = $_GET["issueID"] ;
-    $data = array("issueID" => $issueID) ;
+    $issueID = $_GET['issueID'] ;
+    $data = array('issueID' => $issueID) ;
 
     try {
-        $sql = "SELECT helpDeskIssue.* , surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
+        $sql = 'SELECT helpDeskIssue.* , surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID ' ;
         $result=$connection2->prepare($sql);
         $result->execute($data);
 
-        $sql2 = "SELECT helpDeskTechnicians.*, surname , title, preferredName, helpDeskIssue.createdByID, helpDeskIssue.status AS issueStatus, privacySetting FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID " ;
+        $sql2 = 'SELECT helpDeskTechnicians.*, surname , title, preferredName, helpDeskIssue.createdByID, helpDeskIssue.status AS issueStatus, privacySetting FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID ' ;
         $result2 = $connection2->prepare($sql2);
         $result2->execute($data);
         $array2 = $result2->fetch();
 
-        $sql3 = "SELECT issueDiscussID, comment, timestamp, gibbonPersonID FROM helpDeskIssueDiscuss WHERE issueID=:issueID ORDER BY timestamp ASC" ;
+        $sql3 = 'SELECT issueDiscussID, comment, timestamp, gibbonPersonID FROM helpDeskIssueDiscuss WHERE issueID=:issueID ORDER BY timestamp ASC' ;
         $result3 = $connection2->prepare($sql3);
         $result3->execute($data);
 
-        $sql4 = "SELECT surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.createdByID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID";
+        $sql4 = 'SELECT surname , preferredName , title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.createdByID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID';
         $result4 = $connection2->prepare($sql4);
         $result4->execute($data);
         $row4 = $result4->fetch();
     } catch (PDOException $e) {
     }
 
-    $privacySetting = $array2["privacySetting"];
-    if ($array2["issueStatus"]=="Resolved" && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
-        if ($privacySetting == "No one") {
+    $privacySetting = $array2['privacySetting'];
+    if ($array2['issueStatus']=='Resolved' && !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'fullAccess')) {
+        if ($privacySetting == 'No one') {
             $page->addError('You do not have access to this action.');
             exit();
-        } else if ($privacySetting == "Related" && !relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+        } else if ($privacySetting == 'Related' && !relatedToIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
             $page->addError('You do not have access to this action.');
             exit();
         }
-        else if ($privacySetting == "Owner" && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+        else if ($privacySetting == 'Owner' && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
             $page->addError('You do not have access to this action.');
             exit();
         }
     }
 
-    if (!isset($array2["gibbonPersonID"])) {
-        $technicianName = "Unassigned" ;
+    if (!isset($array2['gibbonPersonID'])) {
+        $technicianName = 'Unassigned' ;
     } else {
-        $technicianName = formatName($array2["title"] , $array2["preferredName"] , $array2["surname"] , "Student", false, false);
+        $technicianName = formatName($array2['title'] , $array2['preferredName'] , $array2['surname'] , 'Student', false, false);
     }
 
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    if (!isset($array2["technicianID"])) {
-        $array2["technicianID"] = null;
+    if (!isset($array2['technicianID'])) {
+        $array2['technicianID'] = null;
     }
 
-    if (technicianExists($connection2, $array2["technicianID"]) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) && !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
-        if (!($array2["technicianID"] == getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]))) {
+    if (technicianExists($connection2, $array2['technicianID']) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID']) && !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue')) {
+        if (!($array2['technicianID'] == getTechnicianID($connection2, $_SESSION[$guid]['gibbonPersonID']))) {
             $page->addError('You do not have access to this action.');
             exit();
         }
@@ -108,14 +108,14 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
     $row = $result->fetch();
 
-    $createdByShow = $row["createdByID"] != $row["gibbonPersonID"];
+    $createdByShow = $row['createdByID'] != $row['gibbonPersonID'];
 
     $date2 = dateConvertBack($guid, $row['date']);
-    if ($date2 == "30/11/-0001") {
-        $date2 = "No date";
+    if ($date2 == '30/11/-0001') {
+        $date2 = 'No date';
     }
 
-    $studentName = formatName($row["title"] , $row["preferredName"] , $row["surname"] , "Student", false, false);
+    $studentName = formatName($row['title'] , $row['preferredName'] , $row['surname'] , 'Student', false, false);
 
     $detailsData = array(
         'issueID' => $issueID,
@@ -133,7 +133,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     $tdWidth .= '%';
 
     $table = DataTable::createDetails('details');
-    $table->setTitle($row["issueName"]);
+    $table->setTitle($row['issueName']);
 
     $table->addColumn('issueID', __('ID'))
             ->width($tdWidth);
@@ -148,7 +148,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
             ->width($tdWidth);
 
     if ($createdByShow) {
-        $detailsData['createdBy'] = formatName($row4["title"] , $row4["preferredName"] , $row4["surname"] , "Student", false, false);
+        $detailsData['createdBy'] = formatName($row4['title'] , $row4['preferredName'] , $row4['surname'] , 'Student', false, false);
         $table->addColumn('createdBy', __('Created By'))
             ->width($tdWidth);
     }
@@ -157,9 +157,9 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
             ->width($tdWidth)
             ->format(function($row) use ($connection2, $guid) {
                 if (isPersonsIssue($connection2, $row['issueID'], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
-                    print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussEdit.php&issueID=". $row['issueID'] . "'>" .  __($row["privacySetting"]) . '</a>';
+                    print '<a href="' . $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_discussEdit.php&issueID='. $row['issueID'] . '">' .  __($row['privacySetting']) . '</a>';
                 } else {
-                    print $row["privacySetting"];
+                    print $row['privacySetting'];
                 }
             });
 
@@ -169,19 +169,19 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     $table = DataTable::createDetails('description');
     $table->setTitle(__('Description'));
 
-    if ($array2["technicianID"] == null && (!relatedToIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
-         if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "acceptIssue") && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+    if ($array2['technicianID'] == null && (!relatedToIssue($connection2, $_GET['issueID'], $_SESSION[$guid]['gibbonPersonID']) || getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'fullAccess'))) {
+         if (getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'acceptIssue') && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
             $table->addHeaderAction('accept', __('Accept'))
                     ->setIcon('page_new')
                     ->directLink()
-                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_acceptProcess.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_acceptProcess.php')
                     ->addParam('issueID', $issueID);
         }
-        if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "assignIssue")) {
+        if (getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'assignIssue')) {
             $table->addHeaderAction('assign', __('Assign'))
                     ->setIcon('attendance')
                     ->modalWindow()
-                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_assign.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_assign.php')
                     ->addParam('issueID', $issueID);
           }
     }
@@ -191,7 +191,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
     echo $table->render([$row]);
 
-    if ($array2["technicianID"] != null) {
+    if ($array2['technicianID'] != null) {
             $IssueDiscussGateway = $container->get(IssueDiscussGateway::class);
             $logs = $IssueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
 
@@ -205,22 +205,22 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
             $action = new Action('refresh', __('Refresh'));
             $action->setIcon('refresh')
-                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_discussView.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php')
                     ->addParam('issueID', $issueID);
             $headerActions[] = $action;
 
             $action = new Action('add', __('Add'));
             $action->modalWindow()
-                    ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_discussPost.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_discussPost.php')
                     ->addParam('issueID', $issueID);
 
             $headerActions[] = $action;
 
-            if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue") || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"])) {
+            if (getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue') || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
                 $action = new Action('resolve', __('Resolve'));
                 $action->setIcon('iconTick')
                         ->directLink()
-                        ->setURL('/modules/' . $_SESSION[$guid]["module"] . '/issues_resolveProcess.php')
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_resolveProcess.php')
                         ->addParam('issueID', $issueID);
 
                 $headerActions[] = $action;

@@ -29,21 +29,21 @@ if (isset($_GET['permission'])) {
     $permission = $_GET['permission'];
 } else {
     $URL .= '/issues_view.php&return=error1';
-    header('Location: {$URL}');
+    header("Location: {$URL}";
     exit();
 }
 
 if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php') || !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], $permission)) {
     //Fail 0
     $URL .= '/issues_view.php&return=error0';
-    header('Location: {$URL}');
+    header("Location: {$URL}";
     exit();
 } else {
     if (isset($_GET['issueID'])) {
         $issueID = $_GET['issueID'];
     } else {
         $URL .= '/issues_view.php&return=error1';
-        header('Location: {$URL}');
+        header("Location: {$URL}";
         exit();
     }
 
@@ -52,13 +52,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         $technicianID = $_POST['technician'];
     } else {
         $URL .= '/issues_assign.php&issueID=$issueID&return=error1';
-        header('Location: {$URL}');
+        header("Location: {$URL}";
         exit();
     }
 
     if ($technicianID == null || $technicianID == '') {
         $URL .= '/issues_assign.php&issueID=$issueID&return=error1';
-        header('Location: {$URL}');
+        header("Location: {$URL}";
         exit();
     }
 
@@ -73,7 +73,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         $issueGateway->update($issueID, $data);
     } catch (PDOException $e) {
         $URL .= '/issues_assign.php&issueID=$issueID&technicianID=$technicianID&return=error2' ;
-        header('Location: {$URL}');
+        header("Location: {$URL}";
         exit();
     }
 
@@ -101,6 +101,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Assigned', array('issueID' => $issueID, 'technicainID'=>$technicianID), null);
 
     $URL .= '/issues_view.php&return=success0' ;
-    header('Location: {$URL}');
+    header("Location: {$URL}";
 }
 ?>

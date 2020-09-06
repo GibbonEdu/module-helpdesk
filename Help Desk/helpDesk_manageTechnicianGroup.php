@@ -30,7 +30,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
 } else {
     //Proceed!
     if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, array("errorA" => "Cannot delete last technician group."));
+        returnProcess($guid, $_GET['return'], null, array('errorA' => 'Cannot delete last technician group.'));
     }
    
     $techGroupGateway = $container->get(TechGroupGateway::class);
@@ -41,31 +41,31 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     $formatTechnicianList = function($row) use ($technicianGateway) {
         $technicians = $technicianGateway->selectTechniciansByTechGroup($row['groupID'])->fetchAll();
         if (count($technicians) < 1) {
-            return __("No one is currently in this group.");
+            return __('No one is currently in this group.');
         }
         return Format::nameList($technicians, 'Student', false, false);
     };
 
     $table = DataTable::create('techGroups');
-    $table->setTitle("Technician Groups");
+    $table->setTitle('Technician Groups');
 
-    $table->addHeaderAction('add', __("Create"))
-            ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnicianGroup.php");
+    $table->addHeaderAction('add', __('Create'))
+            ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnicianGroup.php');
 
-    $table->addColumn('groupName', __("Group Name"));
+    $table->addColumn('groupName', __('Group Name'));
 
-    $table->addColumn('techs', __("Technicians in group"))
+    $table->addColumn('techs', __('Technicians in group'))
             ->format($formatTechnicianList);
 
     $table->addActionColumn()
             ->addParam('groupID')
             ->format(function ($techGroup, $actions) use ($guid, $techGroupData) {
-                $actions->addAction('edit', __("Edit"))
-                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_editTechnicianGroup.php");
+                $actions->addAction('edit', __('Edit'))
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_editTechnicianGroup.php');
 
                 if (count($techGroupData) > 1) {
-                    $actions->addAction('delete', __("Delete"))
-                            ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianGroupDelete.php");
+                    $actions->addAction('delete', __('Delete'))
+                            ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_technicianGroupDelete.php');
                 }
             });
 

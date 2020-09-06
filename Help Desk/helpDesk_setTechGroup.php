@@ -37,7 +37,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         $technicianID = $_GET["technicianID"];
 
         $data = array();
-        $sql = "SELECT groupID as value, groupName as name FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
+        $sql = 'SELECT groupID as value, groupName as name FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC';
         
         $technicianGateway = $container->get(TechnicianGateway::class);
 
