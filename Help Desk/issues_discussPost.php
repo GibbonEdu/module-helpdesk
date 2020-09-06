@@ -22,7 +22,7 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
 //Module includes
 include __DIR__ . '/moduleFunctions.php';
-if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php")) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Acess denied
     $page->addError('You do not have access to this action.');
 } else {
