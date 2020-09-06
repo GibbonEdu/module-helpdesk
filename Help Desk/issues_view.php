@@ -203,7 +203,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     
     $table->addActionColumn()
             ->addParam('issueID')
-            ->format(function ($issues, $actions) use ($guid, $connection2) {
+            ->format(function ($issues, $actions) use ($guid, $connection2, $gibbon) {
             $actions->addAction('view', __('Open'))
                 ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php');
                 
