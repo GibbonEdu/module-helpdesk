@@ -24,7 +24,7 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
 $page->breadcrumbs->add(__('Manage Technicians'));
 
-if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -43,38 +43,38 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
         }
 
         $issues = array_map(function($issue) use ($guid) {
-            return Format::link("./index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/issues_discussView.php&issueID=". $issue["issueID"], $issue["issueName"]);
+            return Format::link('./index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php&issueID='. $issue['issueID'], $issue['issueName']);
         }, $issues);
 
-        return implode(", ", $issues);
+        return implode(', ', $issues);
     };
 
     $table = DataTable::create('technicians');
-    $table->setTitle("Technicians");
+    $table->setTitle('Technicians');
 
-    $table->addHeaderAction('add', __("Add"))
-            ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_createTechnician.php")
+    $table->addHeaderAction('add', __('Add'))
+            ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnician.php')
             ->displayLabel();
 
-    $table->addColumn('name', __("Name"))
-            ->format(Format::using('name', ['title', 'preferredName', 'surname', "Student", false, false]));
+    $table->addColumn('name', __('Name'))
+            ->format(Format::using('name', ['title', 'preferredName', 'surname', 'Student', false, false]));
     
-    $table->addColumn('workingOn', __("Working On"))->format($formatIssues);
+    $table->addColumn('workingOn', __('Working On'))->format($formatIssues);
     
-    $table->addColumn('groupName', __("Group"));
+    $table->addColumn('groupName', __('Group'));
 
     $table->addActionColumn()
             ->addParam('technicianID')
             ->format(function ($technician, $actions) use ($guid) {
                 $actions->addAction('edit', __('Edit'))
-                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_setTechGroup.php");
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_setTechGroup.php');
 
                 $actions->addAction('stats', __('Stats'))
                         ->setIcon('internalAssessment')
-                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianStats.php");
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_technicianStats.php');
 
                 $actions->addAction('delete', __('Delete'))
-                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/helpDesk_technicianDelete.php");
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_technicianDelete.php');
             });
 
     echo $table->render($technicianGateway->selectTechnicians()->toDataSet());

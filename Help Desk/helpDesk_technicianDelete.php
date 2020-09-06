@@ -23,7 +23,7 @@ $page->breadcrumbs
         ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
         ->add(__('Delete Technician'));
 
-if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -34,7 +34,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
 
     if (isset($_GET["technicianID"])) {
         $technicianID = $_GET["technicianID"];
-        $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . "/helpDesk_technicianDeleteProcess.php?technicianID=" . $technicianID);
+        $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID);
         echo $form->getOutput();
     } else {
         $page->addError(__('No technician selected.'));

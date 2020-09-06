@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 require_once '../../gibbon.php';
 
 if (empty($_SESSION[$guid]['gibbonPersonID']) || empty($_SESSION[$guid]['gibbonRoleIDPrimary'])
-	|| !isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")) {
+	|| !isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     die(__('Your request failed because you do not have access to this action.'));
 } else {
 	$currentGroupName = $_POST['currentGroupName'] ?? null;
@@ -33,7 +33,7 @@ if (empty($_SESSION[$guid]['gibbonPersonID']) || empty($_SESSION[$guid]['gibbonR
     }
 
     $data = array('groupName' => $groupName);
-    $sql = "SELECT COUNT(*) FROM helpDeskTechGroups WHERE groupName=:groupName";
+    $sql = 'SELECT COUNT(*) FROM helpDeskTechGroups WHERE groupName=:groupName';
     $result = $pdo->executeQuery($data, $sql);
 
     echo ($result && $result->rowCount() == 1)? $result->fetchColumn(0) : -1;

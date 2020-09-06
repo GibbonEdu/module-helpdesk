@@ -22,7 +22,7 @@ use Gibbon\Forms\Form;
 
 $page->breadcrumbs->add(__('Manage Help Desk Settings'));
 
-if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settings.php")) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settings.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -40,10 +40,10 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_settin
     );
 
     $privacyTypes = array(
-        "Everyone" => __("Everyone"),
-        "Related" => __("Related"),
-        "Owner" => __("Owner"),
-        "No one" => __("No one"),
+        'Everyone' => __('Everyone'),
+        'Related' => __('Related'),
+        'Owner' => __('Owner'),
+        'No one' => __('No one'),
     );
 
     $settingGateway = $container->get(SettingGateway::class);

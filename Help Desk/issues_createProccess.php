@@ -87,7 +87,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
 
         $issueID = $connection2->lastInsertId();
         if ($createdOnBehalf) {
-            setNotification($connection2, $guid, $data['gibbonPersonID'], 'A new issue has been created on your behalf (' . $data['issueName'] . ').', 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
+            setNotification($connection2, $guid, $data['gibbonPersonID'], 'A new issue has been created on your behalf (' . $data['issueName'] . ').', 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID');
         }
         notifyTechnican($connection2, $guid, $issueID, $data['issueName'], $data['gibbonPersonID']);
 
