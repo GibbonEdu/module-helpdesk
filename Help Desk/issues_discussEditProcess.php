@@ -19,34 +19,31 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
-include '../../functions.php' ;
-include '../../config.php' ;
+require_once '../../gibbon.php';
 
-include './moduleFunctions.php' ;
+require_once './moduleFunctions.php';
 
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
 
 $URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/Help Desk/' ;
 
-if (isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php') == false) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
-      $URL = $URL . 'issues_view.php&return=error0' ;
+      $URL .= 'issues_view.php&return=error0' ;
     header("Location: {$URL}");
     exit();
 } else {
 
     if (isset($_GET['issueID'])) {
         $issueID = $_GET['issueID'];
-        $URL = $URL . 'issues_discussView.php&issueID=' . $issueID ;
+        $URL .= 'issues_discussView.php&issueID=' . $issueID ;
     } else {
-        $URL = $URL . 'issues_view.php&return=error1' ;
+        $URL .= 'issues_view.php&return=error1' ;
         header("Location: {$URL}");
         exit();
     }
 
     if (!isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
-        $URL = $URL . 'issues_view.php&return=error0' ;
+        $URL .= 'issues_view.php&return=error0' ;
         header("Location: {$URL}");
         exit();
     }
@@ -54,7 +51,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php'
     if (isset($_POST['privacySetting'])) {
         $privacySetting = $_POST['privacySetting'];
     } else {
-        $URL = $URL . '&return=error1' ;
+        $URL .= '&return=error1' ;
         header("Location: {$URL}");
           exit();
     }
@@ -65,12 +62,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php'
         $issueGateway = $container->get(IssueGateway::class);
         $issueGateway->update($issueID, $data);
     } catch (PDOException $e) {
-        $URL = $URL . '&return=error2' ;
+        $URL .= '&return=error2' ;
         header("Location: {$URL}");
         exit();
     }
 
-      $URL = $URL . '&return=success0' ;
+      $URL .= '&return=success0' ;
     header("Location: {$URL}");
 }
 ?>

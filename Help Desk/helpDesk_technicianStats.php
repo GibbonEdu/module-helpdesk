@@ -21,7 +21,7 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 
-include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')

@@ -25,18 +25,16 @@ use Gibbon\Domain\DataSet;
 use Gibbon\Domain\System\DiscussionGateway;
 use Gibbon\View\View;
 
-@session_start() ;
-
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
 
 $allowed = relatedToIssue($connection2, $_GET['issueID'], $_SESSION[$guid]['gibbonPersonID']);
 if ((!hasTechnicianAssigned($connection2, $_GET['issueID']) && isTechnician($connection2, $_SESSION[$guid]['gibbonPersonID'])) || getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'fullAccess')) {
     $allowed = true;
 }
 
-if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
+if (!isModuleAccessible($guid, $connection2) || !$allowed) {
     //Acess denied
-    $page->addError('You do not have access to this action.');
+    $page->addError(__('You do not have access to this action.'));
     exit();
 } else {
     $page->breadcrumbs->add(__('Discuss Issue'));
@@ -68,14 +66,14 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
     $privacySetting = $array2['privacySetting'];
     if ($array2['issueStatus']=='Resolved' && !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'fullAccess')) {
         if ($privacySetting == 'No one') {
-            $page->addError('You do not have access to this action.');
+            $page->addError(__('You do not have access to this action.'));
             exit();
         } else if ($privacySetting == 'Related' && !relatedToIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
-            $page->addError('You do not have access to this action.');
+            $page->addError(__('You do not have access to this action.'));
             exit();
         }
         else if ($privacySetting == 'Owner' && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
-            $page->addError('You do not have access to this action.');
+            $page->addError(__('You do not have access to this action.'));
             exit();
         }
     }
@@ -96,7 +94,7 @@ if (isModuleAccessible($guid, $connection2) == false || !$allowed) {
 
     if (technicianExists($connection2, $array2['technicianID']) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID']) && !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue')) {
         if (!($array2['technicianID'] == getTechnicianID($connection2, $_SESSION[$guid]['gibbonPersonID']))) {
-            $page->addError('You do not have access to this action.');
+            $page->addError(__('You do not have access to this action.'));
             exit();
         }
     }

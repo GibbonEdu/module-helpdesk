@@ -17,48 +17,44 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-include "../../functions.php" ;
-include "../../config.php" ;
+require_once '../../gibbon.php';
 
-include "./moduleFunctions.php" ;
+require_once './moduleFunctions.php' ;
 
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]["timezone"]);
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/Help Desk/' ;
 
-$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/" ;
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")==false) {
+if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')==false) {
     //Fail 0
-    $URL = $URL . "&return=error0" ;
+    $URL .= '&return=error0' ;
     header("Location: {$URL}");
 } else {
     //Proceed!
-    if (isset($_GET["groupID"])) {
-        $groupID = $_GET["groupID"] ;
+    if (isset($_GET['groupID'])) {
+        $groupID = $_GET['groupID'] ;
     } else {
-        $URL = $URL . "helpDesk_manageTechnicianGroup&return=error1" ;
+        $URL .= 'helpDesk_manageTechnicianGroup&return=error1' ;
         header("Location: {$URL}");
         exit();
     }
 
-    if (isset($_POST["group"])) {
-        $newGroupID = $_POST["group"];
+    if (isset($_POST['group'])) {
+        $newGroupID = $_POST['group'];
     } else {
-        $URL = $URL . "helpdesk_technicianGroupDelete&groupID=$groupID&return=error1" ;
+        $URL .= 'helpdesk_technicianGroupDelete&groupID=$groupID&return=error1' ;
         header("Location: {$URL}");
         exit();
     }
 
     try {
         $data = array();
-        $sql = "SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC";
+        $sql = 'SELECT * FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC';
         $result = $connection2->prepare($sql);
         $result->execute($data);
     } catch (PDOException $e) {
     }
 
     if ($result->rowcount() == 1) {
-        $URL = $URL . "helpDesk_manageTechnicianGroup.php&return=errorA";
+        $URL .= 'helpDesk_manageTechnicianGroup.php&return=errorA';
         header("Location: {$URL}");
         exit();
     }
@@ -66,31 +62,31 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
     //Write to database
 
     try {
-        $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+        $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
         if ($gibbonModuleID == null) {
-            throw new PDOException("Invalid gibbonModuleID.");
+            throw new PDOException('Invalid gibbonModuleID.');
         }
         //Delete techGroup
-        $data1 = array("groupID" => $groupID) ;
-        $sql1 = "DELETE FROM helpDeskTechGroups WHERE groupID=:groupID" ;
+        $data1 = array('groupID' => $groupID) ;
+        $sql1 = 'DELETE FROM helpDeskTechGroups WHERE groupID=:groupID' ;
         $result1 = $connection2->prepare($sql1);
         $result1->execute($data1);
         //Migrate Technicians assigned to deleted techGroup to new techGroup
-        $data2=array("groupID" => $groupID, "newGroupID" => $newGroupID) ;
-        $sql2="UPDATE helpDeskTechnicians SET groupID=:newGroupID WHERE groupID=:groupID" ;
+        $data2=array('groupID' => $groupID, 'newGroupID' => $newGroupID) ;
+        $sql2='UPDATE helpDeskTechnicians SET groupID=:newGroupID WHERE groupID=:groupID' ;
         $result2=$connection2->prepare($sql2);
         $result2->execute($data2);
     } catch (PDOException $e) {
         //Fail 2
-        $URL = $URL."helpdesk_technicianGroupDelete&groupID=$groupID&group=$group&return=error2" ;
+        $URL .=.'helpdesk_technicianGroupDelete&groupID=$groupID&group=$group&return=error2' ;
         header("Location: {$URL}");
         exit();
     }
 
-    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Group Removed", array("newGroupID" => $newGroupID), null);
+    setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Group Removed', array('newGroupID' => $newGroupID), null);
 
     //Success 0
-    $URL = $URL . "helpDesk_manageTechnicianGroup.php&return=success0" ;
+    $URL .= 'helpDesk_manageTechnicianGroup.php&return=success0' ;
     header("Location: {$URL}");
 }
 ?>

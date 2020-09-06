@@ -23,7 +23,7 @@ $page->breadcrumbs
     ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
     ->add(__('Create Technician Group'));
 
-if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php') == FALSE) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {

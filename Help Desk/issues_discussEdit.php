@@ -20,9 +20,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
-include './modules/' . $_SESSION[$guid]['module'] . '/moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !(isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") || !(isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
