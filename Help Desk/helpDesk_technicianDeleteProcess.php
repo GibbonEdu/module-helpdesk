@@ -17,59 +17,76 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-include "../../functions.php" ;
-include "../../config.php" ;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
-Include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+require_once '../../gibbon.php';
 
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]["timezone"]);
+require_once './moduleFunctions.php';
 
-$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/helpDesk_manageTechnicians.php" ;
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php") == false) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
     //Fail 0
-    $URL = $URL . "&return=error0" ;
+    $URL .= '&return=error0';
     header("Location: {$URL}");
+    exit();
 } else {
     //Proceed!
-    if (isset($_GET["technicianID"])) {
-        $technicianID = $_GET["technicianID"] ;
-    } else {
-        $URL = $URL . "&return=error1" ;
+    $technicianID = $_GET['technicianID'] ?? '';
+    if (empty($technicianID)) {
+        $URL .= '&return=error1';
         header("Location: {$URL}");
-    }
+        exit();
+    } else {
+        //Write to database
+        try {
+            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
+            if ($gibbonModuleID == null) {
+                throw new PDOException('Invalid gibbonModuleID.');
+            }
 
-    //Write to database
-    try {
-        $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
-        if ($gibbonModuleID == null) {
-            throw new PDOException("Invalid gibbonModuleID.");
+            $technicianGateway = $container->get(TechnicianGateway::class);
+
+            if (!$technicianGateway->exists($technicianID)) {
+                $URL .= '&return=error1';
+                header("Location: {$URL}");
+                exit();
+            }
+
+            //TODO: Maybe start a transaction?
+            $gibbonPersonID = $technicianGateway->getByID($technicianID)['gibbonPersonID'];
+            if (!$technicianGateway->delete($technicianID)) {
+                throw new PDOException('Failed to Delete Technician');
+            }
+
+            //TODO: In the future, maybe add and option to transfer these issues to another tech.
+            $issueGateway = $container->get(IssueGateway::class);
+
+            //Set any pending issues assigned to technician to unassigned and unset the technician.
+            $keyAndValues = array('technicianID' => $technicianID, 'status' => 'Pending');
+            $data = array('technicianID' => null, 'status' => 'Unassigned');
+            if (!$issueGateway->updateWhere($keyAndValues, $data)) {
+                throw new PDOException('Failed to update pending issues.');
+            }
+
+            //Removed technician from any resolved issue.
+            $keyAndValues['status'] = 'Resolved';
+            unset($data['status']);
+            if (!$issueGateway->updateWhere($keyAndValues, $data)) {
+                throw new PDOException('Failed to update resolved issues.');
+            }
+        } catch (PDOException $e) {
+            //Fail 2
+            $URL .= '&return=error2';
+            header("Location: {$URL}");
         }
 
-        $data = array("technicianID" => $technicianID);
+        setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Removed', array('gibbonPersonID' => $gibbonPersonID), null);
 
-        $sql = "SELECT gibbonPersonID FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-
-        $sql2 = "DELETE FROM helpDeskTechnicians WHERE helpDeskTechnicians.technicianID=:technicianID" ;
-        $result2 = $connection2->prepare($sql2);
-        $result2->execute($data);
-
-     
-
-    } catch (PDOException $e) {
-        //Fail 2
-        $URL = $URL."&return=error2" ;
+        //Success 0
+        $URL .= '&return=success0';
         header("Location: {$URL}");
     }
-
-    $row = $result->fetch();
-    setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Technician Removed", array("gibbonPersonID" => $row['gibbonPersonID']), null);
-
-    //Success 0
-    $URL = $URL . "&return=success0" ;
-    header("Location: {$URL}");
 }
 ?>
