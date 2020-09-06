@@ -24,7 +24,7 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 include __DIR__ . '/moduleFunctions.php';
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Acess denied
-    $page->addError('You do not have access to this action.');
+    $page->addError(__('You do not have access to this action.'));
 } else {
     if (isset($_GET['issueID'])) {
         $issueID = $_GET['issueID'];
@@ -52,13 +52,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
                 echo $form->getOutput();
             } else {
-                $page->addError('You do not have access to this action.');
+                $page->addError(__('You do not have access to this action.'));
             }
         } else {
-            $page->addError('Invalid Issue.');
+            $page->addError(__('Invalid Issue.'));
         }
     } else {
-        $page->addError('No Issue Selected.');
+        $page->addError(__('No Issue Selected.'));
     }
 }
 ?>
