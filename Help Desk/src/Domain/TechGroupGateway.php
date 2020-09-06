@@ -28,4 +28,37 @@ class TechGroupGateway extends QueryableGateway
         return $this->db()->select($sql, $data);
     }
 
+    public function getPermissionValue($gibbonPersonID, $permission)
+    {
+        $query = $this
+            ->newSelect()
+            ->distinct()
+            ->cols(['viewIssue, viewIssueStatus, assignIssue, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue'])
+            ->from($this->getTableName())
+            ->leftJoin('helpDeskTechnicians', 'helpDeskTechGroups.groupID=helpDeskTechnicians.groupID')
+            ->where('helpDeskTechnicians.gibbonPersonID = :gibbonPersonID')
+            ->bindValue('gibbonPersonID', $gibbonPersonID);
+
+        $result = $this->runSelect($query);
+
+        //If there isn't one unique row, deny all permissions
+        if ($result->rowCount() != 1) {
+            return false;
+        }
+
+        $row = $result->fetch();
+
+        //Check for fullAccess permissions
+        if ($row['fullAccess'] == true) {
+            if ($permission == "viewIssueStatus") {
+                return "All";
+            } else {
+                return true;
+            }
+        }
+
+        //Return permission that was asked for
+        return $row[$permission];
+    }
+
 }
