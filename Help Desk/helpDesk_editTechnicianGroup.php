@@ -47,7 +47,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
         $techGroupGateway = $container->get(TechGroupGateway::class);
 
-        $values = $techGroupGateway->selectTechGroupByID($groupID)->fetch();
+
+        $values = $techGroupGateway->getByID($groupID);
+
 
         $form = Form::create('editTechnicianGroup',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);

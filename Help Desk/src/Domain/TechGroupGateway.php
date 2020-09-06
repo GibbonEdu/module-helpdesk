@@ -27,17 +27,6 @@ class TechGroupGateway extends QueryableGateway
 
         return $this->db()->select($sql, $data);
     }
-    
-    public function selectTechGroupByID($groupID) {
-        $query = $this
-            ->newQuery()
-            ->from('helpDeskTechGroups')
-            ->cols(['helpDeskTechGroups.*'])
-            ->where('helpDeskTechGroups.groupID=:groupID')
-            ->bindValue('groupID', $groupID);;
-             
-             return $result = $this->runSelect($query);
-    }
 
     public function getPermissionValue($gibbonPersonID, $permission)
     {
