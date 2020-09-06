@@ -28,16 +28,6 @@ class TechGroupGateway extends QueryableGateway
         return $this->db()->select($sql, $data);
     }
     
-<<<<<<< Updated upstream
-    public function selectTechGroupsByID($groupID) {
-        $data = array('groupID' => $groupID);
-        $sql = "SELECT groupID, groupName, viewIssue, viewIssueStatus, assignIssue, acceptIssue, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue
-                FROM helpDeskTechGroups
-                WHERE groupID=:groupID
-                ORDER BY groupID ASC";
-
-        return $this->db()->select($sql, $data);
-=======
     public function selectTechGroupByID($groupID) {
         $query = $this
             ->newQuery()
@@ -47,7 +37,6 @@ class TechGroupGateway extends QueryableGateway
             ->bindValue('groupID', $groupID);;
              
              return $result = $this->runSelect($query);
->>>>>>> Stashed changes
     }
 
     public function getPermissionValue($gibbonPersonID, $permission)

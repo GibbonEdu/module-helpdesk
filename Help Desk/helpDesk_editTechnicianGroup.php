@@ -18,7 +18,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
-use Gibbon\Domain\DataSet;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 $page->breadcrumbs
@@ -48,12 +47,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageT
 
         $techGroupGateway = $container->get(TechGroupGateway::class);
 
-<<<<<<< Updated upstream
-        $data = $techGroupGateway->selectTechGroupsByID($groupID)->toDataSet();
-        $values = $data->toArray();
-=======
         $values = $techGroupGateway->selectTechGroupByID($groupID)->fetch();
->>>>>>> Stashed changes
 
         $form = Form::create('editTechnicianGroup',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
