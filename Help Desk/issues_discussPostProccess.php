@@ -48,7 +48,7 @@ $issue = $issueGateway->getByID($issueID);
 $URL .= "/issues_discussView.php&issueID=$issueID";
 $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
-if (!relatedToIssue($connection2, $issueID, $gibbonPersonID) || $issueGateway == 'Resolved') {
+if (!relatedToIssue($connection2, $issueID, $gibbonPersonID) || $issue['status'] == 'Resolved') {
     //Fail 0 aka No permission
     $URL .= '&return=error0';
     header("Location: {$URL}");
