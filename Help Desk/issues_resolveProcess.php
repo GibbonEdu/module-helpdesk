@@ -20,76 +20,79 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
 //Bit of a cheat, but needed for gateway to work
-$_POST['address'] = '/modules/Help Desk/issues_acceptProcess.php';
+$_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
 
-include '../../gibbon.php';
+require_once '../../gibbon.php';
 
-include "./moduleFunctions.php" ;
+require_once './moduleFunctions.php' ;
 
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]["timezone"]);
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php' ;
 
-$URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Help Desk/issues_view.php" ;
-
-if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") == false || !getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php') || !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue')) {
     //Fail 0
-    $URL = $URL . "&return=error0" ;
+    $URL .= '&return=error0' ;
     header("Location: {$URL}");
+    exit();
 } else {
     //Proceed!
-    if (isset($_GET["issueID"])) {
-          $issueID = $_GET["issueID"] ;
-    }
-    if ($issueID == "") {
+    $issueID = $_GET['issueID'] ?? '';
+
+    if (empty($issueID)){
         //Fail 3
-        $URL = $URL . "&return=error1" ;
+        $URL .= '&return=error1' ;
         header("Location: {$URL}");
+        exit();
     } else {
-        if (relatedToIssue($connection2, $issueID, $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "resolveIssue")) {
+        if (relatedToIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID']) || getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue')) {
             //Write to database
             try {
-                $gibbonModuleID = getModuleIDFromName($connection2, "Help Desk");
+                $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
                 if ($gibbonModuleID == null) {
-                    throw new PDOException("Invalid gibbonModuleID.");
+                    throw new PDOException('Invalid gibbonModuleID.');
                 }
 
-                $data = array("status" => "Resolved");
+                $data = array('status' => 'Resolved');
 
                 $issueGateway = $container->get(IssueGateway::class);
-                $issueGateway->update($issueID, $data);
+                if (!$issueGateway->update($issueID, $data)) {
+                    throw new PDOException('Failed to update issue.');
+                }
             } catch (PDOException $e) {
-                $URL = $URL . "&return=error2" ;
+                $URL .= '&return=error2' ;
                 header("Location: {$URL}");
+                exit();
             }
 
             $row = getIssue($connection2, $issueID);
 
-            $message = "Issue #";
+            $message = 'Issue #';
             $message .= $issueID;
-            $message .= " (" . $row["issueName"] . ") has been resolved.";
+            $message .= ' (' . $row['issueName'] . ') has been resolved.';
 
             $personIDs = getPeopleInvolved($connection2, $issueID);
 
             foreach ($personIDs as $personID) {
-                if ($personID != $_SESSION[$guid]["gibbonPersonID"]) {
-                    setNotification($connection2, $guid, $personID, $message, "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
+                if ($personID != $_SESSION[$guid]['gibbonPersonID']) {
+                    setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
                 } 
             }
 
             $array['issueID'] = $issueID;
 
-            if (isTechnician($connection2, $_SESSION[$guid]["gibbonPersonID"])) {
-                $array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]["gibbonPersonID"]);
+            if (isTechnician($connection2, $_SESSION[$guid]['gibbonPersonID'])) {
+                $array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]['gibbonPersonID']);
             }
 
-            setLog($connection2, $_SESSION[$guid]["gibbonSchoolYearID"], $gibbonModuleID, $_SESSION[$guid]["gibbonPersonID"], "Issue Resolved", $array, null);
+            setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Issue Resolved', $array, null);
 
             //Success 0
-            $URL = $URL . "&return=success0" ;
+            $URL .= '&return=success0';
             header("Location: {$URL}");
+            exit();
         } else {
-            $URL = $URL . "&return=error0" ;
+            $URL .= '&return=error0';
             header("Location: {$URL}");
+            exit();
         }
     }
 }
