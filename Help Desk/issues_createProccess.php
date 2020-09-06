@@ -66,7 +66,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
 
     if (empty($data['issueName']) || empty($data['description'])) {
         //Fail 3
-        $URL .= '&return=error1' ;
+        $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
@@ -80,7 +80,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
             $issueGateway = $container->get(IssueGateway::class);
             $issueGateway->insert($data);
         } catch (PDOException $e) {
-            $URL .= '&return=error2' ;
+            $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
@@ -101,7 +101,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
         setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], $title, $array, null);
 
         //Success 0 aka Created
-        $URL .= '&issueID=' . $issueID . '&return=success0' ;
+        $URL .= '&issueID=' . $issueID . '&return=success0';
         header("Location: {$URL}");
     }
 }

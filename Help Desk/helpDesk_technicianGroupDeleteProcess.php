@@ -19,20 +19,20 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php' ;
+require_once './moduleFunctions.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/Help Desk/' ;
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/Help Desk/';
 
 if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')==false) {
     //Fail 0
-    $URL .= '&return=error0' ;
+    $URL .= '&return=error0';
     header("Location: {$URL}");
 } else {
     //Proceed!
     if (isset($_GET['groupID'])) {
-        $groupID = $_GET['groupID'] ;
+        $groupID = $_GET['groupID'];
     } else {
-        $URL .= 'helpDesk_manageTechnicianGroup&return=error1' ;
+        $URL .= 'helpDesk_manageTechnicianGroup&return=error1';
         header("Location: {$URL}");
         exit();
     }
@@ -40,7 +40,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
     if (isset($_POST['group'])) {
         $newGroupID = $_POST['group'];
     } else {
-        $URL .= 'helpdesk_technicianGroupDelete&groupID=$groupID&return=error1' ;
+        $URL .= 'helpdesk_technicianGroupDelete&groupID=$groupID&return=error1';
         header("Location: {$URL}");
         exit();
     }
@@ -67,18 +67,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
             throw new PDOException('Invalid gibbonModuleID.');
         }
         //Delete techGroup
-        $data1 = array('groupID' => $groupID) ;
-        $sql1 = 'DELETE FROM helpDeskTechGroups WHERE groupID=:groupID' ;
+        $data1 = array('groupID' => $groupID);
+        $sql1 = 'DELETE FROM helpDeskTechGroups WHERE groupID=:groupID';
         $result1 = $connection2->prepare($sql1);
         $result1->execute($data1);
         //Migrate Technicians assigned to deleted techGroup to new techGroup
-        $data2=array('groupID' => $groupID, 'newGroupID' => $newGroupID) ;
-        $sql2='UPDATE helpDeskTechnicians SET groupID=:newGroupID WHERE groupID=:groupID' ;
+        $data2=array('groupID' => $groupID, 'newGroupID' => $newGroupID);
+        $sql2='UPDATE helpDeskTechnicians SET groupID=:newGroupID WHERE groupID=:groupID';
         $result2=$connection2->prepare($sql2);
         $result2->execute($data2);
     } catch (PDOException $e) {
         //Fail 2
-        $URL .=.'helpdesk_technicianGroupDelete&groupID=$groupID&group=$group&return=error2' ;
+        $URL .=.'helpdesk_technicianGroupDelete&groupID=$groupID&group=$group&return=error2';
         header("Location: {$URL}");
         exit();
     }
@@ -86,7 +86,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
     setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Group Removed', array('newGroupID' => $newGroupID), null);
 
     //Success 0
-    $URL .= 'helpDesk_manageTechnicianGroup.php&return=success0' ;
+    $URL .= 'helpDesk_manageTechnicianGroup.php&return=success0';
     header("Location: {$URL}");
 }
 ?>

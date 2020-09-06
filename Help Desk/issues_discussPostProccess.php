@@ -69,7 +69,7 @@ if (!relatedToIssue($connection2, $issueID, $gibbonPersonID) || $issue['status']
             throw new PDOException('Invalid gibbonModuleID.');
         }
 
-        $data = array('issueID' => $issueID, 'comment' => $comment, 'timestamp' => date('Y-m-d H:i:a'), 'gibbonPersonID' => $gibbonPersonID) ;
+        $data = array('issueID' => $issueID, 'comment' => $comment, 'timestamp' => date('Y-m-d H:i:a'), 'gibbonPersonID' => $gibbonPersonID);
         $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
 
         $issueDiscussID = $issueDiscussGateway->insert($data);

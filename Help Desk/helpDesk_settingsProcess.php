@@ -21,11 +21,11 @@ use Gibbon\Domain\System\SettingGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settings.php' ;
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settings.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settings.php')) {
     //Fail 0
-    $URL .= '&return=error0' ;
+    $URL .= '&return=error0';
     header("Location: {$URL}");
 } else {
     //Not a fan, but too bad!
@@ -77,12 +77,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
 
     setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Help Desk Settings Edited', null);
 
-    getSystemSettings($guid, $connection2) ;
+    getSystemSettings($guid, $connection2);
     $return = 'success0';
     if ($dbFail) {
         $return = 'warning1';
     }
-    $URL .= '&return=$return' ;
+    $URL .= '&return=$return';
     header("Location: {$URL}");
 }
 ?>

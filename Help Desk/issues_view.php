@@ -41,7 +41,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
-    $highestAction = getHighestGroupedAction($guid, $_GET['q'], $connection2) ;
+    $highestAction = getHighestGroupedAction($guid, $_GET['q'], $connection2);
     if ($highestAction == false) {
         $page->addError(__('The highest grouped action cannot be determined.'));
         exit();
