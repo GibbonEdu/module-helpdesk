@@ -230,7 +230,7 @@ if (isModuleAccessible($guid, $connection2) == false) {
                     $actions->addAction('reincarnate', __("Reincarnate"))
                         ->directLink()
                         ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_reincarnateProcess.php")
-                        ->setIcon('upload');
+                        ->setIcon('reincarnate');
                 }
             }
             });
