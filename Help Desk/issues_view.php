@@ -229,7 +229,8 @@ if (isModuleAccessible($guid, $connection2) == false) {
                 if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "reincarnateIssue") || isPersonsIssue($connection2, $issues['issueID'], $_SESSION[$guid]["gibbonPersonID"])) {
                     $actions->addAction('reincarnate', __("Reincarnate"))
                         ->directLink()
-                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_reincarnateProcess.php");
+                        ->setURL("/modules/" . $_SESSION[$guid]["module"] . "/issues_reincarnateProcess.php")
+                        ->setIcon('reincarnate');
                 }
             }
             });
