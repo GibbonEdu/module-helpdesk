@@ -18,6 +18,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 //Bit of a cheat, but needed for gateway to work
 $_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
@@ -28,7 +30,9 @@ require_once './moduleFunctions.php' ;
 
 $URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php' ;
 
-if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php') || !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue')) {
+$techGroupGateway = $container->get(TechGroupGateway::class);
+
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php') || !$techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
     //Fail 0
     $URL .= '&return=error0' ;
     header("Location: {$URL}");
@@ -43,8 +47,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         header("Location: {$URL}");
         exit();
     } else {
-        if (relatedToIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID']) || getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue')) {
+        if (relatedToIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID']) || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
             //Write to database
+            $issueGateway = $container->get(IssueGateway::class);
             try {
                 $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
                 if ($gibbonModuleID == null) {
@@ -52,8 +57,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 }
 
                 $data = array('status' => 'Resolved');
-
-                $issueGateway = $container->get(IssueGateway::class);
+                
                 if (!$issueGateway->update($issueID, $data)) {
                     throw new PDOException('Failed to update issue.');
                 }
@@ -63,7 +67,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 exit();
             }
 
-            $row = getIssue($connection2, $issueID);
+            $row = $issueGateway->getByID($issueID);
 
             $message = 'Issue #';
             $message .= $issueID;
@@ -79,11 +83,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
             $array['issueID'] = $issueID;
 
-            if (isTechnician($connection2, $_SESSION[$guid]['gibbonPersonID'])) {
-                $array['technicianID'] = getTechnicianID($connection2, $_SESSION[$guid]['gibbonPersonID']);
+            $technicianGateway = $container->get(TechnicianGatway::class);
+            $technician = $technicianGateway->selectBy('gibbonPersonID' => $gibbon->session->get('gibbonPersonID'));
+            if ($technician->isNotEmpty()) {
+                $array['technicianID'] = $technician->fetch()['technicianID'];
             }
 
-            setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Issue Resolved', $array, null);
+            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Issue Resolved', $array, null);
 
             //Success 0
             $URL .= '&return=success0';
