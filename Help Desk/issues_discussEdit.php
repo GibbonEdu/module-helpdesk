@@ -22,7 +22,7 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
-if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") || !(isPersonsIssue($connection2, $_GET["issueID"], $gibbon->session->get('gibbonPersonID')) || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), "fullAccess"))) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php") || !(isPersonsIssue($connection2, $_GET["issueID"], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess"))) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -39,8 +39,8 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php
         $issueGateway = $container->get(IssueGateway::class); 
         $issue = $issueGateway->getByID($issueID);
 
-        $form = Form::create('editPrivacy', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussEditProcess.php?issueID=' . $issueID, 'post'); 
-        $form->addHiddenValue('address', $gibbon->session->get('address')); 
+        $form = Form::create('editPrivacy', $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/issues_discussEditProcess.php?issueID=' . $issueID, 'post'); 
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']); 
         
         //have a ->selected or setValue going on here          
         $row = $form->addRow();

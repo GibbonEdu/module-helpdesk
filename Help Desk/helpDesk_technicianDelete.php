@@ -34,7 +34,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     if (isset($_GET["technicianID"])) {
         $technicianID = $_GET["technicianID"];
-        $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID);
+        $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID);
         echo $form->getOutput();
     } else {
         $page->addError(__('No technician selected.'));

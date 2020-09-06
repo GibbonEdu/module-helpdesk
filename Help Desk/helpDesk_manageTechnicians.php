@@ -43,7 +43,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         }
 
         $issues = array_map(function($issue) use ($guid) {
-            return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussView.php&issueID='. $issue['issueID'], $issue['issueName']);
+            return Format::link('./index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php&issueID='. $issue['issueID'], $issue['issueName']);
         }, $issues);
 
         return implode(', ', $issues);
@@ -53,7 +53,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $table->setTitle('Technicians');
 
     $table->addHeaderAction('add', __('Add'))
-            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnician.php')
+            ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnician.php')
             ->displayLabel();
 
     $table->addColumn('name', __('Name'))
@@ -67,14 +67,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             ->addParam('technicianID')
             ->format(function ($technician, $actions) use ($guid) {
                 $actions->addAction('edit', __('Edit'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_setTechGroup.php');
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_setTechGroup.php');
 
                 $actions->addAction('stats', __('Stats'))
                         ->setIcon('internalAssessment')
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianStats.php');
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_technicianStats.php');
 
                 $actions->addAction('delete', __('Delete'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianDelete.php');
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_technicianDelete.php');
             });
 
     echo $table->render($technicianGateway->selectTechnicians()->toDataSet());

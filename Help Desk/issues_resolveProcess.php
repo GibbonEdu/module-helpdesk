@@ -28,7 +28,7 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php' ;
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php' ;
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php' ;
 
 $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -47,7 +47,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         header("Location: {$URL}");
         exit();
     } else {
-        if (relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID')) || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
+        if (relatedToIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID']) || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
             //Write to database
             $issueGateway = $container->get(IssueGateway::class);
             try {
@@ -76,7 +76,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             $personIDs = getPeopleInvolved($connection2, $issueID);
 
             foreach ($personIDs as $personID) {
-                if ($personID != $gibbon->session->get('gibbonPersonID')) {
+                if ($personID != $_SESSION[$guid]['gibbonPersonID']) {
                     setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
                 } 
             }

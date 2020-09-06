@@ -25,7 +25,7 @@ use Gibbon\Tables\DataTable;
 $page->breadcrumbs
     ->add(__('Statistics'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -36,8 +36,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
     $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date('Y-m-d');
 
     //Filter
-    $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
-    $form->addHiddenValue('q', '/modules/' . $gibbon->session->get('module') . '/helpdesk_statistics.php');
+    $form = Form::create('helpDeskStatistics', $_SESSION[$guid]['absoluteURL'] . '/index.php', 'get');
+    $form->addHiddenValue('q', '/modules/' . $_SESSION[$guid]['module'] . '/helpdesk_statistics.php');
     $form->setTitle('Filter');
 
     $row = $form->addRow();
@@ -85,7 +85,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         },
     ]);
 
-    $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
+    $logs = $logGateway->queryLogs($criteria, $_SESSION[$guid]['gibbonSchoolYearID']);
 
     $stats = array();
 
@@ -104,7 +104,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
     $table->setTitle('Statistics');
     
     $data = array(
-        'q' => '/modules/' . $gibbon->session->get('module') . '/helpDesk_statisticsDetail.php',
+        'q' => '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_statisticsDetail.php',
         'title' => '', 
         'startDate' => $startDate, 
         'endDate' => $endDate,
@@ -113,7 +113,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
     $table->addColumn('name', __('Name'))
             ->format(function ($row) use ($guid, $data) {
                 $data['title'] = $row['name'];
-                return Format::link($gibbon->session->get('absoluteURL') . '/index.php?' . http_build_query($data), $row['name']);
+                return Format::link($_SESSION[$guid]['absoluteURL'] . '/index.php?' . http_build_query($data), $row['name']);
             });
 
     $table->addColumn('value', __('Value'));

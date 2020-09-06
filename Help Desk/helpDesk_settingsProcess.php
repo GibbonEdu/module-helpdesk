@@ -21,9 +21,9 @@ use Gibbon\Domain\System\SettingGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_settings.php' ;
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settings.php' ;
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_settings.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settings.php')) {
     //Fail 0
     $URL .= '&return=error0' ;
     header("Location: {$URL}");
@@ -75,14 +75,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         }
     }
 
-    setLog($connection2, $gibbon->session->get('gibbonPersonID'), $gibbon->session->get('gibbonModuleID'), $gibbon->session->get('gibbonPersonID'), 'Help Desk Settings Edited', null);
+    setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Help Desk Settings Edited', null);
 
     getSystemSettings($guid, $connection2) ;
     $return = 'success0';
     if ($dbFail) {
         $return = 'warning1';
     }
-    $URL .= '&return='.$return ;
+    $URL .= '&return=$return' ;
     header("Location: {$URL}");
 }
 ?>

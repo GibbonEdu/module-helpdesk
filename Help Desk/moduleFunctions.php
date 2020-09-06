@@ -79,7 +79,7 @@ function notifyTechnican($connection2, $guid, $issueID, $name, $personID)
 
     while ($row = $result->fetch()) {
         $permission = getPermissionValue($connection2, $row["gibbonPersonID"], "viewIssueStatus");
-        if ($row["gibbonPersonID"] != $gibbon->session->get('gibbonPersonID') && $row["gibbonPersonID"] != $personID && ($permission == "UP" || $permission == "All")) {
+        if ($row["gibbonPersonID"] != $_SESSION[$guid]["gibbonPersonID"] && $row["gibbonPersonID"] != $personID && ($permission == "UP" || $permission == "All")) {
             setNotification($connection2, $guid, $row["gibbonPersonID"], "A new issue has been added (" . $name . ").", "Help Desk", "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=" . $issueID);
         }
     }

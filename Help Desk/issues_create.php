@@ -32,18 +32,18 @@ if (!isModuleAccessible($guid, $connection2)) {
         $editLink = null;
         if (isset($_GET['issueID'])) {
             $issueID = $_GET['issueID'];
-            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussView.php&issueID=' . $issueID;
+            $editLink = $_SESSION[$guid]["absoluteURL"] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php&issueID=' . $issueID;
         }
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
-    $priorityOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $gibbon->session->get('module'), 'issuePriority', false))));
-    $categoryOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $gibbon->session->get('module'), 'issueCategory', false))));
+    $priorityOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issuePriority', false))));
+    $categoryOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issueCategory', false))));
     $privacyOptions = array("Everyone", "Related", "Owner", "No one");
 
-    $form = Form::create('createIssue', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_createProccess.php', 'post');
+    $form = Form::create('createIssue', $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
-    $form->addHiddenValue('address', $gibbon->session->get('address'));
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
     
     $row = $form->addRow();
         $row->addLabel('issueName', __('Issue Name'));
@@ -70,14 +70,14 @@ if (!isModuleAccessible($guid, $connection2)) {
         
     if (count($priorityOptions) > 0) {
         $row = $form->addRow();
-            $row->addLabel('priority', __(getSettingByScope($connection2, $gibbon->session->get('module'), 'issuePriorityName', false)));
+            $row->addLabel('priority', __(getSettingByScope($connection2, $_SESSION[$guid]['module'], 'issuePriorityName', false)));
             $row->addSelect('priority')
                 ->fromArray($priorityOptions)
                 ->placeholder()
                 ->isRequired();
     }
     
-    if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), "createIssueForOther")) {
+    if (getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "createIssueForOther")) {
         $row = $form->addRow();
             $row->addLabel('createFor', __('Create on behalf of'))
                 ->description(__('Leave blank if creating issue for self.'));
@@ -90,7 +90,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             ->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
         $row->addSelect('privacySetting')
             ->fromArray($privacyOptions)
-            ->selected(getSettingByScope($connection2, $gibbon->session->get('module'), 'resolvedIssuePrivacy', false))
+            ->selected(getSettingByScope($connection2, $_SESSION[$guid]['module'], 'resolvedIssuePrivacy', false))
             ->isRequired(); 
         
     $row = $form->addRow();

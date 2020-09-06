@@ -24,13 +24,13 @@ $page->breadcrumbs
         ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
         ->add(__('Create Technician'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
     if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php', null);
+        returnProcess($guid, $_GET['return'], $_SESSION[$guid]["absoluteURL"] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php', null);
     }
 
     $data = array();
@@ -52,8 +52,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         return $group;
     }, array());
 
-    $form = Form::create('createTechnician',  $gibbon->session->get('absoluteURL').'/modules/'.$gibbon->session->get('module').'/helpDesk_createTechnicianProcess.php', 'post');
-    $form->addHiddenValue('address', $gibbon->session->get('address'));
+    $form = Form::create('createTechnician',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_createTechnicianProcess.php', 'post');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
     $row = $form->addRow();
         $row->addLabel('person', __('Person'));

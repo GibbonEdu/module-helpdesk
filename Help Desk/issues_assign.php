@@ -34,13 +34,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
         $permission = $isReassign ? 'reassignIssue' : 'assignIssue';
 
-        if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), $permission)) {
+        if (getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], $permission)) {
             if (isset($_GET['return'])) {
                 returnProcess($guid, $_GET['return'], null, null);
             }
             
-            $form = Form::create('assignIssue',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
-            $form->addHiddenValue('address', $gibbon->session->get('address'));
+            $form = Form::create('assignIssue',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
+            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
             
             $data = array('issueID' => $issueID);
             

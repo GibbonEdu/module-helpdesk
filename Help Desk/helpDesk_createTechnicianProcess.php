@@ -23,9 +23,9 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnician.php';
+$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnician.php';
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
     $URL .= '&return=error0' ;
     header("Location: {$URL}");
 } else {
@@ -62,7 +62,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         }
 
         $technicianID = $connection2->lastInsertId();
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Added', array('gibbonPersonID'=>$person, 'technicianID'=>$technicianID), null);
+        setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Added', array('gibbonPersonID'=>$person, 'technicianID'=>$technicianID), null);
 
         //Success 0
         $URL .= '&return=success0' ;

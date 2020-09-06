@@ -27,8 +27,8 @@ use Gibbon\View\View;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
-$allowed = relatedToIssue($connection2, $_GET['issueID'], $gibbon->session->get('gibbonPersonID'));
-if ((!hasTechnicianAssigned($connection2, $_GET['issueID']) && isTechnician($connection2, $gibbon->session->get('gibbonPersonID'))) || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'fullAccess')) {
+$allowed = relatedToIssue($connection2, $_GET['issueID'], $_SESSION[$guid]['gibbonPersonID']);
+if ((!hasTechnicianAssigned($connection2, $_GET['issueID']) && isTechnician($connection2, $_SESSION[$guid]['gibbonPersonID'])) || getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'fullAccess')) {
     $allowed = true;
 }
 
@@ -64,15 +64,15 @@ if (!isModuleAccessible($guid, $connection2) || !$allowed) {
     }
 
     $privacySetting = $array2['privacySetting'];
-    if ($array2['issueStatus']=='Resolved' && !getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'fullAccess')) {
+    if ($array2['issueStatus']=='Resolved' && !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'fullAccess')) {
         if ($privacySetting == 'No one') {
             $page->addError(__('You do not have access to this action.'));
             exit();
-        } else if ($privacySetting == 'Related' && !relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
+        } else if ($privacySetting == 'Related' && !relatedToIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
             $page->addError(__('You do not have access to this action.'));
             exit();
         }
-        else if ($privacySetting == 'Owner' && !isPersonsIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
+        else if ($privacySetting == 'Owner' && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
             $page->addError(__('You do not have access to this action.'));
             exit();
         }
@@ -92,8 +92,8 @@ if (!isModuleAccessible($guid, $connection2) || !$allowed) {
         $array2['technicianID'] = null;
     }
 
-    if (technicianExists($connection2, $array2['technicianID']) && !isPersonsIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID')) && !getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
-        if (!($array2['technicianID'] == getTechnicianID($connection2, $gibbon->session->get('gibbonPersonID')))) {
+    if (technicianExists($connection2, $array2['technicianID']) && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID']) && !getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue')) {
+        if (!($array2['technicianID'] == getTechnicianID($connection2, $_SESSION[$guid]['gibbonPersonID']))) {
             $page->addError(__('You do not have access to this action.'));
             exit();
         }
@@ -154,8 +154,8 @@ if (!isModuleAccessible($guid, $connection2) || !$allowed) {
     $table->addColumn('privacySetting', __('Privacy'))
             ->width($tdWidth)
             ->format(function($row) use ($connection2, $guid) {
-                if (isPersonsIssue($connection2, $row['issueID'], $gibbon->session->get('gibbonPersonID')) || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), "fullAccess")) {
-                    print '<a href="' . $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussEdit.php&issueID='. $row['issueID'] . '">' .  __($row['privacySetting']) . '</a>';
+                if (isPersonsIssue($connection2, $row['issueID'], $_SESSION[$guid]["gibbonPersonID"]) || getPermissionValue($connection2, $_SESSION[$guid]["gibbonPersonID"], "fullAccess")) {
+                    print '<a href="' . $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_discussEdit.php&issueID='. $row['issueID'] . '">' .  __($row['privacySetting']) . '</a>';
                 } else {
                     print $row['privacySetting'];
                 }
@@ -167,19 +167,19 @@ if (!isModuleAccessible($guid, $connection2) || !$allowed) {
     $table = DataTable::createDetails('description');
     $table->setTitle(__('Description'));
 
-    if ($array2['technicianID'] == null && (!relatedToIssue($connection2, $_GET['issueID'], $gibbon->session->get('gibbonPersonID')) || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'fullAccess'))) {
-         if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'acceptIssue') && !isPersonsIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
+    if ($array2['technicianID'] == null && (!relatedToIssue($connection2, $_GET['issueID'], $_SESSION[$guid]['gibbonPersonID']) || getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'fullAccess'))) {
+         if (getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'acceptIssue') && !isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
             $table->addHeaderAction('accept', __('Accept'))
                     ->setIcon('page_new')
                     ->directLink()
-                    ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_acceptProcess.php')
                     ->addParam('issueID', $issueID);
         }
-        if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'assignIssue')) {
+        if (getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'assignIssue')) {
             $table->addHeaderAction('assign', __('Assign'))
                     ->setIcon('attendance')
                     ->modalWindow()
-                    ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_assign.php')
                     ->addParam('issueID', $issueID);
           }
     }
@@ -203,22 +203,22 @@ if (!isModuleAccessible($guid, $connection2) || !$allowed) {
 
             $action = new Action('refresh', __('Refresh'));
             $action->setIcon('refresh')
-                    ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_discussView.php')
                     ->addParam('issueID', $issueID);
             $headerActions[] = $action;
 
             $action = new Action('add', __('Add'));
             $action->modalWindow()
-                    ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussPost.php')
+                    ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_discussPost.php')
                     ->addParam('issueID', $issueID);
 
             $headerActions[] = $action;
 
-            if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'resolveIssue') || isPersonsIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
+            if (getPermissionValue($connection2, $_SESSION[$guid]['gibbonPersonID'], 'resolveIssue') || isPersonsIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID'])) {
                 $action = new Action('resolve', __('Resolve'));
                 $action->setIcon('iconTick')
                         ->directLink()
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
+                        ->setURL('/modules/' . $_SESSION[$guid]['module'] . '/issues_resolveProcess.php')
                         ->addParam('issueID', $issueID);
 
                 $headerActions[] = $action;

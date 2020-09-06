@@ -24,7 +24,7 @@ $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
     ->add(__('Edit Technician'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -43,8 +43,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
 
         $values = $technicianGateway->getByID($technicianID);
 
-        $form = Form::create('setTechGroup',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_setTechGroupProcess.php?technicianID=' . $technicianID, 'post');
-        $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form = Form::create('setTechGroup',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_setTechGroupProcess.php?technicianID=' . $technicianID, 'post');
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
         $row = $form->addRow();
             $row->addLabel('group', __('Technician Group'));

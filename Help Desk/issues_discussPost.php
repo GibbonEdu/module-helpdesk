@@ -38,8 +38,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 ->add(__('Post Discuss'));
 
             if (relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
-                $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
-                $form->addHiddenValue('address', $gibbon->session->get('address'));
+                $form = Form::create('issueDiscuss',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
+                $form->addHiddenValue('address', $_SESSION[$guid]['address']);
                 
                 $row = $form->addRow();
                     $column = $row->addColumn();

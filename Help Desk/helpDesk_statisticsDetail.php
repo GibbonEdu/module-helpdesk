@@ -37,7 +37,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
     //Proceed!
     if (isset($_GET["title"])) {
         $title = $_GET["title"];
-        $URL = $gibbon->session->get('absoluteURL') . "/index.php?q=/modules/" . $gibbon->session->get('module');
+        $URL = $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]['module'];
 
         $extras = array();
 
@@ -53,7 +53,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
             $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
 
             $extra = "Technician Name";
-            $extraKey = "technicianID";
+            $extraKey = "technicainID";
             $extraString = "%techName%";
             $extras[1] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
         } else if ($title == "Technician Assigned") {
@@ -63,7 +63,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
             $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
 
             $extra = "Technician Name";
-            $extraKey = "technicianID";
+            $extraKey = "technicainID";
             $extraString = "%techName%";
             $extras[1] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
         } else if ($title == "Discussion Posted") {
@@ -109,10 +109,10 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
         $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date("Y-m-d");
 
         //Filter
-        $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
+        $form = Form::create('helpDeskStatistics', $_SESSION[$guid]['absoluteURL'] . '/index.php', 'get');
 
         $form->setTitle('Filter');
-        $form->addHiddenValue('q', '/modules/' . $gibbon->session->get('module') . '/helpdesk_statisticsDetail.php');
+        $form->addHiddenValue('q', '/modules/' . $_SESSION[$guid]['module'] . '/helpdesk_statisticsDetail.php');
         $form->addHiddenValue('title', $title);
 
         $row = $form->addRow();
