@@ -20,6 +20,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\Form;
 
+require_once __DIR__ . '/moduleFunctions.php';
+
 $page->breadcrumbs->add(__('Manage Help Desk Settings'));
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settings.php')) {
@@ -39,13 +41,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
         'issuePriorityName',
     );
 
-    $privacyTypes = array(
-        'Everyone' => __('Everyone'),
-        'Related' => __('Related'),
-        'Owner' => __('Owner'),
-        'No one' => __('No one'),
-    );
-
     $settingGateway = $container->get(SettingGateway::class);
 
     $form = Form::create('helpDeskSettings',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_settingsProcess.php');
@@ -58,7 +53,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
             switch ($settingName) {
                 case 'resolvedIssuePrivacy':
                     $row->addSelect($setting['name'])
-                        ->fromArray($privacyTypes)
+                        ->fromArray(privacyOptions())
                         ->selected($setting['value']);
                     break;
                 case 'issueCategory':

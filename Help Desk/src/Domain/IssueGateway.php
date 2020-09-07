@@ -74,36 +74,62 @@ class IssueGateway extends QueryableGateway
        return $this->runQuery($query, $criteria);
     }
     
-    
-    public function getOwnerOfIssue($issueID){
-        $data = array("issueID"=> $issueID);
-        $sql = 'SELECT helpDeskIssue.gibbonPersonID, surname, preferredName, gibbonPerson.title 
-        FROM helpDeskIssue 
-        JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) 
-        WHERE issueID=:issueID';
-        
-        return $this->db()->select($sql, $data);
+    public function isRelated($issueID, $gibbonPersonID) {
+        $query = $this
+            ->newQuery()
+            ->from('helpDeskIssue')
+            ->cols(['helpDeskIssue.gibbonPersonID', 'techID.gibbonPersonID AS techPersonID'])
+            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
+            ->where('helpDeskIssue.issueID = :issueID')
+            ->bindValue('issueID', $issueID);
+
+        $issue = $this->runSelect($query);
+
+        return $issue->isNotEmpty() ? in_array($gibbonPersonID, $issue->fetch()) : false;
     }
-    
-    public function getTechWorkingOnIssue($issueID){
-        $data = array("issueID"=> $issueID);
-        $sql = "SELECT helpDeskTechnicians.gibbonPersonID AS personID, surname, preferredName 
-        FROM helpDeskIssue 
-        JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) 
-        JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) 
-        WHERE issueID=:issueID ";
+
+    //This can probably be simplfied, however, for now it works.
+    public function getPeopleInvolved($issueID) {
+        $people = array();
+
+        $query = $this
+            ->newQuery()
+            ->from('helpDeskIssue')
+            ->cols(['helpDeskIssue.gibbonPersonID', 'techID.gibbonPersonID AS techPersonID'])
+            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
+            ->where('helpDeskIssue.issueID = :issueID')
+            ->bindValue('issueID', $issueID);
+
+        $result = $this->runSelect($query);
+
+        if ($result->isNotEmpty()) {
+            foreach ($result->fetch() as $person) {
+                if (!empty($person)) {
+                    $people[] = $person;
+                }
+            }
+        }
+
+        $query = $this
+            ->newQuery()
+            ->distinct()
+            ->from('helpDeskIssueDiscuss')
+            ->cols(['helpDeskIssueDiscuss.gibbonPersonID', 'helpDeskTechGroups.fullAccess'])
+            ->leftJoin('helpDeskTechnicians', 'helpDeskIssueDiscuss.gibbonPersonID=helpDeskTechnicians.gibbonPersonID')
+            ->leftJoin('helpDeskTechGroups', 'helpDeskTechnicians.groupID=helpDeskTechGroups.groupID')
+            ->where('helpDeskIssueDiscuss.issueID = :issueID')
+            ->bindValue('issueID', $issueID)
+            ->where('helpDeskTechGroups.fullAccess IS NOT null');
         
-        return $this->db()->select($sql, $data);
-    }
+        $result = $this->runSelect($query);
         
-        
-    public function getPeopleInvolved($issueID){
-        $data = array("issueID"=> $issueID);
-        $sql = "(SELECT DISTINCT helpDeskIssue.gibbonPersonID FROM helpDeskIssue WHERE issueID=:issueID)
-        UNION (SELECT helpDeskIssueDiscuss.gibbonPersonID FROM helpDeskIssueDiscuss WHERE issueID=:issueID )
-        UNION (SELECT helpDeskTechnicians.gibbonPersonID FROM helpDeskTechnicians LEFT JOIN helpDeskIssue ON (helpDeskIssue.technicianID = helpDeskTechnicians.technicianID) WHERE issueID=:issueID)";
-        
-        return $this->db()->select($sql, $data);
+        while ($person = $result->fetch()) {
+            if (!in_array($person['gibbonPersonID'], $people) && $person['fullAccess']) {
+                $people[] = $person['gibbonPersonID'];
+            }
+        }
+
+        return $people;
     }
 
     

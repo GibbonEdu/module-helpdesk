@@ -58,7 +58,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         exit();
     } else {
         //TODO: Understand this?
-        if (relatedToIssue($connection2, $issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
+        if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
             //Write to database
             try {
                 $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
@@ -81,7 +81,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             $message .= $issueID;
             $message .= ' (' . $issue['issueName'] . ') has been resolved.';
 
-            $personIDs = getPeopleInvolved($connection2, $issueID);
+            $personIDs = $issueGateway->getPeopleInvolved($issueID);
 
             foreach ($personIDs as $personID) {
                 if ($personID != $gibbonPersonID) {

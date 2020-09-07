@@ -25,6 +25,7 @@ use Gibbon\Domain\User\UserGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
+use Gibbon\Domain\System\SettingGateway;
 
 //Module includes
 require_once __DIR__ . '/moduleFunctions.php';
@@ -150,14 +151,16 @@ if (!isModuleAccessible($guid, $connection2)) {
             ]);
     }
 
-    $categoryFilters = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $gibbon->session->get('module'), 'issueCategory', false))));
+    $settingsGateway = $container->get(SettingGateway::class);
+
+    $categoryFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issueCategory'));
     foreach  ($categoryFilters as $category) {
         $table->addMetaData('filterOptions', [
             'category:'.$category => __('Category').': '.$category,
         ]);
     }
 
-    $priorityFilters = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $gibbon->session->get('module'), 'issuePriority', false))));
+    $priorityFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issuePriority', false));
     foreach  ($priorityFilters as $priority) {
         $table->addMetaData('filterOptions', [
             'priority:'.$priority => __('Priority').': '.$priority,
@@ -195,7 +198,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 });
 
     if (!empty($priorityFilters)) {
-        $table->addColumn('priority', __(getSettingByScope($connection2, $gibbon->session->get('module'), 'issuePriorityName', false)));
+        $table->addColumn('priority', __($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issuePriorityName')));
     }
     
     $table->addColumn('technicianID', __('Technician'))
@@ -218,19 +221,14 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $moduleName = $gibbon->session->get('module');
 
                 $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-                $isPersonsIssue = $issues['issueID'] == $gibbonPersonID;
+                $isPersonsIssue = $issues['gibbonPersonID'] == $gibbonPersonID;
 
                 $actions->addAction('view', __('Open'))
                         ->setURL('/modules/' . $moduleName . '/issues_discussView.php');
-                    
-                if ($isPersonsIssue || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) { 
-                    $actions->addAction('edit', __('Edit'))
-                            ->setURL('/modules/' . $moduleName . '/issues_discussEdit.php');
-                }
 
                 if ($issues['status'] != 'Resolved') {
                     if ($issues['technicianID'] == null) {
-                        if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue')) {
+                        if (!$isPersonsIssue && $techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue')) {
                             $actions->addAction('accept', __('Accept'))
                                     ->directLink()
                                     ->setURL('/modules/' . $moduleName . '/issues_acceptProcess.php')
@@ -254,7 +252,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                                 ->setURL('/modules/' . $moduleName . '/issues_resolveProcess.php')
                                 ->setIcon('iconTick');
                     }
-                } else if ($issues['status'] == 'Resolved') {
+                } else {
                     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
                         $actions->addAction('reincarnate', __('Reincarnate'))
                                 ->directLink()

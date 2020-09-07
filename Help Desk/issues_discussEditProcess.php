@@ -50,9 +50,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     }
 
     $privacySetting = $_POST['privacySetting'] ?? '';
-    $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
 
-    if (!in_array($privacySetting, $privacyOptions)) {
+    if (!in_array($privacySetting, privacyOptions())) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();

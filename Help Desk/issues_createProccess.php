@@ -63,9 +63,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
     $settingGateway = $container->get(SettingGateway::class);
 
-    $priorityOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issuePriority'))));
-    $categoryOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issueCategory'))));
-    $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
+    $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
+    $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -75,7 +74,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         $createdOnBehalf = true;
     }
 
-    if (!in_array($data['privacySetting'], $privacyOptions)) {
+    if (!in_array($data['privacySetting'], privacyOptions())) {
         $data['privacySetting'] = $settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy');
     }
 
@@ -105,16 +104,26 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
             exit();
         }
 
+        //Notify issue owner, if created on their behalf
         if ($createdOnBehalf) {
             setNotification($connection2, $guid, $data['gibbonPersonID'], 'A new issue has been created on your behalf (' . $data['issueName'] . ').', 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
         }
 
-        notifyTechnican($connection2, $guid, $issueID, $data['issueName'], $data['gibbonPersonID']);
+        //Notify Techicians
+        $technicianGateway = $container->get(TechnicianGateway::class);
+        $technicians = $technicianGateway->selectTechnicians();
 
+        while ($row = $technicians->fetch()) {
+            $permission = $techGroupGateway->getPermissionValue($row['gibbonPersonID'], 'viewIssueStatus');
+            if ($row['gibbonPersonID'] != $gibbon->session->get('gibbonPersonID') && $row['gibbonPersonID'] != $data['gibbonPersonID'] && ($permission == "UP" || $permission == "All")) {
+                setNotification($connection2, $guid, $row['gibbonPersonID'], 'A new issue has been added (' . $data['issueName'] . ').', $moduleName, "/index.php?q=/modules/$moduleName/issues_discussView.php&issueID=$issueID");
+            }
+        }
+
+        //Log
         $array = array('issueID' => $issueID);
         $title = 'Issue Created';
         if ($createdOnBehalf) {
-            $technicianGateway = $container->get(TechnicianGateway::class);
             $array['technicianID'] = $technicianGateway->getTechnicianByPersonID($gibbonPersonID)->fetch()['technicianID'];
             $title = 'Issue Created (for Another Person)';
         }

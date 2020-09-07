@@ -44,8 +44,6 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php
         $techGroupGateway = $conatiner->get(TechGroupGateway::class);
 
         if ($issue['gibbonPersonID'] == $gibbonPersonID || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
-            $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
-
             $form = Form::create('editPrivacy', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussEditProcess.php?issueID=' . $issueID, 'post'); 
             $form->addHiddenValue('address', $gibbon->session->get('address')); 
             
@@ -54,7 +52,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php
                 $row->addLabel('privacySetting', __('Privacy Settings'))
                     ->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
                 $row->addSelect('privacySetting')
-                    ->fromArray($privacyOptions)
+                    ->fromArray(privacyOptions())
                     ->selected($issue['privacySetting'])
                     ->isRequired(); 
                 

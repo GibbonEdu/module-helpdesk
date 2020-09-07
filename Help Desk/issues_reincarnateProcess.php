@@ -51,7 +51,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
-    if (($issue['gibbonPersonID'] != $gibbonPersonID) && !(relatedToIssue($connection2, $issueID, $gibbonPersonID) && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) {
+    if (($issue['gibbonPersonID'] != $gibbonPersonID) && !($issueGateway->isRelated($issueID, $gibbonPersonID) && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
@@ -84,7 +84,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $message .= $issueID;
     $message .= ' (' . $issue['issueName'] . ') has been reincarnated.';
 
-    $personIDs = getPeopleInvolved($connection2, $issueID);
+    $personIDs = $issueGateway->getPeopleInvolved($connection2, $issueID);
 
     foreach ($personIDs as $personID) {
         if ($personID != $gibbonPersonID) {

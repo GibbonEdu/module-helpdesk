@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once '../../gibbon.php';
@@ -45,7 +46,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
-    if (!relatedToIssue($connection2, $issueID, $gibbonPersonID)) {
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+
+    if (!$issueGateway->isRelated($issueID, $gibbonPersonID) && !$techGroupGateway->gerPermissionValue($gibbonPersonID, 'fullAccess')) {
         //Fail 0 aka No permission
         $URL .= '/issues_view.php&return=error0';
         header("Location: {$URL}");
@@ -96,7 +99,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         $message .= $issueID;
         $message .= ' (' . $issue['issueName'] . ').';
 
-        $personIDs = getPeopleInvolved($connection2, $issueID);
+        $personIDs = $issueGateway->getPeopleInvolved($issueID);
 
         foreach ($personIDs as $personID) {
             if ($personID != $gibbonPersonID) {
