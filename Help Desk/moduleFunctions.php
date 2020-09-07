@@ -17,19 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-function isTechnician($connection2, $gibbonPersonID)
-{
-    try {
-        $data = array("gibbonPersonID"=> $gibbonPersonID);
-        $sql = "SELECT * FROM helpDeskTechnicians WHERE gibbonPersonID=:gibbonPersonID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
-    }
-
-    return ($result->rowCount() == 1);
-}
-
 function notifyTechnican($connection2, $guid, $issueID, $name, $personID)
 {
     try {
@@ -66,26 +53,7 @@ function relatedToIssue($connection2, $issueID, $gibbonPersonID)
     return $isRelated;
 }
 
-function isPersonsIssue($connection2, $issueID, $gibbonPersonID)
-{
-    $ownerID = getOwnerOfIssue($connection2, $issueID)['gibbonPersonID'];
-    return ($ownerID == $gibbonPersonID);
-}
-
-function getOwnerOfIssue($connection2, $issueID)
-{
-    try {
-        $data = array("issueID"=> $issueID);
-        $sql = "SELECT helpDeskIssue.gibbonPersonID, surname, preferredName, gibbonPerson.title FROM helpDeskIssue JOIN gibbonPerson ON (helpDeskIssue.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $row = $result->fetch();
-    } catch (PDOException $e) {
-    }
-
-    return $row;
-}
-
+//Only used in this file, to be removed when dependent functions are removed
 function getPermissionValue($connection2, $gibbonPersonID, $permission)
 {
     try {
