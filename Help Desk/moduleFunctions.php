@@ -21,22 +21,13 @@ function explodeTrim($commaSeperatedString) {
     return array_filter(array_map('trim', explode(',', $commaSeperatedString)));
 }
 
-function relatedToIssue($connection2, $issueID, $gibbonPersonID)
-{
-    $isRelated = false;
-
-    $personIDs = getPeopleInvolved($connection2, $issueID);
-    foreach ($personIDs as $personID) {
-        if ($personID == $gibbonPersonID) {
-            $isRelated = true;
-        }
-    }
-
-    if (getPermissionValue($connection2, $gibbonPersonID, "fullAccess")) {
-        $isRelated = true;
-    }
-
-    return $isRelated;
+function privacyOptions() {
+    return array(
+        'Everyone',
+        'Related',
+        'Owner',
+        'No one',
+    );
 }
 
 //Only used in this file, to be removed when dependent functions are removed
@@ -60,6 +51,24 @@ function getPermissionValue($connection2, $gibbonPersonID, $permission)
         }
     }
     return $row[$permission];
+}
+
+function relatedToIssue($connection2, $issueID, $gibbonPersonID)
+{
+    $isRelated = false;
+
+    $personIDs = getPeopleInvolved($connection2, $issueID);
+    foreach ($personIDs as $personID) {
+        if ($personID == $gibbonPersonID) {
+            $isRelated = true;
+        }
+    }
+
+    if (getPermissionValue($connection2, $gibbonPersonID, "fullAccess")) {
+        $isRelated = true;
+    }
+
+    return $isRelated;
 }
 
 function getPeopleInvolved($connection2, $issueID)
