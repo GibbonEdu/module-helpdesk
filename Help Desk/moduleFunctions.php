@@ -30,43 +30,6 @@ function isTechnician($connection2, $gibbonPersonID)
     return ($result->rowCount() == 1);
 }
 
-function getTechnicianID($connection2, $gibbonPersonID)
-{
-    try {
-        $data = array("gibbonPersonID"=> $gibbonPersonID);
-        $sql = "SELECT * FROM helpDeskTechnicians WHERE helpDeskTechnicians.gibbonPersonID=:gibbonPersonID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
-    }
-
-    $id = null;
-    if ($result->rowCount() == 1) {
-        $array = $result->fetch();
-        $id = (int)$array["technicianID"];
-    }
-    return $id;
-}
-
-function hasTechnicianAssigned($connection2, $issueID)
-{
-    $id = getTechWorkingOnIssue($connection2, $issueID)["personID"];
-    return ($id != null);
-}
-
-function technicianExists($connection2, $technicianID)
-{
-    try {
-        $data = array("technicianID"=> $technicianID);
-        $sql = "SELECT * FROM helpDeskTechnicians WHERE technicianID=:technicianID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
-    }
-
-    return ($result->rowCount() == 1);
-}
-
 function notifyTechnican($connection2, $guid, $issueID, $name, $personID)
 {
     try {
@@ -123,20 +86,6 @@ function getOwnerOfIssue($connection2, $issueID)
     return $row;
 }
 
-function getTechWorkingOnIssue($connection2, $issueID)
-{
-    try {
-        $data = array("issueID"=> $issueID);
-        $sql = "SELECT helpDeskTechnicians.gibbonPersonID AS personID, surname, preferredName FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE issueID=:issueID ";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $row = $result->fetch();
-    } catch (PDOException $e) {
-    }
-
-    return $row;
-}
-
 function getPermissionValue($connection2, $gibbonPersonID, $permission)
 {
     try {
@@ -157,20 +106,6 @@ function getPermissionValue($connection2, $gibbonPersonID, $permission)
         }
     }
     return $row[$permission];
-}
-
-function getIssueStatus($connection2, $issueID)
-{
-    try {
-        $data = array("issueID"=> $issueID);
-        $sql = "SELECT status FROM helpDeskIssue WHERE issueID=:issueID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $row = $result->fetch();
-    } catch (PDOException $e) {
-    }
-
-    return $row["status"];
 }
 
 function getPeopleInvolved($connection2, $issueID)
@@ -203,20 +138,6 @@ function getPeopleInvolved($connection2, $issueID)
         }
     }
     return $personIDs;
-}
-
-function getIssue($connection2, $issueID)
-{
-    try {
-        $data = array("issueID"=> $issueID);
-        $sql = "SELECT * FROM helpDeskIssue WHERE issueID=:issueID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $row = $result->fetch();
-    } catch (PDOException $e) {
-    }
-
-    return $row;
 }
 
 function getPersonName($connection2, $gibbonPersonID)
