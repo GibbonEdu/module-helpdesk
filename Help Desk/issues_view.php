@@ -60,7 +60,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         ->fromPOST();
         
     $criteria->addFilterRules([
-        'issue' => function ($query, $issue) use ($guid) {
+        'issue' => function ($query, $issue) use ($gibbon) {
             switch($issue) {
                 case 'My Issues':
                     $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')

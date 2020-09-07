@@ -49,7 +49,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $table = DataTable::create('techGroups');
     $table->setTitle('Technician Groups');
 
-    $table->addHeaderAction('add', __('Create'))
+    $table->addHeaderAction('add', __('Add'))
             ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroup.php');
 
     $table->addColumn('groupName', __('Group Name'));
