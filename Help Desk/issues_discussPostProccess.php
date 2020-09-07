@@ -99,7 +99,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         $message .= $issueID;
         $message .= ' (' . $issue['issueName'] . ').';
 
-        $personIDs = getPeopleInvolved($connection2, $issueID);
+        $personIDs = $issueGateway->getPeopleInvolved($issueID);
 
         foreach ($personIDs as $personID) {
             if ($personID != $gibbonPersonID) {
