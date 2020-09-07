@@ -22,6 +22,8 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 //Module includes
 require_once __DIR__ . '/moduleFunctions.php';
@@ -32,7 +34,6 @@ if (!isModuleAccessible($guid, $connection2)) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-
     if (isset($_GET['return'])) {
         $editLink = null;
         if (isset($_GET['issueID'])) {
@@ -97,9 +98,14 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     echo $form->getOutput();      
     
-    if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'viewIssue') || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'fullAccess')) {
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    $technicianGateway = $container->get(TechnicianGateway::class);
+
+    $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'))->isNotEmpty();
+
+    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssue') || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess')) {
         $issues = $issueGateway->queryIssues($criteria);
-    } else if (isTechnician($connection2, $gibbon->session->get('gibbonPersonID'))) {
+    } else if ($isTechnician) {
         $issues = $issueGateway->queryIssues($criteria, 'technician', $gibbon->session->get('gibbonPersonID'));
     } else {
         $issues = $issueGateway->queryIssues($criteria, 'owner', $gibbon->session->get('gibbonPersonID'));
@@ -109,26 +115,26 @@ if (!isModuleAccessible($guid, $connection2)) {
     $table->setTitle('Issues');
     
     //FILTERS START
-    if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'viewIssue')) {
+    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssue')) {
         $table->addMetaData('filterOptions', ['issue:All'    => __('Issues').': '.__('All')]);
     }
-    if (isTechnician($connection2, $gibbon->session->get('gibbonPersonID'))) {
+    if ($isTechnician) {
         $table->addMetaData('filterOptions', ['issue:My Assigned'    => __('Issues').': '.__('My Assigned')]);
     }
     $table->addMetaData('filterOptions', ['issue:My Issues'    => __('Issues').': '.__('My Issues')]);
-    if (isTechnician($connection2, $gibbon->session->get('gibbonPersonID'))) {
-        if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'viewIssueStatus')=='All') {        
+    if ($isTechnician) {
+        if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssueStatus')=='All') {        
             $table->addMetaData('filterOptions', [
                 'status:Unassigned'           => __('Status').': '.__('Unassigned'),
                 'status:Pending'          => __('Status').': '.__('Pending'),
                 'status:Resolved'           => __('Status').': '.__('Resolved')
             ]);
-        } else if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'viewIssueStatus')=='UP') {            
+        } else if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssueStatus')=='UP') {            
             $table->addMetaData('filterOptions', [
                 'status:Unassigned'           => __('Status').': '.__('Unassigned'),
                 'status:Pending'          => __('Status').': '.__('Pending')
             ]);            
-        } else if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'viewIssueStatus')=='PR') {                    
+        } else if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssueStatus')=='PR') {                    
             $table->addMetaData('filterOptions', [
                 'status:Pending'          => __('Status').': '.__('Pending'),
                 'status:Resolved'           => __('Status').': '.__('Resolved')
@@ -203,46 +209,54 @@ if (!isModuleAccessible($guid, $connection2)) {
     
     $table->addActionColumn()
             ->addParam('issueID')
-            ->format(function ($issues, $actions) use ($connection2, $gibbon) {
-            $actions->addAction('view', __('Open'))
-                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php');
-                
-            if (isPersonsIssue($connection2, ($issues['issueID']), $gibbon->session->get('gibbonPersonID')) || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'fullAccess')) { 
-                $actions->addAction('edit', __('Edit'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussEdit.php');
-            }
-            if ($issues['status'] != 'Resolved') {
-                if ($issues['technicianID'] == null) {
-                    if (isTechnician($connection2, $gibbon->session->get('gibbonPersonID')) || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'fullAccess')) {
-                        $actions->addAction('accept', __('Accept'))
-                        ->directLink()
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
-                        ->setIcon('page_new');
+            ->format(function ($issues, $actions) use ($gibbon, $techGroupGateway) {
+                $moduleName = $gibbon->session->get('module');
+
+                $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+                $isPersonsIssue = $issues['issueID'] == $gibbonPersonID;
+
+                $actions->addAction('view', __('Open'))
+                        ->setURL('/modules/' . $moduleName . '/issues_discussView.php');
+                    
+                if ($isPersonsIssue || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) { 
+                    $actions->addAction('edit', __('Edit'))
+                            ->setURL('/modules/' . $moduleName . '/issues_discussEdit.php');
+                }
+
+                if ($issues['status'] != 'Resolved') {
+                    if ($issues['technicianID'] == null) {
+                        if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue')) {
+                            $actions->addAction('accept', __('Accept'))
+                                    ->directLink()
+                                    ->setURL('/modules/' . $moduleName . '/issues_acceptProcess.php')
+                                    ->setIcon('page_new');
+                        }
+
+                        if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue')) {
+                            $actions->addAction('assign', __('Assign'))
+                                    ->setURL('/modules/' . $moduleName . '/issues_assign.php')
+                                    ->setIcon('attendance');
+                        }
+                    } else if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue')) { 
+                        $actions->addAction('assign', __('Reassign'))
+                                ->setURL('/modules/' . $moduleName . '/issues_assign.php')
+                                ->setIcon('attendance');
                     }
-                    if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'assignIssue')) {
-                    $actions->addAction('assign', __('Assign'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
-                        ->setIcon('attendance');
+
+                    if($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
+                        $actions->addAction('resolve', __('Resolve'))
+                                ->directLink()
+                                ->setURL('/modules/' . $moduleName . '/issues_resolveProcess.php')
+                                ->setIcon('iconTick');
                     }
-                } else if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'reassignIssue')) { 
-                    $actions->addAction('assign', __('Reassign'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
-                        ->setIcon('attendance');
+                } else if ($issues['status'] == 'Resolved') {
+                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
+                        $actions->addAction('reincarnate', __('Reincarnate'))
+                                ->directLink()
+                                ->setURL('/modules/' . $moduleName . '/issues_reincarnateProcess.php')
+                                ->setIcon('reincarnate');
+                    }
                 }
-                if(getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'resolveIssue') || isPersonsIssue($connection2, $issues['issueID'], $gibbon->session->get('gibbonPersonID'))) {
-                    $actions->addAction('resolve', __('Resolve'))
-                        ->directLink()
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
-                        ->setIcon('iconTick');
-                }
-            }  if ($issues['status'] == 'Resolved') {
-                if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'reincarnateIssue') || isPersonsIssue($connection2, $issues['issueID'], $gibbon->session->get('gibbonPersonID'))) {
-                    $actions->addAction('reincarnate', __('Reincarnate'))
-                        ->directLink()
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_reincarnateProcess.php')
-                        ->setIcon('reincarnate');
-                }
-            }
             });
     
     echo $table->render($issues);    
