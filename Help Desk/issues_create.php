@@ -44,8 +44,8 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $settingGateway = $container->get(SettingGateway::class);
 
-    $priorityOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issuePriority'))));
-    $categoryOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issueCategory'))));
+    $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
+    $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
     $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
 
     $form = Form::create('createIssue', $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/issues_createProccess.php', 'post');

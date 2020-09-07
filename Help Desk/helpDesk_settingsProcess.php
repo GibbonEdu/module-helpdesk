@@ -57,7 +57,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
             switch ($setting) {
                 case 'issueCategory':
                 case 'issuePriority':
-                    $value = implode(',', array_filter(array_map('trim', explode(',', $_POST[$setting]))));
+                    $value = implode(',', explodTrim($_POST[$setting]));
                     break;
                 case 'resolvedIssuePrivacy':
                     if (!in_array($_POST[$setting], $privacyTypes)) {

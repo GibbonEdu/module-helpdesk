@@ -63,8 +63,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
     $settingGateway = $container->get(SettingGateway::class);
 
-    $priorityOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issuePriority'))));
-    $categoryOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issueCategory'))));
+    $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
+    $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
     $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
