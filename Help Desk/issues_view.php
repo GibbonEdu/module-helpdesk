@@ -21,6 +21,7 @@ use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
+use Gibbon\Domain\User\UserGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
@@ -100,6 +101,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $technicianGateway = $container->get(TechnicianGateway::class);
+    $userGateway = $container->get(UserGateway::class);
 
     $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'))->isNotEmpty();
 
@@ -187,8 +189,8 @@ if (!isModuleAccessible($guid, $connection2)) {
           });
     $table->addColumn('gibbonPersonID', __('Owner')) 
                 ->description(__('Category'))
-                ->format(function ($row) use ($connection2) {
-                    $owner = getPersonName($connection2, $row['gibbonPersonID']);
+                ->format(function ($row) use ($userGateway) {
+                    $owner = $userGateway->getByID($row['gibbonPersonID']);
                     return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/><small><i>'. __($row['category']) . '</i></small>';
                 });
 
@@ -197,8 +199,11 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
     
     $table->addColumn('technicianID', __('Technician'))
-                ->format(function ($row) use ($connection2) {
-                    $tech = getPersonName($connection2, $row['techPersonID']);
+                ->format(function ($row) use ($userGateway) {
+                    $tech = $userGateway->getByID($row['techPersonID']);
+                    if (empty($tech)) {
+                        return "";
+                    }
                     return Format::name($tech['title'], $tech['preferredName'], $tech['surname'], 'Staff');
                 });         
     $table->addColumn('status', __('Status'))

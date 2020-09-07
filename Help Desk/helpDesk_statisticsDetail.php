@@ -22,7 +22,9 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
+use Gibbon\Domain\User\UserGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
@@ -174,12 +176,14 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
                 ->format(Format::using('name', ['title', 'preferredName', 'surname', 'Student']));
 
         $techGroupGateway = $container->get(TechGroupGateway::class);
+        $technicianGateway = $container->get(TechnicianGateway::class);
         $issueDisucssGateway = $container->get(IssueDiscussGateway::class);
+        $userGateway = $container->get(UserGateway::class);
         //TODO: This is silly and doesn't seem to work for all things. Theres barely any error catching or really any good code here.
         //At some point this needs to be scrapped or built up from the ground, until then, too bad!
         foreach ($extras as $extra) {
             $table->addColumn($extra['extraKey'], __($extra['extra']))
-                    ->format(function ($row) use ($connection2, $extra, $techGroupGateway, $issueDisucssGateway) {
+                    ->format(function ($row) use ($extra, $technicianGateway, $techGroupGateway, $issueDisucssGateway, $userGateway) {
                         $array = unserialize($row['serialisedArray']);
                         $eString = str_replace("%extraInfo%", $array[$extra['extraKey']], $extra['extraString']);
 
@@ -188,12 +192,15 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
                         }
 
                         if (strpos($eString, "%techName%") !== false) {
-                            $techName = getTechnicianName($connection2, $array[$extra['extraKey']]);
-                            $eString = str_replace("%techName%", Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student'), $eString);
+                            $technician = $technicianGateway->getByID($array[$extra['extraKey']]);
+                            if (!empty($technician)) {
+                                $techName = $userGateway->getByID($technician['gibbonPersonID']);
+                                $eString = str_replace("%techName%", Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student'), $eString);
+                            }
                         }
 
                         if (strpos($eString, "%personName%") !== false) {
-                            $personName = getPersonName($connection2, $array[$extra['extraKey']]);
+                            $personName = $userGateway->getByID($array[$extra['extraKey']]);
                             $eString = str_replace("%personName%", Format::name($personName['title'], $personName['preferredName'], $personName['surname'], 'Student'), $eString);
                         }
 
