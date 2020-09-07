@@ -40,4 +40,28 @@ class TechnicianGateway extends QueryableGateway
 
         return $this->db()->select($sql, $data);
     }
+
+    public function getTechnician($technicianID) {
+        $query = $this
+            ->newQuery()
+            ->from('helpDeskTechnicians')
+            ->cols(['helpDeskTechnicians.technicianID', 'helpDeskTechnicians.gibbonPersonID', 'helpDeskTechnicians.groupID','gibbonPerson.title', 'gibbonPerson.surname', 'gibbonPerson.preferredName'])
+            ->leftJoin('gibbonPerson', 'helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID')
+            ->where('helpDeskTechnicians.technicianID = :technicianID')
+            ->bindValue('technicianID', $technicianID);
+
+        return $this->runSelect($query); 
+    }
+
+    public function getTechnicianByPersonID($gibbonPersonID) {
+         $query = $this
+            ->newQuery()
+            ->from('helpDeskTechnicians')
+            ->cols(['helpDeskTechnicians.technicianID', 'helpDeskTechnicians.gibbonPersonID', 'helpDeskTechnicians.groupID','gibbonPerson.title', 'gibbonPerson.surname', 'gibbonPerson.preferredName'])
+            ->leftJoin('gibbonPerson', 'helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID')
+            ->where('helpDeskTechnicians.gibbonPersonID = :gibbonPersonID')
+            ->bindValue('gibbonPersonID', $gibbonPersonID);
+
+        return $this->runSelect($query);
+    }
 }
