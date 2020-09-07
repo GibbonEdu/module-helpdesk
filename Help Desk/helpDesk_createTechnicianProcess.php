@@ -37,7 +37,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
-    if (empty($person) || empty($groupID) || !$techGroupGateway->exists($group)) {
+    if (empty($person) || empty($group) || !$techGroupGateway->exists($group)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
