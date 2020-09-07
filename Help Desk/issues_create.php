@@ -46,7 +46,6 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
 
     $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
     $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
-    $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
 
     $form = Form::create('createIssue', $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
@@ -96,7 +95,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
         $row->addLabel('privacySetting', __('Privacy Settings'))
             ->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
         $row->addSelect('privacySetting')
-            ->fromArray($privacyOptions)
+            ->fromArray(privacyOptions())
             ->selected($settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy'))
             ->isRequired(); 
         

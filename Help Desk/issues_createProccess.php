@@ -65,7 +65,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
     $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
     $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
-    $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -75,7 +74,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         $createdOnBehalf = true;
     }
 
-    if (!in_array($data['privacySetting'], $privacyOptions)) {
+    if (!in_array($data['privacySetting'], privacyOptions())) {
         $data['privacySetting'] = $settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy');
     }
 
