@@ -39,14 +39,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     //Proceed!
     $issueID = $_GET['issueID'] ?? '';
 
-    if (empty($issueID)) {
-        $URL .= '&return=error1';
-        header("Location: {$URL}");
-        exit();
-    }
-
     $issueGateway = $container->get(IssueGateway::class);
-    if (!$issueGateway->exists($issueID)) {
+    $issue = $issueGateway->getByID($issueID);
+
+    if (empty($issueID) || empty($issue)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
@@ -60,8 +56,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         header("Location: {$URL}");
         exit();
     }
-
-    $issue = $issueGateway->getByID($issueID);
 
     $status = 'Pending';
     if ($issue['technicianID'] == null) {
@@ -93,7 +87,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $personIDs = getPeopleInvolved($connection2, $issueID);
 
     foreach ($personIDs as $personID) {
-        if ($personID != $gibbon->session->get('gibbonPersonID')) {
+        if ($personID != $gibbonPersonID) {
             setNotification($connection2, $guid, $personID, $message, 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
         } 
     }
@@ -101,7 +95,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $array = array('issueID' => $issueID);
 
     $technicianGateway = $container->get(TechnicianGatway::class);
-    $technician = $technicianGateway->selectBy('gibbonPersonID' => $gibbon->session->get('gibbonPersonID'));
+    $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
     if ($technician->isNotEmpty()) {
         $array['technicianID'] = $technician->fetch()['technicianID'];
     }

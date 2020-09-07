@@ -23,51 +23,55 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/Help Desk/' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/Help Desk';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
-    //Fail 0
-      $URL .= 'issues_view.php&return=error0' ;
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
+    $issueID = $_GET['issueID'] ?? '';
 
-    if (isset($_GET['issueID'])) {
-        $issueID = $_GET['issueID'];
-        $URL .= 'issues_discussView.php&issueID=' . $issueID ;
-    } else {
-        $URL .= 'issues_view.php&return=error1' ;
+    $issueGateway = $container->get(IssueGateway::class);
+    $issue = $issueGateway->getByID($issueID);
+
+    if (empty($issueID) || empty($issue)) {
+        $URL .= '/issues_view.php&return=error1';
         header("Location: {$URL}");
         exit();
     }
 
-    if (!isPersonsIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
-        $URL .= 'issues_view.php&return=error0' ;
+    $URL .= '/issues_discussView.php&issueID=' . $issueID;
+
+    if ($issue['gibbonPersonID'] != $gibbon->session->get('gibbonPersonID')) {
+        $URL .= '&return=error0';
         header("Location: {$URL}");
         exit();
     }
 
-    if (isset($_POST['privacySetting'])) {
-        $privacySetting = $_POST['privacySetting'];
-    } else {
-        $URL .= '&return=error1' ;
+    $privacySetting = $_POST['privacySetting'] ?? '';
+    $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
+
+    if (!in_array($privacySetting, $privacyOptions)) {
+        $URL .= '&return=error1';
         header("Location: {$URL}");
-          exit();
+        exit();
     }
 
     try {
         $data = array('privacySetting' => $privacySetting);
-
-        $issueGateway = $container->get(IssueGateway::class);
-        $issueGateway->update($issueID, $data);
+        
+        if (!$issueGateway->update($issueID, $data)) {
+            throw new PDOException('Could not update issue.');
+        }
     } catch (PDOException $e) {
-        $URL .= '&return=error2' ;
+        $URL .= '&return=error2';
         header("Location: {$URL}");
         exit();
     }
 
-      $URL .= '&return=success0' ;
+    $URL .= '&return=success0';
     header("Location: {$URL}");
+    exit();
 }
 ?>

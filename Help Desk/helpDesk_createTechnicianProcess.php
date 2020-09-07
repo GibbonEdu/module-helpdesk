@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once '../../gibbon.php';
@@ -25,17 +26,21 @@ require_once './moduleFunctions.php';
 
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnician.php';
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
-    $URL .= '&return=error0' ;
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
+    $URL .= '&return=error0';
     header("Location: {$URL}");
+    exit();
 } else {
     //Proceed!
     $person = $_POST['person'] ?? '';
     $group = $_POST['group'] ?? '';
 
-    if (empty($person) || empty($group)) {
-        $URL .= '&return=error1' ;
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+
+    if (empty($person) || empty($groupID) || !$techGroupGateway->exists($group)) {
+        $URL .= '&return=error1';
         header("Location: {$URL}");
+        exit();
     } else {
         //Write to database
         try {
@@ -54,19 +59,23 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
                 exit();
             }
 
-            $technicianGateway->insert($data);
+            $technicianID = $technicianGateway->insert($data);
+            if ($technicianID === false) {
+                throw new PDOException('Could not insert technician.');
+            }
         } catch (PDOException $e) {
-            $URL .= '&return=error2' ;
+            $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        $technicianID = $connection2->lastInsertId();
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Added', array('gibbonPersonID'=>$person, 'technicianID'=>$technicianID), null);
+        $array = array('gibbonPersonID' => $person, 'technicianID' => $technicianID);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Added', $array, null);
 
         //Success 0
-        $URL .= '&return=success0' ;
+        $URL .= '&return=success0';
         header("Location: {$URL}");
+        exit();
     }
 }
 ?>

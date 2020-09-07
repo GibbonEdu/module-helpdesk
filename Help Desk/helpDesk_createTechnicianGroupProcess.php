@@ -23,20 +23,20 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroup.php' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroup.php';
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicianGroup.php')) {
-    $URL .= '&return=error0' ;
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
+    $URL .= '&return=error0';
     header("Location: {$URL}");
+    exit();
 } else {
     //Proceed!
-    if (isset($_POST['groupName'])) {
-        $groupName = $_POST['groupName'] ;
-    }
+    $groupName = $_POST['groupName'] ?? '';
 
-    if ($groupName == '') {
-        $URL .= '&return=error1' ;
+    if (empty($groupName)) {
+        $URL .= '&return=error1';
         header("Location: {$URL}");
+        exit();
     } else {
         //Write to database
 
@@ -56,18 +56,20 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
                 exit();
             }
 
-            $techGroupGateway->insert($data);
+            $groupID = $techGroupGateway->insert($data);
+            if ($groupID === false) {
+                throw new PDOException('Could not insert group.');
+            }
         } catch (PDOException $e) {
-            $URL .= '&return=error2' ;
+            $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        $groupID = $connection2->lastInsertId();
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', array('groupID'=>$groupID), null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', array('groupID' => $groupID), null);
 
         //Success 0
-        $URL .= '&groupID=$groupID&return=success0' ;
+        $URL .= "&groupID=$groupID&return=success0";
         header("Location: {$URL}");
     }
 }

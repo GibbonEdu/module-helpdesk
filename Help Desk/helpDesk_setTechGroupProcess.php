@@ -17,16 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php' ;
+require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_setTechGroup.php' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
-    $URL .= '&return=fail0';
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
@@ -34,8 +35,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
     $technicianID = $_GET['technicianID'] ?? '';
     $group = $_POST['group'] ?? '';
 
-    if (empty($technicianID) || empty($group)) {
-        $URL .= '&return=error1';
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    $technicianGateway = $container->get(TechnicianGateway::class);
+
+    if (empty($technicianID) || !$technicianGateway->exists($technicianID) || empty($group) || !$techGroupGateway->exists($group)) {
+        $URL .= '/helpDesk_setTechGroup.php&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
@@ -46,28 +50,22 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $technicianGateway = $container->get(TechnicianGateway::class);
-
-            if (!$technicianGateway->exists($technicianID)) {
-                //TODO: Change redirect?
-                $URL .= '&return=error1';
-                header("Location: {$URL}");
-                exit();
-            } else {
-                $data = array('groupID' => $group);
-                $technicianGateway->update($technicianID, $data);
+            $data = array('groupID' => $group);
+            if (!$technicianGateway->update($technicianID, $data)) {
+                throw new PDOException('Failed to update technician.');
             }
         }
         catch (PDOException $e) {
-            $URL .= '&return=fail2';
+            $URL .= '/helpDesk_setTechGroup.php&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Set', array('technicianID' => $technicianID, 'groupID' => $group), null);
+        $array = array('technicianID' => $technicianID, 'groupID' => $group);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Set', $array, null);
 
         //Success 0
-        $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php&return=success0';
+        $URL .= '/helpDesk_manageTechnicians.php&return=success0';
         header("Location: {$URL}");
         exit();
     }

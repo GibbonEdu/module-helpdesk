@@ -26,30 +26,40 @@ $_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php' ;
+require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php';
 
-$techGroupGateway = $container->get(TechGroupGateway::class);
-
-if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php') || !$techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
-    $URL .= '&return=error0' ;
+    $URL .= '&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
     //Proceed!
-    $issueID = $_GET['issueID'] ?? '';
+    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
-    if (empty($issueID)){
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
+        $URL .= '&return=error0';
+        header("Location: {$URL}");
+        exit();
+    }
+
+    $issueID = $_GET['issueID'] ?? '';
+    
+    $issueGateway = $container->get(IssueGateway::class);
+    $issue = $issueGateway->getByID($issueID);
+
+    if (empty($issueID) || empty($issue) || $issue['status'] != 'Pending'){
         //Fail 3
-        $URL .= '&return=error1' ;
+        $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
-        if (relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID')) || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
+        //TODO: Understand this?
+        if (relatedToIssue($connection2, $issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
             //Write to database
-            $issueGateway = $container->get(IssueGateway::class);
             try {
                 $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
                 if ($gibbonModuleID == null) {
@@ -62,21 +72,19 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                     throw new PDOException('Failed to update issue.');
                 }
             } catch (PDOException $e) {
-                $URL .= '&return=error2' ;
+                $URL .= '&return=error2';
                 header("Location: {$URL}");
                 exit();
             }
 
-            $row = $issueGateway->getByID($issueID);
-
             $message = 'Issue #';
             $message .= $issueID;
-            $message .= ' (' . $row['issueName'] . ') has been resolved.';
+            $message .= ' (' . $issue['issueName'] . ') has been resolved.';
 
             $personIDs = getPeopleInvolved($connection2, $issueID);
 
             foreach ($personIDs as $personID) {
-                if ($personID != $gibbon->session->get('gibbonPersonID')) {
+                if ($personID != $gibbonPersonID) {
                     setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
                 } 
             }
@@ -84,12 +92,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             $array['issueID'] = $issueID;
 
             $technicianGateway = $container->get(TechnicianGatway::class);
-            $technician = $technicianGateway->selectBy('gibbonPersonID' => $gibbon->session->get('gibbonPersonID'));
+            $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
             if ($technician->isNotEmpty()) {
                 $array['technicianID'] = $technician->fetch()['technicianID'];
             }
 
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Issue Resolved', $array, null);
+            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Resolved', $array, null);
 
             //Success 0
             $URL .= '&return=success0';

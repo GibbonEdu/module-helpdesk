@@ -17,15 +17,20 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
+$moduleName = $gibbon->session->get('module');
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/issues_create.php')) {
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName;
+
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.php')) {
     $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
@@ -33,12 +38,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
     //Proceed!    
     $URL .= '/issues_create.php';
 
+    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+
     $data = array(
         //Default data
-        'gibbonPersonID' => $gibbon->session->get('gibbonPersonID'),
-        'createdByID' => $gibbon->session->get('gibbonPersonID'),
+        'gibbonPersonID' => $gibbonPersonID,
+        'createdByID' => $gibbonPersonID,
         'status' => 'Unassigned',
-        'gibbonSchoolYearID' => $gibbon->session->get('gibbonSchoolYearID'),
+        'gibbonSchoolYearID' => $gibbonPersonID,
         'date' => date('Y-m-d'),
         //Data to get from Post or getSettingByScope
         'issueName' => '',
@@ -54,55 +61,69 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         }
     }
 
+    $settingGateway = $container->get(SettingGateway::class);
+
+    $priorityOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issuePriority'))));
+    $categoryOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issueCategory'))));
+    $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
+
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+
     $createdOnBehalf = false;
-    if (isset($_POST['createFor']) && $_POST['createFor'] != 0 && getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), 'createIssueForOther')) {
+    if (isset($_POST['createFor']) && $_POST['createFor'] != 0 && $techGroupGateway->getPermissionValue($gibbonPersonID, 'createIssueForOther')) {
         $data['gibbonPersonID'] = $_POST['createFor'];
         $createdOnBehalf = true;
     }
 
-    if (empty($data['privacySetting'])) {
-        $data['privacySetting'] = getSettingByScope($connection2, 'Help Desk', 'resolvedIssuePrivacy', false);
+    if (!in_array($data['privacySetting'], $privacyOptions)) {
+        $data['privacySetting'] = $settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy');
     }
 
-    if (empty($data['issueName']) || empty($data['description'])) {
-        //Fail 3
+    if (empty($data['issueName'])
+        || empty($data['description']) 
+        || (!in_array($data['category'], $categoryOptions) && count($categoryOptions) > 0) 
+        || (!in_array($data['priority'], $priorityOptions) && count($priorityOptions) > 0)) {
+
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
-        //Write to database
         try {
-            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
+            $gibbonModuleID = getModuleIDFromName($connection2, $moduleName);
             if ($gibbonModuleID == null) {
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
             $issueGateway = $container->get(IssueGateway::class);
-            $issueGateway->insert($data);
+            $issueID = $issueGateway->insert($data);
+            if ($issueID === false) {
+                throw new PDOException('Could not insert issue.');
+            }
         } catch (PDOException $e) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        $issueID = $connection2->lastInsertId();
         if ($createdOnBehalf) {
-            setNotification($connection2, $guid, $data['gibbonPersonID'], 'A new issue has been created on your behalf (' . $data['issueName'] . ').', 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID');
+            setNotification($connection2, $guid, $data['gibbonPersonID'], 'A new issue has been created on your behalf (' . $data['issueName'] . ').', 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
         }
+
         notifyTechnican($connection2, $guid, $issueID, $data['issueName'], $data['gibbonPersonID']);
 
-        $array = array('issueID' =>$issueID);
+        $array = array('issueID' => $issueID);
         $title = 'Issue Created';
         if ($createdOnBehalf) {
-            $array['technicianID'] = getTechnicianID($connection2, $createdByID);
+            $technicianGateway = $container->get(TechnicianGateway::class);
+            $array['technicianID'] = $technicianGateway->getTechnicianByPersonID($gibbonPersonID)->fetch()['technicianID'];
             $title = 'Issue Created (for Another Person)';
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), $title, $array, null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, $title, $array, null);
 
-        //Success 0 aka Created
-        $URL .= '&issueID=' . $issueID . '&return=success0';
+        $URL .= "&issueID=$issueID&return=success0";
         header("Location: {$URL}");
+        exit();
     }
 }
 ?>

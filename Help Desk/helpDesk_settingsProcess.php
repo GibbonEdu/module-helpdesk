@@ -21,13 +21,16 @@ use Gibbon\Domain\System\SettingGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_settings.php' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_settings.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settings.php')) {
     //Fail 0
-    $URL .= '&return=error0' ;
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
+    exit();
 } else {
+    $URL .= '/helpDesk_settings.php';
+
     //Not a fan, but too bad!
     $settings = array(
         'resolvedIssuePrivacy',
@@ -47,7 +50,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
 
     $dbFail = false;
 
-    //Is this really better, potentially, but I'm not going to worry about it too much
+    //Is this really better, potentially, but I'm not going to worry about it too much.
     foreach ($settings as $setting) {
         if (isset($_POST[$setting])) {
             $value = '';
@@ -70,19 +73,21 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
                         exit();
                     }
                     break;
+                $dbFail |= !$settingGateway->updateSettingByScope('Help Desk', $setting, $value);
             }
-            $dbFail |= !$settingGateway->updateSettingByScope('Help Desk', $setting, $value);
         }
     }
 
-    setLog($connection2, $gibbon->session->get('gibbonPersonID'), $gibbon->session->get('gibbonModuleID'), $gibbon->session->get('gibbonPersonID'), 'Help Desk Settings Edited', null);
+    $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
+    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Help Desk Settings Edited', null);
 
-    getSystemSettings($guid, $connection2) ;
     $return = 'success0';
     if ($dbFail) {
         $return = 'warning1';
     }
-    $URL .= '&return='.$return ;
+
+    $URL .= "&return=$return";
     header("Location: {$URL}");
+    exit();
 }
 ?>

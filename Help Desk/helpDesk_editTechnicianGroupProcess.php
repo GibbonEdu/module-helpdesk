@@ -21,28 +21,30 @@ use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroup.php' ;
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     //Fail 0
-    $URL .= '&return=error0' ;
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
     $groupID = $_GET['groupID'] ?? '';
 
-    if (empty($groupID)) {
-        $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicianGroup.php&return=error1';
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+
+    if (empty($groupID) || !$techGroupGateway->exists($groupID)) {
+        $URL .= '/helpDesk_manageTechnicianGroup.php&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
-        $URL .= '&groupID=$groupID';
+        $URL .= "/helpDesk_editTechnicianGroup.php&groupID=$groupID";
 
         $groupName = $_POST['groupName'] ?? '';
         $viewIssueStatus =  $_POST['viewIssueStatus' ?? '';
 
         if (empty($groupName) || empty($viewIssueStatus)) {
-            $URL .= '&return=error1' ;
+            $URL .= '&return=error1';
             header("Location: {$URL}");
             exit();
         } else {
@@ -63,17 +65,17 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                     throw new PDOException('Invalid gibbonModuleID.');
                 }
 
-                $techGroupGateway = $container->get(TechGroupGateway::class);
-
                 if (!$techGroupGateway->unique($data, ['groupName'], $groupID)) {
                     $URL .= '&return=error7';
                     header("Location: {$URL}");
                     exit();
                 }
 
-                $techGroupGateway->update($groupID, $data);
+                if (!$techGroupGateway->update($groupID, $data)) {
+                    throw new PDOException('Could not update group.');
+                }
             } catch (PDOException $e) { 
-                $URL .= '&return=error2' ;
+                $URL .= '&return=error2';
                 header("Location: {$URL}");
                 exit();
             }
@@ -81,8 +83,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             //Success 0
             setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Edited', array('groupID' => $groupID), null);
 
-            $URL .= '&return=success0' ;
+            $URL .= '&return=success0';
             header("Location: {$URL}");
+            exit();
         }
     }
 }

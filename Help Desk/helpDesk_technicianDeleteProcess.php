@@ -24,45 +24,31 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php';
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
     //Fail 0
-    $URL .= '&return=error0';
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
     //Proceed!
+    $URL .= '/helpDesk_manageTechnicians.php';
+
     $technicianID = $_GET['technicianID'] ?? '';
-    if (empty($technicianID)) {
+    $technicianGateway = $container->get(TechnicianGateway::class);
+
+    if (empty($technicianID) || !$technicianGateway->exists($technicianID)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
         //Write to database
         try {
-            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-            if ($gibbonModuleID == null) {
-                throw new PDOException('Invalid gibbonModuleID.');
-            }
-
-            $technicianGateway = $container->get(TechnicianGateway::class);
-
-            if (!$technicianGateway->exists($technicianID)) {
-                $URL .= '&return=error1';
-                header("Location: {$URL}");
-                exit();
-            }
-
             //TODO: Maybe start a transaction?
-            $gibbonPersonID = $technicianGateway->getByID($technicianID)['gibbonPersonID'];
-            if (!$technicianGateway->delete($technicianID)) {
-                throw new PDOException('Failed to Delete Technician');
-            }
-
-            //TODO: In the future, maybe add and option to transfer these issues to another tech.
             $issueGateway = $container->get(IssueGateway::class);
 
+            //TODO: In the future, maybe add and option to transfer these issues to another tech.
             //Set any pending issues assigned to technician to unassigned and unset the technician.
             $keyAndValues = array('technicianID' => $technicianID, 'status' => 'Pending');
             $data = array('technicianID' => null, 'status' => 'Unassigned');
@@ -76,17 +62,25 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             if (!$issueGateway->updateWhere($keyAndValues, $data)) {
                 throw new PDOException('Failed to update resolved issues.');
             }
+
+            $gibbonPersonID = $technicianGateway->getByID($technicianID)['gibbonPersonID'];
+            if (!$technicianGateway->delete($technicianID)) {
+                throw new PDOException('Failed to Delete Technician');
+            }
         } catch (PDOException $e) {
             //Fail 2
             $URL .= '&return=error2';
             header("Location: {$URL}");
+            exit();
         }
 
+        $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
         setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Removed', array('gibbonPersonID' => $gibbonPersonID), null);
 
         //Success 0
         $URL .= '&return=success0';
         header("Location: {$URL}");
+        exit();
     }
 }
 ?>
