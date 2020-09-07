@@ -107,32 +107,4 @@ function getPeopleInvolved($connection2, $issueID)
     }
     return $personIDs;
 }
-
-function getPersonName($connection2, $gibbonPersonID)
-{
-    try {
-        $data = array("gibbonPersonID"=> $gibbonPersonID);
-        $sql = "SELECT title, surname, preferredName FROM gibbonPerson WHERE gibbonPersonID=:gibbonPersonID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $row = $result->fetch();
-    } catch (PDOException $e) {
-    }
-
-    return $row;
-}
-
-function getTechnicianName($connection2, $technicianID)
-{
-    try {
-        $data = array("technicianID"=> $technicianID);
-        $sql = "SELECT title, surname, preferredName FROM gibbonPerson JOIN helpDeskTechnicians ON (gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID) WHERE helpDeskTechnicians.technicianID=:technicianID";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-        $row = $result->fetch();
-    } catch (PDOException $e) {
-    }
-
-    return $row;
-}
 ?>
