@@ -111,7 +111,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
     );
 
     $table->addColumn('name', __('Name'))
-            ->format(function ($row) use ($guid, $data) {
+            ->format(function ($row) use ($gibbon, $data) {
                 $data['title'] = $row['name'];
                 return Format::link($gibbon->session->get('absoluteURL') . '/index.php?' . http_build_query($data), $row['name']);
             });

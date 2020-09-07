@@ -36,13 +36,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $technicianGateway = $container->get(technicianGateway::class);
     $issueGateway = $container->get(IssueGateway::class); 
 
-    $formatIssues = function($row) use ($guid, $issueGateway) {
+    $formatIssues = function($row) use ($gibbon, $issueGateway) {
         $issues = $issueGateway->selectIssueByTechnician($row['technicianID'])->fetchAll();
         if (count($issues) < 1) {
             return __('None');
         }
 
-        $issues = array_map(function($issue) use ($guid) {
+        $issues = array_map(function($issue) use ($gibbon) {
             return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussView.php&issueID='. $issue['issueID'], $issue['issueName']);
         }, $issues);
 
@@ -65,7 +65,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $table->addActionColumn()
             ->addParam('technicianID')
-            ->format(function ($technician, $actions) use ($guid) {
+            ->format(function ($technician, $actions) use ($gibbon) {
                 $actions->addAction('edit', __('Edit'))
                         ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_setTechGroup.php');
 

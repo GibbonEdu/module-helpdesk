@@ -153,7 +153,7 @@ if (!isModuleAccessible($guid, $connection2) || !$allowed) {
 
     $table->addColumn('privacySetting', __('Privacy'))
             ->width($tdWidth)
-            ->format(function($row) use ($connection2, $guid) {
+            ->format(function($row) use ($connection2, $gibbon) {
                 if (isPersonsIssue($connection2, $row['issueID'], $gibbon->session->get('gibbonPersonID')) || getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), "fullAccess")) {
                     print '<a href="' . $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussEdit.php&issueID='. $row['issueID'] . '">' .  __($row['privacySetting']) . '</a>';
                 } else {

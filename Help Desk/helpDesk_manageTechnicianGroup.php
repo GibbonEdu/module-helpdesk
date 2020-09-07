@@ -59,7 +59,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
 
     $table->addActionColumn()
             ->addParam('groupID')
-            ->format(function ($techGroup, $actions) use ($guid, $techGroupData) {
+            ->format(function ($techGroup, $actions) use ($gibbon, $techGroupData) {
                 $actions->addAction('edit', __('Edit'))
                         ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroup.php');
 
