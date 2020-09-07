@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 function explodeTrim($commaSeperatedString) {
+    //This could, in theory, be made for effiicent, however, I don't care to do so.
     return array_filter(array_map('trim', explode(',', $commaSeperatedString)));
 }
 
@@ -51,24 +52,6 @@ function getPermissionValue($connection2, $gibbonPersonID, $permission)
         }
     }
     return $row[$permission];
-}
-
-function relatedToIssue($connection2, $issueID, $gibbonPersonID)
-{
-    $isRelated = false;
-
-    $personIDs = getPeopleInvolved($connection2, $issueID);
-    foreach ($personIDs as $personID) {
-        if ($personID == $gibbonPersonID) {
-            $isRelated = true;
-        }
-    }
-
-    if (getPermissionValue($connection2, $gibbonPersonID, "fullAccess")) {
-        $isRelated = true;
-    }
-
-    return $isRelated;
 }
 
 function getPeopleInvolved($connection2, $issueID)
