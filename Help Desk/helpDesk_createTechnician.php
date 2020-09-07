@@ -24,7 +24,7 @@ $page->breadcrumbs
         ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
         ->add(__('Create Technician'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -48,11 +48,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
 
     $result = $pdo->executeQuery(array(), $peopleSql);
     $users = array_reduce($result->fetchAll(), function ($group, $item) {
-        $group[$item['gibbonPersonID']] = Format::name('', $item['preferredName'], $item['surname'], 'Student', true).' ('.$item['username'].', '.__($item['category']).')';
+        $group[$item['gibbonPersonID']] = Format::name('', $item['preferredName'], $item['surname'], 'Student', true) . ' (' . $item['username'] . ', ' . __($item['category']) . ')';
         return $group;
     }, array());
 
-    $form = Form::create('createTechnician',  $gibbon->session->get('absoluteURL').'/modules/'.$gibbon->session->get('module').'/helpDesk_createTechnicianProcess.php', 'post');
+    $form = Form::create('createTechnician',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianProcess.php', 'post');
     $form->addHiddenValue('address', $gibbon->session->get('address'));
 
     $row = $form->addRow();

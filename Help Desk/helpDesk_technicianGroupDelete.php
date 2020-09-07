@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Forms\Form;
 use Gibbon\Forms\Prefab\DeleteForm;
 use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 $page->breadcrumbs
     ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
@@ -32,21 +33,23 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    //Proceed!
-    if (isset($_GET["groupID"])) {
-        $groupID = $_GET["groupID"];
-        $data = array("groupID" => $groupID);
+    $groupID = $_GET["groupID"] ?? '';
 
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+
+    //Proceed!
+    if (empty($groupID) || !$techGroupGateway->exists($groupID)) {
+        $page->addError(__('No group selected.'));
+    } else {
+        $data = array("groupID" => $groupID);
         $sql = "SELECT groupID as value, groupName as name FROM helpDeskTechGroups WHERE groupID!=:groupID ORDER BY helpDeskTechGroups.groupID ASC"; 
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
 
         //Make sure that there are other groups aside from the group being deleted
-        if ($result->rowcount() > 0) {
+        if ($techGroupGateway->countAll() > 1) {
             //TODO: Add reference to the group that they have selected to delete
             //Also TODO: yell at ray and then regret the life decisions that led me to working on this
             //Another possible function: Option to delete technicians entirely rather than migrate
-            $form = DeleteForm::createForm($gibbon->session->get('absoluteURL').'/modules/'.$gibbon->session->get('module')."/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID, false, false);
+            $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . "/helpDesk_technicianGroupDeleteProcess.php?groupID=$groupID", false, false);
             $form->addHiddenValue('address', $gibbon->session->get('address'));
 
             $row = $form->addRow();
@@ -65,8 +68,6 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
         } else {
             $page->addError(__('Cannot delete last technician group.'));
         }
-    } else {
-        $page->addError(__('No group selected.'));
     }
 }
 ?>

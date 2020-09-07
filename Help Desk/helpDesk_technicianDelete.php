@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\Form;
 use Gibbon\Forms\Prefab\DeleteForm;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 $page->breadcrumbs
         ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
@@ -32,12 +33,16 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    if (isset($_GET["technicianID"])) {
-        $technicianID = $_GET["technicianID"];
+    $technicianID = $_GET['technicianID'] ?? '';
+
+    $technicianGateway = $container->get(TechnicianGateway::class);
+    $values = $technicianGateway->getByID($technicianID);
+
+    if (empty($technicianID) || empty($values)) {
+        $page->addError(__('No Technician selected.'));
+    } else {
         $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID);
         echo $form->getOutput();
-    } else {
-        $page->addError(__('No technician selected.'));
-    }
+    } 
 }
 ?>

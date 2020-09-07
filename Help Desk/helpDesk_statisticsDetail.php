@@ -30,7 +30,7 @@ $page->breadcrumbs
     ->add(__('Statistics'), 'helpDesk_statistics.php')
     ->add(__('Detailed Statistics'));
 
-if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicians.php")) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statistics.php")) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {

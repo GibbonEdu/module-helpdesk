@@ -24,7 +24,7 @@ use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 $page->breadcrumbs->add(__('Manage Technician Groups'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicianGroup.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -54,12 +54,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
 
     $table->addColumn('groupName', __('Group Name'));
 
-    $table->addColumn('techs', __('Technicians in group'))
-            ->format($formatTechnicianList);
+    $table->addColumn('techs', __('Technicians in group'))->format($formatTechnicianList);
 
     $table->addActionColumn()
             ->addParam('groupID')
-            ->format(function ($techGroup, $actions) use ($guid, $techGroupData) {
+            ->format(function ($techGroup, $actions) use ($gibbon, $techGroupData) {
                 $actions->addAction('edit', __('Edit'))
                         ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroup.php');
 

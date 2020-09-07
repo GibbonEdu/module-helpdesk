@@ -27,41 +27,36 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (isset($_GET['issueID'])) {
-        $issueID = $_GET['issueID'];
+    $issueID = $_GET['issueID'] ?? '';
+    $issueGateway = $container->get(IssueGateway::class);
 
-        $issueGateway = $container->get(IssueGateway::class);
-        
-        if ($issueGateway->exists($issueID)) {
-            $page->breadcrumbs
-                ->add(__('Discuss Issue'), 'issues_discussView.php', ['issueID' => $issueID])
-                ->add(__('Post Discuss'));
-
-            if (relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
-                $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
-                $form->addHiddenValue('address', $gibbon->session->get('address'));
-                
-                $row = $form->addRow();
-                    $column = $row->addColumn();
-                    $column->addLabel('comment', __('Comment'));
-                    $column->addEditor('comment', $guid)
-                        ->setRows(5)
-                        ->showMedia()
-                        ->isRequired();
-                
-                $row = $form->addRow();
-                    $row->addFooter();
-                    $row->addSubmit();
-
-                echo $form->getOutput();
-            } else {
-                $page->addError(__('You do not have access to this action.'));
-            }
-        } else {
-            $page->addError(__('Invalid Issue.'));
-        }
-    } else {
+    if (empty($issueID) || !$issueGateway->exists($issueID)) {
         $page->addError(__('No Issue Selected.'));
+    } else {
+        $page->breadcrumbs
+            ->add(__('Discuss Issue'), 'issues_discussView.php', ['issueID' => $issueID])
+            ->add(__('Post Discuss'));
+
+        if (relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
+            $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
+            $form->addHiddenValue('address', $gibbon->session->get('address'));
+            
+            $row = $form->addRow();
+                $column = $row->addColumn();
+                $column->addLabel('comment', __('Comment'));
+                $column->addEditor('comment', $guid)
+                    ->setRows(5)
+                    ->showMedia()
+                    ->isRequired();
+            
+            $row = $form->addRow();
+                $row->addFooter();
+                $row->addSubmit();
+
+            echo $form->getOutput();
+        } else {
+            $page->addError(__('You do not have access to this action.'));
+        }
     }
 }
 ?>

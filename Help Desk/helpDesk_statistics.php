@@ -22,10 +22,9 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 
-$page->breadcrumbs
-    ->add(__('Statistics'));
+$page->breadcrumbs->add(__('Statistics'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_statistics.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -111,7 +110,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
     );
 
     $table->addColumn('name', __('Name'))
-            ->format(function ($row) use ($guid, $data) {
+            ->format(function ($row) use ($gibbon, $data) {
                 $data['title'] = $row['name'];
                 return Format::link($gibbon->session->get('absoluteURL') . '/index.php?' . http_build_query($data), $row['name']);
             });

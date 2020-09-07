@@ -35,9 +35,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    if (isset($_GET['groupID'])) {
-        $groupID = $_GET['groupID'];
+    $groupID = $_GET['groupID'] ?? '';
+    
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    $values = $techGroupGateway->getByID($groupID);
 
+    if (empty($groupID) || empty($values)) {
+        $page->addError(__('No Group Selected.'));
+    } else {
         $statuses = array(
             'All' =>__('All'),
             'UP' =>__('Unassigned & Pending'),
@@ -45,15 +50,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             'Pending' =>__('Pending')
         );
 
-        $techGroupGateway = $container->get(TechGroupGateway::class);
-
-        $values = $techGroupGateway->getByID($groupID);
-
-        $form = Form::create('editTechnicianGroup',  $gibbon->session->get('absoluteURL').'/modules/'.$gibbon->session->get('module').'/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
-        $form->addHiddenValue('address', $gibbon->session->get('address');
+        $form = Form::create('editTechnicianGroup', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
+        $form->addHiddenValue('address', $gibbon->session->get('address'));
 
         $form->addRow()
-            ->addHeading(__("Permissons for Technician Group: " . $values["groupName"]));
+            ->addHeading(__('Permissons for Technician Group: ') . $values['groupName']);
 
         $row = $form->addRow();
             $row->addLabel('groupName', __('Group Name'));
@@ -125,8 +126,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $row->addSubmit();
 
         echo $form->getOutput();
-    } else {
-        $page->addError(__('No Group Selected.'));
     }
 }
 ?>

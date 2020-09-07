@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\Form;
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
@@ -24,17 +26,24 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (isset($_GET['issueID'])) {
-        $issueID = $_GET['issueID'];
-    
-        $isReassign = hasTechnicianAssigned($connection2, $issueID);
+    $issueID = $_GET['issueID'] ?? '';
+
+    $issueGateway = $container->get(IssueGateway::class);
+    $issue = $issueGateway->getByID($issueID);
+
+    if (empty($issueID) || empty($issue)) {
+        $page->addError(__('No issue selected.'));
+    } else {
+        $isReassign = $issue['technicianID'] != null;
 
         $title = $isReassign ? __('Reassign Issue') : __('Assign Issue');
         $page->breadcrumbs->add($title);
 
         $permission = $isReassign ? 'reassignIssue' : 'assignIssue';
 
-        if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), $permission)) {
+        $techGroupGateway = $container->get(TechGroupGateway::class);
+
+        if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), $permission)) {
             if (isset($_GET['return'])) {
                 returnProcess($guid, $_GET['return'], null, null);
             }
@@ -69,8 +78,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         } else {
             $page->addError(__('You do not have access to this action.'));
         }
-    } else {    
-        $page->addError(__('No issue selected.'));
     }
 }
 ?>

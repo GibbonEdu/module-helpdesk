@@ -24,7 +24,7 @@ $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
     ->add(__('Edit Technician'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -33,15 +33,16 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    if (isset($_GET["technicianID"])) {
-        $technicianID = $_GET["technicianID"];
+    $technicianID = $_GET['technicianID'] ?? '';
 
+    $technicianGateway = $container->get(TechnicianGateway::class);
+    $values = $technicianGateway->getByID($technicianID);
+
+    if (empty($technicianID) || empty($values)) {
+        $page->addError(__('No Technician selected.'));
+    } else {
         $data = array();
         $sql = 'SELECT groupID as value, groupName as name FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC';
-        
-        $technicianGateway = $container->get(TechnicianGateway::class);
-
-        $values = $technicianGateway->getByID($technicianID);
 
         $form = Form::create('setTechGroup',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_setTechGroupProcess.php?technicianID=' . $technicianID, 'post');
         $form->addHiddenValue('address', $gibbon->session->get('address'));
@@ -60,8 +61,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
             $row->addSubmit();
 
         echo $form->getOutput();
-    } else {
-        $page->addError(__('No Technician selected.'));
     }
 }
 ?>

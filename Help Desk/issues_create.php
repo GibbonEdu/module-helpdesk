@@ -16,32 +16,39 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Forms\Form;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
-$page->breadcrumbs
-    ->add(__('Create Issue'));
+$page->breadcrumbs->add(__('Create Issue'));
 
-if (!isModuleAccessible($guid, $connection2)) {
+if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.php")) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
+    $moduleName = $gibbon->session->get('module');
+    
     if (isset($_GET['return'])) {
         $editLink = null;
         if (isset($_GET['issueID'])) {
             $issueID = $_GET['issueID'];
-            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussView.php&issueID=' . $issueID;
+            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $issueID;
         }
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
-    $priorityOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $gibbon->session->get('module'), 'issuePriority', false))));
-    $categoryOptions = array_filter(array_map('trim', explode(',', getSettingByScope($connection2, $gibbon->session->get('module'), 'issueCategory', false))));
-    $privacyOptions = array("Everyone", "Related", "Owner", "No one");
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    $settingGateway = $container->get(SettingGateway::class);
 
-    $form = Form::create('createIssue', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_createProccess.php', 'post');
+    $priorityOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issuePriority'))));
+    $categoryOptions = array_filter(array_map('trim', explode(',', $settingGateway->getSettingByScope($moduleName, 'issueCategory'))));
+    $privacyOptions = array('Everyone', 'Related', 'Owner', 'No one');
+
+    $form = Form::create('createIssue', $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
     $form->addHiddenValue('address', $gibbon->session->get('address'));
     
@@ -70,14 +77,14 @@ if (!isModuleAccessible($guid, $connection2)) {
         
     if (count($priorityOptions) > 0) {
         $row = $form->addRow();
-            $row->addLabel('priority', __(getSettingByScope($connection2, $gibbon->session->get('module'), 'issuePriorityName', false)));
+            $row->addLabel('priority', __($settingGateway->getSettingByScope($moduleName, 'issuePriorityName')));
             $row->addSelect('priority')
                 ->fromArray($priorityOptions)
                 ->placeholder()
                 ->isRequired();
     }
     
-    if (getPermissionValue($connection2, $gibbon->session->get('gibbonPersonID'), "createIssueForOther")) {
+    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'createIssueForOther')) {
         $row = $form->addRow();
             $row->addLabel('createFor', __('Create on behalf of'))
                 ->description(__('Leave blank if creating issue for self.'));
@@ -90,7 +97,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             ->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
         $row->addSelect('privacySetting')
             ->fromArray($privacyOptions)
-            ->selected(getSettingByScope($connection2, $gibbon->session->get('module'), 'resolvedIssuePrivacy', false))
+            ->selected($settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy'))
             ->isRequired(); 
         
     $row = $form->addRow();

@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
@@ -27,17 +28,22 @@ $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
     ->add(__('Techncian Statistics'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    if (isset($_GET['technicianID'])) {
-        $technicianID = $_GET['technicianID'];
+    $technicianID = $_GET['technicianID'] ?? '';
 
-        $techName = getTechnicianName($connection2, $technicianID);
+    $technicianGateway = $container->get(TechnicianGateway::class);
+    $technician = $technicianGateway->getTechnician($technicianID);
+
+    if (empty($technicianID) || $technician->isEmpty()) {
+        $page->addError(__('No Technician Selected.'));
+    } else {
+        $technician = $technician->fetch();
         echo '<h3>';
-            echo Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student');
+            echo Format::name($technician['title'], $technician['preferredName'], $technician['surname'], 'Student');
         echo '</h3>';
 
         //Default Data
@@ -46,10 +52,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date('Y-m-d');
 
         //Filter
-        $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL').'/index.php', 'get');
+        $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
 
         $form->setTitle('Filter');
-        $form->addHiddenValue('q', '/modules/'.$gibbon->session->get('module').'/helpdesk_technicianStats.php');
+        $form->addHiddenValue('q', '/modules/' . $gibbon->session->get('module') . '/helpdesk_technicianStats.php');
         $form->addHiddenValue('technicianID', $technicianID);
 
         $row = $form->addRow();
@@ -73,6 +79,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         echo $form->getOutput();
 
         //Stats collection
+
+        //TODO: Migrate this to a gateway and honestly fix it, because it seems like it doesn't work anyways.
         $result = getLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), getModuleIDFromName($connection2, 'Help Desk'), null, null, $startDate, $endDate, null, array('technicianID'=>$technicianID));
         $rArray = $result->fetchAll();
 
@@ -110,8 +118,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get
         $table->addColumn('title', __('Action Title'));
 
         echo $table->render($rArray);
-    } else {
-        $page->addError(__('No Technician Selected.'));
     }
 }
 ?>

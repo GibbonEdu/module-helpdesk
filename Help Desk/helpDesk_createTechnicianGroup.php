@@ -32,7 +32,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $editLink = null;
         if (isset($_GET['groupID'])) {
             $groupID = $_GET['groupID'];
-            $editLink = $gibbon->session->get('absoluteURL') . "/index.php?q=/modules/Help Desk/helpDesk_editTechnicianGroup.php&groupID=$groupID";
+            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/'  . $gibbon->session->get('module') .  "/helpDesk_editTechnicianGroup.php&groupID=$groupID";
         }
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
