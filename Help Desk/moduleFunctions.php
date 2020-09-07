@@ -17,6 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+function explodeTrim($commaSeperatedString) {
+    return array_filter(array_map('trim', explode(',', $commaSeperatedString)));
+}
+
 function notifyTechnican($connection2, $guid, $issueID, $name, $personID)
 {
     try {
