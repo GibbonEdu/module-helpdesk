@@ -58,7 +58,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         exit();
     } else {
         //TODO: Understand this?
-        if (relatedToIssue($connection2, $issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
+        if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
             //Write to database
             try {
                 $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');

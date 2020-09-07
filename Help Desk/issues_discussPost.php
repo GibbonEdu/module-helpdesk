@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 //Module includes
 require_once __DIR__ . '/moduleFunctions.php';
@@ -37,7 +38,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             ->add(__('Discuss Issue'), 'issues_discussView.php', ['issueID' => $issueID])
             ->add(__('Post Discuss'));
 
-        if (relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
+        $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+
+        $techGroupGateway = $container->get(TechGroupGateway::class);
+
+        if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
             $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
             $form->addHiddenValue('address', $gibbon->session->get('address'));
             

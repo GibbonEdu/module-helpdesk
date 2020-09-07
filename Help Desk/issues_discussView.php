@@ -52,6 +52,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         //Information about the current user
         $isPersonsIssue = ($issue['gibbonPersonID'] == $gibbon->session->get('gibbonPersonID'));
         $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'))->isNotEmpty();
+        $isRelated = $issueGateway->isRelated($issueID, $gibbon->session->get('gibbonPersonID'));
         $hasFullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
 
         //Information about the issue's technician
@@ -59,7 +60,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         $technician = $technician->isNotEmpty() ? $technician->fetch() : [];
         $hasTechAssigned = !empty($technician);
 
-        $allowed = relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))
+        $allowed = $isRelated
             || (!$hasTechAssigned && $isTechnician) 
             || $hasFullAccess;
 
@@ -67,7 +68,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         if ($issue['status'] == 'Resolved' && !$hasFullAccess) {
             if ($privacySetting == 'No one') {
                 $allowed = false;
-            } else if ($privacySetting == 'Related' && !relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID'))) {
+            } else if ($privacySetting == 'Related' && !$isRelated) {
                 $allowed = false;
             }
             else if ($privacySetting == 'Owner' && !$isPersonsIssue) {
