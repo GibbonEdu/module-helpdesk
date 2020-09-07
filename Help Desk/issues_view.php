@@ -218,19 +218,14 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $moduleName = $gibbon->session->get('module');
 
                 $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-                $isPersonsIssue = $issues['issueID'] == $gibbonPersonID;
+                $isPersonsIssue = $issues['gibbonPersonID'] == $gibbonPersonID;
 
                 $actions->addAction('view', __('Open'))
                         ->setURL('/modules/' . $moduleName . '/issues_discussView.php');
-                    
-                if ($isPersonsIssue || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) { 
-                    $actions->addAction('edit', __('Edit'))
-                            ->setURL('/modules/' . $moduleName . '/issues_discussEdit.php');
-                }
-
+                        
                 if ($issues['status'] != 'Resolved') {
                     if ($issues['technicianID'] == null) {
-                        if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue')) {
+                        if (!$isPersonsIssue && $techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue')) {
                             $actions->addAction('accept', __('Accept'))
                                     ->directLink()
                                     ->setURL('/modules/' . $moduleName . '/issues_acceptProcess.php')
@@ -254,7 +249,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                                 ->setURL('/modules/' . $moduleName . '/issues_resolveProcess.php')
                                 ->setIcon('iconTick');
                     }
-                } else if ($issues['status'] == 'Resolved') {
+                } else {
                     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
                         $actions->addAction('reincarnate', __('Reincarnate'))
                                 ->directLink()
