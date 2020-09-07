@@ -28,7 +28,7 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php';
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
@@ -93,7 +93,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $personIDs = getPeopleInvolved($connection2, $issueID);
 
     foreach ($personIDs as $personID) {
-        if ($personID != $_SESSION[$guid]['gibbonPersonID']) {
+        if ($personID != $gibbon->session->get('gibbonPersonID')) {
             setNotification($connection2, $guid, $personID, $message, 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
         } 
     }

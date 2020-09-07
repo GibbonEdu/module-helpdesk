@@ -48,8 +48,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
 
     $settingGateway = $container->get(SettingGateway::class);
 
-    $form = Form::create('helpDeskSettings',  $_SESSION[$guid]['absoluteURL'] . '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_settingsProcess.php');
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form = Form::create('helpDeskSettings',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_settingsProcess.php');
+    $form->addHiddenValue('address', $gibbon->session->get('address'));
 
     foreach ($settings as $settingName) {
         $setting = $settingGateway->getSettingByScope('Help Desk', $settingName, true);

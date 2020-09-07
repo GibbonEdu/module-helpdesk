@@ -25,7 +25,7 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $gibbon->session->get('module');
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 $issueID = $_GET['issueID'] ?? '';
 
@@ -94,7 +94,7 @@ if (!relatedToIssue($connection2, $issueID, $gibbonPersonID) || $issue['status']
     $personIDs = getPeopleInvolved($connection2, $issueID);
 
     foreach ($personIDs as $personID) {
-        if ($personID != $_SESSION[$guid]['gibbonPersonID']) {
+        if ($personID != $gibbon->session->get('gibbonPersonID')) {
             setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
         } 
     }

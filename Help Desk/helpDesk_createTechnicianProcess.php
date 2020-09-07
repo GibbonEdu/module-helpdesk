@@ -23,10 +23,10 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnician.php';
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnician.php';
 
-if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['module'] . '/helpDesk_manageTechnicians.php')) {
-    $URL .= '&return=error0';
+if (!isActionAccessible($guid, $connection2, '/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php')) {
+    $URL .= '&return=error0' ;
     header("Location: {$URL}");
 } else {
     //Proceed!
@@ -34,7 +34,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
     $group = $_POST['group'] ?? '';
 
     if (empty($person) || empty($group)) {
-        $URL .= '&return=error1';
+        $URL .= '&return=error1' ;
         header("Location: {$URL}");
     } else {
         //Write to database
@@ -56,16 +56,16 @@ if (!isActionAccessible($guid, $connection2, '/modules/' . $_SESSION[$guid]['mod
 
             $technicianGateway->insert($data);
         } catch (PDOException $e) {
-            $URL .= '&return=error2';
+            $URL .= '&return=error2' ;
             header("Location: {$URL}");
             exit();
         }
 
         $technicianID = $connection2->lastInsertId();
-        setLog($connection2, $_SESSION[$guid]['gibbonSchoolYearID'], $gibbonModuleID, $_SESSION[$guid]['gibbonPersonID'], 'Technician Added', array('gibbonPersonID'=>$person, 'technicianID'=>$technicianID), null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Added', array('gibbonPersonID'=>$person, 'technicianID'=>$technicianID), null);
 
         //Success 0
-        $URL .= '&return=success0';
+        $URL .= '&return=success0' ;
         header("Location: {$URL}");
     }
 }

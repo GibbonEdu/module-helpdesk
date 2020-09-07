@@ -46,8 +46,8 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
             //TODO: Add reference to the group that they have selected to delete
             //Also TODO: yell at ray and then regret the life decisions that led me to working on this
             //Another possible function: Option to delete technicians entirely rather than migrate
-            $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID, false, false);
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form = DeleteForm::createForm($gibbon->session->get('absoluteURL').'/modules/'.$gibbon->session->get('module')."/helpDesk_technicianGroupDeleteProcess.php?groupID=" . $groupID, false, false);
+            $form->addHiddenValue('address', $gibbon->session->get('address'));
 
             $row = $form->addRow();
                 $row->addLabel('group', __('New Technician Group'))

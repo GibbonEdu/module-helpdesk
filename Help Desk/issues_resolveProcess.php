@@ -26,15 +26,15 @@ $_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
+require_once './moduleFunctions.php' ;
 
-$URL = $_SESSION[$guid]['absoluteURL'] . '/index.php?q=/modules/' . $_SESSION[$guid]['module'] . '/issues_view.php';
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php' ;
 
 $techGroupGateway = $container->get(TechGroupGateway::class);
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php') || !$techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
     //Fail 0
-    $URL .= '&return=error0';
+    $URL .= '&return=error0' ;
     header("Location: {$URL}");
     exit();
 } else {
@@ -43,11 +43,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     if (empty($issueID)){
         //Fail 3
-        $URL .= '&return=error1';
+        $URL .= '&return=error1' ;
         header("Location: {$URL}");
         exit();
     } else {
-        if (relatedToIssue($connection2, $issueID, $_SESSION[$guid]['gibbonPersonID']) || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
+        if (relatedToIssue($connection2, $issueID, $gibbon->session->get('gibbonPersonID')) || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue')) {
             //Write to database
             $issueGateway = $container->get(IssueGateway::class);
             try {
@@ -62,7 +62,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                     throw new PDOException('Failed to update issue.');
                 }
             } catch (PDOException $e) {
-                $URL .= '&return=error2';
+                $URL .= '&return=error2' ;
                 header("Location: {$URL}");
                 exit();
             }
@@ -76,7 +76,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             $personIDs = getPeopleInvolved($connection2, $issueID);
 
             foreach ($personIDs as $personID) {
-                if ($personID != $_SESSION[$guid]['gibbonPersonID']) {
+                if ($personID != $gibbon->session->get('gibbonPersonID')) {
                     setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
                 } 
             }

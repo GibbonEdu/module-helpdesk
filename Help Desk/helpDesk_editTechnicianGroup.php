@@ -24,7 +24,7 @@ $page->breadcrumbs
     ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
     ->add(__('Edit Technician Group')); 
 
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
@@ -49,8 +49,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $values = $techGroupGateway->getByID($groupID);
 
-        $form = Form::create('editTechnicianGroup',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form = Form::create('editTechnicianGroup',  $gibbon->session->get('absoluteURL').'/modules/'.$gibbon->session->get('module').'/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
+        $form->addHiddenValue('address', $gibbon->session->get('address');
 
         $form->addRow()
             ->addHeading(__("Permissons for Technician Group: " . $values["groupName"]));
@@ -58,7 +58,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row = $form->addRow();
             $row->addLabel('groupName', __('Group Name'));
             $row->addTextField('groupName')
-                ->uniqueField('./modules/' . $_SESSION[$guid]['module'] . '/helpDesk_createTechnicianGroupAjax.php', array('currentGroupName' => $values['groupName']))
+                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', array('currentGroupName' => $values['groupName']))
                 ->isRequired()
                 ->setValue($values['groupName']);
 
