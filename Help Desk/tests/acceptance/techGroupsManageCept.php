@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('Create and Edit a Technician Group');
+$I->wantTo('Create, Edit and Delete Technician Group');
 $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'helpDesk_manageTechnicianGroup.php');
 
@@ -34,8 +34,7 @@ $I->click('Submit');
 $I->seeSuccessMessage();
 
 // Delete ------------------------------------------------
-//TODO: IDK, seems hard to test for when the delete is a modal window
-// $I->amOnModulePage('Help Desk', 'helpDesk_technicianGroupDelete.php', array('groupID' => $groupID));
-// 
-// $I->click('Submit');
-// $I->seeSuccessMessage();
+$I->amOnModulePage('Help Desk', 'helpDesk_technicianGroupDelete.php', array('groupID' => $groupID));
+$I->selectFromDropdown('group', 2);
+$I->click('Submit');
+$I->seeSuccessMessage();

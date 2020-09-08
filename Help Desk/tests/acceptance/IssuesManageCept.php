@@ -25,16 +25,18 @@ $I->seeBreadcrumb('Discuss Issue');
 $I->click('Accept');
 $I->seeSuccessMessage();
 
+//TODO: Modal views be like: no
 // discussView Assign ------------------------------------------------
 // $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
 // $I->seeBreadcrumb('Discuss Issue');
 // 
 // $I->click('Reassign');
 // $I->selectFromDropdown('technician', 1);
+// $I->click('Submit');
 // $I->seeSuccessMessage();
 
-// Resolve ------------------------------------------------
-// $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
-// 
-// $I->click('Resolve');
-// $I->seeSuccessMessage();
+//Resolve ------------------------------------------------
+$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+
+$I->click('Resolve');
+$I->seeSuccessMessage();

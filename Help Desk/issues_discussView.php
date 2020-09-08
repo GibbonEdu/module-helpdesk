@@ -210,7 +210,6 @@ if (!isModuleAccessible($guid, $connection2)) {
                 if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue') || $isPersonsIssue) {
                     $action = new Action('resolve', __('Resolve'));
                     $action->setIcon('iconTick')
-                            ->directLink()
                             ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
                             ->addParam('issueID', $issueID);
 
