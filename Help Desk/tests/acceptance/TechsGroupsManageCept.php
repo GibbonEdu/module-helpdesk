@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('add, edit and delete technicians');
+$I->wantTo('add, edit and delete technician technician groups');
 $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'helpDesk_manageTechnicianGroup.php');
 
@@ -9,11 +9,9 @@ $I->clickNavigation('Add');
 $I->seeBreadcrumb('Create Technician Group');
 
 
-$addFormValues = array(
-    'groupName'             => 'Test Group'
-);
+$I->fillField('groupName', 'Test Group');
+$I->click('Submit');
 
-$I->submitForm('#content form', $addFormValues, 'Submit');
 $I->seeSuccessMessage();
 
 
@@ -23,21 +21,18 @@ $groupID = $I->grabEditIDFromURL();
 $I->amOnModulePage('Help Desk', 'helpDesk_editTechnicianGroup.php', array('groupID' => $groupID));
 $I->seeBreadcrumb('Edit Technician Group');
 
-$I->seeInFormFields('#content form', $addFormValues);
-$editFormValues = array(
-    'groupName' => 'Test Group',
-    'viewIssue' => 'Y',
-    'assignIssue' => 'N',
-    'acceptIssue' => 'N',
-    'resolveIssue' => 'N',
-    'createIssueForOther' => 'N',
-    'reassignIssue' => 'N',
-    'reincarnateIssue' => 'N'
-    'fullAccess' => 'N'
-    
-);
+$I->seeInField('groupName', 'Test Group');
+$I->seeInField('viewIssue', 'Y');
+$I->seeInField('assignIssue', 'N');
+$I->seeInField('acceptIssue', 'Y');
+$I->seeInField('resolveIssue', 'Y');
+$I->seeInField('createIssueForOther', 'Y');
+$I->seeInField('reassignIssue', 'N');
+$I->seeInField('reincarnateIssue', 'N');
+$I->seeInField('fullAccess', 'N');
+
 $I->selectFromDropdown('viewIssueStatus', 1);
-$I->submitForm('#content form', $addFormValues, 'Submit');
+$I->click('Submit');
 $I->seeSuccessMessage();
 
 // Delete ------------------------------------------------

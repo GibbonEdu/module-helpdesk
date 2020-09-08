@@ -21,7 +21,7 @@ $technicianID = $I->grabEditIDFromURL();
 $I->amOnModulePage('Help Desk', 'helpDesk_setTechGroup.php', array('technicianID' => $technicianID));
 $I->seeBreadcrumb('Edit Technician');
 
-//TODO: I currently do not see in form fields
+//TODO: I currently do not see in dropdowns
 
 $I->selectFromDropdown('group', 2);
 $I->click('Submit');
