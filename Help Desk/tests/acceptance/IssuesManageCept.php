@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('create, accept, assign, resolve, and reincarnate');
+$I->wantTo('create (on behalf of another) and accept issues');
 $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
@@ -33,8 +33,8 @@ $I->seeSuccessMessage();
 // $I->selectFromDropdown('technician', 1);
 // $I->seeSuccessMessage();
 
-// Delete ------------------------------------------------
-$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
-
-$I->click('Resolve');
-$I->seeSuccessMessage();
+// Resolve ------------------------------------------------
+// $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+// 
+// $I->click('Resolve');
+// $I->seeSuccessMessage();
