@@ -73,7 +73,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Added', $array, null);
 
         //Success 0
-        $URL .= '&return=success0';
+        $URL .= "&technicianID=$technicianID&return=success0";
         header("Location: {$URL}");
         exit();
     }
