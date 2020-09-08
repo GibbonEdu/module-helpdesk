@@ -195,9 +195,18 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $action->modalWindow()
                         ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussPost.php')
                         ->addParam('issueID', $issueID);
-
+                
                 $headerActions[] = $action;
-
+                
+                if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                    $action = new Action('reassign', __('Reassign'));
+                    $action->setIcon('attendance')
+                            ->modalWindow()
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                            ->addParam('issueID', $issueID);
+                }
+                $headerActions[] = $action;
+                
                 if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue') || $isPersonsIssue) {
                     $action = new Action('resolve', __('Resolve'));
                     $action->setIcon('iconTick')
