@@ -1,6 +1,6 @@
 <?php
 // Attempt to load the Gibbon config.php file
-$configPath = __DIR__ . '/../../config.php';
+$configPath = '/../../config.php';
 if (!file_exists($configPath)) {
     return ['DB_HOST' => '','DB_USERNAME' => '','DB_PASSWORD' => '','DB_NAME' => '','ABSOLUTE_PATH' => '','ABSOLUTE_URL' => ''];
 }
@@ -18,6 +18,7 @@ return [
     'DB_USERNAME' => (isset($testDatabaseUsername))? $testDatabaseUsername : $databaseUsername,
     'DB_PASSWORD' => (isset($testDatabasePassword))? $testDatabasePassword: $databasePassword,
     'DB_NAME' => (isset($testDatabaseName))? $testDatabaseName: $databaseName,
-    'ABSOLUTE_PATH' => (isset($testPath))? rtrim($testPath, '/') : 'localhost',
-    'ABSOLUTE_URL' => (isset($testURL))? rtrim($testURL, '/') : 'http://127.0.0.1:8888',
+    'ABSOLUTE_PATH' => (isset($testPath))? rtrim($testPath, '/') : 'localhost/index.php?q=/modules/Help\ Desk',
+    'ABSOLUTE_URL' => (isset($testURL))? rtrim($testURL, '/') : 'http://127.0.0.1:8888/index.php?q=/modules/Help\ Desk',
 ];
+

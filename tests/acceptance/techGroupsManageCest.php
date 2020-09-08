@@ -8,7 +8,6 @@ $I->amOnModulePage('Help Desk', 'helpDesk_manageTechnicianGroup.php');
 $I->clickNavigation('Add');
 $I->seeBreadcrumb('Create Technician Group');
 
-
 $I->fillField('groupName', 'Test Group');
 $I->click('Submit');
 

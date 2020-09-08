@@ -5,32 +5,36 @@ $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
 // Add ------------------------------------------------
-$I->clickNavigation('create');
+$I->clickNavigation('Create');
 $I->seeBreadcrumb('Create Issue');
 $I->fillField('issueName', 'Test Issue');
 $I->fillField('description', '<p>Test Description</p>');
 $I->selectFromDropdown('category', 2);
-$I->selectFromDropdown('priority', 2);
-$I->selectFromDropdown('privacySettings', 2);
-$I->submitForm('#content form', $addFormValues, 'Submit');
-$I->seeSuccessMessage();
-
-
-$issueID = $I->grabEditIDFromURL();
-
-// discussView ------------------------------------------------
-$I->amOnModulePage('Help Desk', 'issues_discussView.php', array('issueID' => $issueID));
-$I->seeBreadcrumb('Discuss Issue');
-
-$I->seeInField('issueName', 'Test Issue');
-$I->seeInField('description', '<p>Test Description</p>');
-
-$I->selectFromDropdown('group', 2);
+$I->selectFromDropdown('createFor', 2); 
+//TODO: priorities, they don't exist by default so
 $I->click('Submit');
 $I->seeSuccessMessage();
 
-// Delete ------------------------------------------------
-$I->amOnModulePage('Help Desk', 'helpDesk_technicianDelete.php', array('issueID' => $issueID));
 
-$I->click('Yes');
+$issueID = $I->grabValueFromURL('issueID');
+
+// discussView Assign ------------------------------------------------
+$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+$I->seeBreadcrumb('Discuss Issue');
+
+$I->click('Accept');
+$I->seeSuccessMessage();
+
+// discussView Assign ------------------------------------------------
+// $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+// $I->seeBreadcrumb('Discuss Issue');
+// 
+// $I->click('Reassign');
+// $I->selectFromDropdown('technician', 1);
+// $I->seeSuccessMessage();
+
+// Delete ------------------------------------------------
+$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+
+$I->click('Resolve');
 $I->seeSuccessMessage();
