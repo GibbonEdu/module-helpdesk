@@ -116,7 +116,8 @@ if (!isModuleAccessible($guid, $connection2)) {
             $table->setTitle($issue['issueName']);
 
             $table->addColumn('issueID', __('ID'))
-                    ->width($tdWidth);
+                    ->width($tdWidth)
+                    ->format(Format::using('number', ['issueID', 0]));
 
             $table->addColumn('owner', __('Owner'))
                     ->width($tdWidth);
