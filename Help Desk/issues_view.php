@@ -168,7 +168,8 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
     //FILTERS END
     
-    $table->modifyRows(function($issue, $row) {
+    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway) {
         if ($issue['status'] == 'Resolved') {
             $row->addClass('current');
         } else if ($issue['status'] == 'Unassigned') {
@@ -176,6 +177,22 @@ if (!isModuleAccessible($guid, $connection2)) {
         } else if ($issue['status'] == 'Pending') {
             $row->addClass('warning');
         }
+
+        //Potentially could be done better
+        if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess') && $issue['status'] == 'Resolved') {
+            switch ($issue['privacySetting']) {
+                case 'No one':
+                    $row = null;
+                    break;
+                case 'Owner':
+                    $row = ($issue['gibbonPersonID'] == $gibbonPersonID) ? $row : null;
+                    break;
+                case 'Related':
+                    $row = $issueGateway->isRelated($issue['issueID'], $gibbonPersonID) ? $row : null;
+                    break;
+            }
+        }
+
         return $row;
     });
 
