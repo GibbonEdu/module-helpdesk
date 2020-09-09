@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('Add a Technicians');
+$I->wantTo('Create, edit, and delete a technician');
 $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'helpDesk_manageTechnicians.php');
 
