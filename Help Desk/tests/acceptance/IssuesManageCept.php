@@ -10,7 +10,7 @@ $I->seeBreadcrumb('Create Issue');
 $I->fillField('issueName', 'Test Issue');
 $I->fillField('description', '<p>Test Description</p>');
 $I->selectFromDropdown('category', 2);
-$I->selectFromDropdown('createFor', 2); 
+$I->selectFromDropdown('createFor', -1); 
 //TODO: priorities, they don't exist by default so
 $I->click('Submit');
 $I->seeSuccessMessage();

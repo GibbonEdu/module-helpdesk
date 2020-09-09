@@ -8,6 +8,21 @@ actor: AcceptanceTester
 modules:
     enabled:
         - PhpBrowser:
-            url: https://localhost:8888/core
+            url: https://127.0.0.1:8888/core
         - \Helper\Acceptance
+        - Db
+        - DbHelper
+        - Filesystem
+        - Asserts
+    config:
+        Db:
+            dsn: "mysql:host=localhost;dbname=gibbontest"
+            user: "root"
+            password: "root"
+            dump: 'tests/_data/dump.sql'
+            populate: true
+            cleanup: false
+            reconnect: true
+groups:
+    users: [/Users]
 step_decorators: ~        
