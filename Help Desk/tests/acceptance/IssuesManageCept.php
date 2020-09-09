@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('create (on behalf of another), accept, reassign, resolve, reincarnate, and resolve an issues');
+$I->wantTo('create (on behalf of another), accept, discuss, reassign, resolve, reincarnate, and resolve an issues');
 $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
@@ -23,6 +23,13 @@ $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID
 $I->seeBreadcrumb('Discuss Issue');
 
 $I->click('Accept');
+$I->seeSuccessMessage();
+
+// discuss ------------------------------------------------
+$I->amOnModulePage('Help Desk', 'issues_discussPost.php', ['issueID' => $issueID]);
+$I->seeBreadcrumb('Post Discuss');
+$I->fillField('comment', '<p>Discuss Test</p>');
+$I->click('Submit');
 $I->seeSuccessMessage();
 
 
