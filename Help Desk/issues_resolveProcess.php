@@ -91,7 +91,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
             $array['issueID'] = $issueID;
 
-            $technicianGateway = $container->get(TechnicianGatway::class);
+            $technicianGateway = $container->get(TechnicianGateway::class);
             $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
             if ($technician->isNotEmpty()) {
                 $array['technicianID'] = $technician->fetch()['technicianID'];

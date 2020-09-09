@@ -17,8 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
@@ -36,8 +38,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     } else {
         $isReassign = $issue['technicianID'] != null;
 
-        $title = $isReassign ? __('Reassign Issue') : __('Assign Issue');
-        $page->breadcrumbs->add($title);
+        $title = $isReassign ? 'Reassign Issue' : 'Assign Issue';
+        $page->breadcrumbs->add(__($title));
 
         $permission = $isReassign ? 'reassignIssue' : 'assignIssue';
 
@@ -47,28 +49,36 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             if (isset($_GET['return'])) {
                 returnProcess($guid, $_GET['return'], null, null);
             }
+
+            $technicianGateway = $container->get(TechnicianGateway::class);
+
+            $techs = array_reduce($technicianGateway->selectTechnicians()->fetchAll(), function ($group, $item) {
+                $group[$item['technicianID']] = Format::name($item['title'], $item['preferredName'], $item['surname'], 'Student', true) . ' (' . $item['groupName'] . ')';
+                return $group;
+            }, array());
+
+            $ownerTech = $technicianGateway->getTechnicianByPersonID($issue['gibbonPersonID']);
+            if($ownerTech->isNotEmpty()) {
+                unset($techs[$ownerTech->fetch()['technicianID']]);
+            }  
             
             $form = Form::create('assignIssue',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
             $form->addHiddenValue('address', $gibbon->session->get('address'));
-            
+
             $data = array('issueID' => $issueID);
-            
-            //TODO: Fix module_function getAllTechnicians to work here
-            $sql = 'SELECT helpDeskTechnicians.gibbonPersonID, technicianID AS value, concat(surname, ", ", preferredName) AS name FROM helpDeskTechnicians JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE status="Full" ORDER BY surname, preferredName ASC';
-            
-            //Find curently assigned technician TODO: fix the getTechWorkingOnIssue function in module_functions so that it actually works and this can be replaced
-            $sqlvalues = 'SELECT helpDeskTechnicians.gibbonPersonID AS personID, helpDeskTechnicians.technicianID AS value, concat(surname, ", ", preferredName) AS name FROM helpDeskIssue JOIN helpDeskTechnicians ON (helpDeskIssue.technicianID=helpDeskTechnicians.technicianID) JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE gibbonPerson.status="Full" AND issueID=:issueID ORDER BY name ASC';
-            $result = $connection2->prepare($sqlvalues);
-                $result->execute($data);
-                $values = $result->fetch();
                 
             $row = $form->addRow();
                 $row->addLabel('technician', __('Technician'));
-                $row->addSelect('technician')
-                    ->fromQuery($pdo, $sql, $data)
-                    ->placeholder()
-                    ->isRequired()
-                    ->selected($values['value']); 
+                $select = $row->addSelect('technician')
+                    ->fromArray($techs)
+                    ->isRequired();
+                
+                if ($isReassign) {
+                    $select->selected($issue['technicianID']); 
+                } else {
+                    $select->placeholder();
+                }
+
             
             $row = $form->addRow();
                 $row->addFooter();

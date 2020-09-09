@@ -76,7 +76,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         header("Location: {$URL}");
         exit();
     }
+
     $technician = $technician->fetch();
+
+    if ($technician['gibbonPersonID'] == $issue['gibbonPersonID']) {
+        $URL .= "/issues_assign.php&issueID=$issueID&return=error1";
+        header("Location: {$URL}");
+        exit();
+    }
 
     try {
         $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
