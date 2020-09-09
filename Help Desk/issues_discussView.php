@@ -186,36 +186,48 @@ if (!isModuleAccessible($guid, $connection2)) {
                 //Again a bit of a cheat, we'll see how this goes.
                 $headerActions = array();
 
-                $action = new Action('refresh', __('Refresh'));
-                $action->setIcon('refresh')
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
-                        ->addParam('issueID', $issueID);
-                $headerActions[] = $action;
-
-                $action = new Action('add', __('Add'));
-                $action->modalWindow()
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussPost.php')
-                        ->addParam('issueID', $issueID);
-                
-                $headerActions[] = $action;
-                
-                if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
-                    $action = new Action('reassign', __('Reassign'));
-                    $action->setIcon('attendance')
-                            ->modalWindow()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                if ($issue['status'] != 'Resolved') {
+                    $action = new Action('refresh', __('Refresh'));
+                    $action->setIcon('refresh')
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
                             ->addParam('issueID', $issueID);
-                }
-                $headerActions[] = $action;
-                
-                if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue') || $isPersonsIssue) {
-                    $action = new Action('resolve', __('Resolve'));
-                    $action->setIcon('iconTick')
-                            ->directLink()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
-                            ->addParam('issueID', $issueID);
-
                     $headerActions[] = $action;
+
+                    $action = new Action('add', __('Add'));
+                    $action->modalWindow()
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussPost.php')
+                            ->addParam('issueID', $issueID);
+                    
+                    $headerActions[] = $action;
+                    
+                    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                        $action = new Action('reassign', __('Reassign'));
+                        $action->setIcon('attendance')
+                                ->modalWindow()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                                ->addParam('issueID', $issueID);
+                    }
+                    $headerActions[] = $action;
+                    
+                    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue') || $isPersonsIssue) {
+                        $action = new Action('resolve', __('Resolve'));
+                        $action->setIcon('iconTick')
+                                ->directLink()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
+                                ->addParam('issueID', $issueID);
+
+                        $headerActions[] = $action;
+                    }
+                } else {
+                     if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'reincarnateIssue') || $isPersonsIssue) {
+                        $action = new Action('reincarnate', __('Reincarnate'));
+                        $action->directLink()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_reincarnateProcess.php')
+                                ->setIcon('reincarnate')
+                                ->addParam('issueID', $issueID);
+
+                        $headerActions[] = $action;
+                    }
                 }
 
                 echo '<div class="linkTop">';
