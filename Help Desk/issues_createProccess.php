@@ -45,7 +45,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         'gibbonPersonID' => $gibbonPersonID,
         'createdByID' => $gibbonPersonID,
         'status' => 'Unassigned',
-        'gibbonSchoolYearID' => $gibbonPersonID,
+        'gibbonSchoolYearID' => $gibbon->session->get('gibbonSchoolYearID'),
         'date' => date('Y-m-d'),
         //Data to get from Post or getSettingByScope
         'issueName' => '',
