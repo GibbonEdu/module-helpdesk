@@ -56,7 +56,8 @@ if (!isModuleAccessible($guid, $connection2)) {
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
         ->filterBy('year', $year)
-        ->sortBy('issueID')
+        ->sortBy('status', 'ASC')
+        ->sortBy('issueID', 'DESC')
         ->fromPOST();
         
     $criteria->addFilterRules([
