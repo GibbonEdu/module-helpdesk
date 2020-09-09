@@ -15,20 +15,20 @@ $I->click('Submit');
 $I->seeSuccessMessage();
 
 //TODO: technicianID does not get posted
-// $technicianID = $I->grabValueFromURL('technicianID');
+$technicianID = $I->grabValueFromURL('technicianID');
+
+// Edit ------------------------------------------------
+$I->amOnModulePage('Help Desk', 'helpDesk_setTechGroup.php', array('technicianID' => $technicianID));
+$I->seeBreadcrumb('Edit Technician');
+
+//TODO: I currently do not see in dropdowns
+
+$I->selectFromDropdown('group', 2);
+$I->click('Submit');
+$I->seeSuccessMessage();
+
+// Delete ------------------------------------------------
+// $I->amOnModulePage('Help Desk', 'helpDesk_technicianDelete.php', array('technicianID' => $technicianID));
 // 
-// // Edit ------------------------------------------------
-// $I->amOnModulePage('Help Desk', 'helpDesk_setTechGroup.php', array('technicianID' => $technicianID));
-// $I->seeBreadcrumb('Edit Technician');
-// 
-// //TODO: I currently do not see in dropdowns
-// 
-// $I->selectFromDropdown('group', 2);
-// $I->click('Submit');
+// $I->click('Yes');
 // $I->seeSuccessMessage();
-// 
-// // Delete ------------------------------------------------
-// // $I->amOnModulePage('Help Desk', 'helpDesk_technicianDelete.php', array('technicianID' => $technicianID));
-// // 
-// // $I->click('Yes');
-// // $I->seeSuccessMessage();
