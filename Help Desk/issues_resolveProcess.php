@@ -22,7 +22,7 @@ use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 //Bit of a cheat, but needed for gateway to work
-$_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
+$_POST['address'] = '/modules/Help Desk/issues_reincarnateProcess.php';
 
 require_once '../../gibbon.php';
 
@@ -37,77 +37,76 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     exit();
 } else {
     //Proceed!
-    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-
-    $techGroupGateway = $container->get(TechGroupGateway::class);
-    if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
-        $URL .= '&return=error0';
-        header("Location: {$URL}");
-        exit();
-    }
-
     $issueID = $_GET['issueID'] ?? '';
-    
+
     $issueGateway = $container->get(IssueGateway::class);
     $issue = $issueGateway->getByID($issueID);
 
-    if (empty($issueID) || empty($issue) || $issue['status'] != 'Pending'){
-        //Fail 3
+    if (empty($issueID) || empty($issue)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
-    } else {
-        //TODO: Understand this?
-        if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
-            //Write to database
-            try {
-                $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-                if ($gibbonModuleID == null) {
-                    throw new PDOException('Invalid gibbonModuleID.');
-                }
-
-                $data = array('status' => 'Resolved');
-                
-                if (!$issueGateway->update($issueID, $data)) {
-                    throw new PDOException('Failed to update issue.');
-                }
-            } catch (PDOException $e) {
-                $URL .= '&return=error2';
-                header("Location: {$URL}");
-                exit();
-            }
-
-            $message = 'Issue #';
-            $message .= $issueID;
-            $message .= ' (' . $issue['issueName'] . ') has been resolved.';
-
-            $personIDs = $issueGateway->getPeopleInvolved($issueID);
-
-            foreach ($personIDs as $personID) {
-                if ($personID != $gibbonPersonID) {
-                    setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
-                } 
-            }
-
-            $array['issueID'] = $issueID;
-
-            $technicianGateway = $container->get(TechnicianGatway::class);
-            $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
-            if ($technician->isNotEmpty()) {
-                $array['technicianID'] = $technician->fetch()['technicianID'];
-            }
-
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Resolved', $array, null);
-
-            //Success 0
-            $URL .= '&return=success0';
-            header("Location: {$URL}");
-            exit();
-        } else {
-            $URL .= '&return=error0';
-            header("Location: {$URL}");
-            exit();
-        }
     }
+
+    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    if (($issue['gibbonPersonID'] != $gibbonPersonID) && !($issueGateway->isRelated($issueID, $gibbonPersonID) && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
+        $URL .= '&return=error1';
+        header("Location: {$URL}");
+        exit();
+    }
+
+    $status = 'Resolved';
+    if ($issue['technicianID'] == null) {
+       $URL .= '&return=error0';
+        header("Location: {$URL}");
+        exit();
+    }
+
+    //Write to database
+    try {
+        $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
+        if ($gibbonModuleID == null) {
+            throw new PDOException('Invalid gibbonModuleID.');
+        }
+
+        $data = array('status' => $status);
+
+        if (!$issueGateway->update($issueID, $data)) {
+            throw new PDOException('Failed to update Issue');
+        }
+    } catch (PDOException $e) {
+        $URL .= '&return=error2';
+        header("Location: {$URL}");
+        exit();
+    }
+
+    $message = 'Issue #';
+    $message .= $issueID;
+    $message .= ' (' . $issue['issueName'] . ') has been resolved.';
+
+    $personIDs = $issueGateway->getPeopleInvolved($connection2, $issueID);
+
+    foreach ($personIDs as $personID) {
+        if ($personID != $gibbonPersonID) {
+            setNotification($connection2, $guid, $personID, $message, 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
+        } 
+    }
+
+    $array = array('issueID' => $issueID);
+
+    $technicianGateway = $container->get(TechnicianGatway::class);
+    $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
+    if ($technician->isNotEmpty()) {
+        $array['technicianID'] = $technician->fetch()['technicianID'];
+    }
+
+    setLog($connection2,$gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Resolved', $array, null);
+
+    //Success 0
+    $URL .= '&return=success0';
+    header("Location: {$URL}");
+    exit();
 }
 ?>
