@@ -51,7 +51,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
-    if (($issue['gibbonPersonID'] != $gibbonPersonID) && !($issueGateway->isRelated($issueID, $gibbonPersonID)) && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) {
+    if (($issue['gibbonPersonID'] != $gibbonPersonID) && !($issueGateway->isRelated($issueID, $gibbonPersonID) && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
