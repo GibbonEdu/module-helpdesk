@@ -28,11 +28,11 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php';
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
-    $URL .= '&return=error0';
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
@@ -43,7 +43,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $issue = $issueGateway->getByID($issueID);
 
     if (empty($issueID) || empty($issue)) {
-        $URL .= '&return=error1';
+        $URL .= '/issues_view.php&return=error1';
         header("Location: {$URL}");
         exit();
     }
@@ -52,10 +52,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
     if (($issue['gibbonPersonID'] != $gibbonPersonID) && !($issueGateway->isRelated($issueID, $gibbonPersonID) && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
-        $URL .= '&return=error1';
+        $URL .= '/issues_view.php&return=error1';
         header("Location: {$URL}");
         exit();
     }
+
+    $URL .= "/issues_discussView.php&issueID=$issueID";
 
     $status = 'Pending';
     if ($issue['technicianID'] == null) {
