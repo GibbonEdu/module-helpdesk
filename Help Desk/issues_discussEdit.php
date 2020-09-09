@@ -41,7 +41,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_view.php
 
         $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
-        $techGroupGateway = $conatiner->get(TechGroupGateway::class);
+        $techGroupGateway = $container->get(TechGroupGateway::class);
 
         if ($issue['gibbonPersonID'] == $gibbonPersonID || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
             $form = Form::create('editPrivacy', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussEditProcess.php?issueID=' . $issueID, 'post'); 
