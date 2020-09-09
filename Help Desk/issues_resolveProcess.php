@@ -51,7 +51,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $issueGateway = $container->get(IssueGateway::class);
     $issue = $issueGateway->getByID($issueID);
 
-    if (empty($issueID) || empty($issue) || $issue['status'] != 'Pending'){
+    if (empty($issueID) || empty($issue)){
         //Fail 3
         $URL .= '&return=error1';
         header("Location: {$URL}");
