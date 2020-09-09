@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('create (on behalf of another) and accept issues');
+$I->wantTo('create (on behalf of another), accept, discuss, reassign, resolve, reincarnate, and resolve an issues');
 $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
@@ -10,7 +10,7 @@ $I->seeBreadcrumb('Create Issue');
 $I->fillField('issueName', 'Test Issue');
 $I->fillField('description', '<p>Test Description</p>');
 $I->selectFromDropdown('category', 2);
-$I->selectFromDropdown('createFor', 2); 
+$I->selectFromDropdown('createFor', -1); 
 //TODO: priorities, they don't exist by default so
 $I->click('Submit');
 $I->seeSuccessMessage();
@@ -18,26 +18,43 @@ $I->seeSuccessMessage();
 
 $issueID = $I->grabValueFromURL('issueID');
 
-// discussView Assign ------------------------------------------------
+// discussView Accept ------------------------------------------------
 $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
 $I->seeBreadcrumb('Discuss Issue');
 
 $I->click('Accept');
 $I->seeSuccessMessage();
 
-//TODO: Modal views be like: no
+// discuss ------------------------------------------------
+$I->amOnModulePage('Help Desk', 'issues_discussPost.php', ['issueID' => $issueID]);
+$I->seeBreadcrumb('Post Discuss');
+$I->fillField('comment', '<p>Discuss Test</p>');
+$I->click('Submit');
+$I->seeSuccessMessage();
+
+
 // discussView Assign ------------------------------------------------
-// $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
-// $I->seeBreadcrumb('Discuss Issue');
-// 
-// $I->click('Reassign');
-// $I->selectFromDropdown('technician', 1);
-// $I->click('Submit');
-// $I->seeSuccessMessage();
+$I->amOnModulePage('Help Desk', 'issues_assign.php', ['issueID' => $issueID]);
+$I->seeBreadcrumb('Reassign Issue');
+
+$I->selectFromDropdown('technician', 1);
+$I->click('Submit');
+$I->seeSuccessMessage();
 
 //Resolve ------------------------------------------------
-//TODO: In theory this should work, in practice it's broken even when tested manually so that needs fixing
-// $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
-// 
-// $I->click('Resolve');
-// $I->seeSuccessMessage();
+$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+
+$I->click('Resolve');
+$I->seeSuccessMessage();
+
+//Resolve ------------------------------------------------
+$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+
+$I->click('Reincarnate');
+$I->seeSuccessMessage();
+
+//Resolve ------------------------------------------------
+$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+
+$I->click('Resolve');
+$I->seeSuccessMessage();

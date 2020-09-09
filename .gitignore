@@ -34,3 +34,6 @@ Thumbs.db
 *.rar
 *.tar
 *.zip
+Help Desk/tests/_output/IssuesManageCept.fail.html
+Help Desk/tests/_output/techGroupsManageCept.fail.html
+Help Desk/tests/_output/techManageCept.fail.html
