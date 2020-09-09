@@ -118,7 +118,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Technician Assigned', $array, null);
 
-    $URL .= '/issues_view.php&return=success0';
+    $URL .= '/issues_discussView.php&return=success0';
     header("Location: {$URL}");
     exit();
 }

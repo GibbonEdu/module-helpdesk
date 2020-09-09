@@ -41,7 +41,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $URL .= "/helpDesk_editTechnicianGroup.php&groupID=$groupID";
 
         $groupName = $_POST['groupName'] ?? '';
-        $viewIssueStatus =  $_POST['viewIssueStatus' ?? '';
+        $viewIssueStatus =  $_POST['viewIssueStatus'] ?? '';
 
         if (empty($groupName) || empty($viewIssueStatus)) {
             $URL .= '&return=error1';

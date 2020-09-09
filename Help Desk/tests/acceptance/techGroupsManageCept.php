@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('add, edit and delete technicians');
+$I->wantTo('Create, Edit and Delete Technician Group');
 $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'helpDesk_manageTechnicianGroup.php');
 
@@ -8,40 +8,33 @@ $I->amOnModulePage('Help Desk', 'helpDesk_manageTechnicianGroup.php');
 $I->clickNavigation('Add');
 $I->seeBreadcrumb('Create Technician Group');
 
+$I->fillField('groupName', 'Test Group');
+$I->click('Submit');
 
-$addFormValues = array(
-    'groupName'             => 'Test Group'
-);
-
-$I->submitForm('#content form', $addFormValues, 'Submit');
 $I->seeSuccessMessage();
 
-
-$groupID = $I->grabEditIDFromURL();
+$groupID = $I->grabValueFromURL('groupID');
 
 // Edit ------------------------------------------------
 $I->amOnModulePage('Help Desk', 'helpDesk_editTechnicianGroup.php', array('groupID' => $groupID));
 $I->seeBreadcrumb('Edit Technician Group');
 
-$I->seeInFormFields('#content form', $addFormValues);
-$editFormValues = array(
-    'groupName' => 'Test Group',
-    'viewIssue' => 'Y',
-    'assignIssue' => 'N',
-    'acceptIssue' => 'N',
-    'resolveIssue' => 'N',
-    'createIssueForOther' => 'N',
-    'reassignIssue' => 'N',
-    'reincarnateIssue' => 'N'
-    'fullAccess' => 'N'
-    
-);
+$I->seeInField('groupName', 'Test Group');
+$I->seeInField('viewIssue', '1');
+$I->seeInField('assignIssue', '');
+$I->seeInField('acceptIssue', '1');
+$I->seeInField('resolveIssue', '1');
+$I->seeInField('createIssueForOther', '1');
+$I->seeInField('reassignIssue', '');
+$I->seeInField('reincarnateIssue', '1');
+$I->seeInField('fullAccess', '');
+
 $I->selectFromDropdown('viewIssueStatus', 1);
-$I->submitForm('#content form', $addFormValues, 'Submit');
+$I->click('Submit');
 $I->seeSuccessMessage();
 
 // Delete ------------------------------------------------
 $I->amOnModulePage('Help Desk', 'helpDesk_technicianGroupDelete.php', array('groupID' => $groupID));
-
-$I->click('Yes');
+$I->selectFromDropdown('group', 2);
+$I->click('Submit');
 $I->seeSuccessMessage();
