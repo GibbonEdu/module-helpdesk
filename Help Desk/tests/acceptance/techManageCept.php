@@ -14,7 +14,6 @@ $I->selectFromDropdown('group', 2);
 $I->click('Submit');
 $I->seeSuccessMessage();
 
-//TODO: technicianID does not get posted
 $technicianID = $I->grabValueFromURL('technicianID');
 
 // Edit ------------------------------------------------

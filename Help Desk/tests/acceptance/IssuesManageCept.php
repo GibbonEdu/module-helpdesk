@@ -55,7 +55,7 @@ $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID
 
 $I->click('Resolve');
 $I->seeSuccessMessage();
-$I->seeBreadcrumb('Discuss Issue');
+$I->seeBreadcrumb('Issues');
 
 //Resolve ------------------------------------------------
 $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
