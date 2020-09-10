@@ -37,7 +37,7 @@ $I->seeSuccessMessage();
 $I->amOnModulePage('Help Desk', 'issues_assign.php', ['issueID' => $issueID]);
 $I->seeBreadcrumb('Reassign Issue');
 
-$I->selectFromDropdown('technician', 1);
+$I->selectFromDropdown('technician', 2);
 $I->click('Submit');
 $I->seeSuccessMessage();
 

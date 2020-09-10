@@ -9,10 +9,14 @@ $I->seeBreadcrumb('Manage Help Desk Settings');
 
 
 $I->selectFromDropdown('resolvedIssuePrivacy', 1);
-$I->fillField('issueCategory', 'Facilities,ICT');
-$I->fillField('issuePriority', '1,2,3');
-$I->fillField('issuePriorityName', 'Priority');
-$I->click('Submit');
+$newFormValues = array(
+            'issueCategory' => 'Facilities,ICT',
+            'issuePriority' => '1,2,3',
+            'issuePriorityName' => 'Priority',
+        );
+
+$I->submitForm('#helpDeskSettings', $newFormValues, 'Submit');
 $I->seeSuccessMessage();
 
+$I->seeInFormFields('#helpDeskSettings', $newFormValues);
 
