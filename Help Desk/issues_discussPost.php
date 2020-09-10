@@ -33,7 +33,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $issueGateway = $container->get(IssueGateway::class);
     $issue = $issueGateway->getByID($issueID);
 
-    if (empty($issueID) || !empty($issue)) {
+    if (empty($issueID) || empty($issue)) {
         $page->addError(__('No Issue Selected.'));
     } else {
         $page->breadcrumbs
