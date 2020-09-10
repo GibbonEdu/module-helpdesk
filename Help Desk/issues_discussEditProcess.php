@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
 
@@ -41,10 +42,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         exit();
     }
 
-    $URL .= '/issues_discussView.php&issueID=' . $issueID;
+    $gibbonPersonID =  $gibbon->session->get('gibbonPersonID');
+    $techGroupGateway = $container->get(TechGroupGateway::class);
 
-    if ($issue['gibbonPersonID'] != $gibbon->session->get('gibbonPersonID')) {
-        $URL .= '&return=error0';
+    if ($issue['gibbonPersonID'] != $gibbonPersonID && !$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
+        $URL .= "/issues_discussView.php&issueID=$issueID&return=error0";
         header("Location: {$URL}");
         exit();
     }
@@ -52,7 +54,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $privacySetting = $_POST['privacySetting'] ?? '';
 
     if (!in_array($privacySetting, privacyOptions())) {
-        $URL .= '&return=error1';
+        $URL .= "/issues_discussEdit.php&issueID=$issueID&return=error1";
         header("Location: {$URL}");
         exit();
     }
@@ -64,12 +66,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             throw new PDOException('Could not update issue.');
         }
     } catch (PDOException $e) {
-        $URL .= '&return=error2';
+        $URL .= "/issues_discussEdit.php&issueID=$issueID&return=error2";
         header("Location: {$URL}");
         exit();
     }
 
-    $URL .= '&return=success0';
+    $URL .= "/issues_discussView.php&issueID=$issueID&return=success0";
     header("Location: {$URL}");
     exit();
 }

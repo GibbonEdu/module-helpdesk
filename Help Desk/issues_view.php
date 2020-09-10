@@ -44,19 +44,14 @@ if (!isModuleAccessible($guid, $connection2)) {
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
-    $highestAction = getHighestGroupedAction($guid, $_GET['q'], $connection2);
-    if ($highestAction == false) {
-        $page->addError(__('The highest grouped action cannot be determined.'));
-        exit();
-    }
-
     $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
 
     $issueGateway = $container->get(IssueGateway::class);
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
         ->filterBy('year', $year)
-        ->sortBy('issueID')
+        ->sortBy('status', 'ASC')
+        ->sortBy('issueID', 'DESC')
         ->fromPOST();
         
     $criteria->addFilterRules([
@@ -168,7 +163,8 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
     //FILTERS END
     
-    $table->modifyRows(function($issue, $row) {
+    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway) {
         if ($issue['status'] == 'Resolved') {
             $row->addClass('current');
         } else if ($issue['status'] == 'Unassigned') {
@@ -176,6 +172,22 @@ if (!isModuleAccessible($guid, $connection2)) {
         } else if ($issue['status'] == 'Pending') {
             $row->addClass('warning');
         }
+
+        //Potentially could be done better
+        if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess') && $issue['status'] == 'Resolved') {
+            switch ($issue['privacySetting']) {
+                case 'No one':
+                    $row = null;
+                    break;
+                case 'Owner':
+                    $row = ($issue['gibbonPersonID'] == $gibbonPersonID) ? $row : null;
+                    break;
+                case 'Related':
+                    $row = $issueGateway->isRelated($issue['issueID'], $gibbonPersonID) ? $row : null;
+                    break;
+            }
+        }
+
         return $row;
     });
 

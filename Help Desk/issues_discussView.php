@@ -139,7 +139,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     ->width($tdWidth)
                     ->format(function($row) use ($gibbon, $isPersonsIssue, $hasFullAccess) {
                         if ($isPersonsIssue || $hasFullAccess) {
-                            return '<a href="' . $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussEdit.php&issueID='. $row['issueID'] . '">' .  __($row['privacySetting']) . '</a>';
+                            return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussEdit.php&issueID='. $row['issueID'], __($row['privacySetting']));
                         } else {
                             return __($row['privacySetting']);
                         }
@@ -166,7 +166,14 @@ if (!isModuleAccessible($guid, $connection2)) {
                             ->modalWindow()
                             ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
                             ->addParam('issueID', $issueID);
-                  }
+                }
+                if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue') || $isPersonsIssue) {
+                    $table->addHeaderAction('resolve', __('Resolve'))
+                            ->setIcon('iconTick')
+                            ->directLink()
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
+                            ->addParam('issueID', $issueID);
+                }
             }
 
             $table->addColumn('description')
