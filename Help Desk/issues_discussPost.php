@@ -29,38 +29,44 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $page->addError(__('You do not have access to this action.'));
 } else {
     $issueID = $_GET['issueID'] ?? '';
-    $issueGateway = $container->get(IssueGateway::class);
 
-    if (empty($issueID) || !$issueGateway->exists($issueID)) {
+    $issueGateway = $container->get(IssueGateway::class);
+    $issue = $issueGateway->getByID($issueID);
+
+    if (empty($issueID) || !empty($issue)) {
         $page->addError(__('No Issue Selected.'));
     } else {
         $page->breadcrumbs
             ->add(__('Discuss Issue'), 'issues_discussView.php', ['issueID' => $issueID])
             ->add(__('Post Discuss'));
 
-        $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+        if ($issue['status'] == 'Pending') {
+            $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
-        $techGroupGateway = $container->get(TechGroupGateway::class);
+            $techGroupGateway = $container->get(TechGroupGateway::class);
 
-        if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
-            $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
-            $form->addHiddenValue('address', $gibbon->session->get('address'));
-            
-            $row = $form->addRow();
-                $column = $row->addColumn();
-                $column->addLabel('comment', __('Comment'));
-                $column->addEditor('comment', $guid)
-                    ->setRows(5)
-                    ->showMedia()
-                    ->isRequired();
-            
-            $row = $form->addRow();
-                $row->addFooter();
-                $row->addSubmit();
+            if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
+                $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
+                $form->addHiddenValue('address', $gibbon->session->get('address'));
+                
+                $row = $form->addRow();
+                    $column = $row->addColumn();
+                    $column->addLabel('comment', __('Comment'));
+                    $column->addEditor('comment', $guid)
+                        ->setRows(5)
+                        ->showMedia()
+                        ->isRequired();
+                
+                $row = $form->addRow();
+                    $row->addFooter();
+                    $row->addSubmit();
 
-            echo $form->getOutput();
+                echo $form->getOutput();
+            } else {
+                $page->addError(__('You do not have access to this action.'));
+            }
         } else {
-            $page->addError(__('You do not have access to this action.'));
+            $page->addError(__('You cannot comment on an issue that is Unassigned or Resolved.'));
         }
     }
 }
