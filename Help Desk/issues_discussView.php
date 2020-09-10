@@ -193,7 +193,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             echo $table->render([$issue]);
 
             $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
-            $logs = $issueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
+            $logs = $issueDiscussGateway->getIssueDiscussionByID($issueID, $isPersonsIssue)->fetchAll();
 
             if ($hasTechAssigned || count($logs) > 0) {
                 echo $page->fetchFromTemplate('ui/discussion.twig.html', [
