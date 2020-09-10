@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('Change settings');
+$I->wantTo('Change and check settings');
 $I->loginAsAdmin();
 
 
