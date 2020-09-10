@@ -20,7 +20,7 @@ class IssueDiscussGateway extends QueryableGateway
     private static $searchableColumns = [];
 
     public function getIssueDiscussionByID($issueID, $isPersonsIssue) {
-       if ($isPersonsIssue == FALSE) { 
+       if ($isPersonsIssue == TRUE) { 
         $query = $this
             ->newSelect()
             ->cols(['helpDeskIssueDiscuss.*', 'gibbonPerson.title', 'gibbonPerson.surname', 'gibbonPerson.preferredName', 'gibbonPerson.image_240', 'gibbonPerson.username', 'gibbonPerson.email', 'helpDeskTechnicians.technicianID', '"Owner" AS type', '"Commented " AS action'])
