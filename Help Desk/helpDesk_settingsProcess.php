@@ -68,8 +68,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
                         exit();
                     }
                     break;
-                $dbFail |= !$settingGateway->updateSettingByScope('Help Desk', $setting, $value);
             }
+            $dbFail |= !$settingGateway->updateSettingByScope('Help Desk', $setting, $value);
         }
     }
 
