@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('create (on behalf of another), accept, discuss, reassign, resolve, reincarnate, and resolve an issues');
+$I->wantTo('create (on behalf of another), accept, discuss, reassign, resolve, reincarnate, and resolve an issue as a technician (admin)');
 $I->loginAsAdmin();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
@@ -57,7 +57,7 @@ $I->click('Resolve');
 $I->seeSuccessMessage();
 $I->seeBreadcrumb('Issues');
 
-//Resolve ------------------------------------------------
+//Reincarnate ------------------------------------------------
 $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
 
 $I->click('Reincarnate');

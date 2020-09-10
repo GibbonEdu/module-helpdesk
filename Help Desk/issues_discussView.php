@@ -155,7 +155,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             //TODO: Can this be simplified?
             if ($isResolved) {
-                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) {
+                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
                     $table->addHeaderAction('reincarnate', __('Reincarnate'))
                             ->setIcon('reincarnate')
                             ->directLink()
@@ -224,8 +224,9 @@ if (!isModuleAccessible($guid, $connection2)) {
                                 ->modalWindow()
                                 ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
                                 ->addParam('issueID', $issueID);
+                            $headerActions[] = $action;
                     }
-                    $headerActions[] = $action;
+                    
                     
                     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
                         $action = new Action('resolve', __('Resolve'));
