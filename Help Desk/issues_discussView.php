@@ -50,22 +50,24 @@ if (!isModuleAccessible($guid, $connection2)) {
         $technicianGateway = $container->get(TechnicianGateway::class);
 
         //Information about the current user
-        $isPersonsIssue = ($issue['gibbonPersonID'] == $gibbon->session->get('gibbonPersonID'));
-        $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'))->isNotEmpty();
-        $isRelated = $issueGateway->isRelated($issueID, $gibbon->session->get('gibbonPersonID'));
-        $hasFullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
+        $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+        $isPersonsIssue = ($issue['gibbonPersonID'] == $gibbonPersonID);
+        $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID)->isNotEmpty();
+        $isRelated = $issueGateway->isRelated($issueID, $gibbonPersonID);
+        $hasFullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
 
         //Information about the issue's technician
         $technician = $technicianGateway->getTechnician($issue['technicianID']);
         $technician = $technician->isNotEmpty() ? $technician->fetch() : [];
         $hasTechAssigned = !empty($technician);
+        $isResolved = ($issue['status'] == 'Resolved');
 
         $allowed = $isRelated
             || (!$hasTechAssigned && $isTechnician) 
             || $hasFullAccess;
 
         $privacySetting = $issue['privacySetting'];
-        if ($issue['status'] == 'Resolved' && !$hasFullAccess) {
+        if ($isResolved && !$hasFullAccess) {
             if ($privacySetting == 'No one') {
                 $allowed = false;
             } else if ($privacySetting == 'Related' && !$isRelated) {
@@ -152,39 +154,48 @@ if (!isModuleAccessible($guid, $connection2)) {
             $table->setTitle(__('Description'));
 
             //TODO: Can this be simplified?
-            if (!$hasTechAssigned) {
-                 if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'acceptIssue') && !$isPersonsIssue) {
-                    $table->addHeaderAction('accept', __('Accept'))
-                            ->setIcon('page_new')
+            if ($isResolved) {
+                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) {
+                    $table->addHeaderAction('reincarnate', __('Reincarnate'))
+                            ->setIcon('reincarnate')
                             ->directLink()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_reincarnateProcess.php')
                             ->addParam('issueID', $issueID);
                 }
-                if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'assignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
-                    $table->addHeaderAction('assign', __('Assign'))
-                            ->setIcon('attendance')
-                            ->modalWindow()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
-                            ->addParam('issueID', $issueID);
-                }
-                if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue') || $isPersonsIssue) {
-                    $table->addHeaderAction('resolve', __('Resolve'))
-                            ->setIcon('iconTick')
-                            ->directLink()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
-                            ->addParam('issueID', $issueID);
+            } else {
+                if (!$hasTechAssigned) {
+                     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue') && !$isPersonsIssue) {
+                        $table->addHeaderAction('accept', __('Accept'))
+                                ->setIcon('page_new')
+                                ->directLink()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
+                                ->addParam('issueID', $issueID);
+                    }
+                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                        $table->addHeaderAction('assign', __('Assign'))
+                                ->setIcon('attendance')
+                                ->modalWindow()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                                ->addParam('issueID', $issueID);
+                    }
+                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
+                        $table->addHeaderAction('resolve', __('Resolve'))
+                                ->setIcon('iconTick')
+                                ->directLink()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
+                                ->addParam('issueID', $issueID);
+                    }
                 }
             }
-
             $table->addColumn('description')
                     ->width('100%');
 
             echo $table->render([$issue]);
 
-            if ($hasTechAssigned) {
-                $IssueDiscussGateway = $container->get(IssueDiscussGateway::class);
-                $logs = $IssueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
+            $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
+            $logs = $issueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
 
+            if ($hasTechAssigned || count($logs) > 0) {
                 echo $page->fetchFromTemplate('ui/discussion.twig.html', [
                     'title' => __('Comments'),
                     'discussion' => $logs
@@ -193,7 +204,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 //Again a bit of a cheat, we'll see how this goes.
                 $headerActions = array();
 
-                if ($issue['status'] != 'Resolved') {
+                if (!$isResolved) {
                     $action = new Action('refresh', __('Refresh'));
                     $action->setIcon('refresh')
                             ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
@@ -207,7 +218,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     
                     $headerActions[] = $action;
                     
-                    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
                         $action = new Action('reassign', __('Reassign'));
                         $action->setIcon('attendance')
                                 ->modalWindow()
@@ -216,7 +227,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     }
                     $headerActions[] = $action;
                     
-                    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'resolveIssue') || $isPersonsIssue) {
+                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
                         $action = new Action('resolve', __('Resolve'));
                         $action->setIcon('iconTick')
                                 ->directLink()
@@ -225,23 +236,12 @@ if (!isModuleAccessible($guid, $connection2)) {
 
                         $headerActions[] = $action;
                     }
-                } else {
-                     if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'reincarnateIssue') || $isPersonsIssue) {
-                        $action = new Action('reincarnate', __('Reincarnate'));
-                        $action->directLink()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_reincarnateProcess.php')
-                                ->setIcon('reincarnate')
-                                ->addParam('issueID', $issueID);
-
-                        $headerActions[] = $action;
-                    }
+                    echo '<div class="linkTop">';
+                        foreach ($headerActions as $action) {
+                            echo $action->getOutput();
+                        }
+                    echo '</div>';
                 }
-
-                echo '<div class="linkTop">';
-                    foreach ($headerActions as $action) {
-                        echo $action->getOutput();
-                    }
-                echo '</div>';
             }
         } else {
             $page->addError(__('You do not have access to this action.'));
