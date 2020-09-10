@@ -48,16 +48,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
-    if (!$issueGateway->isRelated($issueID, $gibbonPersonID) && !$techGroupGateway->gerPermissionValue($gibbonPersonID, 'fullAccess')) {
-        //Fail 0 aka No permission
-        $URL .= '/issues_view.php&return=error0';
-        header("Location: {$URL}");
-        exit();
-    } else {
+    if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->gerPermissionValue($gibbonPersonID, 'fullAccess')) {
       //Proceed!
         $URL .= "/issues_discussView.php&issueID=$issueID";
 
-        if ($issue['status'] == 'Resolved') {
+        if ($issue['status'] != 'Pending') {
             $URL .= '&return=error0';
             header("Location: {$URL}");
             exit();
@@ -116,6 +111,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Discussion Posted', $array, null);
 
         $URL .= '&return=success0';
+        header("Location: {$URL}");
+        exit();
+    } else {
+        //Fail 0 aka No permission
+        $URL .= '/issues_view.php&return=error0';
         header("Location: {$URL}");
         exit();
     }
