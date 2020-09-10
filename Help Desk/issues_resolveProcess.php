@@ -39,13 +39,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     //Proceed!
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
-    $techGroupGateway = $container->get(TechGroupGateway::class);
-    if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
-        $URL .= '&return=error0';
-        header("Location: {$URL}");
-        exit();
-    }
-
     $issueID = $_GET['issueID'] ?? '';
     
     $issueGateway = $container->get(IssueGateway::class);
@@ -57,8 +50,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         header("Location: {$URL}");
         exit();
     } else {
-        //TODO: Understand this?
-        if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) {
+        $related = $issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
+        if (($issue['gibbonPersonID'] == $gibbonPersonID) || ($related && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
             //Write to database
             try {
                 $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');

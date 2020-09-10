@@ -51,62 +51,64 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
-    if (($issue['gibbonPersonID'] != $gibbonPersonID) && !($issueGateway->isRelated($issueID, $gibbonPersonID) && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
+    
+    $related = $issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
+    if (($issue['gibbonPersonID'] == $gibbonPersonID) || ($related && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
+        $URL .= "/issues_discussView.php&issueID=$issueID";
+
+        $status = 'Pending';
+        if ($issue['technicianID'] == null) {
+            $status = 'Unassigned';
+        }
+
+        //Write to database
+        try {
+            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
+            if ($gibbonModuleID == null) {
+                throw new PDOException('Invalid gibbonModuleID.');
+            }
+
+            $data = array('status' => $status);
+
+            if (!$issueGateway->update($issueID, $data)) {
+                throw new PDOException('Failed to update Issue');
+            }
+        } catch (PDOException $e) {
+            $URL .= '&return=error2';
+            header("Location: {$URL}");
+            exit();
+        }
+
+        $message = 'Issue #';
+        $message .= $issueID;
+        $message .= ' (' . $issue['issueName'] . ') has been reincarnated.';
+
+        $personIDs = $issueGateway->getPeopleInvolved($issueID);
+
+        foreach ($personIDs as $personID) {
+            if ($personID != $gibbonPersonID) {
+                setNotification($connection2, $guid, $personID, $message, 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
+            } 
+        }
+
+        $array = array('issueID' => $issueID);
+
+        $technicianGateway = $container->get(TechnicianGateway::class);
+        $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
+        if ($technician->isNotEmpty()) {
+            $array['technicianID'] = $technician->fetch()['technicianID'];
+        }
+
+        setLog($connection2,$gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Reincarnated', $array, null);
+
+        //Success 0
+        $URL .= '&return=success0';
+        header("Location: {$URL}");
+        exit();
+    } else {
         $URL .= '/issues_view.php&return=error1';
         header("Location: {$URL}");
         exit();
     }
-
-    $URL .= "/issues_discussView.php&issueID=$issueID";
-
-    $status = 'Pending';
-    if ($issue['technicianID'] == null) {
-        $status = 'Unassigned';
-    }
-
-    //Write to database
-    try {
-        $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-        if ($gibbonModuleID == null) {
-            throw new PDOException('Invalid gibbonModuleID.');
-        }
-
-        $data = array('status' => $status);
-
-        if (!$issueGateway->update($issueID, $data)) {
-            throw new PDOException('Failed to update Issue');
-        }
-    } catch (PDOException $e) {
-        $URL .= '&return=error2';
-        header("Location: {$URL}");
-        exit();
-    }
-
-    $message = 'Issue #';
-    $message .= $issueID;
-    $message .= ' (' . $issue['issueName'] . ') has been reincarnated.';
-
-    $personIDs = $issueGateway->getPeopleInvolved($issueID);
-
-    foreach ($personIDs as $personID) {
-        if ($personID != $gibbonPersonID) {
-            setNotification($connection2, $guid, $personID, $message, 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
-        } 
-    }
-
-    $array = array('issueID' => $issueID);
-
-    $technicianGateway = $container->get(TechnicianGateway::class);
-    $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
-    if ($technician->isNotEmpty()) {
-        $array['technicianID'] = $technician->fetch()['technicianID'];
-    }
-
-    setLog($connection2,$gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Reincarnated', $array, null);
-
-    //Success 0
-    $URL .= '&return=success0';
-    header("Location: {$URL}");
-    exit();
 }
 ?>
