@@ -124,4 +124,92 @@ class AcceptanceTester extends \Codeception\Actor
 
         return $this->amOnPage($url);
     }
+    
+    public function createIssueForMyself()
+    {
+         $I = $this;
+        $I->clickNavigation('Create');
+        $I->seeBreadcrumb('Create Issue');
+        $I->fillField('issueName', 'Test Issue');
+        $I->fillField('description', '<p>Test Description</p>');
+        $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('priority', -1);
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Create Issue');
+    }
+    
+    public function createIssueOnBehalf()
+    {
+        $I = $this;
+        $I->clickNavigation('Create');
+        $I->seeBreadcrumb('Create Issue');
+        $I->fillField('issueName', 'Test Issue');
+        $I->fillField('description', '<p>Test Description</p>');
+        $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('createFor', -1); 
+        $I->selectFromDropdown('priority', -1);
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Create Issue');
+    }
+    public function acceptIssue($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+        $I->seeBreadcrumb('Discuss Issue');
+
+        $I->see('Test Issue');
+        $I->see('Test Description');
+
+        $I->click('Accept');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Discuss Issue');
+    }
+    
+    public function assignIssue($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_assign.php', ['issueID' => $issueID]);
+        $I->seeBreadcrumb('Reassign Issue');
+
+        $I->selectFromDropdown('technician', 2);
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Discuss Issue');
+    }
+    
+    public function discussIssue($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_discussPost.php', ['issueID' => $issueID]);
+        $I->seeBreadcrumb('Post Discuss');
+
+        $I->dontSee('Assign');
+        $I->dontSee('Accept');
+
+        $I->fillField('comment', '<p>Discuss Test</p>');
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Discuss Issue');
+    }
+    
+    public function resolveIssue($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+        $I->click('Resolve');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Issues');
+    }
+    
+    public function reincarnateIssue($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+        $I->click('Reincarnate');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Discuss Issue');
+    }
+    
 }
