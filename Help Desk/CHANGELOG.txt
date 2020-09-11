@@ -263,3 +263,9 @@ v1.2.00
 -------
 OO Update
 hand full of bug fixes
+
+v1.2.01
+-------
+Updated Authors to include Ashton Power
+Fixed descriptions on issues view.
+Fixed version.php to show correct version.
