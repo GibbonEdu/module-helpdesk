@@ -200,7 +200,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     $table->addColumn('issueName', __('Name'))
           ->description(__('Description'))
           ->format(function ($issue) {
-            return '<strong>' . __($issue['issueName']) . '</strong><br/><small><i>' . __($issue['description']) . '</i></small>';
+            return '<strong>' . $issue['issueName'] . '</strong><br/><small><i>' . Format::truncate(strip_tags($issue['description']), 50) . '</i></small>';
           });
     $table->addColumn('gibbonPersonID', __('Owner')) 
                 ->description(__('Category'))
