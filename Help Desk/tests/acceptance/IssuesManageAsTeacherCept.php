@@ -13,12 +13,10 @@ $I->selectFromDropdown('category', 2);
 $I->selectFromDropdown('priority', -1);
 $I->click('Submit');
 
-//Check if table view is correct (and that we've been redirected to issues_view.php)
+//Check if we get redirected correctly
 $issueID = $I->grabValueFromURL('issueID');
 $I->seeSuccessMessage();
-$I->seeBreadcrumb('Issues');
-$I->see('Test Issue');
-$I->see('Test Description');
+$I->seeBreadcrumb('Create Issue');
 
 
 // discussView Accept ------------------------------------------------
