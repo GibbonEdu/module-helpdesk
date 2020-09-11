@@ -5,64 +5,26 @@ $I->loginAsTeacher();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
 // Add ------------------------------------------------
-$I->clickNavigation('Create');
-$I->seeBreadcrumb('Create Issue');
-$I->fillField('issueName', 'Test Issue');
-$I->fillField('description', '<p>Test Description</p>');
-$I->selectFromDropdown('category', 2);
-$I->selectFromDropdown('priority', -1);
-$I->click('Submit');
-
-//Check if table view is correct (and that we've been redirected to issues_view.php)
+$I->createIssueForMyself();
 $issueID = $I->grabValueFromURL('issueID');
-$I->seeSuccessMessage();
-$I->seeBreadcrumb('Issues');
-$I->see('Test Issue');
-$I->see('Test Description');
-
 
 // discussView Accept ------------------------------------------------
 $I->click('Logout');
 $I->loginAsAdmin();
-$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
-$I->seeBreadcrumb('Discuss Issue');
-
-$I->click('Accept');
-$I->seeSuccessMessage();
-$I->seeBreadcrumb('Discuss Issue');
+$I->acceptIssue($issueID);
 
 
 // discuss ------------------------------------------------
 $I->click('Logout');
 $I->loginAsTeacher();
-$I->amOnModulePage('Help Desk', 'issues_discussPost.php', ['issueID' => $issueID]);
-$I->seeBreadcrumb('Post Discuss');
-
-$I->dontSee('Assign');
-$I->dontSee('Accept');
-
-$I->fillField('comment', '<p>Discuss Test</p>');
-$I->click('Submit');
-$I->seeSuccessMessage();
+$I->discussIssue($issueID);
 
 
 //Resolve ------------------------------------------------
-$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
-
-$I->click('Resolve');
-$I->seeSuccessMessage();
-$I->seeBreadcrumb('Issues');
+$I->resolveIssue($issueID);
 
 //Reincarnate ------------------------------------------------
-$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
-
-$I->click('Reincarnate');
-$I->seeSuccessMessage();
-$I->seeBreadcrumb('Discuss Issue');
+$I->reincarnateIssue($issueID);
 
 //Resolve ------------------------------------------------
-$I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
-
-$I->click('Resolve');
-$I->seeSuccessMessage();
-$I->seeBreadcrumb('Issues');
+$I->resolveIssue($issueID);
