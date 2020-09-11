@@ -269,4 +269,5 @@ $sql[$count][1]="
 $count++;
 $sql[$count][0]="1.2.01";
 $sql[$count][1]="
+UPDATE `gibbonmodule` SET `author`='Ray Clark, Ashton Power & Adrien Tremblay' WHERE `name` = 'Help Desk';end
 ";
