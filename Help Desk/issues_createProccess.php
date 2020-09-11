@@ -36,7 +36,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
     exit();
 } else {
     //Proceed!    
-    $URL .= '/issues_view.php';
+    $URL .= '/issues_create.php';
 
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
