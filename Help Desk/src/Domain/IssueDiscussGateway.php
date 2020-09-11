@@ -19,7 +19,17 @@ class IssueDiscussGateway extends QueryableGateway
     private static $primaryKey = 'issueDiscussID';
     private static $searchableColumns = [];
 
-    public function getIssueDiscussionByID($issueID) {
+    public function getIssueDiscussionByID($issueID, $isPersonsIssue) {
+       if ($isPersonsIssue == TRUE) { 
+        $query = $this
+            ->newSelect()
+            ->cols(['helpDeskIssueDiscuss.*', 'gibbonPerson.title', 'gibbonPerson.surname', 'gibbonPerson.preferredName', 'gibbonPerson.image_240', 'gibbonPerson.username', 'gibbonPerson.email', 'helpDeskTechnicians.technicianID', '"Owner" AS type', '"Commented " AS action'])
+            ->from('helpDeskIssueDiscuss')
+            ->innerJoin('gibbonPerson', 'helpDeskIssueDiscuss.gibbonPersonID=gibbonPerson.gibbonPersonID')
+            ->leftJoin('helpDeskTechnicians', 'helpDeskIssueDiscuss.gibbonPersonID=helpDeskTechnicians.gibbonPersonID')
+            ->where('helpDeskIssueDiscuss.issueID = :issueID')
+            ->bindValue('issueID', $issueID);
+        } else {
         $query = $this
             ->newSelect()
             ->cols(['helpDeskIssueDiscuss.*', 'gibbonPerson.title', 'gibbonPerson.surname', 'gibbonPerson.preferredName', 'gibbonPerson.image_240', 'gibbonPerson.username', 'gibbonPerson.email', 'helpDeskTechnicians.technicianID', '"Technician" AS type', '"Commented " AS action'])
@@ -27,18 +37,8 @@ class IssueDiscussGateway extends QueryableGateway
             ->innerJoin('gibbonPerson', 'helpDeskIssueDiscuss.gibbonPersonID=gibbonPerson.gibbonPersonID')
             ->leftJoin('helpDeskTechnicians', 'helpDeskIssueDiscuss.gibbonPersonID=helpDeskTechnicians.gibbonPersonID')
             ->where('helpDeskIssueDiscuss.issueID = :issueID')
-            ->where('helpDeskTechnicians.gibbonPersonID IS NOT NULL')
             ->bindValue('issueID', $issueID);
-            
-        $query->union()
-            ->cols(['helpDeskIssueDiscuss.*', 'gibbonPerson.title', 'gibbonPerson.surname', 'gibbonPerson.preferredName', 'gibbonPerson.image_240', 'gibbonPerson.username', 'gibbonPerson.email', 'helpDeskTechnicians.technicianID', '"Owner" AS type', '"Commented " AS action'])
-            ->from('helpDeskIssueDiscuss')
-            ->innerJoin('gibbonPerson', 'helpDeskIssueDiscuss.gibbonPersonID=gibbonPerson.gibbonPersonID')
-            ->leftJoin('helpDeskTechnicians', 'helpDeskIssueDiscuss.gibbonPersonID=helpDeskTechnicians.gibbonPersonID')
-            ->where('helpDeskIssueDiscuss.issueID = :issueID')
-            ->where('helpDeskTechnicians.gibbonPersonID IS NULL')
-            ->bindValue('issueID', $issueID)
-            ->orderBy(['timestamp']);
+        }
 
         $result = $this->runSelect($query);
 

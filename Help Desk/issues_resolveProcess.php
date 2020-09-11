@@ -42,6 +42,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $issueID = $_GET['issueID'] ?? '';
     
     $issueGateway = $container->get(IssueGateway::class);
+    $techGroupGateway = $container->get(techGroupGateway::class);
     $issue = $issueGateway->getByID($issueID);
 
     if (empty($issueID) || empty($issue)){
