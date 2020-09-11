@@ -269,3 +269,7 @@ v1.2.01
 Updated Authors to include Ashton Power
 Fixed descriptions on issues view.
 Fixed version.php to show correct version.
+
+v1.2.02
+-------
+Properly added Ashton Power to Authors.
