@@ -31,7 +31,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 } else {
     $departmentName = $_POST['departmentName'] ?? '';
     $departmentDesc = $_POST['departmentDesc'] ?? '';
-    if (empty($departmentName)) {
+    if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
@@ -46,15 +46,15 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
             $data = array('departmentName' => $departmentName, 'departmentDesc' => $departmentDesc);
 
-            $DepartmentGateway = $container->get(DepartmentGateway::class);
+            $departmentGateway = $container->get(DepartmentGateway::class);
 
-            if (!$DepartmentGateway->unique($data, ['departmentName'])) {
+            if (!$departmentGateway->unique($data, ['departmentName'])) {
                 $URL .= '&return=error7';
                 header("Location: {$URL}");
                 exit();
             }
 
-            $departmentID = $DepartmentGateway->insert($data);
+            $departmentID = $departmentGateway->insert($data);
             if ($departmentID === false) {
                 throw new PDOException('Could not insert group.');
             }
