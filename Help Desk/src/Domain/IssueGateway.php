@@ -82,7 +82,6 @@ class IssueGateway extends QueryableGateway
                     ->where('helpDeskSubcategories.departmentID = :departmentID')
                     ->bindValue('departmentID', $departmentID);
             },
-
         ]);
 
        return $this->runQuery($query, $criteria);
