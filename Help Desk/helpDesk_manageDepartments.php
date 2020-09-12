@@ -28,13 +28,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 } else {
     //Proceed!
     
-    $DepartmentGateway = $container->get(DepartmentGateway::class);
-    $SubCategoryGateway = $container->get(SubCategoryGateway::class);   
+    $departmentGateway = $container->get(departmentGateway::class);
+    $subCategoryGateway = $container->get(SubCategoryGateway::class);   
 
-    $departmentData = $DepartmentGateway->selectDepartments()->toDataSet();
+    $departmentData = $departmentGateway->selectDepartments()->toDataSet();
 
-    $formatCategoryList = function($row) use ($SubCategoryGateway) {
-        $categories = $SubCategoryGateway->selectBy(['departmentID' => $row['departmentID']])->fetchAll();
+    $formatCategoryList = function($row) use ($subCategoryGateway) {
+        $categories = $subCategoryGateway->selectBy(['departmentID' => $row['departmentID']])->fetchAll();
         if (count($categories) < 1) {
             return __('This department does not have any subcategories.');
         }
@@ -52,14 +52,15 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $table->addColumn('categories', __('Subcategories in department'))->format($formatCategoryList);;
 
     $table->addActionColumn()
-            ->addParam('groupID')
+            ->addParam('departmentID')
             ->format(function ($department, $actions) use ($gibbon, $departmentData) {
                 $actions->addAction('edit', __('Edit'))
                         ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartments.php');
 
                 if (count($departmentData) > 1) {
                     $actions->addAction('delete', __('Delete'))
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_DeleteDepartments.php');
+                            ->modalWindow()
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_deleteDepartments.php');
                 }
             });
     
