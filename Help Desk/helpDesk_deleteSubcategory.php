@@ -17,12 +17,30 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Forms\Prefab\DeleteForm;
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
+
 $page->breadcrumbs->add(__('Delete a Subcategory'));
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
+    $departmentID = $_GET['departmentID'] ?? '';
+    $subcategoryID = $_GET['subcategoryID'] ?? '';
 
+    $subcategoryGateway = $container->get(SubcategoryGateway::class);
+    $subcategory = $subcategoryGateway->getByID($subcategoryID);
+
+    if (empty($departmentID) || empty($subcategoryID) || empty($subcategory) || $subcategory['departmentID'] != $departmentID) {
+        $page->addError(__('Invalid Data Provided'));
+    } else {
+        $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . "/helpDesk_deleteSubcategoryProcess.php");
+        $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form->addHiddenValue('departmentID', $departmentID);
+        $form->addHiddenValue('subcategoryID', $subcategoryID);
+
+        echo $form->getOutput();
+    }
 }
 ?>
