@@ -23,8 +23,8 @@ class SubcategoryGateway extends QueryableGateway
         $query = $this
             ->newQuery()
             ->from('helpDeskSubcategories')
-            ->cols(['subcategoryID', 'subcategoryName', 'departmentID', 'departmentName', 'departmentDesc'])
-            ->leftjoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskSubcategories.departmentID');
+            ->cols(['subcategoryID', 'subcategoryName', 'helpDeskSubcategories.departmentID', 'departmentName', 'departmentDesc'])
+            ->leftjoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID');
 
         $criteria->addFilterRules([
             'subcategoryID' => function ($query, $subcategoryID) {
