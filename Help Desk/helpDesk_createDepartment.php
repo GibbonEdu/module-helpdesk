@@ -33,7 +33,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $row = $form->addRow();
         $row->addLabel('departmentName', __('Department Name'));
         $row->addTextField('departmentName')
-            ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')->maxLength(55)
+            ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentAjax.php')->maxLength(55)
             ->isRequired();
             
     $row = $form->addRow();
