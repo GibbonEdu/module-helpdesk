@@ -20,12 +20,19 @@ class TechGroupGateway extends QueryableGateway
     private static $searchableColumns = [];
 
     public function selectTechGroups() {
-        $data = array();
-        $sql = "SELECT groupID, groupName, viewIssue, viewIssueStatus, assignIssue, acceptIssue, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue
-                FROM helpDeskTechGroups
-                ORDER BY groupID ASC";
+        $query = $this
+            ->newSelect()
+            ->cols([
+                'groupID','groupName',
+                'viewIssue', 'viewIssueStatus',
+                'assignIssue', 'acceptIssue', 'resolveIssue', 'createIssueForOther', 'fullAccess', 'reassignIssue', 'reincarnateIssue',
+                'helpDeskTechGroups.departmentID', 'departmentName',
+            ])
+            ->from('helpDeskTechGroups')
+            ->leftJoin('helpDeskDepartments', 'helpDeskTechGroups.departmentID=helpDeskDepartments.departmentID')
+            ->orderBy(['groupID']);
 
-        return $this->db()->select($sql, $data);
+        return $this->runSelect($query);
     }
 
     public function getPermissionValue($gibbonPersonID, $permission)
