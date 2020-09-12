@@ -77,17 +77,14 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
 
         $subcategoryData = $subcategoryGateway->querySubcategories($criteria);
 
-        $subcategories = array();
-        foreach ($subcategoryData as $subcategory) {
-            $subcategories[$subcategory['departmentName']][$subcategory['subcategoryID']] = $subcategory['subcategoryName'];
-        }
-
+        if (count($subcategoryData) > 0) {
         $row = $form->addRow();
             $row->addLabel('subcategoryID', __('Category'));
             $row->addSelect('subcategoryID')
-                ->fromArray($subcategories)
+                ->fromDataSet($subcategoryData, 'subcategoryID', 'subcategoryName', 'departmentName')
                 ->placeholder()
                 ->isRequired();
+        }
     }
     
      $row = $form->addRow();
