@@ -49,6 +49,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $table->addColumn('departmentName', __('Department Name'));
 
+    $table->addColumn('departmentDesc', __('Department Description'));
+
     $table->addColumn('categories', __('Subcategories in department'))->format($formatCategoryList);;
 
     $table->addActionColumn()
