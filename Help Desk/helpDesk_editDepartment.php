@@ -30,7 +30,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentGateway = $container->get(DepartmentGateway::class);
     $values = $departmentGateway->getByID($departmentID);
     
-    if (empty($groupID) || empty($values)) {
+    if (empty($departmentID) || empty($values)) {
         $page->addError(__('No Group Selected.'));
     } else {
         $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartmentProcess.php', 'post');
