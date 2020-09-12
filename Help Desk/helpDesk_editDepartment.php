@@ -30,29 +30,34 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentGateway = $container->get(DepartmentGateway::class);
     $values = $departmentGateway->getByID($departmentID);
     
-    $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartmentProcess.php', 'post');
-    $form->addHiddenValue('address', $gibbon->session->get('address'));
+    if (empty($groupID) || empty($values)) {
+        $page->addError(__('No Group Selected.'));
+    } else {
+        $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartmentProcess.php', 'post');
+        $form->addHiddenValue('address', $gibbon->session->get('address'));
 
-    $row = $form->addRow();
-        $row->addLabel('departmentName', __('Department Name'));
-        $row->addTextField('departmentName')
-            ->readOnly()
-            ->isRequired();
+        $row = $form->addRow();
+            $row->addLabel('departmentName', __('Department Name'));
+            $row->addTextField('departmentName')
+                ->readOnly()
+                ->isRequired();
             
-    $row = $form->addRow();
-        $row->addLabel('departmentDesc', __('Department Description'));
-        $row->addTextField('departmentDesc')
-            ->maxLength(128)
-            ->isRequired();
+        $row = $form->addRow();
+            $row->addLabel('departmentDesc', __('Department Description'));
+            $row->addTextField('departmentDesc')
+                ->maxLength(128)
+                ->isRequired();
     
-    //TODO: ADD STUFF FOR SUBCATEGORIES
-    $form->loadAllValuesFrom($values);
+        //TODO: ADD STUFF FOR SUBCATEGORIES
+        $form->loadAllValuesFrom($values);
      
-    $row = $form->addRow();
-        $row->addFooter();
-        $row->addSubmit();
+        $row = $form->addRow();
+            $row->addFooter();
+            $row->addSubmit();
 
-    echo $form->getOutput();
+        echo $form->getOutput();
+    }
+    
     
 
 }
