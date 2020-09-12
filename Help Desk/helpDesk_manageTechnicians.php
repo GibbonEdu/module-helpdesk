@@ -37,7 +37,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $issueGateway = $container->get(IssueGateway::class); 
 
     $formatIssues = function($row) use ($gibbon, $issueGateway) {
-        $issues = $issueGateway->selectActiveIssueByTechnician($row['technicianID'])->fetchAll();
+        $issues = $issueGateway->selectIssueByTechnician($row['technicianID'])->fetchAll();
         if (count($issues) < 1) {
             return __('None');
         }
