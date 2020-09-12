@@ -273,3 +273,6 @@ Fixed version.php to show correct version.
 v1.2.02
 -------
 Properly added Ashton Power to Authors.
+
+v1.3.00
+-------
