@@ -56,12 +56,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             ->format(function ($department, $actions) use ($gibbon, $departmentData) {
                 $actions->addAction('edit', __('Edit'))
                         ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartments.php');
-
-                if (count($departmentData) > 1) {
-                    $actions->addAction('delete', __('Delete'))
-                            ->modalWindow()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_deleteDepartments.php');
-                }
+                $actions->addAction('delete', __('Delete'))
+                        ->modalWindow()
+                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_deleteDepartments.php');
             });
     
     
