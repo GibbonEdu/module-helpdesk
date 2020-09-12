@@ -18,5 +18,28 @@ class SubcategoryGateway extends QueryableGateway
     private static $tableName = 'helpDeskSubcategories';
     private static $primaryKey = 'subcategoryID';
     private static $searchableColumns = [];
+
+    public function querySubcategories($criteria) {
+        $query = $this
+            ->newQuery()
+            ->from('helpDeskSubcategories')
+            ->cols(['subcategoryID', 'subcategoryName', 'departmentID', 'departmentName', 'departmentDesc'])
+            ->leftjoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskSubcategories.departmentID');
+
+        $criteria->addFilterRules([
+            'subcategoryID' => function ($query, $subcategoryID) {
+                return $query
+                    ->where('helpDeskSubcategories.subcategoryID = :subcategoryID')
+                    ->bindValue('subcategoryID', $subcategoryID);
+            },
+            'departmentID' => function ($query, $departmentID) {
+                return $query
+                    ->where('helpDeskSubcategories.departmentID = :departmentID')
+                    ->bindValue('departmentID', $departmentID);
+            },
+        ]);
+
+        return $this->runQuery($query, $criteria);
+    }
     
 }

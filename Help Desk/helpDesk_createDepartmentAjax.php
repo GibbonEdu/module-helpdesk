@@ -21,10 +21,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 require_once '../../gibbon.php';
 
 if (empty($gibbon->session->get('gibbonPersonID')) || empty($gibbon->session->get('gibbonRoleIDPrimary'))
-	|| !isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
+    || !isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     die(__('Your request failed because you do not have access to this action.'));
 } else {
-	
-}
+    $departmentName = $_POST['departmentName'] ?? '';
 
+    $data = array('departmentName' => $departmentName);
+    $sql = 'SELECT COUNT(*) FROM helpDeskDepartments WHERE departmentName=:departmentName';
+    $result = $pdo->executeQuery($data, $sql);
+
+    echo ($result && $result->rowCount() == 1)? $result->fetchColumn(0) : -1;
+}
 ?>

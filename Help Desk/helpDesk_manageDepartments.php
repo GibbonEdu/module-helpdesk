@@ -38,7 +38,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         if (count($categories) < 1) {
             return __('This department does not have any subcategories.');
         }
-        return $categories; //does this have to format as a list? if so, how do i do that
+        return implode(', ', array_column($categories, 'subcategoryName'));
     };
     
     $table = DataTable::create('departments');
@@ -48,6 +48,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartment.php');
 
     $table->addColumn('departmentName', __('Department Name'));
+
+    $table->addColumn('departmentDesc', __('Department Description'));
 
     $table->addColumn('categories', __('Subcategories in department'))->format($formatCategoryList);;
 
@@ -60,8 +62,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                         ->modalWindow()
                         ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_deleteDepartments.php');
             });
-    
-    
     
     echo $table->render($departmentData);    
 }
