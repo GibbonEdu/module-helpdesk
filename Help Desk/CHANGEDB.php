@@ -289,4 +289,5 @@ ALTER TABLE `helpDeskIssue` ADD `gibbonSpaceID` int(5) UNSIGNED ZEROFILL DEFAULT
 ALTER TABLE `helpDeskIssue` ADD `subcategoryID` int(4) UNSIGNED ZEROFILL DEFAULT NULL;end
 ALTER TABLE `helpDeskTechGroups` ADD `departmentID` int(4) UNSIGNED ZEROFILL DEFAULT NULL;end
 INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`) VALUES (NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE);end
+INSERT INTO gibbonAction SET name='Manage Departments', precedence='0', category='Technician', description='Allows the user to manage the Help Desk Departments.', URLList='helpDesk_manageDepartments.php', entryURL='helpDesk_manageDepartments.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='Y', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 ";
