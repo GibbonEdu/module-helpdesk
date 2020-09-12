@@ -276,3 +276,7 @@ Properly added Ashton Power to Authors.
 
 v1.3.00
 -------
+Implemented Departments and Subcategories.
+Added setting to enable/disalbe simple categories.
+Added edit links for Technicians in Manage Tech Groups.
+Added edit links for Tech Groups in Manage Technicians.
