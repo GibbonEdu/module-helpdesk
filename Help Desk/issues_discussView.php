@@ -27,6 +27,7 @@ use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Domain\DataSet;
 use Gibbon\Domain\System\DiscussionGateway;
 use Gibbon\Domain\User\UserGateway;
+use Gibbon\Domain\School\FacilityGateway;
 use Gibbon\View\View;
 
 require_once __DIR__ . '/moduleFunctions.php';
@@ -82,35 +83,29 @@ if (!isModuleAccessible($guid, $connection2)) {
             if (isset($_GET['return'])) {
                 returnProcess($guid, $_GET['return'], null, null);
             }
-
-            if ($hasTechAssigned) {
-                $technicianName = Format::name($technician['title'] , $technician['preferredName'] , $technician['surname'] , 'Student');
-            } else {
-                $technicianName = __('Unassigned');
-            }
         
             $createdByShow = ($issue['createdByID'] != $issue['gibbonPersonID']);
-
-            $date = dateConvertBack($guid, $issue['date']);
-            if ($date == '30/11/-0001') {
-                $date = 'No date';
-            }
-
+            
             $userGateway = $container->get(UserGateway::class);
             $owner = $userGateway->getByID($issue['gibbonPersonID']);
+
+            $facilityGateway = $container->get(FacilityGateway::class);
+            $facility = $facilityGateway->getByID($issue['gibbonSpaceID']);
 
             $detailsData = array(
                 'issueID' => $issueID,
                 'owner' => Format::name($owner['title'] , $owner['preferredName'] , $owner['surname'] , 'Student'),
-                'technician' => $technicianName,
-                'date' => $date,
-                'privacySetting' => $issue['privacySetting']
+                'technician' => $hasTechAssigned ? Format::name($technician['title'] , $technician['preferredName'] , $technician['surname'] , 'Student') : __('Unassigned'),
+                'date' => Format::date($issue['date']),
+                'privacySetting' => $issue['privacySetting'],
+                'facility' => empty($facility) ? __('N/A') : $facility['name'],
             );
 
             $tdWidth = count($detailsData);
             if ($createdByShow) {
                 $tdWidth++;
             }
+
             $tdWidth = 100 / $tdWidth;
             $tdWidth .= '%';
 
@@ -128,6 +123,9 @@ if (!isModuleAccessible($guid, $connection2)) {
                     ->width($tdWidth);
 
             $table->addColumn('date', __('Date'))
+                    ->width($tdWidth);
+
+            $table->addColumn('facility', __('Facility'))
                     ->width($tdWidth);
 
             if ($createdByShow) {

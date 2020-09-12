@@ -17,20 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
-
-require_once '../../gibbon.php';
-
-require_once './moduleFunctions.php';
-
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editSubCategory.php';
+$page->breadcrumbs->add(__('Edit a Subcategory'));
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
-    $URL .= '&return=error0';
-    header("Location: {$URL}");
-    exit();
+    //Acess denied
+    $page->addError(__('You do not have access to this action.'));
 } else {
-    
-    }
+
 }
 ?>
