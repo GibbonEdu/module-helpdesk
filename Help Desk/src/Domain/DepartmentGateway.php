@@ -38,7 +38,9 @@ class DepartmentGateway extends QueryableGateway
                 SET helpDeskIssue.subcategoryID = NULL
                 WHERE helpDeskSubcategories.departmentID = :departmentID';
 
-        if (!$this->db()->update($sql, $data)) {
+        $this->db()->update($sql, $data);
+
+        if (!$this->db()->getQuerySuccess()) {
             return false;
         }
 
@@ -49,11 +51,28 @@ class DepartmentGateway extends QueryableGateway
             ->where('departmentID = :departmentID')
             ->bindValue('departmentID', $departmentID);
 
-        if (!$this->runDelete($query)) {
+        $this->runDelete($query);
+
+        if (!$this->db()->getQuerySuccess()) {
             return false;
         }
 
+        $query = $this
+            ->newUpdate()
+            ->table('helpDeskTechGroups')
+            ->set('departmentID', NULL)
+            ->where('departmentID = :departmentID')
+            ->bindValue('departmentID', $departmentID);
+
+        $this->runUpdate($query);
+
+        if (!$this->db()->getQuerySuccess()) {
+            return false;
+        }
+
+        $this->delete($departmentID);
+
         //Delete Department
-        return $this->delete($departmentID);
+        return $this->db()->getQuerySuccess();
     }
 }
