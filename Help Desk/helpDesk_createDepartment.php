@@ -33,12 +33,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $row = $form->addRow();
         $row->addLabel('departmentName', __('Department Name'));
         $row->addTextField('departmentName')
-            ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')
+            ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')->maxLength(55)
             ->isRequired();
             
     $row = $form->addRow();
         $row->addLabel('departmentDesc', __('Department Description'));
-        $row->addTextField('departmentDesc')
+        $row->addTextField('departmentDesc')->maxLength(128)
             ->isRequired();
     
     //TODO: ADD STUFF FOR SUBCATEGORIES
