@@ -27,6 +27,15 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
+
+    if (isset($_GET['return'])) {
+        $editLink = null;
+        if (isset($_GET['departmentID'])) {
+            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartment.php&departmentID=' . $_GET['departmentID'];
+        }
+        returnProcess($guid, $_GET['return'], $editLink, null);
+    }
+
     $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcess.php', 'post');
     $form->addHiddenValue('address', $gibbon->session->get('address'));
 
@@ -42,9 +51,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row->addTextField('departmentDesc')
             ->maxLength(128)
             ->isRequired();
-    
-    //TODO: ADD STUFF FOR SUBCATEGORIES
-    
+        
     $row = $form->addRow();
         $row->addFooter();
         $row->addSubmit();
