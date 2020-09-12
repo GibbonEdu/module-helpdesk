@@ -28,4 +28,32 @@ class DepartmentGateway extends QueryableGateway
         return $this->db()->select($sql, $data);
     }
     
+    public function deleteDepartment($departmentID) {
+        //TODO: Transaction
+
+        //Update issues to remove subcategories to be deleted
+        $data = array('departmentID' => $departmentID);
+        $sql = 'UPDATE helpDeskIssue
+                LEFT JOIN helpDeskSubcategories ON (helpDeskIssue.subcategoryID = helpDeskSubcategories.subcategoryID)
+                SET helpDeskIssue.subcategoryID = NULL
+                WHERE helpDeskSubcategories.departmentID = :departmentID';
+
+        if (!$this->db()->update($sql, $data)) {
+            return false;
+        }
+
+        //Delete subcategories
+        $query = $this
+            ->newDelete()
+            ->from('helpDeskSubcategories')
+            ->where('departmentID = :departmentID')
+            ->bindValue('departmentID', $departmentID);
+
+        if (!$this->runDelete($query)) {
+            return false;
+        }
+
+        //Delete Department
+        return $this->delete($departmentID);
+    }
 }
