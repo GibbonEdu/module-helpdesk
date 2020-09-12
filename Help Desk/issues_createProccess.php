@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
@@ -54,6 +55,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         'gibbonSpaceID' => null,
         'priority' => '',
         'privacySetting' => '',
+        'subcategoryID' => null,
     );
 
     foreach ($data as $key => $value) {
@@ -66,6 +68,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
     $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
     $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
+    $simpleCategories = ($settingGateway->getSettingByScope($moduleName, 'simpleCategories') == '1');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -79,9 +82,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         $data['privacySetting'] = $settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy');
     }
 
+    $subcategoryGateway = $container->get(SubcategoryGateway::class);
+
     if (empty($data['issueName'])
         || empty($data['description']) 
-        || (!in_array($data['category'], $categoryOptions) && count($categoryOptions) > 0) 
+        || (!in_array($data['category'], $categoryOptions) && count($categoryOptions) > 0 && $simpleCategories)
+        || (!$subcategoryGateway->exists($data['subcategoryID']) && !$simpleCategories)
         || (!in_array($data['priority'], $priorityOptions) && count($priorityOptions) > 0)) {
 
         $URL .= '&return=error1';
