@@ -57,8 +57,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 return $name;
             }
         }, $technicians));
-
-        //return Format::nameList($technicians, 'Student', false, false);
     };
 
     $table = DataTable::create('techGroups');
