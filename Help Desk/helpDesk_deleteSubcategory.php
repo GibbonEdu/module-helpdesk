@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 $page->breadcrumbs->add(__('Delete a Subcategory'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_deleteSubCategory.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
