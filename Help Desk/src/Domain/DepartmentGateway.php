@@ -18,4 +18,14 @@ class DepartmentGateway extends QueryableGateway
     private static $tableName = 'helpDeskDepartments';
     private static $primaryKey = 'departmentID';
     private static $searchableColumns = [];
+    
+    public function selectDepartments() {
+        $data = array();
+        $sql = "SELECT *
+                FROM helpDeskDepartments
+                ORDER BY departmentID ASC";
+
+        return $this->db()->select($sql, $data);
+    }
+    
 }

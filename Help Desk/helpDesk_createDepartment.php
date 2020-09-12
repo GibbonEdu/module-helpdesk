@@ -16,15 +16,35 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
+use Gibbon\Forms\Form;
 
 $page->breadcrumbs->add(__('Create a Department'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_createDepartment.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
+    $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcess.php', 'post');
+    $form->addHiddenValue('address', $gibbon->session->get('address'));
+
+    $row = $form->addRow();
+        $row->addLabel('departmentName', __('departmentName'));
+        $row->addTextField('groupName')
+            ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')
+            ->isRequired();
+            
+    $row = $form->addRow();
+        $row->addLabel('departmentDesc', __('departmentDesc'));
+        $row->addTextField('groupName')
+            ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')
+            ->isRequired();
+
+    $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
+
+    echo $form->getOutput();
 
 }
 ?>
