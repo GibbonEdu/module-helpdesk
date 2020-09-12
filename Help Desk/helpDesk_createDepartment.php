@@ -41,7 +41,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row->addTextField('departmentDesc')
             ->isRequired();
     
-    //TODO: ADD MULTI SELECT FOR SUBCATEGORIES
+    //TODO: ADD STUFF FOR SUBCATEGORIES
     
     $row = $form->addRow();
         $row->addFooter();
