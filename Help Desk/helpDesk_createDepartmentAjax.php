@@ -25,6 +25,12 @@ if (empty($gibbon->session->get('gibbonPersonID')) || empty($gibbon->session->ge
     die(__('Your request failed because you do not have access to this action.'));
 } else {
     $departmentName = $_POST['departmentName'] ?? '';
+    $currentDepartmentName = $_POST['currentDepartmentName'] ?? '';
+
+    if (!empty($currentDepartmentName) && $currentDepartmentName == $departmentName) {
+    	echo 0;
+    	die();
+    }
 
     $data = array('departmentName' => $departmentName);
     $sql = 'SELECT COUNT(*) FROM helpDeskDepartments WHERE departmentName=:departmentName';
