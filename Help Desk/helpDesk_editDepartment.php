@@ -39,7 +39,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row = $form->addRow();
             $row->addLabel('departmentName', __('Department Name'));
             $row->addTextField('departmentName')
-                ->readOnly()
+                ->maxLength(55)
+                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentAjax.php', ['currentDepartmentName' => $values['departmentName']])
                 ->isRequired();
             
         $row = $form->addRow();
@@ -57,8 +58,5 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         echo $form->getOutput();
     }
-    
-    
-
 }
 ?>
