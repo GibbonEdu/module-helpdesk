@@ -17,20 +17,56 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 
 require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartment.php';
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
-    $URL .= '&return=error0';
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
+    $departmentID = $_POST['departmentID'] ?? '';
     
+    $departmentGateway = $container->get(DepartmentGateway::class);
+
+    if(empty($departmentID) || !$departmentGateway->exists($departmentID)) {
+        $URL .= 'helpDesk_manageDepartments.php&return=error1';
+        header("Location: {$URL}");
+        exit();
     }
+
+    $URL .= "/helpDesk_editDepartment.php&departmentID=$departmentID";
+
+    $departmentName = $_POST['departmentName'] ?? '';
+    $departmentDesc = $_POST['departmentDesc'] ?? '';
+
+    if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128) {
+        $URL .= '&return=error1';
+        header("Location: {$URL}");
+        exit();
+    }
+
+    $data = array('departmentName' => $departmentName, 'departmentDesc' => $departmentDesc);
+
+    if (!$departmentGateway->unique($data, ['departmentName'], $departmentID)) {
+        $URL .= '&return=error7';
+        header("Location: {$URL}");
+        exit();
+    }
+
+    if (!$departmentGateway->update($departmentID, $data)) {
+        $URL .= '&return=error2';
+        header("Location: {$URL}");
+        exit();
+    }
+
+    $URL .= '&return=success0';
+    header("Location: {$URL}");
+    exit();
 }
 ?>

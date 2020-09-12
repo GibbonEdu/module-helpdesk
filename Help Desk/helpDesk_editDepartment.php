@@ -18,7 +18,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
-$page->breadcrumbs->add(__('Edit a Department'));
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
+use Gibbon\Tables\DataTable;
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     //Acess denied
@@ -28,19 +29,31 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentID = $_GET['departmentID'] ?? '';
 
     $departmentGateway = $container->get(DepartmentGateway::class);
-    $values = $departmentGateway->getByID($departmentID);
+    $department = $departmentGateway->getByID($departmentID);
     
-    if (empty($departmentID) || empty($values)) {
-        $page->addError(__('No Group Selected.'));
+    if (empty($departmentID) || empty($department)) {
+        $page->addError(__('No Department Selected.'));
     } else {
-        $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartmentProcess.php', 'post');
+        $page->breadcrumbs
+            ->add(__('Manage Departments'), 'helpDesk_manageDepartments.php')
+            ->add(__('Edit Department'));
+
+        $moduleName = $gibbon->session->get('module');
+
+        if (isset($_GET['return'])) {
+            returnProcess($guid, $_GET['return'], null, null);
+        }
+
+        $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/helpDesk_editDepartmentProcess.php', 'post');
+        $form->setTitle($department['departmentName']);
         $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form->addHiddenValue('departmentID', $departmentID);
 
         $row = $form->addRow();
             $row->addLabel('departmentName', __('Department Name'));
             $row->addTextField('departmentName')
                 ->maxLength(55)
-                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentAjax.php', ['currentDepartmentName' => $values['departmentName']])
+                ->uniqueField('./modules/' . $moduleName . '/helpDesk_createDepartmentAjax.php', ['currentDepartmentName' => $department['departmentName']])
                 ->isRequired();
             
         $row = $form->addRow();
@@ -49,14 +62,47 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 ->maxLength(128)
                 ->isRequired();
     
-        //TODO: ADD STUFF FOR SUBCATEGORIES
-        $form->loadAllValuesFrom($values);
+        $form->loadAllValuesFrom($department);
      
         $row = $form->addRow();
             $row->addFooter();
             $row->addSubmit();
 
         echo $form->getOutput();
+
+        $subcategoryGateway = $container->get(SubcategoryGateway::class);
+
+        $criteria = $subcategoryGateway->newQueryCriteria(true)
+            ->filterBy('departmentID', $departmentID)
+            ->sortBy(['subcategoryName'])
+            ->fromPOST();
+
+        $subcategoryData = $subcategoryGateway->querySubcategories($criteria);
+
+        $table = DataTable::create('subcategories');
+        $table->setTitle(__('Subcategories'));
+
+        $table->addHeaderAction('add', __('Create'))
+                ->addParam('departmentID', $departmentID)
+                ->modalWindow()
+                ->displayLabel()
+                ->setURL('/modules/' . $moduleName . '/helpDesk_createSubcategory.php');
+
+        $table->addColumn('subcategoryName', __('Name'));
+
+        $table->addActionColumn()
+                ->addParam('departmentID')
+                ->addParam('subcategoryID')
+                ->format(function ($subcategory, $actions) use ($moduleName) {
+                    $actions->addAction('edit', __('Edit'))
+                            ->modalWindow()
+                            ->setURL('/modules/' . $moduleName . '/helpDesk_editSubcategory.php');
+
+                    $actions->addAction('delete', __('Delete'))
+                            ->setURL('/modules/' . $moduleName . '/helpDesk_deleteSubcategory.php');
+                });
+
+        echo $table->render($subcategoryData);
     }
 }
 ?>
