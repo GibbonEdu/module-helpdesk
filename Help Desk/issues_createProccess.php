@@ -51,6 +51,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         'issueName' => '',
         'category' => '',
         'description' => '',
+        'gibbonSpaceID' => null,
         'priority' => '',
         'privacySetting' => '',
     );

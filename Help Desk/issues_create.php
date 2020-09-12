@@ -73,6 +73,11 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
                     ->setRows(5)
                     ->showMedia()
                     ->isRequired();
+
+    $row = $form->addRow();
+        $row->addLabel('gibbonSpaceID', __('Facility'));
+        $row->addSelectSpace('gibbonSpaceID')
+            ->placeholder();
         
     if (count($priorityOptions) > 0) {
         $row = $form->addRow();
