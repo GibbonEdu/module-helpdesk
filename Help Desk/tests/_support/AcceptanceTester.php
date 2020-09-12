@@ -124,7 +124,7 @@ class AcceptanceTester extends \Codeception\Actor
 
         return $this->amOnPage($url);
     }
-    
+    //TODO: COMPLEX CATEGORIES
     public function createIssueForMyself()
     {
          $I = $this;
