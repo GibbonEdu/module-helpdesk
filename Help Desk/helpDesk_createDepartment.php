@@ -29,17 +29,17 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $form->addHiddenValue('address', $gibbon->session->get('address'));
 
     $row = $form->addRow();
-        $row->addLabel('departmentName', __('departmentName'));
+        $row->addLabel('departmentName', __('Department Name'));
         $row->addTextField('groupName')
             ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')
             ->isRequired();
             
     $row = $form->addRow();
-        $row->addLabel('departmentDesc', __('departmentDesc'));
+        $row->addLabel('departmentDesc', __('Department Description'));
         $row->addTextField('groupName')
             ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')
             ->isRequired();
-
+    
     $row = $form->addRow();
         $row->addFooter();
         $row->addSubmit();
