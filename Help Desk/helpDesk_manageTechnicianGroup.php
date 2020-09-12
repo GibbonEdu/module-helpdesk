@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Tables\DataTable;
 use Gibbon\Services\Format;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
@@ -34,7 +35,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     }
    
     $techGroupGateway = $container->get(TechGroupGateway::class);
-    $technicianGateway = $container->get(TechnicianGateway::class);   
+    $technicianGateway = $container->get(TechnicianGateway::class);
+    $departmentGateway = $container->get(DepartmentGateway::class); 
 
     $techGroupData = $techGroupGateway->selectTechGroups()->toDataSet();
 
@@ -54,6 +56,20 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $table->addColumn('groupName', __('Group Name'));
 
+    if ($departmentGateway->countAll() > 0) {
+        $table->addColumn('department', __('Department'))
+                ->format(function ($techGroup) use ($guid, $connection2, $gibbon) {
+                    if (empty($techGroup['departmentID'])) {
+                        return __('No assgined Department');
+                    }
+
+                    if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
+                        return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartment.php&departmentID='. $techGroup['departmentID'], $techGroup['departmentName']);
+                    } else {
+                        return $techGroup['departmentName'];
+                    }
+                });
+    }
     $table->addColumn('techs', __('Technicians in group'))->format($formatTechnicianList);
 
     $table->addActionColumn()
