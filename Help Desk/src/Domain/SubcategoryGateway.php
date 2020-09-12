@@ -19,13 +19,4 @@ class SubcategoryGateway extends QueryableGateway
     private static $primaryKey = 'subcategoryID';
     private static $searchableColumns = [];
     
-    public function selectCategoriesByDepartment($departmentID) {
-        $data = array('departmentID' => $departmentID);
-        $sql = 'SELECT *
-                FROM helpDeskSubcategories
-                WHERE helpDeskSubcategories.departmentID=:departmentID
-                ORDER BY helpDeskSubcategories.subcategoryID ASC';
-
-        return $this->db()->select($sql, $data);
-    }
 }

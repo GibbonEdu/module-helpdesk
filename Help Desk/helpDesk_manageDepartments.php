@@ -34,7 +34,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentData = $DepartmentGateway->selectDepartments()->toDataSet();
 
     $formatCategoryList = function($row) use ($SubCategoryGateway) {
-        $categories = $SubCategoryGateway->selectCategoriesByDepartment($row['departmentID'])->fetchAll();
+        $categories = $SubCategoryGateway->selectBy(['departmentID' => $row['departmentID']])->fetchAll();
         if (count($categories) < 1) {
             return __('This department does not have any subcategories.');
         }
@@ -55,11 +55,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             ->addParam('groupID')
             ->format(function ($department, $actions) use ($gibbon, $departmentData) {
                 $actions->addAction('edit', __('Edit'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroup.php');
+                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartments.php');
 
                 if (count($departmentData) > 1) {
                     $actions->addAction('delete', __('Delete'))
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianGroupDelete.php');
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_DeleteDepartments.php');
                 }
             });
     
