@@ -66,6 +66,11 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
                 ->isRequired();
     }
     
+     $row = $form->addRow();
+        $row->addLabel('gibbonSpaceID', __('Facility'));
+        $row->addSelectSpace('gibbonSpaceID')
+            ->placeholder();
+            
     $row = $form->addRow();
         $column = $row->addColumn();
             $column->addLabel('description', __('Description'));
@@ -74,10 +79,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
                     ->showMedia()
                     ->isRequired();
 
-    $row = $form->addRow();
-        $row->addLabel('gibbonSpaceID', __('Facility'));
-        $row->addSelectSpace('gibbonSpaceID')
-            ->placeholder();
+   
         
     if (count($priorityOptions) > 0) {
         $row = $form->addRow();
