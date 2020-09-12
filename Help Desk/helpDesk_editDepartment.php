@@ -16,15 +16,44 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
+use Gibbon\Forms\Form;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 $page->breadcrumbs->add(__('Edit a Department'));
 
-if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_editDepartment.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
+    $departmentID = $_GET['departmentID'] ?? '';
+
+    $departmentGateway = $container->get(DepartmentGateway::class);
+    $values = $departmentGateway->getByID($departmentID);
+    
+    $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartmentProcess.php', 'post');
+    $form->addHiddenValue('address', $gibbon->session->get('address'));
+
+    $row = $form->addRow();
+        $row->addLabel('departmentName', __('Department Name'));
+        $row->addTextField('departmentName')
+            ->readOnly()
+            ->isRequired();
+            
+    $row = $form->addRow();
+        $row->addLabel('departmentDesc', __('Department Description'));
+        $row->addTextField('departmentDesc')
+            ->maxLength(128)
+            ->isRequired();
+    
+    //TODO: ADD STUFF FOR SUBCATEGORIES
+    $form->loadAllValuesFrom($values);
+     
+    $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
+
+    echo $form->getOutput();
+    
 
 }
 ?>
