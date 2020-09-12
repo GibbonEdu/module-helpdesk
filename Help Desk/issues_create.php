@@ -21,6 +21,7 @@ use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
@@ -46,6 +47,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
 
     $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
     $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
+    $simpleCategories = ($settingGateway->getSettingByScope($moduleName, 'simpleCategories') == '1');
 
     $form = Form::create('createIssue', $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
@@ -57,11 +59,33 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
             ->required()
             ->maxLength(55);
     
-    if (count($categoryOptions) > 0) {
+    if ($simpleCategories) {
+        if (count($categoryOptions) > 0) {
+            $row = $form->addRow();
+                $row->addLabel('category', __('Category'));
+                $row->addSelect('category')
+                    ->fromArray($categoryOptions)
+                    ->placeholder()
+                    ->isRequired();
+        }
+    } else {
+        $subcategoryGateway = $container->get(SubcategoryGateway::class);
+
+        $criteria = $subcategoryGateway->newQueryCriteria(true)
+            ->sortBy(['departmentName', 'subcategoryName'])
+            ->fromPOST();
+
+        $subcategoryData = $subcategoryGateway->querySubcategories($criteria);
+
+        $subcategories = array();
+        foreach ($subcategoryData as $subcategory) {
+            $subcategories[$subcategory['departmentName']][$subcategory['subcategoryID']] = $subcategory['subcategoryName'];
+        }
+
         $row = $form->addRow();
-            $row->addLabel('category', __('Category'));
-            $row->addSelect('category')
-                ->fromArray($categoryOptions)
+            $row->addLabel('subcategoryID', __('Category'));
+            $row->addSelect('subcategoryID')
+                ->fromArray($subcategories)
                 ->placeholder()
                 ->isRequired();
     }
