@@ -19,15 +19,6 @@ class IssueGateway extends QueryableGateway
     private static $primaryKey = 'issueID';
     private static $searchableColumns = ['issueID', 'issueName', 'description'];
 
-    public function selectIssueByTechnician($technicianID) {
-        $data = array('technicianID' => $technicianID);
-        $sql = "SELECT issueID, gibbonPersonID, issueName, description, date, status, category, priority, gibbonSchoolYearID, createdByID, privacySetting
-                FROM helpDeskIssue
-                WHERE technicianID=:technicianID
-                ORDER BY issueID ASC";
-
-        return $this->db()->select($sql, $data);
-    }
     
     public function selectActiveIssueByTechnician($technicianID) {
         $data = array('technicianID' => $technicianID);
