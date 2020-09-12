@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Tables\DataTable;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
-use Gibbon\Module\HelpDesk\Domain\SubCategoryGateway;
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 
 $page->breadcrumbs->add(__('Manage Departments'));
 
@@ -28,13 +28,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 } else {
     //Proceed!
     
-    $departmentGateway = $container->get(departmentGateway::class);
-    $subCategoryGateway = $container->get(SubCategoryGateway::class);   
+    $departmentGateway = $container->get(DepartmentGateway::class);
+    $subcategoryGateway = $container->get(SubcategoryGateway::class);   
 
     $departmentData = $departmentGateway->selectDepartments()->toDataSet();
 
-    $formatCategoryList = function($row) use ($subCategoryGateway) {
-        $categories = $subCategoryGateway->selectBy(['departmentID' => $row['departmentID']])->fetchAll();
+    $formatCategoryList = function($row) use ($subcategoryGateway) {
+        $categories = $subcategoryGateway->selectBy(['departmentID' => $row['departmentID']])->fetchAll();
         if (count($categories) < 1) {
             return __('This department does not have any subcategories.');
         }
