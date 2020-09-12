@@ -29,23 +29,12 @@ class IssueGateway extends QueryableGateway
         return $this->db()->select($sql, $data);
     }
     
-     public function queryIssues($criteria, $mode='all', $gibbonPersonID='') {      
+     public function queryIssues($criteria) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
             ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
-
-        switch($mode) {
-            case 'technician':
-                $query->where('techID.gibbonPersonID=:gibbonPersonID')
-                    ->bindValue('gibbonPersonID', $gibbonPersonID);
-                break;
-            case 'owner':
-                $query->where('helpDeskIssue.gibbonPersonID=:gibbonPersonID')
-                    ->bindValue('gibbonPersonID', $gibbonPersonID);
-                break;
-        }
 
         $criteria->addFilterRules([
             'status' => function ($query, $status) {
