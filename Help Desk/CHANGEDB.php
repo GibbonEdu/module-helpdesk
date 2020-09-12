@@ -283,4 +283,10 @@ UPDATE `gibbonModule` SET `author`='Ray Clark, Ashton Power & Adrien Tremblay' W
 $count++;
 $sql[$count][0]="1.3.00";
 $sql[$count][1]="
+CREATE TABLE `helpDeskDepartments` (`departmentID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT, `departmentName` varchar(55) NOT NULL, `departmentDesc` varchar(128) NOT NULL, PRIMARY KEY (`departmentID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
+CREATE TABLE `helpDeskSubcategories` (`subcategoryID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT, `departmentID` int(4) unsigned zerofill NOT NULL, `subcategoryName` varchar(55) NOT NULL, PRIMARY KEY (`subcategoryID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
+ALTER TABLE `helpDeskIssue` ADD `gibbonSpaceID` int(5) UNSIGNED ZEROFILL DEFAULT NULL;end
+ALTER TABLE `helpDeskIssue` ADD `subcategoryID` int(4) UNSIGNED ZEROFILL DEFAULT NULL;end
+ALTER TABLE `helpDeskTechGroups` ADD `departmentID` int(4) UNSIGNED ZEROFILL DEFAULT NULL;end
+INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`) VALUES (NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE);end
 ";

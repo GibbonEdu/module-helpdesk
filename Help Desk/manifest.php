@@ -50,6 +50,8 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskIssue` (
   `gibbonSchoolYearID` int(3) unsigned zerofill NOT NULL,
   `createdByID` int(12) unsigned zerofill NOT NULL,
   `privacySetting` ENUM('Everyone', 'Related', 'Owner', 'No one') DEFAULT 'Everyone',
+  `subcategoryID` int(4) UNSIGNED ZEROFILL DEFAULT NULL,
+  `gibbonSpaceID` int(5) UNSIGNED ZEROFILL DEFAULT NULL,
   PRIMARY KEY (`issueID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
@@ -67,7 +69,8 @@ VALUES
 (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
 (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
 (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
-(NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Related')";
+(NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Related'),
+(NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE)";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
   `groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -81,6 +84,7 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
   `fullAccess` boolean DEFAULT 0,
   `reassignIssue` boolean DEFAULT 0,
   `reincarnateIssue` boolean DEFAULT 1,
+  `departmentID` int(4) UNSIGNED ZEROFILL DEFAULT NULL,
    PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
@@ -88,6 +92,11 @@ $moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupNam
 VALUES
 (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1),
 (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1)";
+
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskDepartments` (`departmentID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT, `departmentName` varchar(55) NOT NULL, `departmentDesc` varchar(128) NOT NULL, PRIMARY KEY (`departmentID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskSubcategories` (`subcategoryID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT, `departmentID` int(4) unsigned zerofill NOT NULL, `subcategoryName` varchar(55) NOT NULL, PRIMARY KEY (`subcategoryID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
 //Action rows
 //One array per action
