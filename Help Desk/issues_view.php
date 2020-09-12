@@ -101,9 +101,13 @@ if (!isModuleAccessible($guid, $connection2)) {
     $technicianGateway = $container->get(TechnicianGateway::class);
     $userGateway = $container->get(UserGateway::class);
 
-    $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'))->isNotEmpty();
+    $technician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'));
+    $technicianGroupID = $technician->isNotEmpty() ? $technician->fetch()['groupID'] : '';
 
-    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssue') || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess')) {
+    $isTechnician = !empty($technicianGroupID);
+    $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
+
+    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssue') || $fullAccess) {
         $issues = $issueGateway->queryIssues($criteria);
     } else if ($isTechnician) {
         $issues = $issueGateway->queryIssues($criteria, 'technician', $gibbon->session->get('gibbonPersonID'));
@@ -160,13 +164,16 @@ if (!isModuleAccessible($guid, $connection2)) {
             ]);
         }
     } else {
-        $departmentGateway = $container->get(DepartmentGateway::class);
-        $departments = $departmentGateway->selectDepartments()->toDataSet();
+        $techGroup = $techGroupGateway->getByID($technicianGroupID);
+        if (!$isTechnician || ($isTechnician && $techGroup['departmentID'] == null) || $fullAccess) {
+            $departmentGateway = $container->get(DepartmentGateway::class);
+            $departments = $departmentGateway->selectDepartments()->toDataSet();
 
-        foreach ($departments as $department) {
-            $table->addMetaData('filterOptions', [
-                'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
-            ]);
+            foreach ($departments as $department) {
+                $table->addMetaData('filterOptions', [
+                    'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
+                ]);
+            }
         }
 
         $subcategoryGateway = $container->get(SubcategoryGateway::class);
@@ -191,7 +198,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     //FILTERS END
     
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway) {
+    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $fullAccess, $issueGateway) {
         if ($issue['status'] == 'Resolved') {
             $row->addClass('current');
         } else if ($issue['status'] == 'Unassigned') {
@@ -201,7 +208,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         }
 
         //Potentially could be done better
-        if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess') && $issue['status'] == 'Resolved') {
+        if (!$fullAccess && $issue['status'] == 'Resolved') {
             switch ($issue['privacySetting']) {
                 case 'No one':
                     $row = null;
