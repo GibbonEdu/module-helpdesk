@@ -17,20 +17,39 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 
 require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageDepartments.php';
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
-    $URL .= '&return=error0';
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
+    $URL .= '/helpDesk_manageDepartments.php';
     
+    $departmentID = $_POST['departmentID'] ?? '';
+
+    $departmentGateway = $container->get(DepartmentGateway::class);
+
+    if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
+        $URL .= '&return=error1';
+        header("Location: {$URL}");
+        exit();
     }
+
+    if (!$departmentGateway->deleteDepartment($departmentID)) {
+        $URL .= '&return=error2';
+        header("Location: {$URL}");
+        exit();
+    }
+
+    $URL .= '&return=success0';
+    header("Location: {$URL}");
+    exit();
 }
 ?>
