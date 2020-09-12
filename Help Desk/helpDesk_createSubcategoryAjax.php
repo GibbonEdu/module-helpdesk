@@ -26,6 +26,12 @@ if (empty($gibbon->session->get('gibbonPersonID')) || empty($gibbon->session->ge
 } else {
     $departmentID = $_POST['departmentID'] ?? '';
     $subcategoryName = $_POST['subcategoryName'] ?? '';
+    $currentSubcategoryName = $_POST['currentSubcategoryName'] ?? '';
+
+    if (!empty($currentSubcategoryName) && $currentSubcategoryName == $subcategoryName) {
+    	echo 0;
+    	die();
+    }
 
     $data = array('departmentID' => $departmentID, 'subcategoryName' => $subcategoryName);
     $sql = 'SELECT COUNT(*) FROM helpDeskSubcategories WHERE departmentID=:departmentID AND subcategoryName=:subcategoryName';
