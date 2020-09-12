@@ -22,7 +22,9 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\User\UserGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Domain\System\SettingGateway;
@@ -158,7 +160,25 @@ if (!isModuleAccessible($guid, $connection2)) {
             ]);
         }
     } else {
-        
+        $departmentGateway = $container->get(DepartmentGateway::class);
+        $departments = $departmentGateway->selectDepartments()->toDataSet();
+
+        foreach ($departments as $department) {
+            $table->addMetaData('filterOptions', [
+                'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
+            ]);
+        }
+
+        $subcategoryGateway = $container->get(SubcategoryGateway::class);
+        $subcategoryCriteria = $subcategoryGateway->newQueryCriteria(true)
+            ->sortBy(['departmentName', 'subcategoryName']);
+
+        $subcategories = $subcategoryGateway->querySubcategories($subcategoryCriteria);
+        foreach ($subcategories as $subcategory) {
+            $table->addMetaData('filterOptions', [
+                'subcategoryID:' . $subcategory['subcategoryID'] => __('Subcategory') . ': ' . $subcategory['departmentName'] . ' - ' . $subcategory['subcategoryName'],
+            ]);
+        }
     }
 
     $priorityFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issuePriority', false));
