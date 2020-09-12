@@ -148,11 +148,17 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $settingsGateway = $container->get(SettingGateway::class);
 
-    $categoryFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issueCategory'));
-    foreach  ($categoryFilters as $category) {
-        $table->addMetaData('filterOptions', [
-            'category:'.$category => __('Category').': '.$category,
-        ]);
+    $simpleCategories = $settingsGateway->getSettingByScope($gibbon->session->get('module'), 'simpleCategories');
+
+    if ($simpleCategories) {
+        $categoryFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issueCategory'));
+        foreach  ($categoryFilters as $category) {
+            $table->addMetaData('filterOptions', [
+                'category:'.$category => __('Category').': '.$category,
+            ]);
+        }
+    } else {
+        
     }
 
     $priorityFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issuePriority', false));
@@ -161,6 +167,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             'priority:'.$priority => __('Priority').': '.$priority,
         ]);
     }
+
     //FILTERS END
     
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
@@ -204,9 +211,14 @@ if (!isModuleAccessible($guid, $connection2)) {
           });
     $table->addColumn('gibbonPersonID', __('Owner')) 
                 ->description(__('Category'))
-                ->format(function ($row) use ($userGateway) {
+                ->format(function ($row) use ($userGateway, $simpleCategories) {
                     $owner = $userGateway->getByID($row['gibbonPersonID']);
-                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/><small><i>'. __($row['category']) . '</i></small>';
+                    $category = $row['category'];
+                    if (!$simpleCategories && !empty($row['subcategoryName'])) {
+                        //TODO: Do better formatting on this
+                        $category = $row['departmentName'] . ' - ' . $row['subcategoryName'];
+                    }
+                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/>'. Format::small(__($category));
                 });
 
     if (!empty($priorityFilters)) {
