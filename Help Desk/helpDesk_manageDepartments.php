@@ -36,7 +36,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $formatCategoryList = function($row) use ($SubCategoryGateway) {
         $categories = $SubCategoryGateway->selectCategoriesByDepartment($row['departmentID'])->fetchAll();
         if (count($categories) < 1) {
-            return __('This department does not have any categories.');
+            return __('This department does not have any subcategories.');
         }
         return $categories; //does this have to format as a list? if so, how do i do that
     };
@@ -47,9 +47,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $table->addHeaderAction('add', __('Add'))
             ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartment.php');
 
-    $table->addColumn('departmentName', __('departmentName'));
+    $table->addColumn('departmentName', __('Department Name'));
 
-    $table->addColumn('categories', __('Categories in department'))->format($formatCategoryList);;
+    $table->addColumn('categories', __('Subcategories in department'))->format($formatCategoryList);;
 
     $table->addActionColumn()
             ->addParam('groupID')

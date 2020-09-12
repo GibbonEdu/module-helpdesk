@@ -24,7 +24,7 @@ class SubcategoryGateway extends QueryableGateway
         $sql = 'SELECT *
                 FROM helpDeskSubcategories
                 WHERE helpDeskSubcategories.departmentID=:departmentID
-                ORDER BY helpDeskTechnicians.subcategoryID ASC';
+                ORDER BY helpDeskSubcategories.subcategoryID ASC';
 
         return $this->db()->select($sql, $data);
     }

@@ -18,7 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\Form;
 
-$page->breadcrumbs->add(__('Create a Department'));
+$page->breadcrumbs
+    ->add(__('Manage Departments'), 'helpDesk_manageDepartments.php')
+    ->add(__('Create Department'));
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     //Acess denied
@@ -30,14 +32,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $row = $form->addRow();
         $row->addLabel('departmentName', __('Department Name'));
-        $row->addTextField('groupName')
+        $row->addTextField('departmentName')
             ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')
             ->isRequired();
             
     $row = $form->addRow();
         $row->addLabel('departmentDesc', __('Department Description'));
-        $row->addTextField('groupName')
-            ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcessAjax.php')
+        $row->addTextField('departmentDesc')
             ->isRequired();
     
     $row = $form->addRow();
