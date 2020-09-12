@@ -16,8 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 
 require_once '../../gibbon.php';
 
@@ -30,7 +29,47 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     header("Location: {$URL}");
     exit();
 } else {
-    
+    $departmentName = $_POST['departmentName'] ?? '';
+    $departmentDesc = $_POST['departmentDesc'] ?? '';
+    if (empty($departmentName)) {
+        $URL .= '&return=error1';
+        header("Location: {$URL}");
+        exit();
+    } else {
+        //Write to database
+
+        try {
+            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
+            if ($gibbonModuleID == null) {
+                throw new PDOException('Invalid gibbonModuleID.');
+            }
+
+            $data = array('departmentName' => $departmentName, 'departmentDesc' => $departmentDesc);
+
+            $DepartmentGateway = $container->get(DepartmentGateway::class);
+
+            if (!$DepartmentGateway->unique($data, ['departmentName'])) {
+                $URL .= '&return=error7';
+                header("Location: {$URL}");
+                exit();
+            }
+
+            $departmentID = $DepartmentGateway->insert($data);
+            if ($departmentID === false) {
+                throw new PDOException('Could not insert group.');
+            }
+        } catch (PDOException $e) {
+            $URL .= '&return=error2';
+            header("Location: {$URL}");
+            exit();
+        }
+
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Department Added', array('departmentID' => $departmentID), null);
+
+        //Success 0
+        $URL .= "&departmentID=$departmentID&return=success0";
+        header("Location: {$URL}");
     }
 }
+
 ?>

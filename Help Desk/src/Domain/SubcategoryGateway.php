@@ -18,4 +18,5 @@ class SubcategoryGateway extends QueryableGateway
     private static $tableName = 'helpDeskSubcategories';
     private static $primaryKey = 'subcategoryID';
     private static $searchableColumns = [];
+    
 }
