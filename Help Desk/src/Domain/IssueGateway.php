@@ -34,8 +34,10 @@ class IssueGateway extends QueryableGateway
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
-            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
+            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID', 'helpDeskDepartments.departmentName', 'helpDeskSubcategories.subcategoryName'])
+            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
+            ->leftJoin('helpDeskSubcategories', 'helpDeskIssue.subcategoryID=helpDeskSubcategories.subcategoryID')
+            ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID');
 
         switch($mode) {
             case 'technician':
@@ -68,7 +70,18 @@ class IssueGateway extends QueryableGateway
                 return $query
                     ->where('helpDeskIssue.gibbonSchoolYearID = :year')
                     ->bindValue('year', $year);
-            }
+            },
+            'subcategoryID' => function ($query, $subcategoryID) {
+                return $query
+                    ->where('helpDeskIssue.subcategoryID = :subcategoryID')
+                    ->bindValue('subcategoryID', $subcategoryID);
+            },
+            'departmentID' => function ($query, $departmentID) {
+                return $query
+                    ->where('helpDeskSubcategories.departmentID = :departmentID')
+                    ->bindValue('departmentID', $departmentID);
+            },
+
         ]);
 
        return $this->runQuery($query, $criteria);
