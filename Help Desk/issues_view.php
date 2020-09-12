@@ -107,12 +107,14 @@ if (!isModuleAccessible($guid, $connection2)) {
     $isTechnician = !empty($technicianGroupID);
     $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
 
-    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssue') || $fullAccess) {
-        $issues = $issueGateway->queryIssues($criteria);
+    $issues = $issueGateway->queryIssues($criteria);
+
+    $mode = 'owner';
+
+    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'viewIssue') || $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess')) {
+        $mode = 'all';
     } else if ($isTechnician) {
-        $issues = $issueGateway->queryIssues($criteria, 'technician', $gibbon->session->get('gibbonPersonID'));
-    } else {
-        $issues = $issueGateway->queryIssues($criteria, 'owner', $gibbon->session->get('gibbonPersonID'));
+        $mode = 'tech';
     }
     
     $table = DataTable::createPaginated('issues', $criteria);
@@ -198,7 +200,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     //FILTERS END
     
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $fullAccess, $issueGateway) {
+    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway, $mode) {
         if ($issue['status'] == 'Resolved') {
             $row->addClass('current');
         } else if ($issue['status'] == 'Unassigned') {
@@ -207,21 +209,37 @@ if (!isModuleAccessible($guid, $connection2)) {
             $row->addClass('warning');
         }
 
-        //Potentially could be done better
-        if (!$fullAccess && $issue['status'] == 'Resolved') {
-            switch ($issue['privacySetting']) {
-                case 'No one':
+        if ($issue['status'] != 'Resolved') {
+            if ($mode == 'owner') {
+                if ($issue['gibbonPersonID'] != $gibbonPersonID) {
                     $row = null;
-                    break;
-                case 'Owner':
-                    $row = ($issue['gibbonPersonID'] == $gibbonPersonID) ? $row : null;
-                    break;
-                case 'Related':
-                    $row = $issueGateway->isRelated($issue['issueID'], $gibbonPersonID) ? $row : null;
-                    break;
+                }
+            } else if ($mode == 'tech') {
+                if ($issue['techPersonID'] != $gibbonPersonID && $issue['gibbonPersonID'] != $gibbonPersonID) {
+                    $viewIssueStatus = $techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssueStatus');
+                    if ($viewIssueStatus == 'PR' && $issue['status'] == 'Unassigned') {
+                        $row = null;
+                    } else if ($viewIssueStatus == 'UP' && $issue['status'] == 'Resolved') {
+                        $row = null;
+                    }
+                }
+            }
+        } else {
+            //Potentially could be done better
+            if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
+                switch ($issue['privacySetting']) {
+                    case 'No one':
+                        $row = null;
+                        break;
+                    case 'Owner':
+                        $row = ($issue['gibbonPersonID'] == $gibbonPersonID) ? $row : null;
+                        break;
+                    case 'Related':
+                        $row = $issueGateway->isRelated($issue['issueID'], $gibbonPersonID) ? $row : null;
+                        break;
+                }
             }
         }
-
         return $row;
     });
 

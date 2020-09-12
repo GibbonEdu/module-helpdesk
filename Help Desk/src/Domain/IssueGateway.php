@@ -19,7 +19,6 @@ class IssueGateway extends QueryableGateway
     private static $primaryKey = 'issueID';
     private static $searchableColumns = ['issueID', 'issueName', 'description'];
 
-    
     public function selectActiveIssueByTechnician($technicianID) {
         $data = array('technicianID' => $technicianID);
         $sql = "SELECT issueID, gibbonPersonID, issueName, description, date, status, category, priority, gibbonSchoolYearID, createdByID, privacySetting
@@ -29,9 +28,8 @@ class IssueGateway extends QueryableGateway
 
         return $this->db()->select($sql, $data);
     }
-
-
-     public function queryIssues($criteria, $mode='all', $gibbonPersonID='') {      
+    
+     public function queryIssues($criteria) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
@@ -39,17 +37,6 @@ class IssueGateway extends QueryableGateway
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
             ->leftJoin('helpDeskSubcategories', 'helpDeskIssue.subcategoryID=helpDeskSubcategories.subcategoryID')
             ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID');
-
-        switch($mode) {
-            case 'technician':
-                $query->where('techID.gibbonPersonID=:gibbonPersonID')
-                    ->bindValue('gibbonPersonID', $gibbonPersonID);
-                break;
-            case 'owner':
-                $query->where('helpDeskIssue.gibbonPersonID=:gibbonPersonID')
-                    ->bindValue('gibbonPersonID', $gibbonPersonID);
-                break;
-        }
 
         $criteria->addFilterRules([
             'status' => function ($query, $status) {

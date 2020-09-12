@@ -274,6 +274,11 @@ v1.2.02
 -------
 Properly added Ashton Power to Authors.
 
+v1.2.03
+-------
+Fixed Technician working on bug.
+Fixed Issue View bug
+
 v1.3.00
 -------
 Implemented Departments and Subcategories.
