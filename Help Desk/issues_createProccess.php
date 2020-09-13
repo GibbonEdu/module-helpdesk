@@ -92,7 +92,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
      
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $techGroupData = $techGroupGateway->selectBy(['departmentID' => $departmentData[0]['departmentID']])->fetch();
-    var_dump($techGroupData);
+    
     
     if (empty($data['issueName'])
         || empty($data['description']) 
@@ -128,8 +128,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
         //Notify Techicians
         $technicianGateway = $container->get(TechnicianGateway::class);
-        $technicians = $technicianGateway->selectTechnicians();
-
+        $technicians = $technicianGateway->selectBy(['groupID' => $techGroupData['groupID']]);
+        //todo: if technicians is bool(false) just send a notification to all techs
         while ($row = $technicians->fetch()) {
             $permission = $techGroupGateway->getPermissionValue($row['gibbonPersonID'], 'viewIssueStatus');
             if ($row['gibbonPersonID'] != $gibbon->session->get('gibbonPersonID') && $row['gibbonPersonID'] != $data['gibbonPersonID'] && ($permission == "UP" || $permission == "All")) {
