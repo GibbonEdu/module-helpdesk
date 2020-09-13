@@ -127,7 +127,20 @@ class AcceptanceTester extends \Codeception\Actor
     //TODO: COMPLEX CATEGORIES
     public function createIssueForMyself()
     {
-         $I = $this;
+        $I = $this;
+        $I->clickNavigation('Create');
+        $I->seeBreadcrumb('Create Issue');
+        $I->fillField('issueName', 'Test Issue');
+        $I->fillField('description', '<p>Test Description</p>');
+        $I->selectFromDropdown('subcategoryID', -2);
+        $I->selectFromDropdown('priority', -1);
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Create Issue');
+    }
+     public function createIssueForMyselfSimple()
+    {
+        $I = $this;
         $I->clickNavigation('Create');
         $I->seeBreadcrumb('Create Issue');
         $I->fillField('issueName', 'Test Issue');
@@ -138,8 +151,24 @@ class AcceptanceTester extends \Codeception\Actor
         $I->seeSuccessMessage();
         $I->seeBreadcrumb('Create Issue');
     }
+   
     
     public function createIssueOnBehalf()
+    {
+        $I = $this;
+        $I->clickNavigation('Create');
+        $I->seeBreadcrumb('Create Issue');
+        $I->fillField('issueName', 'Test Issue');
+        $I->fillField('description', '<p>Test Description</p>');
+        $I->selectFromDropdown('subcategoryID', -2);
+        $I->selectFromDropdown('createFor', -1); 
+        $I->selectFromDropdown('priority', -1);
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Create Issue');
+    }
+    
+    public function createIssueOnBehalfSimple()
     {
         $I = $this;
         $I->clickNavigation('Create');
@@ -153,6 +182,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->seeSuccessMessage();
         $I->seeBreadcrumb('Create Issue');
     }
+    
     public function acceptIssue($issueID)
     {
         $I = $this;
