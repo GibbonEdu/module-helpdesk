@@ -88,9 +88,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
             ->filterBy('subcategoryID', $data['subcategoryID'])
             ->fromPOST();
     $departmentData = $subcategoryGateway->querySubcategories($criteria);
-    
+     var_dump($departmentData);
     $techGroupGateway = $container->get(TechGroupGateway::class);
-    $techGroupData = $techGroupGateway->selectBy(['departmentID' => $departmentData['departmentID']])->fetch();
+    $techGroupData = $techGroupGateway->selectBy(['departmentID' => $departmentData['departmentID']]);
+   
     var_dump($techGroupData);
     if (empty($data['issueName'])
         || empty($data['description']) 
