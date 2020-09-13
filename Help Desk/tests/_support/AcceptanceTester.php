@@ -124,7 +124,7 @@ class AcceptanceTester extends \Codeception\Actor
 
         return $this->amOnPage($url);
     }
-    //TODO: COMPLEX CATEGORIES
+
     public function createIssueForMyself()
     {
         $I = $this;
@@ -272,30 +272,38 @@ class AcceptanceTester extends \Codeception\Actor
         $I->seeSuccessMessage();
         $I->seeBreadcrumb('Create Department');
     }
+    
     public function addSubcategory($departmentID)
     {
         $I = $this;
-        $I->amOnModulePage('Help Desk', 'helpDesk_createSubcategory.php', array('departmentID' => $departmentID));
-
+        $I->amOnModulePage('Help Desk', 'helpDesk_editDepartment.php', array('departmentID' => $departmentID));
+        $I->clickNavigation('Create');
         $I->fillField('subcategoryName', 'Test Subcategory');
         $I->click('Submit');
         $I->seeSuccessMessage();
     }
     
-    public function deleteDepartment($departmentID)
+    public function deleteDepartment()
     {
         $I = $this;
-        $I->amOnModulePage('Help Desk', 'helpDesk_deleteDepartment.php', array('departmentID' => $departmentID));
-
+        $I->amOnModulePage('Help Desk', 'helpDesk_manageDepartments.php');
+        $I->click("Delete", "//td[contains(text(),'Test Department')]//..");
         $I->click('Yes');
         $I->seeSuccessMessage();
     }
     
+    public function editSubcategory($departmentID, $subcategoryID)
+    {
+        $I = $this;
+        $I->click("Edit", "//td[contains(text(),'Test Subcategory')]//..");
+        $I->fillField('subcategoryName', 'Test Subcategory Edit');
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+    }
     public function deleteSubcategory($departmentID, $subcategoryID)
     {
         $I = $this;
-        $I->amOnModulePage('Help Desk', 'helpDesk_deleteSubcategory.php', array('departmentID' => $departmentID, 'subcategoryID' => $subcategoryID));
-
+        $I->click("Delete", "//td[contains(text(),'Test Subcategory')]//..");
         $I->click('Yes');
         $I->seeSuccessMessage();
     }
