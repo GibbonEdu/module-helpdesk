@@ -79,7 +79,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Subcategory Added', array('subcategoryID' => $subcategoryID), null);
 
-    $URL .= '&return=success0';
+    $URL .= "&subcategoryID=$subcategoryID&return=success0";
     header("Location: {$URL}");
     exit();
 }
