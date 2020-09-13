@@ -151,7 +151,6 @@ class AcceptanceTester extends \Codeception\Actor
         $I->seeSuccessMessage();
         $I->seeBreadcrumb('Create Issue');
     }
-   
     
     public function createIssueOnBehalf()
     {
@@ -241,5 +240,65 @@ class AcceptanceTester extends \Codeception\Actor
         $I->seeSuccessMessage();
         $I->seeBreadcrumb('Discuss Issue');
     }
+    
+    public function resolveIssueFromView($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_view.php');
+        $I->click("Resolve", "//td[contains(text(),'".$issueID."')]//..");
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Issues');
+    }
+    
+    public function reincarnateIssueFromView($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_view.php');
+        $I->click("Reincarnate", "//td[contains(text(),'".$issueID."')]//..");
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Discuss Issue');
+    }
+    
+    public function createDepartment()
+    {
+        $I = $this;
+        $I->clickNavigation('Add');
+        $I->seeBreadcrumb('Create Department');
+
+        $I->fillField('departmentName', 'Test Department');
+        $I->fillField('departmentDesc', 'Test Department Description');
+        $I->click('Submit');
+
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Create Department');
+    }
+    public function addSubcategory($departmentID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'helpDesk_createSubcategory.php', array('departmentID' => $departmentID));
+
+        $I->fillField('subcategoryName', 'Test Subcategory');
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+    }
+    
+    public function deleteDepartment($departmentID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'helpDesk_deleteDepartment.php', array('departmentID' => $departmentID));
+
+        $I->click('Yes');
+        $I->seeSuccessMessage();
+    }
+    
+    public function deleteSubcategory($departmentID, $subcategoryID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'helpDesk_deleteSubcategory.php', array('departmentID' => $departmentID, 'subcategoryID' => $subcategoryID));
+
+        $I->click('Yes');
+        $I->seeSuccessMessage();
+    }
+    
     
 }
