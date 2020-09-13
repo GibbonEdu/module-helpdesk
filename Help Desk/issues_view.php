@@ -102,7 +102,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     $userGateway = $container->get(UserGateway::class);
 
     $technician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'));
-    $technicianGroupID = $technician->isNotEmpty() ? $technician->fetch()['groupID'] : '';
+    $techGroup = $techGroupGateway->getByID($technician->isNotEmpty() ? $technician->fetch()['groupID'] : '');
 
     $isTechnician = !empty($technicianGroupID);
     $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
@@ -166,7 +166,6 @@ if (!isModuleAccessible($guid, $connection2)) {
             ]);
         }
     } else {
-        $techGroup = $techGroupGateway->getByID($technicianGroupID);
         if (!$isTechnician || ($isTechnician && $techGroup['departmentID'] == null) || $fullAccess) {
             $departmentGateway = $container->get(DepartmentGateway::class);
             $departments = $departmentGateway->selectDepartments()->toDataSet();
@@ -176,17 +175,18 @@ if (!isModuleAccessible($guid, $connection2)) {
                     'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
                 ]);
             }
-        }
+        } else {
+            $subcategoryGateway = $container->get(SubcategoryGateway::class);
+            $subcategoryCriteria = $subcategoryGateway->newQueryCriteria(true)
+                ->filterBy('departmentID', $techGroup['departmentID'])
+                ->sortBy(['departmentName', 'subcategoryName']);
 
-        $subcategoryGateway = $container->get(SubcategoryGateway::class);
-        $subcategoryCriteria = $subcategoryGateway->newQueryCriteria(true)
-            ->sortBy(['departmentName', 'subcategoryName']);
-
-        $subcategories = $subcategoryGateway->querySubcategories($subcategoryCriteria);
-        foreach ($subcategories as $subcategory) {
-            $table->addMetaData('filterOptions', [
-                'subcategoryID:' . $subcategory['subcategoryID'] => __('Subcategory') . ': ' . $subcategory['departmentName'] . ' - ' . $subcategory['subcategoryName'],
-            ]);
+            $subcategories = $subcategoryGateway->querySubcategories($subcategoryCriteria);
+            foreach ($subcategories as $subcategory) {
+                $table->addMetaData('filterOptions', [
+                    'subcategoryID:' . $subcategory['subcategoryID'] => __('Subcategory') . ': ' . $subcategory['departmentName'] . ' - ' . $subcategory['subcategoryName'],
+                ]);
+            }
         }
     }
 
@@ -200,7 +200,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     //FILTERS END
     
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway, $mode) {
+    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway, $mode, $techGroup) {
         if ($issue['status'] == 'Resolved') {
             $row->addClass('current');
         } else if ($issue['status'] == 'Unassigned') {
@@ -220,6 +220,10 @@ if (!isModuleAccessible($guid, $connection2)) {
                     if ($viewIssueStatus == 'PR' && $issue['status'] == 'Unassigned') {
                         $row = null;
                     } else if ($viewIssueStatus == 'UP' && $issue['status'] == 'Resolved') {
+                        $row = null;
+                    }
+
+                    if ($techGroup['departmentID'] != null && $issue['departmentID'] != $techGroup['departmentID']) {
                         $row = null;
                     }
                 }
