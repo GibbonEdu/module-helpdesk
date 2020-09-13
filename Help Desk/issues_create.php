@@ -22,6 +22,7 @@ use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
+use Gibbon\Domain\School\FacilityGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
@@ -71,7 +72,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
     } else {
         $subcategoryGateway = $container->get(SubcategoryGateway::class);
 
-        $criteria = $subcategoryGateway->newQueryCriteria(true)
+        $criteria = $subcategoryGateway->newQueryCriteria()
             ->sortBy(['departmentName', 'subcategoryName'])
             ->fromPOST();
 
@@ -87,11 +88,22 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
         }
     }
     
+     $facilityGateway = $container->get(FacilityGateway::class);
+    $criteria = $facilityGateway->newQueryCriteria()
+            ->sortBy(['type', 'name'])
+            ->fromPOST();
+    $facilityData = $facilityGateway->queryFacilities($criteria);
+    
+
      $row = $form->addRow();
         $row->addLabel('gibbonSpaceID', __('Facility'));
-        $row->addSelectSpace('gibbonSpaceID')
-            ->placeholder();
-            
+        $row->addSelect('gibbonSpaceID')
+            ->fromDataSet($facilityData, 'gibbonSpaceID', 'name', 'type')
+            ->placeholder()
+            ->isRequired();
+
+    
+    
     $row = $form->addRow();
         $column = $row->addColumn();
             $column->addLabel('description', __('Description'));
