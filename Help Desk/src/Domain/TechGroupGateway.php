@@ -33,7 +33,7 @@ class TechGroupGateway extends QueryableGateway
         $query = $this
             ->newSelect()
             ->distinct()
-            ->cols(['viewIssue, viewIssueStatus, assignIssue, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue'])
+            ->cols(['viewIssue, viewIssueStatus, assignIssue, acceptIssue, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue'])
             ->from($this->getTableName())
             ->leftJoin('helpDeskTechnicians', 'helpDeskTechGroups.groupID=helpDeskTechnicians.groupID')
             ->where('helpDeskTechnicians.gibbonPersonID = :gibbonPersonID')
