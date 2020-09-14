@@ -88,7 +88,7 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
     PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue)
+$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, `resolveIssue`, `createIssueForOther`, `fullAccess`, `reassignIssue`, `reincarnateIssue`, `departmentID`)
     VALUES
     (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1, NULL),
     (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1, NULL)";
