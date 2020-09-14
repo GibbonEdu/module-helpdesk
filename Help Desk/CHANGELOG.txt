@@ -279,6 +279,10 @@ v1.2.03
 Fixed Technician working on bug.
 Fixed Issue View bug
 
+v1.2.04
+-------
+Fixed acceptIssue permission check not working
+
 v1.3.00
 -------
 Implemented Departments and Subcategories.
