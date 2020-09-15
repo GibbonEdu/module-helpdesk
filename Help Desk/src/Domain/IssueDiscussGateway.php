@@ -44,8 +44,4 @@ class IssueDiscussGateway extends QueryableGateway
 
         return $result;
     }
-
-
-
-    
 }

@@ -193,6 +193,14 @@ if (!isModuleAccessible($guid, $connection2)) {
             $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
             $logs = $issueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
 
+            array_walk($logs, function (&$discussion, $key) use ($issue) {
+                if ($discussion['gibbonPersonID'] == $issue['gibbonPersonID']) {
+                    $discussion['type'] = 'Owner';
+                } else {
+                    $discussion['type'] = 'Technician';
+                }
+            });
+
             if ($hasTechAssigned || count($logs) > 0) {
                 echo $page->fetchFromTemplate('ui/discussion.twig.html', [
                     'title' => __('Comments'),

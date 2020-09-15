@@ -283,6 +283,11 @@ v1.2.04
 -------
 Fixed acceptIssue permission check not working
 
+v1.2.05
+-------
+Fixed issue discuss bug
+Fixed non-full status technicians displaying
+
 v1.3.00
 -------
 Implemented Departments and Subcategories.
