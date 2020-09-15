@@ -99,10 +99,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
         $row->addLabel('gibbonSpaceID', __('Facility'));
         $row->addSelect('gibbonSpaceID')
             ->fromDataSet($facilityData, 'gibbonSpaceID', 'name', 'type')
-            ->placeholder()
-            ->isRequired();
-
-    
+            ->placeholder();
     
     $row = $form->addRow();
         $column = $row->addColumn();
