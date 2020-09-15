@@ -33,7 +33,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    $technicianGateway = $container->get(technicianGateway::class);
+    $technicianGateway = $container->get(TechnicianGateway::class);
     $issueGateway = $container->get(IssueGateway::class); 
 
     $formatIssues = function($row) use ($gibbon, $issueGateway) {
