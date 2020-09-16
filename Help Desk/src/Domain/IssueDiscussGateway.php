@@ -38,7 +38,7 @@ class IssueDiscussGateway extends QueryableGateway
             ->where('helpDeskIssueDiscuss.issueID = :issueID')
             ->where('helpDeskTechnicians.gibbonPersonID IS NOT NULL')
             ->bindValue('issueID', $issueID)
-            ->orderBy(['timestamp']);
+            ->orderBy(['timestamp DESC']);
 
         $result = $this->runSelect($query);
 
