@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Tables\DataTable;
 use Gibbon\Tables\Action;
+use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
@@ -189,24 +190,9 @@ if (!isModuleAccessible($guid, $connection2)) {
                     ->width('100%');
 
             echo $table->render([$issue]);
-
-            $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
-            $logs = $issueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
-
-            array_walk($logs, function (&$discussion, $key) use ($issue) {
-                if ($discussion['gibbonPersonID'] == $issue['gibbonPersonID']) {
-                    $discussion['type'] = 'Owner';
-                } else {
-                    $discussion['type'] = 'Technician';
-                }
-            });
-
-            if ($hasTechAssigned || count($logs) > 0) {
-                echo $page->fetchFromTemplate('ui/discussion.twig.html', [
-                    'title' => __('Comments'),
-                    'discussion' => $logs
-                ]); 
-                
+            
+    $issueGateway = $container->get(IssueGateway::class);
+    $issue = $issueGateway->getByID($issueID);
                 //Again a bit of a cheat, we'll see how this goes.
                 $headerActions = array();
 
@@ -215,13 +201,6 @@ if (!isModuleAccessible($guid, $connection2)) {
                     $action->setIcon('refresh')
                             ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
                             ->addParam('issueID', $issueID);
-                    $headerActions[] = $action;
-
-                    $action = new Action('add', __('Add'));
-                    $action->modalWindow()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussPost.php')
-                            ->addParam('issueID', $issueID);
-                    
                     $headerActions[] = $action;
                     
                     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
@@ -248,6 +227,49 @@ if (!isModuleAccessible($guid, $connection2)) {
                             echo $action->getOutput();
                         }
                     echo '</div>';
+                    
+                    
+        if ($issue['status'] == 'Pending') {
+            $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+
+            $techGroupGateway = $container->get(TechGroupGateway::class);
+
+            if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
+            $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
+                $form->addHiddenValue('address', $gibbon->session->get('address'));
+                $form->addRow()->addHeading(__('Comments'));
+                $row = $form->addRow();
+                    $column = $row->addColumn();
+                    $column->addLabel('comment', __('Comment'));
+                    $column->addEditor('comment', $guid)
+                        ->setRows(5)
+                        ->showMedia()
+                        ->isRequired();
+                
+                $row = $form->addRow();
+                    $row->addFooter();
+                    $row->addSubmit();
+
+                echo $form->getOutput();
+            }
+        }
+            $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
+            $logs = $issueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
+
+            array_walk($logs, function (&$discussion, $key) use ($issue) {
+                if ($discussion['gibbonPersonID'] == $issue['gibbonPersonID']) {
+                    $discussion['type'] = 'Owner';
+                } else {
+                    $discussion['type'] = 'Technician';
+                }
+            });
+
+            if ($hasTechAssigned || count($logs) > 0) {
+                echo $page->fetchFromTemplate('ui/discussion.twig.html', [
+                    'title' => __(''),
+                    'discussion' => $logs
+                ]); 
+                
                 }
             }
         } else {
