@@ -220,8 +220,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     $headerActions[] = $action;
 
                     $action = new Action('add', __('Add'));
-                    $action->modalWindow()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussPost.php')
+                    $action->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussPost.php')
                             ->addParam('issueID', $issueID);
                     
                     $headerActions[] = $action;
