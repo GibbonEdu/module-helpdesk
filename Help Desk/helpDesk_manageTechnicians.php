@@ -35,8 +35,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $manageTechGroups = isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php');
     $moduleName = $gibbon->session->get('module');
-
-    $technicianGateway = $container->get(technicianGateway::class);
+    
+    $technicianGateway = $container->get(TechnicianGateway::class);
     $issueGateway = $container->get(IssueGateway::class); 
 
     $formatIssues = function($row) use ($moduleName, $issueGateway) {
