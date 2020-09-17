@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="1.2.05";
+$version="1.2.06";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
 $url="https://github.com/raynichc/helpdesk";
 
