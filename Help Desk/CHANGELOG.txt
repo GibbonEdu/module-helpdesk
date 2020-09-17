@@ -288,6 +288,10 @@ v1.2.05
 Fixed issue discuss bug
 Fixed non-full status technicians displaying
 
+v1.2.06
+-------
+Fixed issue discuss post permission typo
+
 v1.3.00
 -------
 Implemented Departments and Subcategories.

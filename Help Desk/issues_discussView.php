@@ -190,54 +190,45 @@ if (!isModuleAccessible($guid, $connection2)) {
                     ->width('100%');
 
             echo $table->render([$issue]);
-            
-    $issueGateway = $container->get(IssueGateway::class);
-    $issue = $issueGateway->getByID($issueID);
-                //Again a bit of a cheat, we'll see how this goes.
-                $headerActions = array();
+        
 
-                if (!$isResolved) {
-                    $action = new Action('refresh', __('Refresh'));
-                    $action->setIcon('refresh')
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
-                            ->addParam('issueID', $issueID);
-                    $headerActions[] = $action;
-                    
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
-                        $action = new Action('reassign', __('Reassign'));
-                        $action->setIcon('attendance')
-                                ->modalWindow()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
-                                ->addParam('issueID', $issueID);
-                            $headerActions[] = $action;
-                    }
-                    
-                    
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
-                        $action = new Action('resolve', __('Resolve'));
-                        $action->setIcon('iconTick')
-                                ->directLink()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
-                                ->addParam('issueID', $issueID);
-
-                        $headerActions[] = $action;
-                    }
-                    echo '<div class="linkTop">';
-                        foreach ($headerActions as $action) {
-                            echo $action->getOutput();
-                        }
-                    echo '</div>';
-                    
-                    
-        if ($issue['status'] == 'Pending') {
-            $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-
-            $techGroupGateway = $container->get(TechGroupGateway::class);
-
-            if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
             $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
-                $form->addHiddenValue('address', $gibbon->session->get('address'));
-                $form->addRow()->addHeading(__('Comments'));
+            $form->addHiddenValue('address', $gibbon->session->get('address'));
+            $form->addRow()->addHeading(__('Comments'));
+            //Again a bit of a cheat, we'll see how this goes.
+            $headerActions = array();
+                            
+            if ($issue['status'] == 'Pending') {
+                $action = new Action('refresh', __('Refresh'));
+                $action->setIcon('refresh')
+                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
+                        ->addParam('issueID', $issueID);
+                $headerActions[] = $action;
+                
+                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                    $action = new Action('reassign', __('Reassign'));
+                    $action->setIcon('attendance')
+                            ->modalWindow()
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                            ->addParam('issueID', $issueID);
+                        $headerActions[] = $action;
+                }
+                
+                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
+                    $action = new Action('resolve', __('Resolve'));
+                    $action->setIcon('iconTick')
+                            ->directLink()
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
+                            ->addParam('issueID', $issueID);
+
+                    $headerActions[] = $action;
+                }
+                echo '<div class="linkTop">';
+                    foreach ($headerActions as $action) {
+                        echo $action->getOutput();
+                    }
+                echo '</div>';
+
                 $row = $form->addRow();
                     $column = $row->addColumn();
                     $column->addLabel('comment', __('Comment'));
@@ -249,28 +240,28 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $row = $form->addRow();
                     $row->addFooter();
                     $row->addSubmit();
-
-                echo $form->getOutput();
             }
-        }
+
             $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
             $logs = $issueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
 
-            array_walk($logs, function (&$discussion, $key) use ($issue) {
-                if ($discussion['gibbonPersonID'] == $issue['gibbonPersonID']) {
-                    $discussion['type'] = 'Owner';
-                } else {
-                    $discussion['type'] = 'Technician';
-                }
-            });
-
             if ($hasTechAssigned || count($logs) > 0) {
-                echo $page->fetchFromTemplate('ui/discussion.twig.html', [
+                array_walk($logs, function (&$discussion, $key) use ($issue) {
+                    if ($discussion['gibbonPersonID'] == $issue['gibbonPersonID']) {
+                        $discussion['type'] = 'Owner';
+                    } else {
+                        $discussion['type'] = 'Technician';
+                    }
+                });
+
+                $form->addRow()->addContent('comments')->setContent($page->fetchFromTemplate('ui/discussion.twig.html', [
                     'title' => __(''),
                     'discussion' => $logs
-                ]); 
-                
-                }
+                ])); 
+            }
+
+            if (count($form->getRows()) > 1) {
+                echo $form->getOutput();
             }
         } else {
             $page->addError(__('You do not have access to this action.'));

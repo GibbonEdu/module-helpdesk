@@ -48,7 +48,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
-    if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->gerPermissionValue($gibbonPersonID, 'fullAccess')) {
+    if ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
       //Proceed!
         $URL .= "/issues_discussView.php&issueID=$issueID";
 
