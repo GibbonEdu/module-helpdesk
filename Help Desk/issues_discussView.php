@@ -216,10 +216,13 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
             $form->addHiddenValue('address', $gibbon->session->get('address'));
-            $form->addRow()->addHeading(__('Comments'));
-                            
+            $row = $form->addRow();
+            $col = $row->addColumn();
+                $col->addHeading(__('Comments'))->addClass('inline-block');
+               
             if ($issue['status'] == 'Pending') {
-                $row = $form->addRow();
+                $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$_SESSION[$guid]['gibbonThemeName'].'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');
+                $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
                     $column = $row->addColumn();
                     $column->addLabel('comment', __('Comment'));
                     $column->addEditor('comment', $guid)
@@ -227,7 +230,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                         ->showMedia()
                         ->isRequired();
                 
-                $row = $form->addRow();
+                $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');;
                     $row->addFooter();
                     $row->addSubmit();
             }
