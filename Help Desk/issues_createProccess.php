@@ -131,6 +131,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
                 $techs = array_filter($techs, function ($tech) use ($departmentID) {
                     return empty($tech['departmentID']) || $tech['departmentID'] == $departmentID;
                 });
+            
+            $subcategory = $subcategoryGateway->getByID($data['subcategoryID']);
             }
         }
 
@@ -139,7 +141,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         foreach ($techs as $techPersonID) {
             $permission = $techGroupGateway->getPermissionValue($techPersonID, 'viewIssueStatus');
             if ($techPersonID != $gibbon->session->get('gibbonPersonID') && $techPersonID != $data['gibbonPersonID'] && in_array($permission, ['UP', 'All'])) {
-                setNotification($connection2, $guid, $techPersonID, 'A new issue has been added (' . $data['issueName'] . ').', $moduleName, "/index.php?q=/modules/$moduleName/issues_discussView.php&issueID=$issueID");
+                setNotification($connection2, $guid, $techPersonID, 'A new issue has been added (' . $data['issueName'] . ') in subcategory' . $subcategory'subcategoryName'[] . '.', $moduleName, "/index.php?q=/modules/$moduleName/issues_discussView.php&issueID=$issueID");
             }
         }
 
