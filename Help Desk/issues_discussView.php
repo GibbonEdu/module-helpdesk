@@ -238,7 +238,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
             $logs = $issueDiscussGateway->getIssueDiscussionByID($issueID)->fetchAll();
 
-            if ($hasTechAssigned || count($logs) > 0) {
+            if (count($logs) > 0) {
                 array_walk($logs, function (&$discussion, $key) use ($issue) {
                     if ($discussion['gibbonPersonID'] == $issue['gibbonPersonID']) {
                         $discussion['type'] = 'Owner';
@@ -247,10 +247,12 @@ if (!isModuleAccessible($guid, $connection2)) {
                     }
                 });
 
-                $form->addRow()->addContent('comments')->setContent($page->fetchFromTemplate('ui/discussion.twig.html', [
-                    'title' => __(''),
-                    'discussion' => $logs
-                ])); 
+                $form->addRow()
+                    ->addContent('comments')
+                    ->setContent($page->fetchFromTemplate('ui/discussion.twig.html', [
+                        'title' => __(''),
+                        'discussion' => $logs
+                    ])); 
             }
 
             if (count($form->getRows()) > 1) {
