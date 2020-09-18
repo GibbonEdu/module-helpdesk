@@ -111,7 +111,56 @@ if (!isModuleAccessible($guid, $connection2)) {
             $tdWidth .= '%';
 
             $table = DataTable::createDetails('details');
-            $table->setTitle($issue['issueName']);
+            $table->setTitle($issue['issueName']);            
+
+            //TODO: Double check these permission
+            if ($isResolved) {
+                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
+                    $table->addHeaderAction('reincarnate', __('Reincarnate'))
+                            ->setIcon('reincarnate')
+                            ->directLink()
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_reincarnateProcess.php')
+                            ->addParam('issueID', $issueID);
+                }
+            } else {
+                if (!$hasTechAssigned) {
+                     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue') && !$isPersonsIssue) {
+                        $table->addHeaderAction('accept', __('Accept'))
+                                ->setIcon('page_new')
+                                ->directLink()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
+                                ->addParam('issueID', $issueID);
+                    }
+                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                        $table->addHeaderAction('assign', __('Assign'))
+                                ->setIcon('attendance')
+                                ->modalWindow()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                                ->addParam('issueID', $issueID);
+                    }
+                } else {
+                    $table->addHeaderAction('refresh', __('Refresh'))
+                            ->setIcon('refresh')
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
+                            ->addParam('issueID', $issueID);
+
+                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                        $table->addHeaderAction('reassign', __('Reassign'))
+                                ->setIcon('attendance')
+                                ->modalWindow()
+                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                                ->addParam('issueID', $issueID);
+                    }
+                }
+
+                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
+                    $table->addHeaderAction('resolve', __('Resolve'))
+                            ->setIcon('iconTick')
+                            ->directLink()
+                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
+                            ->addParam('issueID', $issueID);
+                }
+            }
 
             $table->addColumn('issueID', __('ID'))
                     ->width($tdWidth)
@@ -146,89 +195,30 @@ if (!isModuleAccessible($guid, $connection2)) {
                         }
                     });
 
+            $detailsData['description'] = $issue['description'];
+            $table->addColumn('description', __('Description'))
+                    ->width('100%');
+
             echo $table->render([$detailsData]);
 
+            /*
             //Description Table
             $table = DataTable::createDetails('description');
             $table->setTitle(__('Description'));
 
             //TODO: Can this be simplified?
-            if ($isResolved) {
-                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
-                    $table->addHeaderAction('reincarnate', __('Reincarnate'))
-                            ->setIcon('reincarnate')
-                            ->directLink()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_reincarnateProcess.php')
-                            ->addParam('issueID', $issueID);
-                }
-            } else {
-                if (!$hasTechAssigned) {
-                     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue') && !$isPersonsIssue) {
-                        $table->addHeaderAction('accept', __('Accept'))
-                                ->setIcon('page_new')
-                                ->directLink()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
-                                ->addParam('issueID', $issueID);
-                    }
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
-                        $table->addHeaderAction('assign', __('Assign'))
-                                ->setIcon('attendance')
-                                ->modalWindow()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
-                                ->addParam('issueID', $issueID);
-                    }
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
-                        $table->addHeaderAction('resolve', __('Resolve'))
-                                ->setIcon('iconTick')
-                                ->directLink()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
-                                ->addParam('issueID', $issueID);
-                    }
-                }
-            }
+            
             $table->addColumn('description')
                     ->width('100%');
 
             echo $table->render([$issue]);
-        
+            */
 
             $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
             $form->addHiddenValue('address', $gibbon->session->get('address'));
             $form->addRow()->addHeading(__('Comments'));
-            //Again a bit of a cheat, we'll see how this goes.
-            $headerActions = array();
                             
             if ($issue['status'] == 'Pending') {
-                $action = new Action('refresh', __('Refresh'));
-                $action->setIcon('refresh')
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
-                        ->addParam('issueID', $issueID);
-                $headerActions[] = $action;
-                
-                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
-                    $action = new Action('reassign', __('Reassign'));
-                    $action->setIcon('attendance')
-                            ->modalWindow()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
-                            ->addParam('issueID', $issueID);
-                        $headerActions[] = $action;
-                }
-                
-                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
-                    $action = new Action('resolve', __('Resolve'));
-                    $action->setIcon('iconTick')
-                            ->directLink()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
-                            ->addParam('issueID', $issueID);
-
-                    $headerActions[] = $action;
-                }
-                echo '<div class="linkTop">';
-                    foreach ($headerActions as $action) {
-                        echo $action->getOutput();
-                    }
-                echo '</div>';
-
                 $row = $form->addRow();
                     $column = $row->addColumn();
                     $column->addLabel('comment', __('Comment'));
