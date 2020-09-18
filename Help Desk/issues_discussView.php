@@ -219,9 +219,9 @@ if (!isModuleAccessible($guid, $connection2)) {
             $row = $form->addRow();
             $col = $row->addColumn();
                 $col->addHeading(__('Comments'))->addClass('inline-block');
-                $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$_SESSION[$guid]['gibbonThemeName'].'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');;
-                
+               
             if ($issue['status'] == 'Pending') {
+                $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$_SESSION[$guid]['gibbonThemeName'].'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');
                 $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
                     $column = $row->addColumn();
                     $column->addLabel('comment', __('Comment'));
