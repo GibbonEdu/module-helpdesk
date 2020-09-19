@@ -22,6 +22,7 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\User\UserGateway;
+use Gibbon\Domain\School\FacilityGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
@@ -258,30 +259,42 @@ if (!isModuleAccessible($guid, $connection2)) {
           ->format(function ($issue) {
             return '<strong>' . $issue['issueName'] . '</strong><br/><small><i>' . Format::truncate(strip_tags($issue['description']), 50) . '</i></small>';
           });
+          
     $table->addColumn('gibbonPersonID', __('Owner')) 
-                ->description(__('Category'))
-                ->format(function ($row) use ($userGateway, $simpleCategories) {
+                ->description(__('Technician'))
+                ->format(function ($row) use ($userGateway) {
                     $owner = $userGateway->getByID($row['gibbonPersonID']);
-                    $category = $row['category'];
+                    $tech = $userGateway->getByID($row['techPersonID']);
+                    if (empty($tech)) {
+                        return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/>';
+                    }
+                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/>'. Format::small(__(Format::name($tech['title'], $tech['preferredName'], $tech['surname'], 'Staff')));
+                });
+
+    $facilityGateway = $container->get(FacilityGateway::class);
+    $table->addColumn('facility', __('Facility')) 
+        ->description(__('Category'))
+        ->format(function ($row) use ($facilityGateway, $simpleCategories) {
+            
+           $facility = $facilityGateway->getByID($row['gibbonSpaceID']);
+            
+            $category = $row['category'];
                     if (!$simpleCategories && !empty($row['subcategoryName'])) {
                         //TODO: Do better formatting on this
                         $category = $row['departmentName'] . ' - ' . $row['subcategoryName'];
                     }
-                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/>'. Format::small(__($category));
-                });
-
+            if (empty($facility)) {
+                        return '<br/>'. Format::small(__($category));
+            }
+            return  __($facility['name'] . '<br/>'. Format::small($category));
+        });
+    
     if (!empty($priorityFilters)) {
         $table->addColumn('priority', __($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issuePriorityName')));
     }
+ 
     
-    $table->addColumn('technicianID', __('Technician'))
-                ->format(function ($row) use ($userGateway) {
-                    $tech = $userGateway->getByID($row['techPersonID']);
-                    if (empty($tech)) {
-                        return "";
-                    }
-                    return Format::name($tech['title'], $tech['preferredName'], $tech['surname'], 'Staff');
-                });         
+      
     $table->addColumn('status', __('Status'))
           ->description(__('Date'))
           ->format(function ($issue) {
