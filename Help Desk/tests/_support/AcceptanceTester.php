@@ -211,12 +211,10 @@ class AcceptanceTester extends \Codeception\Actor
     public function discussIssue($issueID)
     {
         $I = $this;
-        $I->amOnModulePage('Help Desk', 'issues_discussPost.php', ['issueID' => $issueID]);
-        $I->seeBreadcrumb('Post Discuss');
+        $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+        $I->seeBreadcrumb('Discuss Issue');
 
-        $I->dontSee('Assign');
-        $I->dontSee('Accept');
-
+        $I->click('.comment');
         $I->fillField('comment', '<p>Discuss Test</p>');
         $I->click('Submit');
         $I->seeSuccessMessage();
