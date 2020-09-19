@@ -87,19 +87,9 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
                 ->isRequired();
         }
     }
-    
-     $facilityGateway = $container->get(FacilityGateway::class);
-    $criteria = $facilityGateway->newQueryCriteria()
-            ->sortBy(['type', 'name'])
-            ->fromPOST();
-    $facilityData = $facilityGateway->queryFacilities($criteria);
-    
-
-     $row = $form->addRow();
+   $row = $form->addRow();
         $row->addLabel('gibbonSpaceID', __('Facility'));
-        $row->addSelect('gibbonSpaceID')
-            ->fromDataSet($facilityData, 'gibbonSpaceID', 'name', 'type')
-            ->placeholder();
+        $row->addSelectSpace('gibbonSpaceID')->placeholder();
     
     $row = $form->addRow();
         $column = $row->addColumn();
