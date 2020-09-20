@@ -116,7 +116,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             //TODO: Double check these permission
             if ($isResolved) {
-                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
+                 if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
                     $table->addHeaderAction('reincarnate', __('Reincarnate'))
                             ->setIcon('reincarnate')
                             ->directLink()
@@ -154,7 +154,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     }
                 }
 
-                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
+                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
                     $table->addHeaderAction('resolve', __('Resolve'))
                             ->setIcon('iconTick')
                             ->directLink()
