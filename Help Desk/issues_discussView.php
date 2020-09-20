@@ -56,6 +56,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         $isPersonsIssue = ($issue['gibbonPersonID'] == $gibbonPersonID);
         $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID)->isNotEmpty();
         $isRelated = $issueGateway->isRelated($issueID, $gibbonPersonID);
+        $hasViewAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue');
         $hasFullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
 
         //Information about the issue's technician
@@ -66,10 +67,10 @@ if (!isModuleAccessible($guid, $connection2)) {
 
         $allowed = $isRelated
             || (!$hasTechAssigned && $isTechnician) 
-            || $hasFullAccess;
+            || $hasViewAccess;
 
         $privacySetting = $issue['privacySetting'];
-        if ($isResolved && !$hasFullAccess) {
+        if ($isResolved && !$hasViewAccess) {
             if ($privacySetting == 'No one') {
                 $allowed = false;
             } else if ($privacySetting == 'Related' && !$isRelated) {
@@ -115,7 +116,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             //TODO: Double check these permission
             if ($isResolved) {
-                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
+                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
                     $table->addHeaderAction('reincarnate', __('Reincarnate'))
                             ->setIcon('reincarnate')
                             ->directLink()
@@ -153,7 +154,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     }
                 }
 
-                if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
+                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
                     $table->addHeaderAction('resolve', __('Resolve'))
                             ->setIcon('iconTick')
                             ->directLink()
@@ -213,14 +214,14 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             echo $table->render([$issue]);
             */
-
+           
             $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
             $form->addHiddenValue('address', $gibbon->session->get('address'));
             $row = $form->addRow();
             $col = $row->addColumn();
                 $col->addHeading(__('Comments'))->addClass('inline-block');
                
-            if ($issue['status'] == 'Pending') {
+            if ($issue['status'] == 'Pending' && $isRelated) {
                 $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$_SESSION[$guid]['gibbonThemeName'].'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');
                 $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
                     $column = $row->addColumn();

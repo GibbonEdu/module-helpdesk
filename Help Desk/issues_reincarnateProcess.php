@@ -41,7 +41,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     $issueGateway = $container->get(IssueGateway::class);
     $issue = $issueGateway->getByID($issueID);
-
     if (empty($issueID) || empty($issue)) {
         $URL .= '/issues_view.php&return=error1';
         header("Location: {$URL}");
