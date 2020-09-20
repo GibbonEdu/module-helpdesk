@@ -229,8 +229,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 }
             }
         } else {
-            //Potentially could be done better
-            if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue') && !$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
+            if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
                 switch ($issue['privacySetting']) {
                     case 'No one':
                         $row = null;
@@ -302,11 +301,12 @@ if (!isModuleAccessible($guid, $connection2)) {
     
     $table->addActionColumn()
             ->addParam('issueID')
-            ->format(function ($issues, $actions) use ($gibbon, $techGroupGateway) {
+            ->format(function ($issues, $actions) use ($gibbon, $techGroupGateway, $issueGateway) {
                 $moduleName = $gibbon->session->get('module');
 
                 $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
                 $isPersonsIssue = $issues['gibbonPersonID'] == $gibbonPersonID;
+                $related = $issueGateway->isRelated($issues['issueID'], $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
 
                 $actions->addAction('view', __('Open'))
                         ->setURL('/modules/' . $moduleName . '/issues_discussView.php');
@@ -330,15 +330,15 @@ if (!isModuleAccessible($guid, $connection2)) {
                                 ->setURL('/modules/' . $moduleName . '/issues_assign.php')
                                 ->setIcon('attendance');
                     }
-
-                    if($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
+                    
+                    if (($issues['gibbonPersonID'] == $gibbonPersonID) || ($related && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
                         $actions->addAction('resolve', __('Resolve'))
                                 ->directLink()
                                 ->setURL('/modules/' . $moduleName . '/issues_resolveProcess.php')
                                 ->setIcon('iconTick');
                     }
                 } else {
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
+                    if (($issues['gibbonPersonID'] == $gibbonPersonID) || ($related && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
                         $actions->addAction('reincarnate', __('Reincarnate'))
                                 ->directLink()
                                 ->setURL('/modules/' . $moduleName . '/issues_reincarnateProcess.php')
