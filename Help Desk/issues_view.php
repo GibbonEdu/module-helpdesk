@@ -230,7 +230,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             }
         } else {
             //Potentially could be done better
-            if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue') || !$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
+            if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue') && !$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
                 switch ($issue['privacySetting']) {
                     case 'No one':
                         $row = null;
