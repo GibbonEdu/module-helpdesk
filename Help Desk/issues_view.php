@@ -48,7 +48,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
 
     $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
-    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
+    
     $issueGateway = $container->get(IssueGateway::class);
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $technicianGateway = $container->get(TechnicianGateway::class);
@@ -56,6 +56,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $technician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'));
     $techGroup = $techGroupGateway->getByID($technician->isNotEmpty() ? $technician->fetch()['groupID'] : ''); 
+    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
     $isTechnician = !empty($technicianGroupID);
     $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
     
