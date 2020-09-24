@@ -48,11 +48,22 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
 
     $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
-
+    $departmentID = $_GET['departmentID'] ?? NULL;
+    
     $issueGateway = $container->get(IssueGateway::class);
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    $technicianGateway = $container->get(TechnicianGateway::class);
+    $userGateway = $container->get(UserGateway::class);
+
+    $technician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'));
+    $techGroup = $techGroupGateway->getByID($technician->isNotEmpty() ? $technician->fetch()['groupID'] : ''); 
+    $isTechnician = !empty($technicianGroupID);
+    $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
+    
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
         ->filterBy('year', $year)
+        ->filterBy('departmentID', $techGroup['departmentID'])
         ->sortBy('status', 'ASC')
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
@@ -98,15 +109,6 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     echo $form->getOutput();      
     
-    $techGroupGateway = $container->get(TechGroupGateway::class);
-    $technicianGateway = $container->get(TechnicianGateway::class);
-    $userGateway = $container->get(UserGateway::class);
-
-    $technician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'));
-    $techGroup = $techGroupGateway->getByID($technician->isNotEmpty() ? $technician->fetch()['groupID'] : '');
-
-    $isTechnician = !empty($technicianGroupID);
-    $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
 
     $issues = $issueGateway->queryIssues($criteria);
 
