@@ -48,8 +48,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
 
     $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
-    $departmentID = $_GET['departmentID'] ?? NULL;
-    
+    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
     $issueGateway = $container->get(IssueGateway::class);
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $technicianGateway = $container->get(TechnicianGateway::class);
@@ -63,7 +62,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
         ->filterBy('year', $year)
-        ->filterBy('departmentID', $techGroup['departmentID'])
+        ->filterBy('departmentID', $departmentID)
         ->sortBy('status', 'ASC')
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
