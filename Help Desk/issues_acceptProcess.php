@@ -30,7 +30,7 @@ require_once './moduleFunctions.php';
 
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussView.php';
 
-if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
     $URL .= '&return=error0';
     header("Location: {$URL}");
