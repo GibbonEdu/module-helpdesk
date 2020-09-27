@@ -144,6 +144,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('subcategoryID', -2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
         $I->seeSuccessMessage();
@@ -157,6 +158,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
         $I->seeSuccessMessage();
@@ -171,6 +173,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('subcategoryID', -2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('createFor', -1); 
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
@@ -186,6 +189,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('createFor', -1); 
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
