@@ -14,7 +14,6 @@ $I->click('Logout');
 $I->loginAsAdmin();
 $I->acceptIssue($issueID);
 
-
 // discuss ------------------------------------------------
 $I->click('Logout');
 $I->loginAsTeacher();
