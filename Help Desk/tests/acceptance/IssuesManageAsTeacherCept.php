@@ -1,12 +1,13 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('Create, discuss, resolve, reincarnate, and resolve an issue as a teacher (complex and simple categories)');
+$I->wantTo('Create and manage an issue as a Teacher/Owner using simple and complex categories, checking permissions');
 $I->loginAsTeacher();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
 // Add ------------------------------------------------
 $I->createIssueForMyself();
 $issueID = $I->grabValueFromURL('issueID');
+$I->checkTeacherPermissions();
 
 // discussView Accept ------------------------------------------------
 $I->click('Logout');
@@ -30,17 +31,11 @@ $I->resolveIssue($issueID);
 
 //Test from view
 $I->reincarnateIssueFromView($issueID);
+$I->checkTeacherPermissionsFromView($issueID);
 $I->resolveIssueFromView($issueID);
 
 //check with simple categories
-$I->click('Logout');
-$I->loginAsAdmin();
-
-$I->amOnModulePage('Help Desk', 'helpDesk_settings.php');
-$I->checkOption('simpleCategories');
-$I->click('Submit');
-
-$I->click('Logout');
+$I->changetoSimpleCategory();
 $I->loginAsTeacher();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
@@ -70,9 +65,4 @@ $I->reincarnateIssue($issueID);
 $I->resolveIssue($issueID);
 
 //go back to complex categories
-$I->click('Logout');
-$I->loginAsAdmin();
-
-$I->amOnModulePage('Help Desk', 'helpDesk_settings.php');
-$I->uncheckOption('simpleCategories');
-$I->click('Submit');
+$I->changetoComplexCategory();
