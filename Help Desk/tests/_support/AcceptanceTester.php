@@ -63,7 +63,7 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     //HELPDESK LOGINS
-    public function loginAsHeadTeach()
+    public function loginAsHeadTech()
     {
         $this->login('testingheadtech', '7SSbB9FZN24Q');
     }

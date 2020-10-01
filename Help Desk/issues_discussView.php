@@ -78,6 +78,8 @@ if (!isModuleAccessible($guid, $connection2)) {
             }
             else if ($privacySetting == 'Owner' && !$isPersonsIssue) {
                 $allowed = false;
+            } else if ($privacySetting == 'Everyone') {
+                $allowed = true;
             }
         }
 

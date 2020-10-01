@@ -1,7 +1,7 @@
 <?php
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Create and manage an issue as a Head Technician using simple and complex categories)');
-$I->loginAsHeadTeach();
+$I->loginAsHeadTech();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
 // Add ------------------------------------------------
@@ -34,7 +34,7 @@ $I->resolveIssueFromView($issueID);
 
 //check with simple categories
 $I->changetoSimpleCategory();
-$I->loginAsHeadTeach();
+$I->loginAsHeadTech();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
 // Add ------------------------------------------------

@@ -13,6 +13,7 @@ $I->checkTeacherPermissions();
 $I->click('Logout');
 $I->loginAsAdmin();
 $I->acceptIssue($issueID);
+$I->discussIssue($issueID);
 
 // discuss ------------------------------------------------
 $I->click('Logout');
