@@ -62,6 +62,17 @@ class AcceptanceTester extends \Codeception\Actor
         $this->login('testingsupport', '84BNQAQfNyKa');
     }
 
+    //HELPDESK LOGINS
+    public function loginAsHeadTech()
+    {
+        $this->login('testingheadtech', '7SSbB9FZN24Q');
+    }
+    
+    public function loginAsTech()
+    {
+        $this->login('testingtech', '7SSbB9FZN24Q');
+    }
+
     public function clickNavigation($text)
     {
         return $this->click($text, '.linkTop a');
@@ -133,6 +144,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('subcategoryID', -2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
         $I->seeSuccessMessage();
@@ -146,6 +158,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
         $I->seeSuccessMessage();
@@ -160,6 +173,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('subcategoryID', -2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('createFor', -1); 
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
@@ -175,6 +189,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('createFor', -1); 
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
@@ -304,6 +319,58 @@ class AcceptanceTester extends \Codeception\Actor
         $I->click("Delete", "//td[contains(text(),'Test Subcategory')]//..");
         $I->click('Yes');
         $I->seeSuccessMessage();
+    }
+    
+    public function changetoSimpleCategory()
+    {
+        $I = $this;
+        $I->click('Logout');
+        $I->loginAsAdmin();
+        $I->amOnModulePage('Help Desk', 'helpDesk_settings.php');
+        $I->checkOption('simpleCategories');
+        $I->click('Submit');
+        $I->click('Logout');
+    }
+    
+    public function changetoComplexCategory()
+    {
+        $I = $this;
+        $I->click('Logout');
+        $I->loginAsAdmin();
+        $I->amOnModulePage('Help Desk', 'helpDesk_settings.php');
+        $I->uncheckOption('simpleCategories');
+        $I->click('Submit');
+        $I->click('Logout');
+    }
+    
+    public function checkTeacherPermissions()
+    {
+        $I = $this;
+        $I->dontSee('Reassign');
+        $I->dontSee('Assign');
+        $I->dontSee('Accept');
+    }
+    
+    public function checkTeacherPermissionsFromView($issueID)
+    {
+        $I = $this;
+        $I->dontSee("Reassign", "//td[contains(text(),'".$issueID."')]//..");
+        $I->dontSee("Assign", "//td[contains(text(),'".$issueID."')]//..");
+        $I->dontSee("Accept", "//td[contains(text(),'".$issueID."')]//..");
+    }
+    
+    public function checkTechPermissions()
+    {
+        $I = $this;
+        $I->dontSee('Reassign');
+        $I->dontSee('Assign');
+    }
+    
+    public function checkTechPermissionsFromView($issueID)
+    {
+        $I = $this;
+        $I->dontSee("Reassign", "//td[contains(text(),'".$issueID."')]//..");
+        $I->dontSee("Assign", "//td[contains(text(),'".$issueID."')]//..");
     }
     
     
