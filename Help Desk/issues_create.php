@@ -55,7 +55,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
     $form->addHiddenValue('address', $gibbon->session->get('address'));
     
     $row = $form->addRow();
-        $row->addLabel('issueName', __('Issue Name'));
+        $row->addLabel('issueName', __('Issue Subject'));
         $row->addTextField('issueName')
             ->required()
             ->maxLength(55);
