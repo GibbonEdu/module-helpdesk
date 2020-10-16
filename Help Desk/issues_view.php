@@ -254,7 +254,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $table->addColumn('issueID', __('Issue ID'))
             ->format(Format::using('number', ['issueID'])); 
-    $table->addColumn('issueName', __('Name'))
+    $table->addColumn('issueName', __('Subject'))
           ->description(__('Description'))
           ->format(function ($issue) {
             return '<strong>' . $issue['issueName'] . '</strong><br/><small><i>' . Format::truncate(strip_tags($issue['description']), 50) . '</i></small>';
