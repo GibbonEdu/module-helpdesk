@@ -36,7 +36,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
     $groupID = $_GET["groupID"] ?? '';
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
-
+    $values = $techGroupGateway->getByID($groupID);
     //Proceed!
     if (empty($groupID) || !$techGroupGateway->exists($groupID)) {
         $page->addError(__('No group selected.'));
@@ -46,12 +46,9 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
 
         //Make sure that there are other groups aside from the group being deleted
         if ($techGroupGateway->countAll() > 1) {
-            //TODO: Add reference to the group that they have selected to delete
-            //Also TODO: yell at ray and then regret the life decisions that led me to working on this
-            //Another possible function: Option to delete technicians entirely rather than migrate
             $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . "/helpDesk_technicianGroupDeleteProcess.php?groupID=$groupID", false, false);
             $form->addHiddenValue('address', $gibbon->session->get('address'));
-
+            $form->setTitle(__($values['groupName']));
             $row = $form->addRow();
                 $row->addLabel('group', __('New Technician Group'))
                     ->description(__('The group to migrate any existing technicians of the old group to'));
