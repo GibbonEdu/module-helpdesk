@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="1.2.06";
+$version="1.3.00";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
 $url="https://github.com/raynichc/helpdesk";
 
@@ -31,63 +31,82 @@ $url="https://github.com/raynichc/helpdesk";
 $tables = 0;
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskTechnicians` (
-  `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
-  `groupID` int(4) unsigned zerofill NOT NULL,
-  PRIMARY KEY (`technicianID`)
+    `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+    `groupID` int(4) unsigned zerofill NOT NULL,
+    PRIMARY KEY (`technicianID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskIssue` (
-  `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `technicianID` int(4) unsigned zerofill DEFAULT NULL,
-  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
-  `issueName` varchar(55) NOT NULL,
-  `description` text NOT NULL,
-  `date` date NOT NULL,
-  `status` ENUM('Unassigned','Pending','Resolved') DEFAULT 'Unassigned',
-  `category` varchar(100) DEFAULT NULL,
-  `priority` varchar(100) DEFAULT NULL,
-  `gibbonSchoolYearID` int(3) unsigned zerofill NOT NULL,
-  `createdByID` int(12) unsigned zerofill NOT NULL,
-  `privacySetting` ENUM('Everyone', 'Related', 'Owner', 'No one') DEFAULT 'Everyone',
-  PRIMARY KEY (`issueID`)
+    `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `technicianID` int(4) unsigned zerofill DEFAULT NULL,
+    `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+    `issueName` varchar(55) NOT NULL,
+    `description` text NOT NULL,
+    `date` date NOT NULL,
+    `status` ENUM('Unassigned','Pending','Resolved') DEFAULT 'Unassigned',
+    `category` varchar(100) DEFAULT NULL,
+    `priority` varchar(100) DEFAULT NULL,
+    `gibbonSchoolYearID` int(3) unsigned zerofill NOT NULL,
+    `createdByID` int(12) unsigned zerofill NOT NULL,
+    `privacySetting` ENUM('Everyone', 'Related', 'Owner', 'No one') DEFAULT 'Everyone',
+    `subcategoryID` int(4) UNSIGNED ZEROFILL DEFAULT NULL,
+    `gibbonSpaceID` int(5) UNSIGNED ZEROFILL DEFAULT NULL,
+    PRIMARY KEY (`issueID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskIssueDiscuss` (
-  `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `issueID` int(12) unsigned zerofill NOT NULL,
-  `comment` text NOT NULL,
-  `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
-  PRIMARY KEY (`issueDiscussID`)
+    `issueDiscussID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `issueID` int(12) unsigned zerofill NOT NULL,
+    `comment` text NOT NULL,
+    `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+    PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 $moduleTables[$tables++]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
-VALUES
-(NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
-(NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
-(NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
-(NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Related')";
+    VALUES
+    (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
+    (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
+    (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
+    (NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Related'),
+    (NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE)";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
-  `groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `groupName` varchar(55) NOT NULL,
-  `viewIssue` boolean DEFAULT 1,
-  `viewIssueStatus` ENUM('All', 'UP', 'PR', 'Pending') DEFAULT 'All',
-  `assignIssue` boolean DEFAULT 0,
-  `acceptIssue` boolean DEFAULT 1,
-  `resolveIssue` boolean DEFAULT 1,
-  `createIssueForOther` boolean DEFAULT 1,
-  `fullAccess` boolean DEFAULT 0,
-  `reassignIssue` boolean DEFAULT 0,
-  `reincarnateIssue` boolean DEFAULT 1,
-   PRIMARY KEY (`groupID`)
+    `groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `groupName` varchar(55) NOT NULL,
+    `viewIssue` boolean DEFAULT 1,
+    `viewIssueStatus` ENUM('All', 'UP', 'PR', 'Pending') DEFAULT 'All',
+    `assignIssue` boolean DEFAULT 0,
+    `acceptIssue` boolean DEFAULT 1,
+    `resolveIssue` boolean DEFAULT 1,
+    `createIssueForOther` boolean DEFAULT 1,
+    `fullAccess` boolean DEFAULT 0,
+    `reassignIssue` boolean DEFAULT 0,
+    `reincarnateIssue` boolean DEFAULT 1,
+    `departmentID` int(4) UNSIGNED ZEROFILL DEFAULT NULL,
+    PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, resolveIssue, createIssueForOther, fullAccess, reassignIssue, reincarnateIssue)
-VALUES
-(NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1),
-(NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1)";
+$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, `resolveIssue`, `createIssueForOther`, `fullAccess`, `reassignIssue`, `reincarnateIssue`, `departmentID`)
+    VALUES
+    (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1, NULL),
+    (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1, NULL)";
+
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskDepartments` (
+    `departmentID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `departmentName` varchar(55) NOT NULL,
+    `departmentDesc` varchar(128) NOT NULL,
+    PRIMARY KEY (`departmentID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskSubcategories` (
+    `subcategoryID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `departmentID` int(4) unsigned zerofill NOT NULL,
+    `subcategoryName` varchar(55) NOT NULL,
+    PRIMARY KEY (`subcategoryID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
 //Action rows
 //One array per action
@@ -194,4 +213,20 @@ $actionRows[$actionCount]["categoryPermissionStudent"]="N";
 $actionRows[$actionCount]["categoryPermissionParent"]="N";
 $actionRows[$actionCount]["categoryPermissionOther"]="Y";
 
+$actionCount++;
+$actionRows[$actionCount]["name"]="Manage Departments";
+$actionRows[$actionCount]["precedence"]="0";
+$actionRows[$actionCount]["category"]="Technician";
+$actionRows[$actionCount]["description"]="Allows the user to manage the Help Desk Departments.";
+$actionRows[$actionCount]["URLList"]="helpDesk_manageDepartments.php";
+$actionRows[$actionCount]["entryURL"]="helpDesk_manageDepartments.php";
+$actionRows[$actionCount]["defaultPermissionAdmin"]="Y";
+$actionRows[$actionCount]["defaultPermissionTeacher"]="N";
+$actionRows[$actionCount]["defaultPermissionStudent"]="N";
+$actionRows[$actionCount]["defaultPermissionParent"]="N";
+$actionRows[$actionCount]["defaultPermissionSupport"]="N";
+$actionRows[$actionCount]["categoryPermissionStaff"]="Y";
+$actionRows[$actionCount]["categoryPermissionStudent"]="N";
+$actionRows[$actionCount]["categoryPermissionParent"]="N";
+$actionRows[$actionCount]["categoryPermissionOther"]="Y";
 ?>

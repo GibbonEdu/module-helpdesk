@@ -20,8 +20,6 @@ $technicianID = $I->grabValueFromURL('technicianID');
 $I->amOnModulePage('Help Desk', 'helpDesk_setTechGroup.php', array('technicianID' => $technicianID));
 $I->seeBreadcrumb('Edit Technician');
 
-//TODO: I currently do not see in dropdowns
-
 $I->selectFromDropdown('group', 2);
 $I->click('Submit');
 $I->seeSuccessMessage();

@@ -1,24 +1,22 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo('Create and manage an issue as a Teacher/Owner using simple and complex categories, checking permissions');
-$I->loginAsTeacher();
+$I->wantTo('Create and manage an issue as a Head Technician using simple and complex categories)');
+$I->loginAsHeadTech();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
 // Add ------------------------------------------------
-$I->createIssueForMyself();
+$I->createIssueOnBehalf();
 $issueID = $I->grabValueFromURL('issueID');
-$I->checkTeacherPermissions();
 
 // discussView Accept ------------------------------------------------
-$I->click('Logout');
-$I->loginAsAdmin();
 $I->acceptIssue($issueID);
-$I->discussIssue($issueID);
 
 // discuss ------------------------------------------------
-$I->click('Logout');
-$I->loginAsTeacher();
 $I->discussIssue($issueID);
+
+
+// discussView Assign ------------------------------------------------
+$I->assignIssue($issueID);
 
 //Resolve ------------------------------------------------
 $I->resolveIssue($issueID);
@@ -31,29 +29,27 @@ $I->resolveIssue($issueID);
 
 //Test from view
 $I->reincarnateIssueFromView($issueID);
-$I->checkTeacherPermissionsFromView($issueID);
 $I->resolveIssueFromView($issueID);
+
 
 //check with simple categories
 $I->changetoSimpleCategory();
-$I->loginAsTeacher();
+$I->loginAsHeadTech();
 $I->amOnModulePage('Help Desk', 'issues_view.php');
 
 // Add ------------------------------------------------
-$I->createIssueForMyselfSimple();
+$I->createIssueOnBehalfSimple();
 $issueID = $I->grabValueFromURL('issueID');
 
 // discussView Accept ------------------------------------------------
-$I->click('Logout');
-$I->loginAsAdmin();
 $I->acceptIssue($issueID);
 
-
 // discuss ------------------------------------------------
-$I->click('Logout');
-$I->loginAsTeacher();
 $I->discussIssue($issueID);
 
+
+// discussView Assign ------------------------------------------------
+$I->assignIssue($issueID);
 
 //Resolve ------------------------------------------------
 $I->resolveIssue($issueID);
@@ -64,5 +60,4 @@ $I->reincarnateIssue($issueID);
 //Resolve ------------------------------------------------
 $I->resolveIssue($issueID);
 
-//go back to complex categories
 $I->changetoComplexCategory();

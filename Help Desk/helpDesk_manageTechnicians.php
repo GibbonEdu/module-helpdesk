@@ -33,17 +33,20 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         returnProcess($guid, $_GET['return'], null, null);
     }
 
+    $manageTechGroups = isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php');
+    $moduleName = $gibbon->session->get('module');
+    
     $technicianGateway = $container->get(TechnicianGateway::class);
     $issueGateway = $container->get(IssueGateway::class); 
 
-    $formatIssues = function($row) use ($gibbon, $issueGateway) {
+    $formatIssues = function($row) use ($moduleName, $issueGateway) {
         $issues = $issueGateway->selectActiveIssueByTechnician($row['technicianID'])->fetchAll();
         if (count($issues) < 1) {
             return __('None');
         }
 
-        $issues = array_map(function($issue) use ($gibbon) {
-            return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussView.php&issueID='. $issue['issueID'], $issue['issueName']);
+        $issues = array_map(function($issue) use ($moduleName) {
+            return Format::link('./index.php?q=/modules/' . $moduleName. '/issues_discussView.php&issueID='. $issue['issueID'], $issue['issueName']);
         }, $issues);
 
         return implode(', ', $issues);
@@ -61,20 +64,27 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     
     $table->addColumn('workingOn', __('Working On'))->format($formatIssues);
     
-    $table->addColumn('groupName', __('Group'));
+    $table->addColumn('group', __('Group'))
+            ->format(function ($technician) use ($manageTechGroups, $moduleName) {
+                if ($manageTechGroups) {
+                    return Format::link('./index.php?q=/modules/' . $moduleName. '/helpDesk_editTechnicianGroup.php&groupID=' . $technician['groupID'], $technician['groupName']);
+                } else {
+                    return $technician['groupName'];
+                }
+            });
 
     $table->addActionColumn()
             ->addParam('technicianID')
-            ->format(function ($technician, $actions) use ($gibbon) {
+            ->format(function ($technician, $actions) use ($moduleName) {
                 $actions->addAction('edit', __('Edit'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_setTechGroup.php');
+                        ->setURL('/modules/' . $moduleName . '/helpDesk_setTechGroup.php');
 
                 $actions->addAction('stats', __('Stats'))
                         ->setIcon('internalAssessment')
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianStats.php');
+                        ->setURL('/modules/' . $moduleName . '/helpDesk_technicianStats.php');
 
                 $actions->addAction('delete', __('Delete'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianDelete.php');
+                        ->setURL('/modules/' . $moduleName . '/helpDesk_technicianDelete.php');
             });
 
     echo $table->render($technicianGateway->selectTechnicians()->toDataSet());

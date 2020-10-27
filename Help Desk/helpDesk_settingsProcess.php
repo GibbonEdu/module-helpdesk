@@ -39,6 +39,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
         'issuePriorityName',
         'issueCategory',
         'issuePriority',
+        'simpleCategories',
     );
 
     $settingGateway = $container->get(SettingGateway::class);
@@ -47,7 +48,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
 
     //Is this really better, potentially, but I'm not going to worry about it too much.
     foreach ($settings as $setting) {
-        if (isset($_POST[$setting])) {
+        if (isset($_POST[$setting]) || $setting == 'simpleCategories') {
             $value = '';
             switch ($setting) {
                 case 'issueCategory':
@@ -67,6 +68,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
                         header("Location: {$URL}");
                         exit();
                     }
+                    break;
+                case 'simpleCategories':
+                    $value = isset($_POST[$setting]) ? '1' : '0';
                     break;
             }
             $dbFail |= !$settingGateway->updateSettingByScope('Help Desk', $setting, $value);

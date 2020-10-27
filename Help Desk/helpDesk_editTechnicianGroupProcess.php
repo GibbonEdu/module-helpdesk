@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
@@ -40,10 +41,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     } else {
         $URL .= "/helpDesk_editTechnicianGroup.php&groupID=$groupID";
 
+        $departmentGateway = $container->get(DepartmentGateway::class);
+
         $groupName = $_POST['groupName'] ?? '';
+        $departmentID = $_POST['departmentID'] ?? null;
+
         $viewIssueStatus =  $_POST['viewIssueStatus'] ?? '';
 
-        if (empty($groupName) || empty($viewIssueStatus)) {
+        if (empty($groupName) || empty($viewIssueStatus) || ($departmentID != null && !$departmentGateway->exists($departmentID))) {
             $URL .= '&return=error1';
             header("Location: {$URL}");
             exit();
@@ -53,6 +58,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $data = array(
                 'groupName' => $groupName,
                 'viewIssueStatus' => $viewIssueStatus,
+                'departmentID' => $departmentID,
             );
 
             foreach ($settings as $setting) {

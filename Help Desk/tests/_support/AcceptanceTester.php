@@ -62,6 +62,17 @@ class AcceptanceTester extends \Codeception\Actor
         $this->login('testingsupport', '84BNQAQfNyKa');
     }
 
+    //HELPDESK LOGINS
+    public function loginAsHeadTech()
+    {
+        $this->login('testingheadtech', '7SSbB9FZN24Q');
+    }
+    
+    public function loginAsTech()
+    {
+        $this->login('testingtech', '7SSbB9FZN24Q');
+    }
+
     public function clickNavigation($text)
     {
         return $this->click($text, '.linkTop a');
@@ -124,15 +135,30 @@ class AcceptanceTester extends \Codeception\Actor
 
         return $this->amOnPage($url);
     }
-    
+
     public function createIssueForMyself()
     {
-         $I = $this;
+        $I = $this;
+        $I->clickNavigation('Create');
+        $I->seeBreadcrumb('Create Issue');
+        $I->fillField('issueName', 'Test Issue');
+        $I->fillField('description', '<p>Test Description</p>');
+        $I->selectFromDropdown('subcategoryID', -2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
+        $I->selectFromDropdown('priority', -1);
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Create Issue');
+    }
+     public function createIssueForMyselfSimple()
+    {
+        $I = $this;
         $I->clickNavigation('Create');
         $I->seeBreadcrumb('Create Issue');
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
         $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
         $I->seeSuccessMessage();
@@ -146,13 +172,31 @@ class AcceptanceTester extends \Codeception\Actor
         $I->seeBreadcrumb('Create Issue');
         $I->fillField('issueName', 'Test Issue');
         $I->fillField('description', '<p>Test Description</p>');
-        $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('subcategoryID', -2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
         $I->selectFromDropdown('createFor', -1); 
         $I->selectFromDropdown('priority', -1);
         $I->click('Submit');
         $I->seeSuccessMessage();
         $I->seeBreadcrumb('Create Issue');
     }
+    
+    public function createIssueOnBehalfSimple()
+    {
+        $I = $this;
+        $I->clickNavigation('Create');
+        $I->seeBreadcrumb('Create Issue');
+        $I->fillField('issueName', 'Test Issue');
+        $I->fillField('description', '<p>Test Description</p>');
+        $I->selectFromDropdown('category', 2);
+        $I->selectFromDropdown('gibbonSpaceID', 2);
+        $I->selectFromDropdown('createFor', -1); 
+        $I->selectFromDropdown('priority', -1);
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Create Issue');
+    }
+    
     public function acceptIssue($issueID)
     {
         $I = $this;
@@ -182,12 +226,10 @@ class AcceptanceTester extends \Codeception\Actor
     public function discussIssue($issueID)
     {
         $I = $this;
-        $I->amOnModulePage('Help Desk', 'issues_discussPost.php', ['issueID' => $issueID]);
-        $I->seeBreadcrumb('Post Discuss');
+        $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+        $I->seeBreadcrumb('Discuss Issue');
 
-        $I->dontSee('Assign');
-        $I->dontSee('Accept');
-
+        $I->click('.comment');
         $I->fillField('comment', '<p>Discuss Test</p>');
         $I->click('Submit');
         $I->seeSuccessMessage();
@@ -211,5 +253,125 @@ class AcceptanceTester extends \Codeception\Actor
         $I->seeSuccessMessage();
         $I->seeBreadcrumb('Discuss Issue');
     }
+    
+    public function resolveIssueFromView($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_view.php');
+        $I->click("Resolve", "//td[contains(text(),'".$issueID."')]//..");
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Issues');
+    }
+    
+    public function reincarnateIssueFromView($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_view.php');
+        $I->click("Reincarnate", "//td[contains(text(),'".$issueID."')]//..");
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Discuss Issue');
+    }
+    
+    public function createDepartment()
+    {
+        $I = $this;
+        $I->clickNavigation('Add');
+        $I->seeBreadcrumb('Create Department');
+
+        $I->fillField('departmentName', 'Test Department');
+        $I->fillField('departmentDesc', 'Test Department Description');
+        $I->click('Submit');
+
+        $I->seeSuccessMessage();
+        $I->seeBreadcrumb('Create Department');
+    }
+    
+    public function addSubcategory($departmentID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'helpDesk_editDepartment.php', array('departmentID' => $departmentID));
+        $I->clickNavigation('Create');
+        $I->fillField('subcategoryName', 'Test Subcategory');
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+    }
+    
+    public function deleteDepartment()
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'helpDesk_manageDepartments.php');
+        $I->click("Delete", "//td[contains(text(),'Test Department')]//..");
+        $I->click('Yes');
+        $I->seeSuccessMessage();
+    }
+    
+    public function editSubcategory($departmentID, $subcategoryID)
+    {
+        $I = $this;
+        $I->click("Edit", "//td[contains(text(),'Test Subcategory')]//..");
+        $I->fillField('subcategoryName', 'Test Subcategory Edit');
+        $I->click('Submit');
+        $I->seeSuccessMessage();
+    }
+    public function deleteSubcategory($departmentID, $subcategoryID)
+    {
+        $I = $this;
+        $I->click("Delete", "//td[contains(text(),'Test Subcategory')]//..");
+        $I->click('Yes');
+        $I->seeSuccessMessage();
+    }
+    
+    public function changetoSimpleCategory()
+    {
+        $I = $this;
+        $I->click('Logout');
+        $I->loginAsAdmin();
+        $I->amOnModulePage('Help Desk', 'helpDesk_settings.php');
+        $I->checkOption('simpleCategories');
+        $I->click('Submit');
+        $I->click('Logout');
+    }
+    
+    public function changetoComplexCategory()
+    {
+        $I = $this;
+        $I->click('Logout');
+        $I->loginAsAdmin();
+        $I->amOnModulePage('Help Desk', 'helpDesk_settings.php');
+        $I->uncheckOption('simpleCategories');
+        $I->click('Submit');
+        $I->click('Logout');
+    }
+    
+    public function checkTeacherPermissions()
+    {
+        $I = $this;
+        $I->dontSee('Reassign');
+        $I->dontSee('Assign');
+        $I->dontSee('Accept');
+    }
+    
+    public function checkTeacherPermissionsFromView($issueID)
+    {
+        $I = $this;
+        $I->dontSee("Reassign", "//td[contains(text(),'".$issueID."')]//..");
+        $I->dontSee("Assign", "//td[contains(text(),'".$issueID."')]//..");
+        $I->dontSee("Accept", "//td[contains(text(),'".$issueID."')]//..");
+    }
+    
+    public function checkTechPermissions()
+    {
+        $I = $this;
+        $I->dontSee('Reassign');
+        $I->dontSee('Assign');
+    }
+    
+    public function checkTechPermissionsFromView($issueID)
+    {
+        $I = $this;
+        $I->dontSee("Reassign", "//td[contains(text(),'".$issueID."')]//..");
+        $I->dontSee("Assign", "//td[contains(text(),'".$issueID."')]//..");
+    }
+    
     
 }

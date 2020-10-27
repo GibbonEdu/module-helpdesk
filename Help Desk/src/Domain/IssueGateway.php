@@ -33,8 +33,10 @@ class IssueGateway extends QueryableGateway
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID'])
-            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID');
+            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID', 'helpDeskDepartments.departmentName', 'helpDeskSubcategories.subcategoryName', 'helpDeskSubcategories.departmentID'])
+            ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
+            ->leftJoin('helpDeskSubcategories', 'helpDeskIssue.subcategoryID=helpDeskSubcategories.subcategoryID')
+            ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID');
 
         $criteria->addFilterRules([
             'status' => function ($query, $status) {
@@ -56,7 +58,17 @@ class IssueGateway extends QueryableGateway
                 return $query
                     ->where('helpDeskIssue.gibbonSchoolYearID = :year')
                     ->bindValue('year', $year);
-            }
+            },
+            'subcategoryID' => function ($query, $subcategoryID) {
+                return $query
+                    ->where('helpDeskIssue.subcategoryID = :subcategoryID')
+                    ->bindValue('subcategoryID', $subcategoryID);
+            },
+            'departmentID' => function ($query, $departmentID) {
+                return $query
+                    ->where('helpDeskSubcategories.departmentID = :departmentID')
+                    ->bindValue('departmentID', $departmentID);
+            },
         ]);
 
        return $this->runQuery($query, $criteria);
@@ -66,7 +78,7 @@ class IssueGateway extends QueryableGateway
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.gibbonPersonID', 'techID.gibbonPersonID AS techPersonID'])
+            ->cols(['helpDeskIssue.gibbonPersonID', 'techID.gibbonPersonID AS techPersonID', 'helpDeskIssue.createdByID' ])
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
             ->where('helpDeskIssue.issueID = :issueID')
             ->bindValue('issueID', $issueID);

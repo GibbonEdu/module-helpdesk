@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Tables\DataTable;
 use Gibbon\Services\Format;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
@@ -32,18 +33,30 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, array('errorA' => 'Cannot delete last technician group.'));
     }
-   
+
+    $manageTechnicians = isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php');
+    $moduleName = $gibbon->session->get('module');
+
     $techGroupGateway = $container->get(TechGroupGateway::class);
-    $technicianGateway = $container->get(TechnicianGateway::class);   
+    $technicianGateway = $container->get(TechnicianGateway::class);
+    $departmentGateway = $container->get(DepartmentGateway::class); 
 
     $techGroupData = $techGroupGateway->selectTechGroups()->toDataSet();
 
-    $formatTechnicianList = function($row) use ($technicianGateway) {
+    $formatTechnicianList = function($row) use ($technicianGateway, $manageTechnicians, $moduleName) {
         $technicians = $technicianGateway->selectTechniciansByTechGroup($row['groupID'])->fetchAll();
         if (count($technicians) < 1) {
             return __('No one is currently in this group.');
         }
-        return Format::nameList($technicians, 'Student', false, false);
+
+        return implode(', ', array_map(function ($row) use ($manageTechnicians, $moduleName) {
+            $name = Format::name($row['title'], $row['preferredName'], $row['surname'], 'Student', false, false);
+            if ($manageTechnicians) {
+                return Format::link('./index.php?q=/modules/' . $moduleName . '/helpDesk_setTechGroup.php&technicianID=' . $row['technicianID'], $name);
+            } else {
+                return $name;
+            }
+        }, $technicians));
     };
 
     $table = DataTable::create('techGroups');
@@ -54,6 +67,20 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $table->addColumn('groupName', __('Group Name'));
 
+    if ($departmentGateway->countAll() > 0) {
+        $table->addColumn('department', __('Department'))
+                ->format(function ($techGroup) use ($guid, $connection2, $gibbon) {
+                    if (empty($techGroup['departmentID'])) {
+                        return __('No assgined Department');
+                    }
+
+                    if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
+                        return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartment.php&departmentID='. $techGroup['departmentID'], $techGroup['departmentName']);
+                    } else {
+                        return $techGroup['departmentName'];
+                    }
+                });
+    }
     $table->addColumn('techs', __('Technicians in group'))->format($formatTechnicianList);
 
     $table->addActionColumn()

@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
@@ -51,8 +52,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         'issueName' => '',
         'category' => '',
         'description' => '',
+        'gibbonSpaceID' => null,
         'priority' => '',
         'privacySetting' => '',
+        'subcategoryID' => null,
     );
 
     foreach ($data as $key => $value) {
@@ -65,6 +68,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
     $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
     $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
+    $simpleCategories = ($settingGateway->getSettingByScope($moduleName, 'simpleCategories') == '1');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -78,9 +82,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         $data['privacySetting'] = $settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy');
     }
 
+    $subcategoryGateway = $container->get(SubcategoryGateway::class);
+    
     if (empty($data['issueName'])
         || empty($data['description']) 
-        || (!in_array($data['category'], $categoryOptions) && count($categoryOptions) > 0) 
+        || (!in_array($data['category'], $categoryOptions) && count($categoryOptions) > 0 && $simpleCategories)
+        || (!$subcategoryGateway->exists($data['subcategoryID']) && !$simpleCategories)
         || (!in_array($data['priority'], $priorityOptions) && count($priorityOptions) > 0)) {
 
         $URL .= '&return=error1';
@@ -111,12 +118,28 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
         //Notify Techicians
         $technicianGateway = $container->get(TechnicianGateway::class);
-        $technicians = $technicianGateway->selectTechnicians();
 
-        while ($row = $technicians->fetch()) {
-            $permission = $techGroupGateway->getPermissionValue($row['gibbonPersonID'], 'viewIssueStatus');
-            if ($row['gibbonPersonID'] != $gibbon->session->get('gibbonPersonID') && $row['gibbonPersonID'] != $data['gibbonPersonID'] && ($permission == "UP" || $permission == "All")) {
-                setNotification($connection2, $guid, $row['gibbonPersonID'], 'A new issue has been added (' . $data['issueName'] . ').', $moduleName, "/index.php?q=/modules/$moduleName/issues_discussView.php&issueID=$issueID");
+        $techs = $technicianGateway->selectTechnicians()->fetchAll();
+
+        if (!$simpleCategories) {
+            $criteria = $subcategoryGateway->newQueryCriteria()
+                ->filterBy('subcategoryID', $data['subcategoryID']);
+                
+            $departmentData = $subcategoryGateway->querySubcategories($criteria);
+            if ($departmentData->count() > 0) {
+                $departmentID = $departmentData->getRow(0)['departmentID'];
+                $techs = array_filter($techs, function ($tech) use ($departmentID) {
+                    return empty($tech['departmentID']) || $tech['departmentID'] == $departmentID;
+                });
+            }
+        }
+
+        $techs = array_column($techs, 'gibbonPersonID');
+
+        foreach ($techs as $techPersonID) {
+            $permission = $techGroupGateway->getPermissionValue($techPersonID, 'viewIssueStatus');
+            if ($techPersonID != $gibbon->session->get('gibbonPersonID') && $techPersonID != $data['gibbonPersonID'] && in_array($permission, ['UP', 'All'])) {
+                setNotification($connection2, $guid, $techPersonID, 'A new issue has been added (' . $data['issueName'] . ').', $moduleName, "/index.php?q=/modules/$moduleName/issues_discussView.php&issueID=$issueID");
             }
         }
 

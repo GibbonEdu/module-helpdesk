@@ -21,22 +21,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 require_once '../../gibbon.php';
 
 if (empty($gibbon->session->get('gibbonPersonID')) || empty($gibbon->session->get('gibbonRoleIDPrimary'))
-    || !isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
+    || !isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     die(__('Your request failed because you do not have access to this action.'));
 } else {
-    $currentGroupName = $_POST['currentGroupName'] ?? null;
-    $groupName = $_POST['groupName'] ?? '';
+    $departmentName = $_POST['departmentName'] ?? '';
+    $currentDepartmentName = $_POST['currentDepartmentName'] ?? '';
 
-    if ($currentGroupName != null && $currentGroupName == $groupName) {
-        echo 0;
-        die();
+    if (!empty($currentDepartmentName) && $currentDepartmentName == $departmentName) {
+    	echo 0;
+    	die();
     }
 
-    $data = array('groupName' => $groupName);
-    $sql = 'SELECT COUNT(*) FROM helpDeskTechGroups WHERE groupName=:groupName';
+    $data = array('departmentName' => $departmentName);
+    $sql = 'SELECT COUNT(*) FROM helpDeskDepartments WHERE departmentName=:departmentName';
     $result = $pdo->executeQuery($data, $sql);
 
     echo ($result && $result->rowCount() == 1)? $result->fetchColumn(0) : -1;
 }
-
 ?>

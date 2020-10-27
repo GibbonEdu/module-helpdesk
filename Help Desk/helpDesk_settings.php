@@ -36,6 +36,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
     //I do this to control the order, there is probably another way, until then, too bad!
     $settings = array(
         'resolvedIssuePrivacy',
+        'simpleCategories',
         'issueCategory',
         'issuePriority',
         'issuePriorityName',
@@ -65,6 +66,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
                     $row->addTextField($setting['name'])
                         ->setValue($setting['value'])
                         ->required();
+                    break;
+                case 'simpleCategories':
+                    $row->addCheckbox($setting['name'])
+                        ->checked(intval($setting['value']));
                     break;
             }
     }

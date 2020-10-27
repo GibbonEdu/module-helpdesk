@@ -22,7 +22,10 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\User\UserGateway;
+use Gibbon\Domain\School\FacilityGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Domain\System\SettingGateway;
@@ -45,11 +48,22 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
 
     $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
-
+    
     $issueGateway = $container->get(IssueGateway::class);
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    $technicianGateway = $container->get(TechnicianGateway::class);
+    $userGateway = $container->get(UserGateway::class);
+
+    $technician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'));
+    $techGroup = $techGroupGateway->getByID($technician->isNotEmpty() ? $technician->fetch()['groupID'] : ''); 
+    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
+    $isTechnician = !empty($technicianGroupID);
+    $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
+    
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
         ->filterBy('year', $year)
+        ->filterBy('departmentID', $departmentID)
         ->sortBy('status', 'ASC')
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
@@ -95,11 +109,6 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     echo $form->getOutput();      
     
-    $techGroupGateway = $container->get(TechGroupGateway::class);
-    $technicianGateway = $container->get(TechnicianGateway::class);
-    $userGateway = $container->get(UserGateway::class);
-
-    $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'))->isNotEmpty();
 
     $issues = $issueGateway->queryIssues($criteria);
 
@@ -150,11 +159,38 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $settingsGateway = $container->get(SettingGateway::class);
 
-    $categoryFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issueCategory'));
-    foreach  ($categoryFilters as $category) {
-        $table->addMetaData('filterOptions', [
-            'category:'.$category => __('Category').': '.$category,
-        ]);
+    $simpleCategories = $settingsGateway->getSettingByScope($gibbon->session->get('module'), 'simpleCategories');
+
+    if ($simpleCategories) {
+        $categoryFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issueCategory'));
+        foreach  ($categoryFilters as $category) {
+            $table->addMetaData('filterOptions', [
+                'category:'.$category => __('Category').': '.$category,
+            ]);
+        }
+    } else {
+        if (!$isTechnician || ($isTechnician && $techGroup['departmentID'] == null) || $fullAccess) {
+            $departmentGateway = $container->get(DepartmentGateway::class);
+            $departments = $departmentGateway->selectDepartments()->toDataSet();
+
+            foreach ($departments as $department) {
+                $table->addMetaData('filterOptions', [
+                    'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
+                ]);
+            }
+        } else {
+            $subcategoryGateway = $container->get(SubcategoryGateway::class);
+            $subcategoryCriteria = $subcategoryGateway->newQueryCriteria(true)
+                ->filterBy('departmentID', $techGroup['departmentID'])
+                ->sortBy(['departmentName', 'subcategoryName']);
+
+            $subcategories = $subcategoryGateway->querySubcategories($subcategoryCriteria);
+            foreach ($subcategories as $subcategory) {
+                $table->addMetaData('filterOptions', [
+                    'subcategoryID:' . $subcategory['subcategoryID'] => __('Subcategory') . ': ' . $subcategory['departmentName'] . ' - ' . $subcategory['subcategoryName'],
+                ]);
+            }
+        }
     }
 
     $priorityFilters = explodeTrim($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issuePriority', false));
@@ -163,10 +199,11 @@ if (!isModuleAccessible($guid, $connection2)) {
             'priority:'.$priority => __('Priority').': '.$priority,
         ]);
     }
+
     //FILTERS END
     
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway, $mode) {
+    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway, $mode, $techGroup) {
         if ($issue['status'] == 'Resolved') {
             $row->addClass('current');
         } else if ($issue['status'] == 'Unassigned') {
@@ -188,11 +225,13 @@ if (!isModuleAccessible($guid, $connection2)) {
                     } else if ($viewIssueStatus == 'UP' && $issue['status'] == 'Resolved') {
                         $row = null;
                     }
+                    if ($techGroup['departmentID'] != null && $issue['departmentID'] != $techGroup['departmentID']) {
+                        $row = null;
+                    }
                 }
             }
         } else {
-            //Potentially could be done better
-            if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) {
+            if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
                 switch ($issue['privacySetting']) {
                     case 'No one':
                         $row = null;
@@ -215,30 +254,47 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $table->addColumn('issueID', __('Issue ID'))
             ->format(Format::using('number', ['issueID'])); 
-    $table->addColumn('issueName', __('Name'))
+    $table->addColumn('issueName', __('Subject'))
           ->description(__('Description'))
           ->format(function ($issue) {
             return '<strong>' . $issue['issueName'] . '</strong><br/><small><i>' . Format::truncate(strip_tags($issue['description']), 50) . '</i></small>';
           });
+          
     $table->addColumn('gibbonPersonID', __('Owner')) 
-                ->description(__('Category'))
+                ->description(__('Technician'))
                 ->format(function ($row) use ($userGateway) {
                     $owner = $userGateway->getByID($row['gibbonPersonID']);
-                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/><small><i>'. __($row['category']) . '</i></small>';
+                    $tech = $userGateway->getByID($row['techPersonID']);
+                    if (empty($tech)) {
+                        return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/>';
+                    }
+                    return Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff') . '<br/>'. Format::small(__(Format::name($tech['title'], $tech['preferredName'], $tech['surname'], 'Staff')));
                 });
 
+    $facilityGateway = $container->get(FacilityGateway::class);
+    $table->addColumn('facility', __('Facility')) 
+        ->description(__('Category'))
+        ->format(function ($row) use ($facilityGateway, $simpleCategories) {
+            
+           $facility = $facilityGateway->getByID($row['gibbonSpaceID']);
+            
+            $category = $row['category'];
+                    if (!$simpleCategories && !empty($row['subcategoryName'])) {
+                        //TODO: Do better formatting on this
+                        $category = $row['departmentName'] . ' - ' . $row['subcategoryName'];
+                    }
+            if (empty($facility)) {
+                        return '<br/>'. Format::small(__($category));
+            }
+            return  __($facility['name'] . '<br/>'. Format::small($category));
+        });
+    
     if (!empty($priorityFilters)) {
         $table->addColumn('priority', __($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issuePriorityName')));
     }
+ 
     
-    $table->addColumn('technicianID', __('Technician'))
-                ->format(function ($row) use ($userGateway) {
-                    $tech = $userGateway->getByID($row['techPersonID']);
-                    if (empty($tech)) {
-                        return "";
-                    }
-                    return Format::name($tech['title'], $tech['preferredName'], $tech['surname'], 'Staff');
-                });         
+      
     $table->addColumn('status', __('Status'))
           ->description(__('Date'))
           ->format(function ($issue) {
@@ -247,11 +303,12 @@ if (!isModuleAccessible($guid, $connection2)) {
     
     $table->addActionColumn()
             ->addParam('issueID')
-            ->format(function ($issues, $actions) use ($gibbon, $techGroupGateway) {
+            ->format(function ($issues, $actions) use ($gibbon, $techGroupGateway, $issueGateway) {
                 $moduleName = $gibbon->session->get('module');
 
                 $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
                 $isPersonsIssue = $issues['gibbonPersonID'] == $gibbonPersonID;
+                $related = $issueGateway->isRelated($issues['issueID'], $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
 
                 $actions->addAction('view', __('Open'))
                         ->setURL('/modules/' . $moduleName . '/issues_discussView.php');
@@ -275,15 +332,15 @@ if (!isModuleAccessible($guid, $connection2)) {
                                 ->setURL('/modules/' . $moduleName . '/issues_assign.php')
                                 ->setIcon('attendance');
                     }
-
-                    if($techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue') || $isPersonsIssue) {
+                    
+                    if (($issues['gibbonPersonID'] == $gibbonPersonID) || ($related && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
                         $actions->addAction('resolve', __('Resolve'))
                                 ->directLink()
                                 ->setURL('/modules/' . $moduleName . '/issues_resolveProcess.php')
                                 ->setIcon('iconTick');
                     }
                 } else {
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue') || $isPersonsIssue) {
+                    if (($issues['gibbonPersonID'] == $gibbonPersonID) || ($related && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
                         $actions->addAction('reincarnate', __('Reincarnate'))
                                 ->directLink()
                                 ->setURL('/modules/' . $moduleName . '/issues_reincarnateProcess.php')

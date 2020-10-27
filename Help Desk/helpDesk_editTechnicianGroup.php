@@ -18,7 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 
 $page->breadcrumbs
     ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
@@ -43,6 +45,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($groupID) || empty($values)) {
         $page->addError(__('No Group Selected.'));
     } else {
+        $departmentGateway = $container->get(DepartmentGateway::class);
+        $departmentData = $departmentGateway->selectDepartments()->toDataSet();
+
         $statuses = array(
             'All' =>__('All'),
             'UP' =>__('Unassigned & Pending'),
@@ -52,9 +57,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $form = Form::create('editTechnicianGroup', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
         $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form->setTitle($values['groupName']);
 
-        $form->addRow()
-            ->addHeading(__('Permissons for Technician Group: ') . $values['groupName']);
+        $form->addRow()->addHeading(__('Settings'));
 
         $row = $form->addRow();
             $row->addLabel('groupName', __('Group Name'));
@@ -62,6 +67,18 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', array('currentGroupName' => $values['groupName']))
                 ->isRequired()
                 ->setValue($values['groupName']);
+
+        if (count($departmentData) > 0) {
+            $row = $form->addRow();
+                $row->addLabel('departmentID', __('Department'))
+                    ->description(__('Assigning a Department to a Tech Group will only allow techs in the group to work on issues in the department.'));
+                $row->addSelect('departmentID')
+                    ->fromDataset($departmentData, 'departmentID', 'departmentName')
+                    ->placeholder()
+                    ->selected($values['departmentID']);
+        }
+
+        $form->addRow()->addHeading(__('Permissons'));
 
         $row = $form->addRow();
             $row->addLabel('viewIssue', __('Allow View All Issues'))

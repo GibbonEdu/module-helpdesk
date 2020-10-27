@@ -21,6 +21,8 @@ use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
+use Gibbon\Domain\School\FacilityGateway;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
@@ -46,25 +48,48 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
 
     $priorityOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issuePriority'));
     $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
+    $simpleCategories = ($settingGateway->getSettingByScope($moduleName, 'simpleCategories') == '1');
 
     $form = Form::create('createIssue', $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
     $form->addHiddenValue('address', $gibbon->session->get('address'));
     
     $row = $form->addRow();
-        $row->addLabel('issueName', __('Issue Name'));
+        $row->addLabel('issueName', __('Issue Subject'));
         $row->addTextField('issueName')
             ->required()
             ->maxLength(55);
     
-    if (count($categoryOptions) > 0) {
+    if ($simpleCategories) {
+        if (count($categoryOptions) > 0) {
+            $row = $form->addRow();
+                $row->addLabel('category', __('Category'));
+                $row->addSelect('category')
+                    ->fromArray($categoryOptions)
+                    ->placeholder()
+                    ->isRequired();
+        }
+    } else {
+        $subcategoryGateway = $container->get(SubcategoryGateway::class);
+
+        $criteria = $subcategoryGateway->newQueryCriteria()
+            ->sortBy(['departmentName', 'subcategoryName'])
+            ->fromPOST();
+
+        $subcategoryData = $subcategoryGateway->querySubcategories($criteria);
+
+        if (count($subcategoryData) > 0) {
         $row = $form->addRow();
-            $row->addLabel('category', __('Category'));
-            $row->addSelect('category')
-                ->fromArray($categoryOptions)
+            $row->addLabel('subcategoryID', __('Category'));
+            $row->addSelect('subcategoryID')
+                ->fromDataSet($subcategoryData, 'subcategoryID', 'subcategoryName', 'departmentName')
                 ->placeholder()
                 ->isRequired();
+        }
     }
+   $row = $form->addRow();
+        $row->addLabel('gibbonSpaceID', __('Facility'));
+        $row->addSelectSpace('gibbonSpaceID')->placeholder();
     
     $row = $form->addRow();
         $column = $row->addColumn();
@@ -73,6 +98,8 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
                     ->setRows(5)
                     ->showMedia()
                     ->isRequired();
+
+   
         
     if (count($priorityOptions) > 0) {
         $row = $form->addRow();

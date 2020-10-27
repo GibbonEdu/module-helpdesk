@@ -14,7 +14,7 @@ $newFormValues = array(
             'issuePriority' => '1,2,3',
             'issuePriorityName' => 'Priority',
         );
-
+$I->uncheckOption('simpleCategories');
 $I->submitForm('#helpDeskSettings', $newFormValues, 'Submit');
 $I->seeSuccessMessage();
 
