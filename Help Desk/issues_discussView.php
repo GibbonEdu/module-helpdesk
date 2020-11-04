@@ -223,7 +223,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             $col = $row->addColumn();
                 $col->addHeading(__('Comments'))->addClass('inline-block');
                
-            if ($issue['status'] == 'Pending' && $isRelated) {
+            if ($issue['status'] == 'Pending' && ($isRelated || $hasFullAccess)) {
                 $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$_SESSION[$guid]['gibbonThemeName'].'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');
                 $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
                     $column = $row->addColumn();
