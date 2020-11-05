@@ -114,7 +114,8 @@ if (!isModuleAccessible($guid, $connection2)) {
             $tdWidth .= '%';
 
             $table = DataTable::createDetails('details');
-            $table->setTitle($issue['issueName']);            
+            $table->setTitle($issue['issueName']);
+            $table->addMetaData('gridClass', 'grid-cols-6');            
 
             //TODO: Double check these permission
             if ($isResolved) {
@@ -166,30 +167,23 @@ if (!isModuleAccessible($guid, $connection2)) {
             }
 
             $table->addColumn('issueID', __('ID'))
-                    ->width($tdWidth)
                     ->format(Format::using('number', ['issueID', 0]));
 
-            $table->addColumn('owner', __('Owner'))
-                    ->width($tdWidth);
+            $table->addColumn('owner', __('Owner'));
 
-            $table->addColumn('technician', __('Technician'))
-                    ->width($tdWidth);
+            $table->addColumn('technician', __('Technician'));
 
-            $table->addColumn('date', __('Date'))
-                    ->width($tdWidth);
+            $table->addColumn('date', __('Date'));
 
-            $table->addColumn('facility', __('Facility'))
-                    ->width($tdWidth);
+            $table->addColumn('facility', __('Facility'));
 
             if ($createdByShow) {
                 $createdBy = $userGateway->getByID($issue['createdByID']);
                 $detailsData['createdBy'] = Format::name($createdBy['title'] , $createdBy['preferredName'] , $createdBy['surname'] , 'Student');
-                $table->addColumn('createdBy', __('Created By'))
-                    ->width($tdWidth);
+                $table->addColumn('createdBy', __('Created By'));
             }
 
             $table->addColumn('privacySetting', __('Privacy'))
-                    ->width($tdWidth)
                     ->format(function($row) use ($gibbon, $isPersonsIssue, $hasFullAccess) {
                         if ($isPersonsIssue || $hasFullAccess) {
                             return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussEdit.php&issueID='. $row['issueID'], __($row['privacySetting']));
@@ -199,8 +193,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     });
 
             $detailsData['description'] = $issue['description'];
-            $table->addColumn('description', __('Description'))
-                    ->width('100%');
+            $table->addColumn('description', __('Description'))->addClass('col-span-10');
 
             echo $table->render([$detailsData]);
 
