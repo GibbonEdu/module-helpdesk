@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="1.3.00";
+$version="1.4.00";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
 $url="https://github.com/raynichc/helpdesk";
 
@@ -49,7 +49,6 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskIssue` (
     `priority` varchar(100) DEFAULT NULL,
     `gibbonSchoolYearID` int(3) unsigned zerofill NOT NULL,
     `createdByID` int(12) unsigned zerofill NOT NULL,
-    `privacySetting` ENUM('Everyone', 'Related', 'Owner', 'No one') DEFAULT 'Everyone',
     `subcategoryID` int(4) UNSIGNED ZEROFILL DEFAULT NULL,
     `gibbonSpaceID` int(5) UNSIGNED ZEROFILL DEFAULT NULL,
     PRIMARY KEY (`issueID`)
@@ -69,7 +68,6 @@ $moduleTables[$tables++]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope
     (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
     (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
     (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
-    (NULL, 'Help Desk', 'resolvedIssuePrivacy', 'Default Resolved Issue Privacy', 'Default privacy setting for resolved issues.', 'Related'),
     (NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE)";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
