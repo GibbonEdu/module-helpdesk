@@ -21,7 +21,7 @@ class IssueGateway extends QueryableGateway
 
     public function selectActiveIssueByTechnician($technicianID) {
         $data = array('technicianID' => $technicianID);
-        $sql = "SELECT issueID, gibbonPersonID, issueName, description, date, status, category, priority, gibbonSchoolYearID, createdByID, privacySetting
+        $sql = "SELECT issueID, gibbonPersonID, issueName, description, date, status, category, priority, gibbonSchoolYearID, createdByID
                 FROM helpDeskIssue
                 WHERE technicianID=:technicianID AND status='Pending'
                 ORDER BY issueID ASC";

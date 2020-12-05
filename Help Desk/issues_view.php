@@ -212,36 +212,20 @@ if (!isModuleAccessible($guid, $connection2)) {
             $row->addClass('warning');
         }
 
-        if ($issue['status'] != 'Resolved') {
-            if ($mode == 'owner') {
-                if ($issue['gibbonPersonID'] != $gibbonPersonID) {
+        if ($mode == 'owner') {
+            if ($issue['gibbonPersonID'] != $gibbonPersonID) {
+                $row = null;
+            }
+        } else if ($mode == 'tech') {
+            if ($issue['techPersonID'] != $gibbonPersonID && $issue['gibbonPersonID'] != $gibbonPersonID) {
+                $viewIssueStatus = $techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssueStatus');
+                if ($viewIssueStatus == 'PR' && $issue['status'] == 'Unassigned') {
+                    $row = null;
+                } else if ($viewIssueStatus == 'UP' && $issue['status'] == 'Resolved') {
                     $row = null;
                 }
-            } else if ($mode == 'tech') {
-                if ($issue['techPersonID'] != $gibbonPersonID && $issue['gibbonPersonID'] != $gibbonPersonID) {
-                    $viewIssueStatus = $techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssueStatus');
-                    if ($viewIssueStatus == 'PR' && $issue['status'] == 'Unassigned') {
-                        $row = null;
-                    } else if ($viewIssueStatus == 'UP' && $issue['status'] == 'Resolved') {
-                        $row = null;
-                    }
-                    if ($techGroup['departmentID'] != null && $issue['departmentID'] != $techGroup['departmentID']) {
-                        $row = null;
-                    }
-                }
-            }
-        } else {
-            if (!$techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
-                switch ($issue['privacySetting']) {
-                    case 'No one':
-                        $row = null;
-                        break;
-                    case 'Owner':
-                        $row = ($issue['gibbonPersonID'] == $gibbonPersonID) ? $row : null;
-                        break;
-                    case 'Related':
-                        $row = $issueGateway->isRelated($issue['issueID'], $gibbonPersonID) ? $row : null;
-                        break;
+                if ($techGroup['departmentID'] != null && $issue['departmentID'] != $techGroup['departmentID']) {
+                    $row = null;
                 }
             }
         }

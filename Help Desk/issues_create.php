@@ -117,15 +117,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.p
             $row->addSelectStaff('createFor')
                 ->placeholder();
     }
-                        
-    $row = $form->addRow();
-        $row->addLabel('privacySetting', __('Privacy Settings'))
-            ->description(__('If this Issue will or may contain any private information you may choose the privacy of this for when it is completed.'));
-        $row->addSelect('privacySetting')
-            ->fromArray(privacyOptions())
-            ->selected($settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy'))
-            ->isRequired(); 
-        
+
     $row = $form->addRow();
         $row->addFooter();
         $row->addSubmit();

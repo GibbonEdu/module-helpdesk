@@ -8,4 +8,3 @@ $I->amOnModulePage('Help Desk', 'issues_view.php');
 $I->click("Open");
 $I->dontSee('', '.error');
 $issueID = $I->grabValueFromURL('issueID');
-//TODO: get the privacy of the issue and see if I'm allowed to be seeing this lmao

@@ -69,19 +69,6 @@ if (!isModuleAccessible($guid, $connection2)) {
             || (!$hasTechAssigned && $isTechnician) 
             || $hasViewAccess;
 
-        $privacySetting = $issue['privacySetting'];
-        if ($isResolved && !$hasViewAccess) {
-            if ($privacySetting == 'No one') {
-                $allowed = false;
-            } else if ($privacySetting == 'Related' && !$isRelated) {
-                $allowed = false;
-            }
-            else if ($privacySetting == 'Owner' && !$isPersonsIssue) {
-                $allowed = false;
-            } else if ($privacySetting == 'Everyone') {
-                $allowed = true;
-            }
-        }
 
         if ($allowed) {
             if (isset($_GET['return'])) {
@@ -101,7 +88,6 @@ if (!isModuleAccessible($guid, $connection2)) {
                 'owner' => Format::nameLinked($owner['gibbonPersonID'], $owner['title'] , $owner['preferredName'] , $owner['surname'] , 'Staff'),
                 'technician' => $hasTechAssigned ? Format::name($technician['title'] , $technician['preferredName'] , $technician['surname'] , 'Student') : __('Unassigned'),
                 'date' => Format::date($issue['date']),
-                'privacySetting' => $issue['privacySetting'],
                 'facility' => empty($facility) ? __('N/A') : $facility['name'],
             );
 
@@ -182,15 +168,6 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $detailsData['createdBy'] = Format::name($createdBy['title'] , $createdBy['preferredName'] , $createdBy['surname'] , 'Student');
                 $table->addColumn('createdBy', __('Created By'));
             }
-
-            $table->addColumn('privacySetting', __('Privacy'))
-                    ->format(function($row) use ($gibbon, $isPersonsIssue, $hasFullAccess) {
-                        if ($isPersonsIssue || $hasFullAccess) {
-                            return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussEdit.php&issueID='. $row['issueID'], __($row['privacySetting']));
-                        } else {
-                            return __($row['privacySetting']);
-                        }
-                    });
 
             $detailsData['description'] = $issue['description'];
             $table->addColumn('description', __('Description'))->addClass('col-span-10');
