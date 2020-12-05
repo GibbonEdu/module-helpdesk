@@ -101,7 +101,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             $table = DataTable::createDetails('details');
             $table->setTitle($issue['issueName']);
-            $table->addMetaData('gridClass', 'grid-cols-6');            
+            $table->addMetaData('gridClass', 'grid-cols-' . count($detailsData));            
 
             //TODO: Double check these permission
             if ($isResolved) {
