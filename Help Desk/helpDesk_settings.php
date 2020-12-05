@@ -35,7 +35,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
 
     //I do this to control the order, there is probably another way, until then, too bad!
     $settings = array(
-        'resolvedIssuePrivacy',
         'simpleCategories',
         'issueCategory',
         'issuePriority',
@@ -52,11 +51,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
             switch ($settingName) {
-                case 'resolvedIssuePrivacy':
-                    $row->addSelect($setting['name'])
-                        ->fromArray(privacyOptions())
-                        ->selected($setting['value']);
-                    break;
                 case 'issueCategory':
                 case 'issuePriority':
                     $row->addTextArea($setting['name'])
