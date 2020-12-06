@@ -259,18 +259,13 @@ if (!isModuleAccessible($guid, $connection2)) {
     $table->addColumn('facility', __('Facility')) 
         ->description(__('Category'))
         ->format(function ($row) use ($facilityGateway, $simpleCategories) {
-            
-           $facility = $facilityGateway->getByID($row['gibbonSpaceID']);
-            
             $category = $row['category'];
-                    if (!$simpleCategories && !empty($row['subcategoryName'])) {
-                        //TODO: Do better formatting on this
-                        $category = $row['departmentName'] . ' - ' . $row['subcategoryName'];
-                    }
-            if (empty($facility)) {
-                        return '<br/>'. Format::small(__($category));
+            if (!$simpleCategories && !empty($row['subcategoryName'])) {
+                //TODO: Do better formatting on this
+                $category = $row['departmentName'] . ' - ' . $row['subcategoryName'];
             }
-            return  __($facility['name'] . '<br/>'. Format::small($category));
+
+            return  __($row['facility'] . '<br/>'. Format::small($category));
         });
     
     if (!empty($priorityFilters)) {
