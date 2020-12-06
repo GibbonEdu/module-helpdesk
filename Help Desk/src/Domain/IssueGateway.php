@@ -33,10 +33,11 @@ class IssueGateway extends QueryableGateway
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID', 'helpDeskDepartments.departmentName', 'helpDeskSubcategories.subcategoryName', 'helpDeskSubcategories.departmentID'])
+            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID', 'helpDeskDepartments.departmentName', 'helpDeskSubcategories.subcategoryName', 'helpDeskSubcategories.departmentID', 'gibbonSpace.name AS facility'])
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
             ->leftJoin('helpDeskSubcategories', 'helpDeskIssue.subcategoryID=helpDeskSubcategories.subcategoryID')
-            ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID');
+            ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID')
+            ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID');
 
         $criteria->addFilterRules([
             'status' => function ($query, $status) {
