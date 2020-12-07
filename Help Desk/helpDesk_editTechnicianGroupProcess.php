@@ -45,6 +45,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $groupName = $_POST['groupName'] ?? '';
         $departmentID = $_POST['departmentID'] ?? null;
+        if (empty($departmentID)) {
+            $departmentID = null;
+        }
 
         $viewIssueStatus =  $_POST['viewIssueStatus'] ?? '';
 

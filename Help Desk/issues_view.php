@@ -56,10 +56,10 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $technician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'));
     $techGroup = $techGroupGateway->getByID($technician->isNotEmpty() ? $technician->fetch()['groupID'] : ''); 
-    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
+    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'];
     $isTechnician = !empty($technicianGroupID);
     $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
-    
+   
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
         ->filterBy('year', $year)
@@ -271,7 +271,6 @@ if (!isModuleAccessible($guid, $connection2)) {
     if (!empty($priorityFilters)) {
         $table->addColumn('priority', __($settingsGateway->getSettingByScope($gibbon->session->get('module'), 'issuePriorityName')));
     }
- 
     
       
     $table->addColumn('status', __('Status'))
