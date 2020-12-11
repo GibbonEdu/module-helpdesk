@@ -82,13 +82,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $row = $form->addRow();
             $row->addLabel('viewIssue', __('Allow View All Issues'))
-                ->description(__('Allow the technician to see all the issues instead of just their issues and the issues they working on.'));
+                ->description(__('Allow the technician to see all the issues instead of just their issues and the issues they working on.') . '<br/>' . Format::bold(__('Note: This overrides the "View Issue Status" setting (i.e. shows all issues regardless of status).')));
             $row->addCheckbox('viewIssue')
                 ->setValue($values['viewIssue']);
 
         $row = $form->addRow();
-            $row->addLabel('viewIssueStatus', __('View Issues Status Name'))
-                ->description(__('Choose what issue statuses the technicians can view.'));
+            $row->addLabel('viewIssueStatus', __('View Issues Status'))
+                ->description(__('Choose what issue statuses the technicians can view.') . '<br/>' . Format::bold(__('Note: The "All" setting does not act like the "Allow View All Issues" setting (i.e. The option will only show the technician\'s own issues and the isssues they are assigned).')));
             $row->addSelect('viewIssueStatus')
                 ->fromArray($statuses)
                 ->isRequired()
