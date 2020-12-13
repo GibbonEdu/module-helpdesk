@@ -20,27 +20,30 @@ class TechnicianGateway extends QueryableGateway
     private static $searchableColumns = [];
 
     public function selectTechnicians() {
-        $data = array();
-        $sql = 'SELECT helpDeskTechnicians.technicianID, helpDeskTechnicians.groupID, helpDeskTechGroups.groupName, gibbonPerson.gibbonPersonID, gibbonPerson.title, gibbonPerson.preferredName, gibbonPerson.surname, helpDeskTechGroups.departmentID
-                FROM helpDeskTechnicians
-                JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)
-                JOIN helpDeskTechGroups ON (helpDeskTechnicians.groupID=helpDeskTechGroups.groupID)
-                WHERE gibbonPerson.status="Full"
-                ORDER BY helpDeskTechnicians.technicianID ASC';
+        $query = $this
+            ->newSelect()
+            ->from('helpDeskTechnicians')
+            ->cols(['helpDeskTechnicians.technicianID', 'helpDeskTechnicians.groupID', 'helpDeskTechGroups.groupName', 'gibbonPerson.gibbonPersonID', 'gibbonPerson.title', 'gibbonPerson.preferredName', 'gibbonPerson.surname', 'helpDeskTechGroups.departmentID'])
+            ->leftJoin('gibbonPerson', 'gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID')
+            ->leftJoin('helpDeskTechGroups', 'helpDeskTechGroups.groupID=helpDeskTechnicians.groupID')
+            ->where('gibbonPerson.status="Full"')
+            ->orderBy(['helpDeskTechnicians.technicianID']);
 
-        return $this->db()->select($sql, $data);
+        return $this->runSelect($query);
     }
 
     public function selectTechniciansByTechGroup($groupID) {
-        $data = array('groupID' => $groupID);
-        $sql = 'SELECT helpDeskTechnicians.technicianID, gibbonPerson.gibbonPersonID, gibbonPerson.title, gibbonPerson.preferredName, gibbonPerson.surname
-                FROM helpDeskTechnicians
-                JOIN gibbonPerson ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID)
-                WHERE helpDeskTechnicians.groupID=:groupID
-                AND gibbonPerson.status="Full"
-                ORDER BY helpDeskTechnicians.technicianID ASC';
+        $query = $this
+            ->newSelect()
+            ->from('helpDeskTechnicians')
+            ->cols(['helpDeskTechnicians.technicianID', 'gibbonPerson.gibbonPersonID', 'gibbonPerson.title', 'gibbonPerson.preferredName', 'gibbonPerson.surname'])
+            ->leftJoin('gibbonPerson', 'gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID')
+            ->where('helpDeskTechnicians.groupID = :groupID')
+            ->bindValue('groupID', $groupID)
+            ->where('gibbonPerson.status = "Full"')
+            ->orderBy(['helpDeskTechnicians.technicianID']);
 
-        return $this->db()->select($sql, $data);
+        return $this->runSelect($query);
     }
 
     public function getTechnician($technicianID) {
