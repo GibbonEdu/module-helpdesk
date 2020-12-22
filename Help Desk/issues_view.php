@@ -59,9 +59,9 @@ if (!isModuleAccessible($guid, $connection2)) {
     $settingsGateway = $container->get(SettingGateway::class);
 
     $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
-    $techGroup = $techGroupGateway->getByID($technician->isNotEmpty() ? $technician->fetch()['groupID'] : ''); 
+    $isTechnician = $technician->isNotEmpty();
+    $techGroup = $techGroupGateway->getByID($isTechnician ? $technician->fetch()['groupID'] : ''); 
     $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
-    $isTechnician = !empty($technician);
     $fullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
     
     $criteria = $issueGateway->newQueryCriteria(true)
@@ -238,7 +238,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     });
 
     //Header Actions
-    if (isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.php")) {
+    if (isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.php')) {
         $table->addHeaderAction('add', __('Create'))
             ->setURL('/modules/' . $moduleName . '/issues_create.php')
             ->displayLabel();
