@@ -69,4 +69,55 @@ class TechnicianGateway extends QueryableGateway
 
         return $this->runSelect($query);
     }
+
+    public function deleteTechnician($technicianID, $newTechnicianID) {
+        $this->db()->beginTransaction();
+
+        //If there is no new tech, reset the Pending Issues
+        if (empty($newTechnicianID)) {
+            $newTechnicianID = NULL;
+
+            $query = $this
+                ->newUpdate()
+                ->table('helpDeskIssue')
+                ->set('technicianID', $newTechnicianID)
+                ->set('status', '"Unassigned"')
+                ->where('technicianID = :technicianID')
+                ->bindValue('technicianID', $technicianID)
+                ->where('status = "Pending"');
+
+            $this->runUpdate($query);
+
+            if (!$this->db()->getQuerySuccess()) {
+                $this->db()->rollBack();
+                return false;
+            }
+        }
+
+        //Change over the assigned issues
+        $query = $this
+            ->newUpdate()
+            ->table('helpDeskIssue')
+            ->set('technicianID', $newTechnicianID)
+            ->where('technicianID = :technicianID')
+            ->bindValue('technicianID', $technicianID);
+
+        $this->runUpdate($query);
+
+        if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
+            return false;
+        }
+
+        //Delete the tech
+        $this->delete($technicianID);
+
+        if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
+            return false;
+        }
+
+        $this->db()->commit();
+        return true;
+    }
 }
