@@ -25,7 +25,7 @@ $page->breadcrumbs
     ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
     ->add(__('Delete Technician Group'));
 
-if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manageTechnicianGroup.php")) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -33,7 +33,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    $groupID = $_GET["groupID"] ?? '';
+    $groupID = $_GET['groupID'] ?? '';
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $values = $techGroupGateway->getByID($groupID);
@@ -41,8 +41,8 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_manage
     if (empty($groupID) || !$techGroupGateway->exists($groupID)) {
         $page->addError(__('No group selected.'));
     } else {
-        $data = array("groupID" => $groupID);
-        $sql = "SELECT groupID as value, groupName as name FROM helpDeskTechGroups WHERE groupID!=:groupID ORDER BY helpDeskTechGroups.groupID ASC"; 
+        $data = array('groupID' => $groupID);
+        $sql = 'SELECT groupID as value, groupName as name FROM helpDeskTechGroups WHERE groupID!=:groupID ORDER BY helpDeskTechGroups.groupID ASC'; 
 
         //Make sure that there are other groups aside from the group being deleted
         if ($techGroupGateway->countAll() > 1) {

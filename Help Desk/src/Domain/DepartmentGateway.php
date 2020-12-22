@@ -20,27 +20,30 @@ class DepartmentGateway extends QueryableGateway
     private static $searchableColumns = [];
     
     public function selectDepartments() {
-        $data = array();
-        $sql = "SELECT *
-                FROM helpDeskDepartments
-                ORDER BY departmentID ASC";
+        $select = $this
+            ->newSelect()
+            ->from('helpDeskDepartments')
+            ->cols(['departmentID', 'departmentName', 'departmentDesc'])
+            ->orderBy(['departmentID']);
 
-        return $this->db()->select($sql, $data);
+        return $this->runSelect($select);
     }
     
     public function deleteDepartment($departmentID) {
-        //TODO: Transaction
+        $this->db()->beginTransaction();
 
         //Update issues to remove subcategories to be deleted
-        $data = array('departmentID' => $departmentID);
-        $sql = 'UPDATE helpDeskIssue
-                LEFT JOIN helpDeskSubcategories ON (helpDeskIssue.subcategoryID = helpDeskSubcategories.subcategoryID)
-                SET helpDeskIssue.subcategoryID = NULL
-                WHERE helpDeskSubcategories.departmentID = :departmentID';
+        $query = $this
+            ->newUpdate() 
+            ->table('helpDeskIssue')
+            ->set('subcategoryID', NULL)
+            ->where('subcategoryID IN (SELECT subcategoryID FROM helpDeskSubcategories WHERE departmentID = :departmentID)')
+            ->bindValue('departmentID', $departmentID);
 
-        $this->db()->update($sql, $data);
+        $this->runUpdate($query);
 
         if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
             return false;
         }
 
@@ -54,6 +57,7 @@ class DepartmentGateway extends QueryableGateway
         $this->runDelete($query);
 
         if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
             return false;
         }
 
@@ -67,12 +71,20 @@ class DepartmentGateway extends QueryableGateway
         $this->runUpdate($query);
 
         if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
             return false;
         }
 
+        //Delete Department
         $this->delete($departmentID);
 
-        //Delete Department
-        return $this->db()->getQuerySuccess();
+        if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
+            return false;
+        }
+
+
+        $this->db()->commit();
+        return true;
     }
 }

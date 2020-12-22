@@ -33,34 +33,32 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
     exit();
 } else {
     //Proceed!
+    $URL .= '/helpDesk_manageTechnicianGroup';
+
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
     if ($techGroupGateway->countAll() < 2) {
-        $URL .= '/helpDesk_manageTechnicianGroup.php&return=errorA';
+        $URL .= '&return=errorA';
         header("Location: {$URL}");
         exit();
     }
 
     $groupID = $_GET['groupID'] ?? '';
     if (empty($groupID) || !$techGroupGateway->exists($groupID)) {
-        $URL .= '/helpDesk_manageTechnicianGroup&return=error1';
+        $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     }
 
     $newGroupID = $_POST['group'] ?? '';
     if (empty($newGroupID) || !$techGroupGateway->exists($newGroupID) || $groupID == $newGroupID) {
-        $URL .= "/helpdesk_technicianGroupDelete&groupID=$groupID&return=error1";
+        $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     }
 
-
-    $technicianGateway = $container->get(TechnicianGateway::class);
-
-    //TODO: Start transaction?
-    if (!$technicianGateway->updateWhere(['groupID' => $groupID], ['groupID' => $newGroupID]) || !$techGroupGateway->delete($groupID)) {
-        $URL .= "/helpdesk_technicianGroupDelete&groupID=$groupID&group=$group&return=error2";
+    if (!$techGroupGateway->deleteTechGroup($groupID, $newGroupID)) {
+        $URL .= '&return=error2';
         header("Location: {$URL}");
         exit();
     }

@@ -28,7 +28,7 @@ require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs->add(__('Create Issue'));
 
-if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/issues_create.php")) {
+if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {

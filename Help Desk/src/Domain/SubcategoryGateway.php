@@ -41,5 +41,34 @@ class SubcategoryGateway extends QueryableGateway
 
         return $this->runQuery($query, $criteria);
     }
+
+    public function deleteSubcategory($subcategoryID) {
+        $this->db()->beginTransaction();
+
+        $query = $this
+            ->newUpdate()
+            ->table('helpDeskIssue')
+            ->set('subcategoryID', NULL)
+            ->where('subcategoryID = :subcategoryID')
+            ->bindValue('subcategoryID', $subcategoryID);
+
+        $this->runUpdate($query);
+
+        if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
+            return false;
+        }
+
+
+        $this->delete($subcategoryID);
+
+        if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
+            return false;
+        }
+
+        $this->db()->commit();
+        return true;
+    }
     
 }
