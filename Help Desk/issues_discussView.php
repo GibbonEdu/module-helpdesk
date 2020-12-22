@@ -92,7 +92,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             //TODO: Double check these permission
             if ($isResolved) {
-                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
+                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) || $hasFullAccess) {
                     $table->addHeaderAction('reincarnate', __('Reincarnate'))
                             ->setIcon('reincarnate')
                             ->directLink()
@@ -108,7 +108,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                                 ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
                                 ->addParam('issueID', $issueID);
                     }
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                    if (($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue') && !$isPersonsIssue) || $hasFullAccess) {
                         $table->addHeaderAction('assign', __('Assign'))
                                 ->setIcon('attendance')
                                 ->modalWindow()
@@ -121,7 +121,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                             ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
                             ->addParam('issueID', $issueID);
 
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                    if (($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && !$isPersonsIssue) || $hasFullAccess) {
                         $table->addHeaderAction('reassign', __('Reassign'))
                                 ->setIcon('attendance')
                                 ->modalWindow()
@@ -130,7 +130,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     }
                 }
 
-                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
+                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) || $hasFullAccess) {
                     $table->addHeaderAction('resolve', __('Resolve'))
                             ->setIcon('iconTick')
                             ->directLink()
