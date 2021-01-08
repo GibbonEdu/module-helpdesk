@@ -33,7 +33,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
     exit();
 } else {
     //Proceed!
-    $URL .= '/helpDesk_manageTechnicianGroup';
+    $URL .= '/helpDesk_manageTechnicianGroup.php';
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -68,7 +68,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
     setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Removed', array('newGroupID' => $newGroupID), null);
 
     //Success 0
-    $URL .= '/helpDesk_manageTechnicianGroup.php&return=success0';
+    $URL .= '&return=success0';
     header("Location: {$URL}");
     exit();
 }
