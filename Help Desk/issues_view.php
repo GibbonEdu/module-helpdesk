@@ -57,13 +57,13 @@ if (!isModuleAccessible($guid, $connection2)) {
     $technicianGateway = $container->get(TechnicianGateway::class);
     $userGateway = $container->get(UserGateway::class);
     $settingsGateway = $container->get(SettingGateway::class);
-
+ 
     $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
     $isTechnician = $technician->isNotEmpty();
     $techGroup = $techGroupGateway->getByID($isTechnician ? $technician->fetch()['groupID'] : ''); 
     $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
     $fullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
-    
+       
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
         ->filterBy('year', $year)
