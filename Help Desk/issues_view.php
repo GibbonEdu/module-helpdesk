@@ -56,7 +56,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $technician = $technicianGateway->getTechnicianByPersonID($gibbon->session->get('gibbonPersonID'));
     $techGroup = $techGroupGateway->getByID($technician->isNotEmpty() ? $technician->fetch()['groupID'] : ''); 
-    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'];
+    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
     $isTechnician = !empty($technicianGroupID);
     $fullAccess = $techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'fullAccess');
    
