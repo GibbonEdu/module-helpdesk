@@ -108,7 +108,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
         //Default Data
         $d = new DateTime('first day of this month');
         $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : $d->format('Y-m-d');
-        $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date("Y-m-d");
+        $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date('Y-m-d');
 
         //Filter
         $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
@@ -118,14 +118,14 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
         $form->addHiddenValue('title', $title);
 
         $row = $form->addRow();
-            $row->addLabel('startDate', __("Start Date Filter"));
+            $row->addLabel('startDate', __('Start Date Filter'));
             $row->addDate('startDate')
                 ->setDateFromValue($startDate)
                 ->chainedTo('endDate')
                 ->required();
 
         $row = $form->addRow();
-            $row->addLabel('endDate', __("End Date Filter"));
+            $row->addLabel('endDate', __('End Date Filter'));
             $row->addDate('endDate')
                 ->setDateFromValue($endDate)
                 ->chainedFrom('startDate')
@@ -187,26 +187,26 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
                         $array = unserialize($row['serialisedArray']);
                         $eString = str_replace("%extraInfo%", $array[$extra['extraKey']], $extra['extraString']);
 
-                        if (strpos($eString, "%groupName%") !== false) {
-                            $eString = str_replace("%groupName%", $techGroupGateway->getByID($array[$extra['extraKey']])['groupName'], $eString);
+                        if (strpos($eString, '%groupName%') !== false) {
+                            $eString = str_replace('%groupName%', $techGroupGateway->getByID($array[$extra['extraKey']])['groupName'], $eString);
                         }
 
-                        if (strpos($eString, "%techName%") !== false) {
+                        if (strpos($eString, '%techName%') !== false) {
                             $technician = $technicianGateway->getByID($array[$extra['extraKey']]);
                             if (!empty($technician)) {
                                 $techName = $userGateway->getByID($technician['gibbonPersonID']);
-                                $eString = str_replace("%techName%", Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student'), $eString);
+                                $eString = str_replace('%techName%', Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student'), $eString);
                             }
                         }
 
-                        if (strpos($eString, "%personName%") !== false) {
+                        if (strpos($eString, '%personName%') !== false) {
                             $personName = $userGateway->getByID($array[$extra['extraKey']]);
-                            $eString = str_replace("%personName%", Format::name($personName['title'], $personName['preferredName'], $personName['surname'], 'Student'), $eString);
+                            $eString = str_replace('%personName%', Format::name($personName['title'], $personName['preferredName'], $personName['surname'], 'Student'), $eString);
                         }
 
-                        if (strpos($eString, "%IDfromPost%") !== false) {
+                        if (strpos($eString, '%IDfromPost%') !== false) {
                             $issueID = $issueDisucssGateway->getByID($array[$extra['extraKey']])['issueID'];
-                            $eString = str_replace("%IDfromPost%", $issueID, $eString);
+                            $eString = str_replace('%IDfromPost%', $issueID, $eString);
                         }
 
                         return $eString;

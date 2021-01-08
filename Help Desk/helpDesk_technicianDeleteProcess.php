@@ -36,38 +36,17 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $URL .= '/helpDesk_manageTechnicians.php';
 
     $technicianID = $_GET['technicianID'] ?? '';
+    $newTechnicianID = $_POST['newTechnicianID'] ?? '';
     $technicianGateway = $container->get(TechnicianGateway::class);
 
-    if (empty($technicianID) || !$technicianGateway->exists($technicianID)) {
+    if (empty($technicianID) || !$technicianGateway->exists($technicianID) || (!empty($newTechnicianID) && !$technicianGateway->exists($newTechnicianID))) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
         //Write to database
-        try {
-            //TODO: Maybe start a transaction?
-            $issueGateway = $container->get(IssueGateway::class);
-
-            //TODO: In the future, maybe add and option to transfer these issues to another tech.
-            //Set any pending issues assigned to technician to unassigned and unset the technician.
-            $keyAndValues = array('technicianID' => $technicianID, 'status' => 'Pending');
-            $data = array('technicianID' => null, 'status' => 'Unassigned');
-            if (!$issueGateway->updateWhere($keyAndValues, $data)) {
-                throw new PDOException('Failed to update pending issues.');
-            }
-
-            //Removed technician from any resolved issue.
-            $keyAndValues['status'] = 'Resolved';
-            unset($data['status']);
-            if (!$issueGateway->updateWhere($keyAndValues, $data)) {
-                throw new PDOException('Failed to update resolved issues.');
-            }
-
-            $gibbonPersonID = $technicianGateway->getByID($technicianID)['gibbonPersonID'];
-            if (!$technicianGateway->delete($technicianID)) {
-                throw new PDOException('Failed to Delete Technician');
-            }
-        } catch (PDOException $e) {
+        $gibbonPersonID = $technicianGateway->getByID($technicianID)['gibbonPersonID'];
+        if (!$technicianGateway->deleteTechnician($technicianID, $newTechnicianID)) {
             //Fail 2
             $URL .= '&return=error2';
             header("Location: {$URL}");

@@ -55,9 +55,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     }
 
-    //TODO: Start Transaction
-    $issueGateway = $container->get(IssueGateway::class);
-    if (!$issueGateway->updateWhere(['subcategoryID' => $subcategoryID], ['subcategoryID' => null]) || !$subcategoryGateway->delete($subcategoryID)) {
+    if (!$subcategoryGateway->deleteSubcategory($subcategoryID)) {
         $URL .= '&return=error2';
         header("Location: {$URL}");
         exit();

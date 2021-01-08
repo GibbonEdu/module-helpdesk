@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Forms\Form;
 use Gibbon\Forms\Prefab\DeleteForm;
+use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 $page->breadcrumbs
@@ -41,7 +42,25 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($technicianID) || empty($values)) {
         $page->addError(__('No Technician selected.'));
     } else {
-        $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID);
+        $techs = array_reduce($technicianGateway->selectTechnicians()->fetchAll(), function ($group, $item) {
+            $group[$item['technicianID']] = Format::name($item['title'], $item['preferredName'], $item['surname'], 'Student', true) . ' (' . $item['groupName'] . ')';
+            return $group;
+        }, array());
+
+        unset($techs[$technicianID]);
+        $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID, false, false);
+
+        $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $row = $form->addRow();
+            $row->addLabel('newTechnicianID', __('New Technician'))
+                ->description(__('Optionally select a new technician to reassign the to-be-deleted technician\'s issues. Note, if no technician is selected, assigned issues that are pending will be unassigned.'));
+            $row->addSelect('newTechnicianID')
+                ->fromArray($techs)
+                ->placeholder();
+
+        $row = $form->addRow();
+            $row->addSubmit();
+
         echo $form->getOutput();
     } 
 }
