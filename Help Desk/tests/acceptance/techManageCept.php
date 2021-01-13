@@ -27,5 +27,5 @@ $I->seeSuccessMessage();
 //Delete ------------------------------------------------
 $I->amOnModulePage('Help Desk', 'helpDesk_technicianDelete.php', array('technicianID' => $technicianID));
 
-$I->click('Yes');
+$I->click('Submit');
 $I->seeSuccessMessage();

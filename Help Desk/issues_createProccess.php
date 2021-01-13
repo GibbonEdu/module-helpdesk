@@ -54,7 +54,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         'description' => '',
         'gibbonSpaceID' => null,
         'priority' => '',
-        'privacySetting' => '',
         'subcategoryID' => null,
     );
 
@@ -76,10 +75,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
     if (isset($_POST['createFor']) && $_POST['createFor'] != 0 && $techGroupGateway->getPermissionValue($gibbonPersonID, 'createIssueForOther')) {
         $data['gibbonPersonID'] = $_POST['createFor'];
         $createdOnBehalf = true;
-    }
-
-    if (!in_array($data['privacySetting'], privacyOptions())) {
-        $data['privacySetting'] = $settingGateway->getSettingByScope($moduleName, 'resolvedIssuePrivacy');
     }
 
     $subcategoryGateway = $container->get(SubcategoryGateway::class);

@@ -298,3 +298,9 @@ Implemented Departments and Subcategories.
 Added setting to enable/disalbe simple categories.
 Added edit links for Technicians in Manage Tech Groups.
 Added edit links for Tech Groups in Manage Technicians.
+
+v1.4.00
+-------
+Removed Privacy Setting.
+Fixed Facility Sorting Bug.
+Fixed Department Filter Bug.

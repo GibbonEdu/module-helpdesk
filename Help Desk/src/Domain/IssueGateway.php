@@ -20,23 +20,27 @@ class IssueGateway extends QueryableGateway
     private static $searchableColumns = ['issueID', 'issueName', 'description'];
 
     public function selectActiveIssueByTechnician($technicianID) {
-        $data = array('technicianID' => $technicianID);
-        $sql = "SELECT issueID, gibbonPersonID, issueName, description, date, status, category, priority, gibbonSchoolYearID, createdByID, privacySetting
-                FROM helpDeskIssue
-                WHERE technicianID=:technicianID AND status='Pending'
-                ORDER BY issueID ASC";
-
-        return $this->db()->select($sql, $data);
+        $select = $this
+            ->newSelect()
+            ->from('helpDeskIssue')
+            ->cols(['issueID', 'issueName'])
+            ->where('technicianID = :technicianID')
+            ->bindValue('technicianID', $technicianID)
+            ->where('status = \'Pending\'')
+            ->orderBy(['issueID']);
+            
+        return $this->runSelect($select);
     }
     
      public function queryIssues($criteria) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID', 'helpDeskDepartments.departmentName', 'helpDeskSubcategories.subcategoryName', 'helpDeskSubcategories.departmentID'])
+            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID', 'helpDeskDepartments.departmentName', 'helpDeskSubcategories.subcategoryName', 'helpDeskSubcategories.departmentID', 'gibbonSpace.name AS facility'])
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
             ->leftJoin('helpDeskSubcategories', 'helpDeskIssue.subcategoryID=helpDeskSubcategories.subcategoryID')
-            ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID');
+            ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID')
+            ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID');
 
         $criteria->addFilterRules([
             'status' => function ($query, $status) {

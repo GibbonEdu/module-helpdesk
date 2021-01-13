@@ -8,7 +8,6 @@ $I->amOnModulePage('Help Desk', 'helpDesk_settings.php');
 $I->seeBreadcrumb('Manage Help Desk Settings');
 
 
-$I->selectFromDropdown('resolvedIssuePrivacy', 1);
 $newFormValues = array(
             'issueCategory' => 'Facilities,ICT',
             'issuePriority' => '1,2,3',

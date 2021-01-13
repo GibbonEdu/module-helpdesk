@@ -22,12 +22,4 @@ function explodeTrim($commaSeperatedString) {
     return array_filter(array_map('trim', explode(',', $commaSeperatedString)));
 }
 
-function privacyOptions() {
-    return array(
-        'Everyone',
-        'Related',
-        'Owner',
-        'No one',
-    );
-}
 ?>

@@ -69,19 +69,6 @@ if (!isModuleAccessible($guid, $connection2)) {
             || (!$hasTechAssigned && $isTechnician) 
             || $hasViewAccess;
 
-        $privacySetting = $issue['privacySetting'];
-        if ($isResolved && !$hasViewAccess) {
-            if ($privacySetting == 'No one') {
-                $allowed = false;
-            } else if ($privacySetting == 'Related' && !$isRelated) {
-                $allowed = false;
-            }
-            else if ($privacySetting == 'Owner' && !$isPersonsIssue) {
-                $allowed = false;
-            } else if ($privacySetting == 'Everyone') {
-                $allowed = true;
-            }
-        }
 
         if ($allowed) {
             if (isset($_GET['return'])) {
@@ -93,33 +80,19 @@ if (!isModuleAccessible($guid, $connection2)) {
             $userGateway = $container->get(UserGateway::class);
             $owner = $userGateway->getByID($issue['gibbonPersonID']);
 
-            $facilityGateway = $container->get(FacilityGateway::class);
-            $facility = $facilityGateway->getByID($issue['gibbonSpaceID']);
-
             $detailsData = array(
                 'issueID' => $issueID,
                 'owner' => Format::nameLinked($owner['gibbonPersonID'], $owner['title'] , $owner['preferredName'] , $owner['surname'] , 'Staff'),
                 'technician' => $hasTechAssigned ? Format::name($technician['title'] , $technician['preferredName'] , $technician['surname'] , 'Student') : __('Unassigned'),
                 'date' => Format::date($issue['date']),
-                'privacySetting' => $issue['privacySetting'],
-                'facility' => empty($facility) ? __('N/A') : $facility['name'],
             );
-
-            $tdWidth = count($detailsData);
-            if ($createdByShow) {
-                $tdWidth++;
-            }
-
-            $tdWidth = 100 / $tdWidth;
-            $tdWidth .= '%';
 
             $table = DataTable::createDetails('details');
             $table->setTitle($issue['issueName']);
-            $table->addMetaData('gridClass', 'grid-cols-6');            
 
             //TODO: Double check these permission
             if ($isResolved) {
-                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue'))) {
+                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) || $hasFullAccess) {
                     $table->addHeaderAction('reincarnate', __('Reincarnate'))
                             ->setIcon('reincarnate')
                             ->directLink()
@@ -135,7 +108,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                                 ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
                                 ->addParam('issueID', $issueID);
                     }
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                    if (($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue') && !$isPersonsIssue) || $hasFullAccess) {
                         $table->addHeaderAction('assign', __('Assign'))
                                 ->setIcon('attendance')
                                 ->modalWindow()
@@ -148,7 +121,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                             ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
                             ->addParam('issueID', $issueID);
 
-                    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && (!$isPersonsIssue || $hasFullAccess)) {
+                    if (($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && !$isPersonsIssue) || $hasFullAccess) {
                         $table->addHeaderAction('reassign', __('Reassign'))
                                 ->setIcon('attendance')
                                 ->modalWindow()
@@ -157,7 +130,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     }
                 }
 
-                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
+                if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue')) || $hasFullAccess) {
                     $table->addHeaderAction('resolve', __('Resolve'))
                             ->setIcon('iconTick')
                             ->directLink()
@@ -175,40 +148,23 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             $table->addColumn('date', __('Date'));
 
-            $table->addColumn('facility', __('Facility'));
-
+            if (!empty($issue['facility'])) {
+                $detailsData['facility'] = $issue['facility'];
+                $table->addColumn('facility', __('Facility'));
+            }
             if ($createdByShow) {
                 $createdBy = $userGateway->getByID($issue['createdByID']);
                 $detailsData['createdBy'] = Format::name($createdBy['title'] , $createdBy['preferredName'] , $createdBy['surname'] , 'Student');
                 $table->addColumn('createdBy', __('Created By'));
             }
 
-            $table->addColumn('privacySetting', __('Privacy'))
-                    ->format(function($row) use ($gibbon, $isPersonsIssue, $hasFullAccess) {
-                        if ($isPersonsIssue || $hasFullAccess) {
-                            return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussEdit.php&issueID='. $row['issueID'], __($row['privacySetting']));
-                        } else {
-                            return __($row['privacySetting']);
-                        }
-                    });
+            $table->addMetaData('gridClass', 'grid-cols-' . count($detailsData));            
 
             $detailsData['description'] = $issue['description'];
             $table->addColumn('description', __('Description'))->addClass('col-span-10');
 
             echo $table->render([$detailsData]);
 
-            /*
-            //Description Table
-            $table = DataTable::createDetails('description');
-            $table->setTitle(__('Description'));
-
-            //TODO: Can this be simplified?
-            
-            $table->addColumn('description')
-                    ->width('100%');
-
-            echo $table->render([$issue]);
-            */
            
             $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
             $form->addHiddenValue('address', $gibbon->session->get('address'));

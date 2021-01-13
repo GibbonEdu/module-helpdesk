@@ -316,3 +316,11 @@ INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, 
 INSERT INTO gibbonAction SET name='Manage Departments', precedence='0', category='Technician', description='Allows the user to manage the Help Desk Departments.', URLList='helpDesk_manageDepartments.php', entryURL='helpDesk_manageDepartments.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='Y', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Help Desk' AND gibbonAction.name='Manage Departments'));end
 ";
+
+//v1.4.00
+$count++;
+$sql[$count][0]="1.4.00";
+$sql[$count][1]="
+ALTER TABLE `helpDeskIssue` DROP COLUMN `privacySetting`;end
+DELETE FROM `gibbonSetting` WHERE name='resolvedIssuePrivacy' AND scope='Help Desk';end
+";

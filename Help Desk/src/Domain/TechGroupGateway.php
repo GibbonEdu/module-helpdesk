@@ -57,8 +57,8 @@ class TechGroupGateway extends QueryableGateway
 
         //Check for fullAccess permissions
         if ($row['fullAccess'] == true) {
-            if ($permission == "viewIssueStatus") {
-                return "All";
+            if ($permission == 'viewIssueStatus') {
+                return 'All';
             } else {
                 return true;
             }
@@ -66,6 +66,34 @@ class TechGroupGateway extends QueryableGateway
 
         //Return permission that was asked for
         return $row[$permission];
+    }
+
+    public function deleteTechGroup($groupID, $newGroupID) {
+        $this->db()->beginTransaction();
+
+        $query = $this
+            ->newUpdate()
+            ->table('helpDeskTechnicians')
+            ->set('groupID', $newGroupID)
+            ->where('groupID = :groupID')
+            ->bindValue('groupID', $groupID);
+
+        $this->runUpdate($query);
+
+        if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollback();
+            return false;
+        }
+
+        $this->delete($groupID);
+
+        if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollback();
+            return false;
+        }
+
+        $this->db()->commit();
+        return true;
     }
 
 }
