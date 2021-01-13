@@ -304,3 +304,7 @@ v1.4.00
 Removed Privacy Setting.
 Fixed Facility Sorting Bug.
 Fixed Department Filter Bug.
+
+v1.4.01
+-------
+Fixed Bug where Facility would not display on Issue Discuss page.

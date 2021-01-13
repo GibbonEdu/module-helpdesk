@@ -31,8 +31,16 @@ class IssueGateway extends QueryableGateway
             
         return $this->runSelect($select);
     }
+
+    public function getIssueByID($issueID) {
+        $criteria = $this->newQueryCriteria(false)
+            ->filterBy('issueID', $issueID);
+
+        $results = $this->queryIssues($criteria);
+        return $results->getRow(0);
+    }      
     
-     public function queryIssues($criteria) {      
+    public function queryIssues($criteria) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
@@ -43,6 +51,11 @@ class IssueGateway extends QueryableGateway
             ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID');
 
         $criteria->addFilterRules([
+            'issueID' => function($query, $issueID) {
+                return $query
+                    ->where('helpDeskIssue.issueID = :issueID')
+                    ->bindValue('issueID', $issueID);
+            },
             'status' => function ($query, $status) {
                 return $query
                     ->where('helpDeskIssue.status = :status')
