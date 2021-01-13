@@ -42,7 +42,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     $issueID = $_GET['issueID'] ?? '';
 
     $issueGateway = $container->get(IssueGateway::class);
-    $issue = $issueGateway->getByID($issueID);
+    $issue = $issueGateway->getIssueByID($issueID);
 
     if (empty($issueID) || empty($issue)) {
         $page->addError(__('No Issue Selected.'));
