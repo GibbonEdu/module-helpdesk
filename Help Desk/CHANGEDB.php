@@ -324,3 +324,9 @@ $sql[$count][1]="
 ALTER TABLE `helpDeskIssue` DROP COLUMN `privacySetting`;end
 DELETE FROM `gibbonSetting` WHERE name='resolvedIssuePrivacy' AND scope='Help Desk';end
 ";
+
+//v1.4.01
+$count++;
+$sql[$count][0]="1.4.01";
+$sql[$count][1]="
+";
