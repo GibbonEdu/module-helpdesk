@@ -20,16 +20,27 @@ class IssueGateway extends QueryableGateway
     private static $searchableColumns = ['issueID', 'issueName', 'description'];
 
     public function selectActiveIssueByTechnician($technicianID) {
-        $data = array('technicianID' => $technicianID);
-        $sql = "SELECT issueID, gibbonPersonID, issueName, description, date, status, category, priority, gibbonSchoolYearID, createdByID
-                FROM helpDeskIssue
-                WHERE technicianID=:technicianID AND status='Pending'
-                ORDER BY issueID ASC";
-
-        return $this->db()->select($sql, $data);
+        $select = $this
+            ->newSelect()
+            ->from('helpDeskIssue')
+            ->cols(['issueID', 'issueName'])
+            ->where('technicianID = :technicianID')
+            ->bindValue('technicianID', $technicianID)
+            ->where('status = \'Pending\'')
+            ->orderBy(['issueID']);
+            
+        return $this->runSelect($select);
     }
+
+    public function getIssueByID($issueID) {
+        $criteria = $this->newQueryCriteria(false)
+            ->filterBy('issueID', $issueID);
+
+        $results = $this->queryIssues($criteria);
+        return $results->getRow(0);
+    }      
     
-     public function queryIssues($criteria) {      
+    public function queryIssues($criteria) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
@@ -40,6 +51,11 @@ class IssueGateway extends QueryableGateway
             ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID');
 
         $criteria->addFilterRules([
+            'issueID' => function($query, $issueID) {
+                return $query
+                    ->where('helpDeskIssue.issueID = :issueID')
+                    ->bindValue('issueID', $issueID);
+            },
             'status' => function ($query, $status) {
                 return $query
                     ->where('helpDeskIssue.status = :status')

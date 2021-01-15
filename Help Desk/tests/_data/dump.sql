@@ -43,4 +43,4 @@ INSERT INTO `gibbonPerson` (`title`, `surname`, `firstName`, `preferredName`, `o
 
 INSERT INTO `helpDeskTechnicians` (`gibbonPersonID`, `groupID`) VALUES ((SELECT `gibbonPersonID` FROM `gibbonPerson` WHERE `username`='testingtech' LIMIT 1), '0002') ON DUPLICATE KEY UPDATE `groupID`='0002';
 
-
+--- TO DO : DATABASE DUMP TO CREATE DEPARTMENT AND ALSO INSERT ADMIN USER INTO A TECH GROUP
