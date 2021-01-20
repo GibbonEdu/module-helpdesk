@@ -71,9 +71,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         }
     } else {
         $subcategoryGateway = $container->get(SubcategoryGateway::class);
-
+        $gibbonRoleID = $gibbon->session->get('gibbonRoleIDCurrent');
         $criteria = $subcategoryGateway->newQueryCriteria()
             ->sortBy(['departmentName', 'subcategoryName'])
+            ->filterBy('gibbonRoleID', $gibbonRoleID)
             ->fromPOST();
 
         $subcategoryData = $subcategoryGateway->querySubcategories($criteria);
