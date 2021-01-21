@@ -17,7 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
-
+use Gibbon\Module\HelpDesk\Domain\HelpdeskPermissionsGateway;
+use Gibbon\Domain\User\RoleGateway;
 require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
@@ -31,7 +32,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 } else {
     $departmentName = $_POST['departmentName'] ?? '';
     $departmentDesc = $_POST['departmentDesc'] ?? '';
-    if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128) {
+    $roles = $_POST['roles'] ?? '';
+    if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128 || empty($roles)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
@@ -58,6 +60,15 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             if ($departmentID === false) {
                 throw new PDOException('Could not insert group.');
             }
+            $HelpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
+
+            foreach ($roles AS $role) {
+                $data = array('departmentID' => $departmentID, 'gibbonRoleID' => $role);
+                $HelpdeskPermissionsGateway->insert($data);
+            }
+            
+            
+            
         } catch (PDOException $e) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
