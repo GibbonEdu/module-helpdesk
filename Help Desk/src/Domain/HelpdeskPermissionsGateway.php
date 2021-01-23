@@ -18,5 +18,23 @@ class HelpdeskPermissionsGateway extends QueryableGateway
     private static $tableName = 'helpDeskDepartmentPermissions';
     private static $primaryKey = 'departmentPermissionsID';
     private static $searchableColumns = [];
+    
+    public function queryDeptPerms($criteria) {
+        $query = $this
+            ->newQuery()
+            ->from('helpDeskDepartmentPermissions')
+            ->cols(['departmentPermissionsID', 'departmentID', 'gibbonRoleID']);
+
+        $criteria->addFilterRules([
+            'departmentID' => function ($query, $departmentID) {
+                return $query
+                    ->where('helpDeskDepartmentPermissions.departmentID = :departmentID')
+                    ->bindValue('departmentID', $departmentID);
+            }
+        ]);
+
+        return $this->runQuery($query, $criteria);
+    }
+
 
 }
