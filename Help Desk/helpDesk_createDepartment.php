@@ -63,8 +63,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $arrRoles[$role['gibbonRoleID']] = __($role['name'])." (".__($role['category']).")";
     }                                       
     $row = $form->addRow();
-        $row->addLabel('roles[]', __('Select Roles'))->description(__('Which roles can create issues for this department'));
-        $row->addSelect('roles[]')->fromArray($arrRoles)->selectMultiple()->setSize(6)->required();
+        $row->addLabel('roles', __('Select Roles'))->description(__('Which roles can create issues for this department'));
+        $row->addSelect('roles')->fromArray($arrRoles)->selectMultiple()->setSize(6)->required();
 
     
     

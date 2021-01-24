@@ -81,8 +81,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         
         $HelpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
         // CRITERIA
-        $criteria = $HelpdeskPermissionsGateway->newQueryCriteria();
-        $roles = $HelpdeskPermissionsGateway->queryDeptPerms($criteria);
+        $criteria = $HelpdeskPermissionsGateway->newQueryCriteria()->filterBy('departmentID', $departmentID);
         //TODO: selected based off queryDeptPerms
         $row->addLabel('roles[]', __('Select Roles'))->description(__('Which roles can create issues for this department'));
         $row->addSelect('roles[]')->fromArray($arrRoles)->selectMultiple()->setSize(6)->required()->selected($HelpdeskPermissionsGateway->queryDeptPerms($criteria)->getColumn('gibbonRoleID'));

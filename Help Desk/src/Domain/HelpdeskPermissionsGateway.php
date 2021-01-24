@@ -25,6 +25,14 @@ class HelpdeskPermissionsGateway extends QueryableGateway
             ->from('helpDeskDepartmentPermissions')
             ->cols(['departmentPermissionsID', 'departmentID', 'gibbonRoleID']);
 
+        $criteria->addFilterRules([
+            'departmentID' => function ($query, $departmentID) {
+                return $query
+                    ->where('helpDeskDepartmentPermissions.departmentID = :departmentID')
+                    ->bindValue('departmentID', $departmentID);
+            }
+        ]);
+
         return $this->runQuery($query, $criteria);
     }
 
