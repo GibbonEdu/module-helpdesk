@@ -19,9 +19,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
+use Gibbon\Module\HelpDesk\Domain\HelpdeskPermissionsGateway;
 use Gibbon\Domain\User\RoleGateway;
 
-use Gibbon\Module\HelpDesk\Domain\HelpdeskPermissionsGateway;
 
 use Gibbon\Tables\DataTable;
 
@@ -78,7 +78,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         foreach ($roles AS $role) {
             $arrRoles[$role['gibbonRoleID']] = __($role['name'])." (".__($role['category']).")";
         } 
-        
         
         //TODO: selected based off queryDeptPerms
         $row->addLabel('roles[]', __('Select Roles'))->description(__('Which roles can create issues for this department'));
