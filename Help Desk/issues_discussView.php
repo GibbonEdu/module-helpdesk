@@ -165,7 +165,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             $table->addMetaData('gridClass', 'grid-cols-' . count($detailsData));            
 
             $detailsData['description'] = $issue['description'];
-            $table->addColumn('description', __('Description'))->addClass('col-span-10');
+            $table->addColumn('description', __('Description'))->addClass('col-span' . count($detailsData));
 
             echo $table->render([$detailsData]);
 
