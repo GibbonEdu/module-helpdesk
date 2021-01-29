@@ -162,10 +162,10 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $table->addColumn('createdBy', __('Created By'));
             }
 
-            $table->addMetaData('gridClass', 'grid-cols-' . count($detailsData - 1));            
+            $table->addMetaData('gridClass', 'grid-cols-' . (count($detailsData - 1));            
 
             $detailsData['description'] = $issue['description'];
-            $table->addColumn('description', __('Description'))->addClass('col-span-' . count($detailsData - 1));
+            $table->addColumn('description', __('Description'))->addClass('col-span-' . (count($detailsData - 1));
 
             echo $table->render([$detailsData]);
 
