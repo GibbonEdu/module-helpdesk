@@ -219,4 +219,3 @@ if (!isModuleAccessible($guid, $connection2)) {
         }
     }
 }
-
