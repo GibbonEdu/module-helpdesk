@@ -292,6 +292,7 @@ class AcceptanceTester extends \Codeception\Actor
 
         $I->fillField('departmentName', 'Test Department');
         $I->fillField('departmentDesc', 'Test Department Description');
+        $I->selectOption('roles[]', array('001', '002', '003'));
         $I->click('Submit');
 
         $I->seeSuccessMessage();

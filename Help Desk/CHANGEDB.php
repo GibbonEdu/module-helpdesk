@@ -336,7 +336,7 @@ $count++;
 $sql[$count][0]="1.4.02";
 $sql[$count][1]="
 CREATE TABLE `helpDeskDepartmentPermissions` (`departmentPermissionsID` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, `departmentID` int(4) UNSIGNED ZEROFILL NOT NULL, `gibbonRoleID` int(3) UNSIGNED ZEROFILL NOT NULL, PRIMARY KEY (`departmentPermissionsID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
-INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) VALUES (NULL, (SELECT departmentID FROM helpDeskDepartments), '001');end
-INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) VALUES (NULL, (SELECT departmentID FROM helpDeskDepartments), '002');end
-INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) VALUES (NULL, (SELECT departmentID FROM helpDeskDepartments), '003');end
+INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '001' FROM helpDeskDepartments;end
+INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '002' FROM helpDeskDepartments;end
+INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '003' FROM helpDeskDepartments;end
 ";
