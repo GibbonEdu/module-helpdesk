@@ -40,7 +40,7 @@ class IssueGateway extends QueryableGateway
         return $results->getRow(0);
     }      
     
-    public function queryIssues($criteria) {      
+    public function queryIssues($criteria, $gibbonSchoolYearID = null, $gibbonPersonID = null, $relation = null) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
@@ -49,6 +49,22 @@ class IssueGateway extends QueryableGateway
             ->leftJoin('helpDeskSubcategories', 'helpDeskIssue.subcategoryID=helpDeskSubcategories.subcategoryID')
             ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID')
             ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID');
+
+        if (!empty($gibbonSchoolYearID)) {
+            $query->where('helpDeskIssue.gibbonSchoolYearID = :year')
+                ->bindValue('year', $gibbonSchoolYearID);
+        }
+        
+        switch($relation) {
+            case 'My Issues':
+                $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')
+                    ->bindValue('gibbonPersonID', $gibbonPersonID);
+                break;
+            case 'My Assigned':
+                $query->where('techID.gibbonPersonID=:techPersonID')
+                    ->bindValue('techPersonID', $gibbonPersonID);
+                break;
+        }
 
         $criteria->addFilterRules([
             'issueID' => function($query, $issueID) {
@@ -70,11 +86,6 @@ class IssueGateway extends QueryableGateway
                 return $query
                     ->where('helpDeskIssue.priority = :priority')
                     ->bindValue('priority', $priority);
-            },
-            'year' => function($query, $year) {
-                return $query
-                    ->where('helpDeskIssue.gibbonSchoolYearID = :year')
-                    ->bindValue('year', $year);
             },
             'subcategoryID' => function ($query, $subcategoryID) {
                 return $query

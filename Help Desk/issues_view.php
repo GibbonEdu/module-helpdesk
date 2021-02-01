@@ -43,7 +43,8 @@ if (!isModuleAccessible($guid, $connection2)) {
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
     $moduleName = $gibbon->session->get('module');
     $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
-    
+    $relation = $_GET['relation'] ?? null;
+
     if (isset($_GET['return'])) {
         $editLink = null;
         if (isset($_GET['issueID'])) {
@@ -66,29 +67,29 @@ if (!isModuleAccessible($guid, $connection2)) {
        
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
-        ->filterBy('year', $year)
         ->filterBy('departmentID', $departmentID)
         ->sortBy('status', 'ASC')
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
-     
-    $criteria->addFilterRules([
-        'issue' => function ($query, $issue) use ($gibbon) {
-            switch($issue) {
-                case 'My Issues':
-                    $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')
-                        ->bindValue('gibbonPersonID', $gibbon->session->get('gibbonPersonID'));
-                    break;
-                case 'My Assigned':
-                    $query->where('techID.gibbonPersonID=:techPersonID')
-                        ->bindValue('techPersonID', $gibbon->session->get('gibbonPersonID'));
-                    break;
-            }
-            return $query;
-        },
-    ]);
+    
+    //Set up Relation data
+    $relations = [];
 
-    $issues = $issueGateway->queryIssues($criteria);
+    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
+        $relations[] = 'All';
+        $relation = $relation ?? 'All';
+    }
+
+    if ($isTechnician) {
+        $relations[] = 'My Assigned';
+        $relation = $relation ?? 'My Assigned';
+    }
+    
+    $relations[] = 'My Issues';
+
+    if (!in_array($relation, $relations)) {
+        $relation = 'My Issues';
+    }
 
     //Search Form
     $form = Form::create('searchForm', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
@@ -106,6 +107,14 @@ if (!isModuleAccessible($guid, $connection2)) {
         $row->addTextField('search')
             ->setValue($criteria->getSearchText());
     
+    if (count($relations) > 1) {
+        $row = $form->addRow();
+            $row->addLabel('relation', __('Relation'));
+            $row->addSelect('relation')
+                ->fromArray($relations)
+                ->selected($relation);
+    }
+
     $row = $form->addRow();
         $row->addLabel('year', __('Year Filter'));
         $row->addSelectSchoolYear('year', 'All')
@@ -116,6 +125,8 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     echo $form->getOutput();      
     
+    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation);
+
     $mode = 'owner';
 
     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
@@ -127,15 +138,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     $table = DataTable::createPaginated('issues', $criteria);
     $table->setTitle('Issues');
     
-    //FILTERS START
-    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
-        $table->addMetaData('filterOptions', ['issue:All'    => __('Issues').': '.__('All')]);
-    }
-    if ($isTechnician) {
-        $table->addMetaData('filterOptions', ['issue:My Assigned'    => __('Issues').': '.__('My Assigned')]);
-    }
-    $table->addMetaData('filterOptions', ['issue:My Issues'    => __('Issues').': '.__('My Issues')]);
-    
+    //FILTERS START    
     $statusFilter = [
         'status:Unassigned' => __('Status').': '.__('Unassigned'),
         'status:Pending'    => __('Status').': '.__('Pending'),
@@ -211,7 +214,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         } else if ($issue['status'] == 'Pending') {
             $row->addClass('warning');
         }
-
+        
         if ($mode == 'owner') {
             if ($issue['gibbonPersonID'] != $gibbonPersonID) {
                 $row = null;
