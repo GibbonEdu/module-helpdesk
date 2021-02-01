@@ -308,3 +308,7 @@ Fixed Department Filter Bug.
 v1.4.01
 -------
 Fixed Bug where Facility would not display on Issue Discuss page.
+
+v1.4.02
+-------
+Adds permission filters

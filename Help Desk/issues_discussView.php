@@ -79,10 +79,14 @@ if (!isModuleAccessible($guid, $connection2)) {
             
             $userGateway = $container->get(UserGateway::class);
             $owner = $userGateway->getByID($issue['gibbonPersonID']);
-
+            if ($owner['gibbonRoleIDPrimary'] == '003' ) {
+                $ownerRole = 'Student';
+            } else {    
+                $ownerRole = 'Staff';
+            }
             $detailsData = array(
                 'issueID' => $issueID,
-                'owner' => Format::nameLinked($owner['gibbonPersonID'], $owner['title'] , $owner['preferredName'] , $owner['surname'] , 'Staff'),
+                'owner' => Format::nameLinked($owner['gibbonPersonID'], $owner['title'] , $owner['preferredName'] , $owner['surname'] , $ownerRole),
                 'technician' => $hasTechAssigned ? Format::name($technician['title'] , $technician['preferredName'] , $technician['surname'] , 'Student') : __('Unassigned'),
                 'date' => Format::date($issue['date']),
             );
@@ -215,4 +219,6 @@ if (!isModuleAccessible($guid, $connection2)) {
         }
     }
 }
-?>
+
+
+

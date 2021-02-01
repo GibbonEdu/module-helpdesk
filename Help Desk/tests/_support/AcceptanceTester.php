@@ -46,6 +46,11 @@ class AcceptanceTester extends \Codeception\Actor
     {
         $this->login('testingteacher', 'm86GVNLH7DbV');
     }
+    
+    public function loginAsTeacher2()
+    {
+        $this->login('testingteacher2', 'm86GVNLH7DbV');
+    }
 
     public function loginAsStudent()
     {
@@ -211,6 +216,13 @@ class AcceptanceTester extends \Codeception\Actor
         $I->seeBreadcrumb('Discuss Issue');
     }
     
+     public function viewIssueError($issueID)
+    {
+        $I = $this;
+        $I->amOnModulePage('Help Desk', 'issues_discussView.php', ['issueID' => $issueID]);
+        $I->seeErrorMessage();
+    }
+    
     public function assignIssue($issueID)
     {
         $I = $this;
@@ -280,6 +292,7 @@ class AcceptanceTester extends \Codeception\Actor
 
         $I->fillField('departmentName', 'Test Department');
         $I->fillField('departmentDesc', 'Test Department Description');
+        $I->selectOption('roles[]', array('001', '002', '003'));
         $I->click('Submit');
 
         $I->seeSuccessMessage();

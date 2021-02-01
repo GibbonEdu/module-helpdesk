@@ -37,6 +37,13 @@ class SubcategoryGateway extends QueryableGateway
                     ->where('helpDeskSubcategories.departmentID = :departmentID')
                     ->bindValue('departmentID', $departmentID);
             },
+            'gibbonRoleID' => function ($query, $gibbonRoleID) {
+                return $query
+                    ->where('helpDeskDepartments.departmentID IN (SELECT departmentID FROM helpDeskDepartmentPermissions WHERE gibbonRoleID = :gibbonRoleID)')
+                     ->bindValue('gibbonRoleID', $gibbonRoleID);
+            },
+            
+            
         ]);
 
         return $this->runQuery($query, $criteria);

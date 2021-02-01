@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="1.4.01";
+$version="1.4.02";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
 $url="https://github.com/raynichc/helpdesk";
 
@@ -105,6 +105,14 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskSubcategories` (
     `subcategoryName` varchar(55) NOT NULL,
     PRIMARY KEY (`subcategoryID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskDepartmentPermissions` (
+    `departmentPermissionsID` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+    `departmentID` int(4) UNSIGNED ZEROFILL NOT NULL,
+    `gibbonRoleID` int(3) UNSIGNED ZEROFILL NOT NULL,
+    PRIMARY KEY (`departmentPermissionsID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
 
 //Action rows
 //One array per action
