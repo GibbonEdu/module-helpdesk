@@ -35,7 +35,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentID = $_POST['departmentID'] ?? '';
     
     $departmentGateway = $container->get(DepartmentGateway::class);
-    $HelpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
+    $helpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
     
     if(empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $URL .= 'helpDesk_manageDepartments.php&return=error1';
@@ -69,11 +69,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     }
     //TODO: create an if error for this
-    $HelpdeskPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
+    $helpdeskPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
 
     foreach ($roles AS $role) {
         $data = array('departmentID' => $departmentID, 'gibbonRoleID' => $role);
-        $HelpdeskPermissionsGateway->insert($data);
+        $helpdeskPermissionsGateway->insert($data);
     }
     $URL .= '&return=success0';
     header("Location: {$URL}");

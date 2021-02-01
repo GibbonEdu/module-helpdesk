@@ -60,11 +60,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             if ($departmentID === false) {
                 throw new PDOException('Could not insert group.');
             }
-            $HelpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
+            $helpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
 
             foreach ($roles AS $role) {
                 $data = array('departmentID' => $departmentID, 'gibbonRoleID' => $role);
-                $HelpdeskPermissionsGateway->insert($data);
+                $helpdeskPermissionsGateway->insert($data);
             }
             
             

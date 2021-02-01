@@ -36,7 +36,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentID = $_POST['departmentID'] ?? '';
 
     $departmentGateway = $container->get(DepartmentGateway::class);
-    $HelpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
+    $helpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
     
     if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $URL .= '&return=error1';
@@ -51,7 +51,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     }
     
     //TODO: create an if error for this
-    $HelpdeskPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
+    $helpdeskPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
 
     $URL .= '&return=success0';
     header("Location: {$URL}");
