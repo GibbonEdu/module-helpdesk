@@ -23,9 +23,9 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="1.4.02";
+$version="1.4.10";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
-$url="https://github.com/raynichc/helpdesk";
+$url="https://github.com/GibbonEdu/module-helpDesk";
 
 //Module tables & gibbonSettings entries
 $tables = 0;

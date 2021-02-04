@@ -333,7 +333,7 @@ $sql[$count][1]="
 
 //v1.4.02
 $count++;
-$sql[$count][0]="1.4.02";
+$sql[$count][0]="1.4.10";
 $sql[$count][1]="
 CREATE TABLE `helpDeskDepartmentPermissions` (`departmentPermissionsID` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, `departmentID` int(4) UNSIGNED ZEROFILL NOT NULL, `gibbonRoleID` int(3) UNSIGNED ZEROFILL NOT NULL, PRIMARY KEY (`departmentPermissionsID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
 INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '001' FROM helpDeskDepartments;end

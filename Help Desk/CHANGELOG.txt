@@ -309,6 +309,6 @@ v1.4.01
 -------
 Fixed Bug where Facility would not display on Issue Discuss page.
 
-v1.4.02
+v1.4.10
 -------
 Adds permission filters
