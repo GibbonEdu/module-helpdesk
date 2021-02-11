@@ -6,12 +6,12 @@ use Gibbon\Domain\QueryCriteria;
 use Gibbon\Domain\QueryableGateway;
 
 /**
- * Technician Gateway
+ * Department Permissions Gateway
  *
  * @version v20
  * @since   v20
  */
-class HelpdeskPermissionsGateway extends QueryableGateway
+class DepartmentPermissionsGateway extends QueryableGateway
 {
     use TableAware;
 
@@ -23,13 +23,19 @@ class HelpdeskPermissionsGateway extends QueryableGateway
         $query = $this
             ->newQuery()
             ->from('helpDeskDepartmentPermissions')
-            ->cols(['departmentPermissionsID', 'departmentID', 'gibbonRoleID']);
+            ->cols(['departmentPermissionsID', 'helpDeskDepartmentPermissions.departmentID', 'departmentName', 'gibbonRoleID'])
+            ->leftJoin('helpDeskDepartments', 'helpDeskDepartmentPermissions.departmentID=helpDeskDepartments.departmentID');
 
         $criteria->addFilterRules([
             'departmentID' => function ($query, $departmentID) {
                 return $query
                     ->where('helpDeskDepartmentPermissions.departmentID = :departmentID')
                     ->bindValue('departmentID', $departmentID);
+            },
+            'gibbonRoleID' => function($query, $gibbonRoleID) {
+                return $query
+                    ->where('helpDeskDepartmentPermissions.gibbonRoleID = :gibbonRoleID')
+                    ->bindValue('gibbonRoleID', $gibbonRoleID);
             }
         ]);
 

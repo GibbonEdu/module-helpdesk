@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
-use Gibbon\Module\HelpDesk\Domain\HelpdeskPermissionsGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
 
 require_once '../../gibbon.php';
 
@@ -36,7 +36,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentID = $_POST['departmentID'] ?? '';
 
     $departmentGateway = $container->get(DepartmentGateway::class);
-    $helpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
+    $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
     
     if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $URL .= '&return=error1';
@@ -51,7 +51,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     }
     
     //TODO: create an if error for this
-    $helpdeskPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
+    $departmentPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
 
     $URL .= '&return=success0';
     header("Location: {$URL}");

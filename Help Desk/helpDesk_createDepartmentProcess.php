@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
-use Gibbon\Module\HelpDesk\Domain\HelpdeskPermissionsGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
 use Gibbon\Domain\User\RoleGateway;
 require_once '../../gibbon.php';
 
@@ -60,11 +60,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             if ($departmentID === false) {
                 throw new PDOException('Could not insert group.');
             }
-            $helpdeskPermissionsGateway = $container->get(HelpdeskPermissionsGateway::class);
+            $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
 
             foreach ($roles AS $role) {
                 $data = array('departmentID' => $departmentID, 'gibbonRoleID' => $role);
-                $helpdeskPermissionsGateway->insert($data);
+                $departmentPermissionsGateway->insert($data);
             }
             
             
