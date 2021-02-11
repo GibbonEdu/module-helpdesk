@@ -40,7 +40,7 @@ class IssueGateway extends QueryableGateway
         return $results->getRow(0);
     }      
     
-    public function queryIssues($criteria, $gibbonSchoolYearID = null, $gibbonPersonID = null, $relation = null) {      
+    public function queryIssues($criteria, $gibbonSchoolYearID = null, $gibbonPersonID = null, $relation = null, $departmentID = null) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
@@ -64,6 +64,11 @@ class IssueGateway extends QueryableGateway
                 $query->where('techID.gibbonPersonID=:techPersonID')
                     ->bindValue('techPersonID', $gibbonPersonID);
                 break;
+        }
+
+        if (!empty($departmentID)) {
+            $query->where('helpDeskSubcategories.departmentID = :departmentID')
+                ->bindValue('departmentID', $departmentID); 
         }
 
         $criteria->addFilterRules([
