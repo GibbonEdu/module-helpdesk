@@ -24,6 +24,7 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Domain\User\UserGateway;
 use Gibbon\Domain\School\FacilityGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
@@ -62,12 +63,11 @@ if (!isModuleAccessible($guid, $connection2)) {
     $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
     $isTechnician = $technician->isNotEmpty();
     $techGroup = $techGroupGateway->getByID($isTechnician ? $technician->fetch()['groupID'] : ''); 
-    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
     $fullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
+    $techDeptFilter = $isTechnician && !empty($techGroup['departmentID']) && !$fullAccess;
        
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
-        ->filterBy('departmentID', $departmentID)
         ->sortBy('status', 'ASC')
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
@@ -125,7 +125,14 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     echo $form->getOutput();      
     
-    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation);
+    $simpleCategories = $settingsGateway->getSettingByScope($moduleName, 'simpleCategories');
+
+    $techDepartment = $techGroup['departmentID'] ?? null;
+    if ($simpleCategories || !$techDeptFilter) {
+        $techDepartment = null;
+    }
+
+    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation, $techDepartment);
 
     $mode = 'owner';
 
@@ -145,6 +152,8 @@ if (!isModuleAccessible($guid, $connection2)) {
         'status:Resolved'   => __('Status').': '.__('Resolved')
     ];
 
+    /*
+    Removed for simplicity
     if ($isTechnician) {
         switch($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssueStatus')) {
             case 'UP':
@@ -160,11 +169,11 @@ if (!isModuleAccessible($guid, $connection2)) {
                 break;
         }   
     }
+    */
 
     $table->addMetaData('filterOptions', $statusFilter);
 
 
-    $simpleCategories = $settingsGateway->getSettingByScope($moduleName, 'simpleCategories');
     if ($simpleCategories) {
         $categoryFilters = explodeTrim($settingsGateway->getSettingByScope($moduleName, 'issueCategory'));
         foreach  ($categoryFilters as $category) {
@@ -173,25 +182,39 @@ if (!isModuleAccessible($guid, $connection2)) {
             ]);
         }
     } else {
-        if (!$isTechnician || ($isTechnician && $techGroup['departmentID'] == null) || $fullAccess) {
-            $departmentGateway = $container->get(DepartmentGateway::class);
-            $departments = $departmentGateway->selectDepartments()->toDataSet();
+        $departments = [];
 
-            foreach ($departments as $department) {
-                $table->addMetaData('filterOptions', [
-                    'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
-                ]);
+        if ($isTechnician) {
+            $departmentGateway = $container->get(DepartmentGateway::class);
+            if ($techDeptFilter) {
+                $departments[] = $departmentGateway->getByID($techGroup['departmentID']);
+            } else {
+                $departments = $departmentGateway->selectDepartments()->toDataSet();
             }
         } else {
-            $subcategoryGateway = $container->get(SubcategoryGateway::class);
+            $gibbonRoleID = $gibbon->session->get('gibbonRoleIDCurrent');
+            $departmentPermissionGateway = $container->get(DepartmentPermissionsGateway::class);
+            $departmentPermissionCriteria = $departmentPermissionGateway->newQueryCriteria()
+                ->filterBy('gibbonRoleID', $gibbonRoleID)
+                ->sortBy(['departmentName']);
+
+            $departments = $departmentPermissionGateway->queryDeptPerms($departmentPermissionCriteria);
+        }
+
+        $subcategoryGateway = $container->get(SubcategoryGateway::class);
+        foreach ($departments as $department) {
+            $table->addMetaData('filterOptions', [
+                'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
+            ]);
+
             $subcategoryCriteria = $subcategoryGateway->newQueryCriteria(true)
-                ->filterBy('departmentID', $techGroup['departmentID'])
-                ->sortBy(['departmentName', 'subcategoryName']);
+                ->filterBy('departmentID', $department['departmentID'])
+                ->sortBy(['subcategoryName']);
 
             $subcategories = $subcategoryGateway->querySubcategories($subcategoryCriteria);
             foreach ($subcategories as $subcategory) {
                 $table->addMetaData('filterOptions', [
-                    'subcategoryID:' . $subcategory['subcategoryID'] => __('Subcategory') . ': ' . $subcategory['departmentName'] . ' - ' . $subcategory['subcategoryName'],
+                    'subcategoryID:' . $subcategory['subcategoryID'] => '&emsp;' . __('Subcategory') . ': ' . $subcategory['departmentName'] . ' - ' . $subcategory['subcategoryName'],
                 ]);
             }
         }
