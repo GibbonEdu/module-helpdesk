@@ -34,12 +34,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
     }
 
     //I do this to control the order, there is probably another way, until then, too bad!
-    $settings = array(
+    $settings = [
         'simpleCategories',
         'issueCategory',
         'issuePriority',
         'issuePriorityName',
-    );
+    ];
 
     $settingGateway = $container->get(SettingGateway::class);
 
