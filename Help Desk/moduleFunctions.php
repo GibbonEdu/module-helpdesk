@@ -17,9 +17,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\User\RoleGateway;
+use Psr\Container\ContainerInterface;
+
 function explodeTrim($commaSeperatedString) {
     //This could, in theory, be made for effiicent, however, I don't care to do so.
     return array_filter(array_map('trim', explode(',', $commaSeperatedString)));
+}
+
+function getRoles(ContainerInterface $container) {
+	$roleGateway = $container->get(RoleGateway::class);
+    $criteria = $roleGateway->newQueryCriteria()
+        ->sortBy(['gibbonRole.name']);
+
+    return array_reduce($roleGateway->queryRoles($criteria)->toArray(), function ($group, $role) {
+        $group[$role['gibbonRoleID']] = __($role['name']) . ' (' . __($role['category']) . ')';
+        return $group; 
+    });
 }
 
 ?>
