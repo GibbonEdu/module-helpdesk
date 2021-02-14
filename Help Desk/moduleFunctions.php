@@ -33,7 +33,7 @@ function getRoles(ContainerInterface $container) {
     return array_reduce($roleGateway->queryRoles($criteria)->toArray(), function ($group, $role) {
         $group[$role['gibbonRoleID']] = __($role['name']) . ' (' . __($role['category']) . ')';
         return $group; 
-    });
+    }, []);
 }
 
 ?>
