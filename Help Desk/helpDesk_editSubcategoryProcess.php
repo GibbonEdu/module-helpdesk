@@ -63,7 +63,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     }
 
-    $data = array('subcategoryName' => $subcategoryName, 'departmentID' => $departmentID);
+    $data = ['subcategoryName' => $subcategoryName, 'departmentID' => $departmentID];
 
     if (!$subcategoryGateway->unique($data, ['subcategoryName', 'departmentID'], $subcategoryID)) {
     	$URL .= '&return=error7';
@@ -79,7 +79,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     }
 
     $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Subcategory Edited', array('subcategoryID' => $subcategoryID), null);
+    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Subcategory Edited', ['subcategoryID' => $subcategoryID], null);
 
     $URL .= '&return=success0';
     header("Location: {$URL}");

@@ -43,7 +43,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $row->addLabel('subcategoryName', __('Subcategory Name'));
             $row->addTextField('subcategoryName')
                 ->required()
-                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createSubcategoryAjax.php', array('departmentID' => $departmentID))
+                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createSubcategoryAjax.php', ['departmentID' => $departmentID])
                 ->maxLength(55);
 
         $row = $form->addRow();

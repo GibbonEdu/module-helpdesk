@@ -66,9 +66,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                     throw new PDOException('Invalid gibbonModuleID.');
                 }
 
-                $data = array('technicianID' => $technicianID, 'status' => 'Pending');
-                
-                if (!$issueGateway->update($issueID, $data)) {
+                if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
                     throw new PDOException('Could not update issue.');
                 }
             } catch (PDOException $e) {
@@ -80,9 +78,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
             setNotification($connection2, $guid, $issue['gibbonPersonID'], 'A technician has started working on your isuse.', 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
 
-            $array = array('issueID' => $issueID, 'technicianID' => $technicianID);
-
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Accepted', $array, null);
+            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Accepted', ['issueID' => $issueID, 'technicianID' => $technicianID], null);
 
             //Success 1 aka Accepted
             $URL .= '&return=success0';

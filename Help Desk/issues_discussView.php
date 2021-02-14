@@ -84,12 +84,12 @@ if (!isModuleAccessible($guid, $connection2)) {
             } else {    
                 $ownerRole = 'Staff';
             }
-            $detailsData = array(
+            $detailsData = [
                 'issueID' => $issueID,
                 'owner' => Format::nameLinked($owner['gibbonPersonID'], $owner['title'] , $owner['preferredName'] , $owner['surname'] , $ownerRole),
                 'technician' => $hasTechAssigned ? Format::name($technician['title'] , $technician['preferredName'] , $technician['surname'] , 'Student') : __('Unassigned'),
                 'date' => Format::date($issue['date']),
-            );
+            ];
 
             $table = DataTable::createDetails('details');
             $table->setTitle($issue['issueName']);

@@ -162,7 +162,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 break;
 
             case 'Pending':
-                $statusFilter = array();
+                $statusFilter = [];
                 break;
         }   
     }

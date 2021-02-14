@@ -45,7 +45,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $techs = array_reduce($technicianGateway->selectTechnicians()->fetchAll(), function ($group, $item) {
             $group[$item['technicianID']] = Format::name($item['title'], $item['preferredName'], $item['surname'], 'Student', true) . ' (' . $item['groupName'] . ')';
             return $group;
-        }, array());
+        }, []);
 
         unset($techs[$technicianID]);
         $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID, false, false);

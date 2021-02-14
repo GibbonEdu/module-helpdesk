@@ -65,7 +65,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
 
     $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
 
-    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Removed', array('newGroupID' => $newGroupID), null);
+    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Removed', ['newGroupID' => $newGroupID], null);
 
     //Success 0
     $URL .= '&return=success0';

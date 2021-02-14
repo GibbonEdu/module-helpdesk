@@ -46,7 +46,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $data = array('departmentName' => $departmentName, 'departmentDesc' => $departmentDesc);
+            $data = ['departmentName' => $departmentName, 'departmentDesc' => $departmentDesc];
 
             $departmentGateway = $container->get(DepartmentGateway::class);
 
@@ -63,11 +63,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
 
             foreach ($roles AS $role) {
-                $data = array('departmentID' => $departmentID, 'gibbonRoleID' => $role);
+                $data = ['departmentID' => $departmentID, 'gibbonRoleID' => $role];
                 $departmentPermissionsGateway->insert($data);
             }
-            
-            
             
         } catch (PDOException $e) {
             $URL .= '&return=error2';
@@ -75,7 +73,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Department Added', array('departmentID' => $departmentID), null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Department Added', ['departmentID' => $departmentID], null);
 
         //Success 0
         $URL .= "&departmentID=$departmentID&return=success0";

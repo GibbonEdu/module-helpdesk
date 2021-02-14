@@ -31,7 +31,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 } else {
     //Proceed!
     if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, array('errorA' => 'Cannot delete last technician group.'));
+        returnProcess($guid, $_GET['return'], null, ['errorA' => 'Cannot delete last technician group.']);
     }
 
     $manageTechnicians = isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php');

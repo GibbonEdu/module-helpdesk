@@ -67,9 +67,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $data = array('status' => $status);
-
-            if (!$issueGateway->update($issueID, $data)) {
+            if (!$issueGateway->update($issueID, ['status' => $status])) {
                 throw new PDOException('Failed to update Issue');
             }
         } catch (PDOException $e) {
@@ -90,7 +88,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             } 
         }
 
-        $array = array('issueID' => $issueID);
+        $array = ['issueID' => $issueID];
 
         $technicianGateway = $container->get(TechnicianGateway::class);
         $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);

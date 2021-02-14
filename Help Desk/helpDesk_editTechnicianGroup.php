@@ -48,12 +48,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $departmentGateway = $container->get(DepartmentGateway::class);
         $departmentData = $departmentGateway->selectDepartments()->toDataSet();
 
-        $statuses = array(
-            'All' =>__('All'),
-            'UP' =>__('Unassigned & Pending'),
-            'PR' =>__('Pending & Resolved'), 
-            'Pending' =>__('Pending')
-        );
+        $statuses = [
+            'All'       =>  __('All'),
+            'UP'        =>  __('Unassigned & Pending'),
+            'PR'        =>  __('Pending & Resolved'), 
+            'Pending'   =>  __('Pending')
+        ];
 
         $form = Form::create('editTechnicianGroup', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
         $form->addHiddenValue('address', $gibbon->session->get('address'));
@@ -64,7 +64,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row = $form->addRow();
             $row->addLabel('groupName', __('Group Name'));
             $row->addTextField('groupName')
-                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', array('currentGroupName' => $values['groupName']))
+                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', ['currentGroupName' => $values['groupName']])
                 ->required()
                 ->setValue($values['groupName']);
 

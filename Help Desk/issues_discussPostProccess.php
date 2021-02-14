@@ -72,10 +72,15 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $data = array('issueID' => $issueID, 'comment' => $comment, 'timestamp' => date('Y-m-d H:i:s'), 'gibbonPersonID' => $gibbonPersonID);
             $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
 
-            $issueDiscussID = $issueDiscussGateway->insert($data);
+            $issueDiscussID = $issueDiscussGateway->insert([
+                'issueID' => $issueID,
+                'comment' => $comment,
+                'timestamp' => date('Y-m-d H:i:s'),
+                'gibbonPersonID' => $gibbonPersonID
+            ]);
+            
             if ($issueDiscussID === false) {
                 throw new PDOException('Could not insert comment.');
             }
@@ -102,7 +107,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             } 
         }
 
-        $array = array('issueDiscussID' => $issueDiscussID);
+        $array = ['issueDiscussID' => $issueDiscussID];
 
         if ($isTech) {
             $array['technicianID'] = $technician->fetch()['technicianID'];

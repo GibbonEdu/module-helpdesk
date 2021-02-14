@@ -46,7 +46,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $data = array('groupName' => $groupName);
+            $data = ['groupName' => $groupName];
 
             $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -66,7 +66,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', array('groupID' => $groupID), null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', ['groupID' => $groupID], null);
 
         //Success 0
         $URL .= "&groupID=$groupID&return=success0";

@@ -41,7 +41,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($technicianID) || empty($values)) {
         $page->addError(__('No Technician selected.'));
     } else {
-        $data = array();
         $sql = 'SELECT groupID as value, groupName as name FROM helpDeskTechGroups ORDER BY helpDeskTechGroups.groupID ASC';
 
         $form = Form::create('setTechGroup',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_setTechGroupProcess.php?technicianID=' . $technicianID, 'post');
@@ -50,7 +49,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row = $form->addRow();
             $row->addLabel('group', __('Technician Group'));
             $row->addSelect('group')
-                ->fromQuery($pdo, $sql, $data)
+                ->fromQuery($pdo, $sql, [])
                 ->selected($values['groupID'])
                 ->required(); 
 

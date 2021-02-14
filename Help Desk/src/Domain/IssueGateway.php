@@ -130,7 +130,7 @@ class IssueGateway extends QueryableGateway
 
     //This can probably be simplfied, however, for now it works.
     public function getPeopleInvolved($issueID) {
-        $people = array();
+        $people = [];
 
         $query = $this
             ->newQuery()

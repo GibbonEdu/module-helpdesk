@@ -50,8 +50,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $data = array('groupID' => $group);
-            if (!$technicianGateway->update($technicianID, $data)) {
+            if (!$technicianGateway->update($technicianID, ['groupID' => $group])) {
                 throw new PDOException('Failed to update technician.');
             }
         }
@@ -61,8 +60,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             exit();
         }
 
-        $array = array('technicianID' => $technicianID, 'groupID' => $group);
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Set', $array, null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Set', ['technicianID' => $technicianID, 'groupID' => $group], null);
 
         //Success 0
         $URL .= '/helpDesk_manageTechnicians.php&return=success0';

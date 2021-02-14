@@ -32,7 +32,7 @@ if (empty($gibbon->session->get('gibbonPersonID')) || empty($gibbon->session->ge
     	die();
     }
 
-    $data = array('departmentName' => $departmentName);
+    $data = ['departmentName' => $departmentName];
     $sql = 'SELECT COUNT(*) FROM helpDeskDepartments WHERE departmentName=:departmentName';
     $result = $pdo->executeQuery($data, $sql);
 
