@@ -132,16 +132,13 @@ if (!isModuleAccessible($guid, $connection2)) {
         $techDepartment = null;
     }
 
-    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation, $techDepartment);
-
-    $mode = 'owner';
-
-    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
-        $mode = 'all';
-    } else if ($isTechnician) {
-        $mode = 'tech';
+    $techViewIssueStatus = $techGroup['viewIssueStatus'] ?? null;
+    if ($fullAccess) {
+        $techViewIssueStatus = null;
     }
-    
+
+    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation, $techViewIssueStatus, $techDepartment);
+
     $table = DataTable::createPaginated('issues', $criteria);
     $table->setTitle('Issues');
     
@@ -172,7 +169,6 @@ if (!isModuleAccessible($guid, $connection2)) {
     */
 
     $table->addMetaData('filterOptions', $statusFilter);
-
 
     if ($simpleCategories) {
         $categoryFilters = explodeTrim($settingsGateway->getSettingByScope($moduleName, 'issueCategory'));
@@ -229,35 +225,13 @@ if (!isModuleAccessible($guid, $connection2)) {
     //FILTERS END    
     
     //Row Modifiers
-    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway, $mode, $techGroup) {
+    $table->modifyRows(function($issue, $row) {
         if ($issue['status'] == 'Resolved') {
             $row->addClass('current');
         } else if ($issue['status'] == 'Unassigned') {
             $row->addClass('error');
         } else if ($issue['status'] == 'Pending') {
             $row->addClass('warning');
-        }
-        
-        if ($mode == 'owner') {
-            if ($issue['gibbonPersonID'] != $gibbonPersonID) {
-                $row = null;
-            }
-        } else if ($mode == 'tech') {
-            if ($issue['techPersonID'] != $gibbonPersonID && $issue['gibbonPersonID'] != $gibbonPersonID) {
-                $viewIssueStatus = $techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssueStatus');
-
-                if ($viewIssueStatus == 'PR' && $issue['status'] == 'Unassigned') {
-                    $row = null;
-                } else if ($viewIssueStatus == 'UP' && $issue['status'] == 'Resolved') {
-                    $row = null;
-                } else if ($viewIssueStatus == 'Pending' && $issue['status'] != 'Pending') {
-                    $row = null;
-                }
-
-                if ($techGroup['departmentID'] != null && $issue['departmentID'] != $techGroup['departmentID']) {
-                    $row = null;
-                }
-            }
         }
 
         return $row;
