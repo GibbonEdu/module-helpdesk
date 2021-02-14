@@ -71,7 +71,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 $row->addLabel('technician', __('Technician'));
                 $select = $row->addSelect('technician')
                     ->fromArray($techs)
-                    ->isRequired();
+                    ->required();
                 
                 if ($isReassign) {
                     $select->selected($issue['technicianID']); 

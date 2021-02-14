@@ -184,7 +184,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     $column->addEditor('comment', $guid)
                         ->setRows(5)
                         ->showMedia()
-                        ->isRequired();
+                        ->required();
                 
                 $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');;
                     $row->addFooter();

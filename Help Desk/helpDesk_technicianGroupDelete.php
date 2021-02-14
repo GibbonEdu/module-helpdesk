@@ -55,7 +55,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 $row->addSelect('group')
                     ->fromQuery($pdo, $sql, $data)
                     ->placeholder()
-                    ->isRequired(); 
+                    ->required(); 
 
             $row = $form->addRow();
                 $row->addFooter();

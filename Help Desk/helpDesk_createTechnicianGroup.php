@@ -44,7 +44,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row->addLabel('groupName', __('Group Name'));
         $row->addTextField('groupName')
             ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php')
-            ->isRequired();
+            ->required();
 
     $row = $form->addRow();
         $row->addFooter();

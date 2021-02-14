@@ -60,14 +60,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row->addSelectPerson('person')
             ->fromArray($users)
             ->placeholder()
-            ->isRequired();
+            ->required();
 
     $row = $form->addRow();
         $row->addLabel('group', __('Technician Group'));
         $row->addSelect('group')
             ->fromQuery($pdo, $groupSql, $data)
             ->placeholder()
-            ->isRequired(); 
+            ->required(); 
 
     $row = $form->addRow();
         $row->addFooter();

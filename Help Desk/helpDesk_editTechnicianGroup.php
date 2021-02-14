@@ -65,7 +65,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $row->addLabel('groupName', __('Group Name'));
             $row->addTextField('groupName')
                 ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', array('currentGroupName' => $values['groupName']))
-                ->isRequired()
+                ->required()
                 ->setValue($values['groupName']);
 
         if (count($departmentData) > 0) {
@@ -91,7 +91,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 ->description(__('Choose what issue statuses the technicians can view.') . '<br/>' . Format::bold(__('Note: The "All" setting does not act like the "Allow View All Issues" setting (i.e. The option will only show the technician\'s own issues and the isssues they are assigned).')));
             $row->addSelect('viewIssueStatus')
                 ->fromArray($statuses)
-                ->isRequired()
+                ->required()
                 ->selected($values['viewIssueStatus']);
 
         $row = $form->addRow();

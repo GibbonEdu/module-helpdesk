@@ -52,7 +52,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $row->addSelect('group')
                 ->fromQuery($pdo, $sql, $data)
                 ->selected($values['groupID'])
-                ->isRequired(); 
+                ->required(); 
 
         $form->loadAllValuesFrom($values);
         
