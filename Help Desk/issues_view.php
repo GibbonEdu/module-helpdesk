@@ -64,7 +64,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     $isTechnician = $technician->isNotEmpty();
     $techGroup = $techGroupGateway->getByID($isTechnician ? $technician->fetch()['groupID'] : ''); 
     $fullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
-    $techDeptFilter = $isTechnician && !empty($techGroup['departmentID']) && !$fullAccess;
+    $techDeptFilter = $isTechnician && !empty($techGroup['departmentID']) && !$fullAccess && ($relation != 'My Issues');
        
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
