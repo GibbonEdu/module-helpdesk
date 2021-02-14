@@ -22,8 +22,6 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
     ->add(__('Techncian Statistics'));

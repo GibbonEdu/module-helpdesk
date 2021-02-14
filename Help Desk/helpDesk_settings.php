@@ -20,8 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\Form;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 $page->breadcrumbs->add(__('Manage Help Desk Settings'));
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settings.php')) {

@@ -22,8 +22,6 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));

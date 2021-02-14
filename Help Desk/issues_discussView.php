@@ -31,8 +31,6 @@ use Gibbon\Domain\User\UserGateway;
 use Gibbon\Domain\School\FacilityGateway;
 use Gibbon\View\View;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 $page->breadcrumbs->add(__('Discuss Issue'));
 
 if (!isModuleAccessible($guid, $connection2)) {

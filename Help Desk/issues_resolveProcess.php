@@ -26,8 +26,6 @@ $_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
-
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {

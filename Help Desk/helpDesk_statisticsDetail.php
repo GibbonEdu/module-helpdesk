@@ -26,8 +26,6 @@ use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 use Gibbon\Domain\User\UserGateway;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 $page->breadcrumbs
     ->add(__('Statistics'), 'helpDesk_statistics.php')
     ->add(__('Detailed Statistics'));

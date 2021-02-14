@@ -16,12 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+use Gibbon\Domain\User\RoleGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
-use Gibbon\Domain\User\RoleGateway;
-require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
+require_once '../../gibbon.php';
 
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartment.php';
 
@@ -33,13 +33,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentName = $_POST['departmentName'] ?? '';
     $departmentDesc = $_POST['departmentDesc'] ?? '';
     $roles = $_POST['roles'] ?? '';
+
     if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128 || empty($roles)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
         //Write to database
-
         try {
             $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
             if ($gibbonModuleID == null) {
