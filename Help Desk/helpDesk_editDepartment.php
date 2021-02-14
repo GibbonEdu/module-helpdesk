@@ -20,10 +20,9 @@ use Gibbon\Forms\Form;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
-use Gibbon\Domain\User\RoleGateway;
-
-
 use Gibbon\Tables\DataTable;
+
+require_once __DIR__ . '/moduleFunctions.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     //Acess denied
@@ -35,7 +34,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentGateway = $container->get(DepartmentGateway::class);
     $department = $departmentGateway->getByID($departmentID);
     
-    if (empty($departmentID) || empty($department)) {
+    if (empty($department)) {
         $page->addError(__('No Department Selected.'));
     } else {
         $page->breadcrumbs
@@ -48,6 +47,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             returnProcess($guid, $_GET['return'], null, null);
         }
 
+        $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
+        $criteria = $departmentPermissionsGateway->newQueryCriteria()
+            ->filterBy('departmentID', $departmentID);
+
+        $selectedRoles = $departmentPermissionsGateway->queryDeptPerms($criteria)->getColumn('gibbonRoleID');
+
+        //Edit Form
         $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/helpDesk_editDepartmentProcess.php', 'post');
         $form->setTitle($department['departmentName']);
         $form->addHiddenValue('address', $gibbon->session->get('address'));
@@ -58,33 +64,22 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $row->addTextField('departmentName')
                 ->maxLength(55)
                 ->uniqueField('./modules/' . $moduleName . '/helpDesk_createDepartmentAjax.php', ['currentDepartmentName' => $department['departmentName']])
-                ->isRequired();
+                ->required();
             
         $row = $form->addRow();
             $row->addLabel('departmentDesc', __('Department Description'));
             $row->addTextField('departmentDesc')
                 ->maxLength(128)
-                ->isRequired();
+                ->required();
              
-            
-        $roleGateway = $container->get(RoleGateway::class);
-        // CRITERIA
-        $criteria = $roleGateway->newQueryCriteria()
-        ->sortBy(['gibbonRole.name']);
-        $arrRoles = array();
-        $roles = $roleGateway->queryRoles($criteria);
-
-        $row = $form->addRow();
-        foreach ($roles AS $role) {
-            $arrRoles[$role['gibbonRoleID']] = __($role['name'])." (".__($role['category']).")";
-        } 
-        
-        $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
-        // CRITERIA
-        $criteria = $departmentPermissionsGateway->newQueryCriteria()->filterBy('departmentID', $departmentID);
-        //TODO: selected based off queryDeptPerms
-        $row->addLabel('roles[]', __('Select Roles'))->description(__('Which roles can create issues for this department'));
-        $row->addSelect('roles[]')->fromArray($arrRoles)->selectMultiple()->setSize(6)->required()->selected($departmentPermissionsGateway->queryDeptPerms($criteria)->getColumn('gibbonRoleID'));
+        $row = $form->addRow();  
+            $row->addLabel('roles', __('Select Roles'))->description(__('Which roles can create issues for this department'));
+            $row->addSelect('roles')
+                ->fromArray(getRoles($container))
+                ->selectMultiple()
+                ->setSize(6)
+                ->required()
+                ->selected($selectedRoles);
         
         $form->loadAllValuesFrom($department);
      

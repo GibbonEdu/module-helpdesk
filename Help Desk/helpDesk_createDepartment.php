@@ -16,8 +16,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 use Gibbon\Forms\Form;
-use Gibbon\Domain\User\RoleGateway;
+
+require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs
     ->add(__('Manage Departments'), 'helpDesk_manageDepartments.php')
@@ -28,7 +30,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-
     if (isset($_GET['return'])) {
         $editLink = null;
         if (isset($_GET['departmentID'])) {
@@ -45,28 +46,21 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row->addTextField('departmentName')
             ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentAjax.php')
             ->maxLength(55)
-            ->isRequired();
+            ->required();
             
     $row = $form->addRow();
         $row->addLabel('departmentDesc', __('Department Description'));
         $row->addTextField('departmentDesc')
             ->maxLength(128)
-            ->isRequired();
-    $roleGateway = $container->get(RoleGateway::class);
-    // CRITERIA
-    $criteria = $roleGateway->newQueryCriteria()
-    ->sortBy(['gibbonRole.name']);
-    $arrRoles = array();
-    $roles = $roleGateway->queryRoles($criteria);
+            ->required();
 
-    foreach ($roles AS $role) {
-        $arrRoles[$role['gibbonRoleID']] = __($role['name'])." (".__($role['category']).")";
-    }                                       
     $row = $form->addRow();
         $row->addLabel('roles', __('Select Roles'))->description(__('Which roles can create issues for this department'));
-        $row->addSelect('roles')->fromArray($arrRoles)->selectMultiple()->setSize(6)->required();
-
-    
+        $row->addSelect('roles')
+            ->fromArray(getRoles($container))
+            ->selectMultiple()
+            ->setSize(6)
+            ->required();
     
     $row = $form->addRow();
         $row->addFooter();
