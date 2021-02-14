@@ -33,7 +33,7 @@ if (empty($gibbon->session->get('gibbonPersonID')) || empty($gibbon->session->ge
     	die();
     }
 
-    $data = array('departmentID' => $departmentID, 'subcategoryName' => $subcategoryName);
+    $data = ['departmentID' => $departmentID, 'subcategoryName' => $subcategoryName];
     $sql = 'SELECT COUNT(*) FROM helpDeskSubcategories WHERE departmentID=:departmentID AND subcategoryName=:subcategoryName';
     $result = $pdo->executeQuery($data, $sql);
 

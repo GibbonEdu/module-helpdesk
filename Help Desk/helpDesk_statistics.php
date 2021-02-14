@@ -86,14 +86,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_statis
 
     $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
 
-    $stats = array();
+    $stats = [];
 
     foreach ($logs as $log) {
         $stats[$log['title']] = ($stats[$log['title']] ?? 0) + 1;
     }
     ksort($stats);
 
-    $display = array();
+    $display = [];
     foreach ($stats as $key => $value) {
         array_push($display, ['name' => $key, 'value' => $value]);
     }
@@ -102,12 +102,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_statis
     $table = DataTable::create('statistics');
     $table->setTitle('Statistics');
     
-    $data = array(
+    $data = [
         'q' => '/modules/' . $gibbon->session->get('module') . '/helpDesk_statisticsDetail.php',
         'title' => '', 
         'startDate' => $startDate, 
         'endDate' => $endDate,
-    );
+    ];
 
     $table->addColumn('name', __('Name'))
             ->format(function ($row) use ($gibbon, $data) {

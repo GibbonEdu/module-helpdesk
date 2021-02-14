@@ -33,7 +33,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         returnProcess($guid, $_GET['return'], $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php', null);
     }
 
-    $data = array();
     $groupSql = 'SELECT groupID as value, groupName as name 
                     FROM helpDeskTechGroups 
                     ORDER BY helpDeskTechGroups.groupID ASC';
@@ -46,11 +45,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                         AND helpDeskTechnicians.gibbonPersonID IS NULL
                         ORDER BY surname, preferredName';
 
-    $result = $pdo->executeQuery(array(), $peopleSql);
+    $result = $pdo->executeQuery([], $peopleSql);
     $users = array_reduce($result->fetchAll(), function ($group, $item) {
         $group[$item['gibbonPersonID']] = Format::name('', $item['preferredName'], $item['surname'], 'Student', true) . ' (' . $item['username'] . ', ' . __($item['category']) . ')';
         return $group;
-    }, array());
+    }, []);
 
     $form = Form::create('createTechnician',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianProcess.php', 'post');
     $form->addHiddenValue('address', $gibbon->session->get('address'));
@@ -60,14 +59,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row->addSelectPerson('person')
             ->fromArray($users)
             ->placeholder()
-            ->isRequired();
+            ->required();
 
     $row = $form->addRow();
         $row->addLabel('group', __('Technician Group'));
         $row->addSelect('group')
-            ->fromQuery($pdo, $groupSql, $data)
+            ->fromQuery($pdo, $groupSql, [])
             ->placeholder()
-            ->isRequired(); 
+            ->required(); 
 
     $row = $form->addRow();
         $row->addFooter();

@@ -32,7 +32,7 @@ if (empty($gibbon->session->get('gibbonPersonID')) || empty($gibbon->session->ge
         die();
     }
 
-    $data = array('groupName' => $groupName);
+    $data = ['groupName' => $groupName];
     $sql = 'SELECT COUNT(*) FROM helpDeskTechGroups WHERE groupName=:groupName';
     $result = $pdo->executeQuery($data, $sql);
 

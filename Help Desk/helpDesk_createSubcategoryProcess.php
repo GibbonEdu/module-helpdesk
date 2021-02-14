@@ -22,8 +22,6 @@ use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
-
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
@@ -57,7 +55,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             throw new PDOException('Invalid gibbonModuleID.');
         }
 
-        $data = array('subcategoryName' => $subcategoryName, 'departmentID' => $departmentID);
+        $data = ['subcategoryName' => $subcategoryName, 'departmentID' => $departmentID];
 
         $subcategoryGateway = $container->get(SubcategoryGateway::class);
 
@@ -77,7 +75,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     }
 
-    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Subcategory Added', array('subcategoryID' => $subcategoryID), null);
+    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Subcategory Added', ['subcategoryID' => $subcategoryID], null);
 
     $URL .= "&subcategoryID=$subcategoryID&return=success0";
     header("Location: {$URL}");

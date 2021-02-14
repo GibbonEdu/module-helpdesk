@@ -34,13 +34,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
     $URL .= '/helpDesk_settings.php';
 
     //Not a fan, but too bad!
-    $settings = array(
+    $settings = [
         'resolvedIssuePrivacy',
         'issuePriorityName',
         'issueCategory',
         'issuePriority',
         'simpleCategories',
-    );
+    ];
 
     $settingGateway = $container->get(SettingGateway::class);
 

@@ -22,8 +22,6 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
     ->add(__('Techncian Statistics'));
@@ -81,10 +79,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         //Stats collection
 
         //TODO: Migrate this to a gateway and honestly fix it, because it seems like it doesn't work anyways.
-        $result = getLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), getModuleIDFromName($connection2, 'Help Desk'), null, null, $startDate, $endDate, null, array('technicianID'=>$technicianID));
+        $result = getLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), getModuleIDFromName($connection2, 'Help Desk'), null, null, $startDate, $endDate, null, ['technicianID' => $technicianID]);
         $rArray = $result->fetchAll();
 
-        $items = array();
+        $items = [];
 
         foreach($rArray as $row) {
             if (!isset($items[$row['title']])) {
@@ -95,7 +93,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         }
         ksort($items);
 
-        $display = array();
+        $display = [];
         foreach ($items as $key => $value) {
             array_push($display, ['name' => $key, 'value' => $value]);
         }

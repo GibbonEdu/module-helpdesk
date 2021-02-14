@@ -23,19 +23,12 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="1.4.01";
+$version="1.4.10";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
-$url="https://github.com/raynichc/helpdesk";
+$url="https://github.com/GibbonEdu/module-helpDesk";
 
 //Module tables & gibbonSettings entries
 $tables = 0;
-
-$moduleTables[$tables++]="CREATE TABLE `helpDeskTechnicians` (
-    `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
-    `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
-    `groupID` int(4) unsigned zerofill NOT NULL,
-    PRIMARY KEY (`technicianID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskIssue` (
     `issueID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -63,12 +56,12 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskIssueDiscuss` (
     PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-$moduleTables[$tables++]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
-    VALUES
-    (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
-    (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
-    (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
-    (NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE)";
+$moduleTables[$tables++]="CREATE TABLE `helpDeskTechnicians` (
+    `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+    `groupID` int(4) unsigned zerofill NOT NULL,
+    PRIMARY KEY (`technicianID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
     `groupID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -86,17 +79,18 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
     PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, `resolveIssue`, `createIssueForOther`, `fullAccess`, `reassignIssue`, `reincarnateIssue`, `departmentID`)
-    VALUES
-    (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1, NULL),
-    (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1, NULL)";
-
-
 $moduleTables[$tables++]="CREATE TABLE `helpDeskDepartments` (
     `departmentID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
     `departmentName` varchar(55) NOT NULL,
     `departmentDesc` varchar(128) NOT NULL,
     PRIMARY KEY (`departmentID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskDepartmentPermissions` (
+    `departmentPermissionsID` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+    `departmentID` int(4) UNSIGNED ZEROFILL NOT NULL,
+    `gibbonRoleID` int(3) UNSIGNED ZEROFILL NOT NULL,
+    PRIMARY KEY (`departmentPermissionsID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskSubcategories` (
@@ -105,6 +99,18 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskSubcategories` (
     `subcategoryName` varchar(55) NOT NULL,
     PRIMARY KEY (`subcategoryID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
+$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, `resolveIssue`, `createIssueForOther`, `fullAccess`, `reassignIssue`, `reincarnateIssue`, `departmentID`)
+    VALUES
+    (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1, NULL),
+    (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1, NULL)";
+
+$moduleTables[$tables++]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
+    VALUES
+    (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
+    (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
+    (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
+    (NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE)";
 
 //Action rows
 //One array per action

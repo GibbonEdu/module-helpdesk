@@ -56,13 +56,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             header("Location: {$URL}");
             exit();
         } else {
-            $settings = array('viewIssue', 'assignIssue', 'acceptIssue', 'resolveIssue', 'createIssueForOther', 'reassignIssue', 'reincarnateIssue', 'fullAccess');
+            $settings = ['viewIssue', 'assignIssue', 'acceptIssue', 'resolveIssue', 'createIssueForOther', 'reassignIssue', 'reincarnateIssue', 'fullAccess'];
 
-            $data = array(
+            $data = [
                 'groupName' => $groupName,
                 'viewIssueStatus' => $viewIssueStatus,
                 'departmentID' => $departmentID,
-            );
+            ];
 
             foreach ($settings as $setting) {
                 $data[$setting] = isset($_POST[$setting]);
@@ -90,7 +90,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             }
 
             //Success 0
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Edited', array('groupID' => $groupID), null);
+            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Edited', ['groupID' => $groupID], null);
 
             $URL .= '&return=success0';
             header("Location: {$URL}");

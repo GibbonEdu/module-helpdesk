@@ -20,8 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\Form;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 $page->breadcrumbs->add(__('Manage Help Desk Settings'));
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settings.php')) {
@@ -34,12 +32,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
     }
 
     //I do this to control the order, there is probably another way, until then, too bad!
-    $settings = array(
+    $settings = [
         'simpleCategories',
         'issueCategory',
         'issuePriority',
         'issuePriorityName',
-    );
+    ];
 
     $settingGateway = $container->get(SettingGateway::class);
 

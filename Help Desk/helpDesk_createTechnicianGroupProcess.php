@@ -21,8 +21,6 @@ use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
-
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroup.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
@@ -46,7 +44,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $data = array('groupName' => $groupName);
+            $data = ['groupName' => $groupName];
 
             $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -66,7 +64,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', array('groupID' => $groupID), null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', ['groupID' => $groupID], null);
 
         //Success 0
         $URL .= "&groupID=$groupID&return=success0";

@@ -67,29 +67,34 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
                 $row->addSelect('category')
                     ->fromArray($categoryOptions)
                     ->placeholder()
-                    ->isRequired();
+                    ->required();
         }
     } else {
         $subcategoryGateway = $container->get(SubcategoryGateway::class);
-
+        $gibbonRoleID = $gibbon->session->get('gibbonRoleIDCurrent');
         $criteria = $subcategoryGateway->newQueryCriteria()
             ->sortBy(['departmentName', 'subcategoryName'])
+            ->filterBy('gibbonRoleID', $gibbonRoleID)
             ->fromPOST();
 
         $subcategoryData = $subcategoryGateway->querySubcategories($criteria);
 
-        if (count($subcategoryData) > 0) {
+        if ($subcategoryData->getTotalCount() == 0) {
+            $page->addError(__('No Categories exist. You will not be able to create an issue.'));
+        }
+
         $row = $form->addRow();
             $row->addLabel('subcategoryID', __('Category'));
             $row->addSelect('subcategoryID')
                 ->fromDataSet($subcategoryData, 'subcategoryID', 'subcategoryName', 'departmentName')
                 ->placeholder()
-                ->isRequired();
-        }
+                ->required();
     }
+
    $row = $form->addRow();
         $row->addLabel('gibbonSpaceID', __('Facility'));
-        $row->addSelectSpace('gibbonSpaceID')->placeholder();
+        $row->addSelectSpace('gibbonSpaceID')
+            ->placeholder();
     
     $row = $form->addRow();
         $column = $row->addColumn();
@@ -97,9 +102,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
             $column->addEditor('description', $guid)
                     ->setRows(5)
                     ->showMedia()
-                    ->isRequired();
-
-   
+                    ->required();
         
     if (count($priorityOptions) > 0) {
         $row = $form->addRow();
@@ -107,7 +110,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
             $row->addSelect('priority')
                 ->fromArray($priorityOptions)
                 ->placeholder()
-                ->isRequired();
+                ->required();
     }
     
     if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'createIssueForOther')) {

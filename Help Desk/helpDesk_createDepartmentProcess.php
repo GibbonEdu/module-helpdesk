@@ -16,11 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+use Gibbon\Domain\User\RoleGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
 
 require_once '../../gibbon.php';
-
-require_once './moduleFunctions.php';
 
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartment.php';
 
@@ -31,20 +32,21 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 } else {
     $departmentName = $_POST['departmentName'] ?? '';
     $departmentDesc = $_POST['departmentDesc'] ?? '';
-    if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128) {
+    $roles = $_POST['roles'] ?? '';
+
+    if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128 || empty($roles)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
         //Write to database
-
         try {
             $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
             if ($gibbonModuleID == null) {
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $data = array('departmentName' => $departmentName, 'departmentDesc' => $departmentDesc);
+            $data = ['departmentName' => $departmentName, 'departmentDesc' => $departmentDesc];
 
             $departmentGateway = $container->get(DepartmentGateway::class);
 
@@ -58,13 +60,20 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             if ($departmentID === false) {
                 throw new PDOException('Could not insert group.');
             }
+            $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
+
+            foreach ($roles AS $role) {
+                $data = ['departmentID' => $departmentID, 'gibbonRoleID' => $role];
+                $departmentPermissionsGateway->insert($data);
+            }
+            
         } catch (PDOException $e) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Department Added', array('departmentID' => $departmentID), null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Department Added', ['departmentID' => $departmentID], null);
 
         //Success 0
         $URL .= "&departmentID=$departmentID&return=success0";

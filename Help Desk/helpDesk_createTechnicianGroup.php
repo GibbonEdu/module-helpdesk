@@ -31,8 +31,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (isset($_GET['return'])) {
         $editLink = null;
         if (isset($_GET['groupID'])) {
-            $groupID = $_GET['groupID'];
-            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/'  . $gibbon->session->get('module') .  "/helpDesk_editTechnicianGroup.php&groupID=$groupID";
+            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/'  . $gibbon->session->get('module') .  '/helpDesk_editTechnicianGroup.php&groupID=' . $_GET['groupID'];
         }
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
@@ -44,7 +43,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row->addLabel('groupName', __('Group Name'));
         $row->addTextField('groupName')
             ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php')
-            ->isRequired();
+            ->required();
 
     $row = $form->addRow();
         $row->addFooter();

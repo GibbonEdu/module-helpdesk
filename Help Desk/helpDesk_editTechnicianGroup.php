@@ -26,8 +26,6 @@ $page->breadcrumbs
     ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
     ->add(__('Edit Technician Group')); 
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
@@ -48,12 +46,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $departmentGateway = $container->get(DepartmentGateway::class);
         $departmentData = $departmentGateway->selectDepartments()->toDataSet();
 
-        $statuses = array(
-            'All' =>__('All'),
-            'UP' =>__('Unassigned & Pending'),
-            'PR' =>__('Pending & Resolved'), 
-            'Pending' =>__('Pending')
-        );
+        $statuses = [
+            'All'       =>  __('All'),
+            'UP'        =>  __('Unassigned & Pending'),
+            'PR'        =>  __('Pending & Resolved'), 
+            'Pending'   =>  __('Pending')
+        ];
 
         $form = Form::create('editTechnicianGroup', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
         $form->addHiddenValue('address', $gibbon->session->get('address'));
@@ -64,8 +62,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row = $form->addRow();
             $row->addLabel('groupName', __('Group Name'));
             $row->addTextField('groupName')
-                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', array('currentGroupName' => $values['groupName']))
-                ->isRequired()
+                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', ['currentGroupName' => $values['groupName']])
+                ->required()
                 ->setValue($values['groupName']);
 
         if (count($departmentData) > 0) {
@@ -91,7 +89,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 ->description(__('Choose what issue statuses the technicians can view.') . '<br/>' . Format::bold(__('Note: The "All" setting does not act like the "Allow View All Issues" setting (i.e. The option will only show the technician\'s own issues and the isssues they are assigned).')));
             $row->addSelect('viewIssueStatus')
                 ->fromArray($statuses)
-                ->isRequired()
+                ->required()
                 ->selected($values['viewIssueStatus']);
 
         $row = $form->addRow();

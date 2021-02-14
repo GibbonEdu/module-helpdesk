@@ -22,8 +22,6 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
@@ -55,7 +53,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             $techs = array_reduce($technicianGateway->selectTechnicians()->fetchAll(), function ($group, $item) {
                 $group[$item['technicianID']] = Format::name($item['title'], $item['preferredName'], $item['surname'], 'Student', true) . ' (' . $item['groupName'] . ')';
                 return $group;
-            }, array());
+            }, []);
 
             $ownerTech = $technicianGateway->getTechnicianByPersonID($issue['gibbonPersonID']);
             if($ownerTech->isNotEmpty()) {
@@ -65,13 +63,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             $form = Form::create('assignIssue',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
             $form->addHiddenValue('address', $gibbon->session->get('address'));
 
-            $data = array('issueID' => $issueID);
-                
             $row = $form->addRow();
                 $row->addLabel('technician', __('Technician'));
                 $select = $row->addSelect('technician')
                     ->fromArray($techs)
-                    ->isRequired();
+                    ->required();
                 
                 if ($isReassign) {
                     $select->selected($issue['technicianID']); 

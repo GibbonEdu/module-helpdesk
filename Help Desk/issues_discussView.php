@@ -31,8 +31,6 @@ use Gibbon\Domain\User\UserGateway;
 use Gibbon\Domain\School\FacilityGateway;
 use Gibbon\View\View;
 
-require_once __DIR__ . '/moduleFunctions.php';
-
 $page->breadcrumbs->add(__('Discuss Issue'));
 
 if (!isModuleAccessible($guid, $connection2)) {
@@ -79,13 +77,17 @@ if (!isModuleAccessible($guid, $connection2)) {
             
             $userGateway = $container->get(UserGateway::class);
             $owner = $userGateway->getByID($issue['gibbonPersonID']);
-
-            $detailsData = array(
+            if ($owner['gibbonRoleIDPrimary'] == '003' ) {
+                $ownerRole = 'Student';
+            } else {    
+                $ownerRole = 'Staff';
+            }
+            $detailsData = [
                 'issueID' => $issueID,
-                'owner' => Format::nameLinked($owner['gibbonPersonID'], $owner['title'] , $owner['preferredName'] , $owner['surname'] , 'Staff'),
+                'owner' => Format::nameLinked($owner['gibbonPersonID'], $owner['title'] , $owner['preferredName'] , $owner['surname'] , $ownerRole),
                 'technician' => $hasTechAssigned ? Format::name($technician['title'] , $technician['preferredName'] , $technician['surname'] , 'Student') : __('Unassigned'),
                 'date' => Format::date($issue['date']),
-            );
+            ];
 
             $table = DataTable::createDetails('details');
             $table->setTitle($issue['issueName']);
@@ -180,7 +182,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     $column->addEditor('comment', $guid)
                         ->setRows(5)
                         ->showMedia()
-                        ->isRequired();
+                        ->required();
                 
                 $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');;
                     $row->addFooter();
@@ -215,4 +217,6 @@ if (!isModuleAccessible($guid, $connection2)) {
         }
     }
 }
-?>
+
+
+

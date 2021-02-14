@@ -1,27 +1,275 @@
 CHANGELOG
 =========
 
-v0.0.01
+v1.4.10
 -------
-First Release.
+Adds permission filters.
+Fixed issues_view.php filtering.
 
-v0.0.02
+v1.4.01
 -------
-Fixed an issue with issues_assignProcess.php where a user would not be redirected.
-Added a button above the Table on issues_view.php to go to issues_submit.php.
-Set default for category and priority drop downs in issues_submit.php to 'Please Select'.
-Added Live Verification to the inputs in issues_submit.php.
-Deleted Create Technicians Action in manifest.php.
-Added Manage Technicians Action in manifest.php.
-Added issues_manage_technicians.php.
-Added issues_techniciansDeleteProcess.php.
-Fixed 2 issues with the table in issues_manage_technicians.php
-Fixed an issues with the drop down menu in issues_createTechnicians.php where you could make a technician a technician.
-Fixed Security Issues with issues_discuss_view_post.php and issues_discuss_postProcess.php.
-Fixed Security Issue with issues_technicianDeleteProcess.php.
-Fixed an issue with the table in issues_manage_technicians.php.
-Fixed an issue with issues_createTechnician.php
-Updated issues_technicianDeleteProcess.php so it deletes all related data in the helpDeskIssues table.
+Fixed Bug where Facility would not display on Issue Discuss page.
+
+v1.4.00
+-------
+Removed Privacy Setting.
+Fixed Facility Sorting Bug.
+Fixed Department Filter Bug.
+
+v1.3.00
+-------
+Implemented Departments and Subcategories.
+Added setting to enable/disalbe simple categories.
+Added edit links for Technicians in Manage Tech Groups.
+Added edit links for Tech Groups in Manage Technicians.
+
+v1.2.06
+-------
+Fixed issue discuss post permission typo
+
+v1.2.05
+-------
+Fixed issue discuss bug
+Fixed non-full status technicians displaying
+
+v1.2.04
+-------
+Fixed acceptIssue permission check not working
+
+v1.2.03
+-------
+Fixed Technician working on bug.
+Fixed Issue View bug
+
+v1.2.02
+-------
+Properly added Ashton Power to Authors.
+
+v1.2.01
+-------
+Updated Authors to include Ashton Power
+Fixed descriptions on issues view.
+Fixed version.php to show correct version.
+
+v1.2.00
+-------
+OO Update
+hand full of bug fixes
+
+v1.1.05
+-------
+Update manifest tables to use InnoDB storage engine
+
+v1.1.04
+-------
+Fixed a bug that would prevent helpDesk_manageTechnicianGroup.php from loading.
+
+v1.1.03
+-------
+Fixed a bug that would prevent a user from creating an issue.
+Fixed a bug that would prevent a user from viewing their own issue.
+
+v1.1.02
+-------
+Properly fixed the installation bug.
+
+v1.1.01
+-------
+Fixed an installation bug.
+
+v1.1.00
+-------
+Updated format to match Gibbon Core.
+Implemented new Return System.
+Removed Log compatibility
+Fixed an issue where helpDesk_statisticsDetail.php would default the title to the "Issue Created (for Another Person)".
+
+v1.0.02
+-------
+If the date is null it will no longer show as "30/11/-0001".
+
+v1.0.01
+-------
+Fixed Default groups not being added when first installing.
+Added Gibbon v10 Compatibility.
+Fixed date not passing through in when creating an issue.
+Fixed %issueName% showing up in helpDesk_statisticsDetail.php.
+
+v1.0.00
+-------
+Fixed an issue with issues_createProcess.php.
+Added Year Filter.
+Added Default groups when first installed.
+
+v0.4.20
+-------
+Implemented Logs into Help Desk.
+Changed Category of Help Desk Settings to "Admin".
+Changed Category of Manage Technicians to "Technician".
+Changed Category of Manage Technician Groups to "Technician".
+Added Statistics action.
+Created helpDesk_statistics.php and helpDesk_technicianStats.php
+Fixed a bug where the Issue Filter was not being used.
+Added helpDesk_statisticsDetail.php.
+Added the ability to only have one Technician Group show up in helpDesk_manageTechnicianGroup.php.
+Changed text "No one" text in helpDesk_manageTechnicianGroup.php to "No one is currently in this group.".
+Added the ability to highlight(in red) a post in issues_discussView.php.
+Added Stats button in helpDesk_technicianID.php.
+Added Technician Stats.
+
+v0.4.10
+-------
+Changed default privacy of issue to Related (Note: The system default are set to Everyone).
+Added a privacy drop down in issues_create.php.
+Arrange sidebar links into categories
+Added privacy setting to issue_discussView.php.
+Added ability to change privacy setting by clicking on the privacy setting text in issue_disucssView.php.
+Made the privacy setting affect multiple areas.
+Made descriptions shorter and stripped the tags off in issues_view.php.
+
+v0.4.00
+-------
+Cleaned up functions.
+Changed textareas to a Wysiwyg.
+Made issues_view.php full width.
+Fixed bug where a table data would not take up all of the rows.
+Changed coloring of rows to represent the status of the issue
+Changed the ordering of the rows to order by status, priority, date, issueID.
+Added Assigned Technician column to issues_view.php.
+Fixed bug where issues_assignProcess.php would send you no where.
+Fixed and updated notifications along with adding new ones.
+Change order of buttons in helpDesk_manageTechnicians.php and helpDesk_manageTechnicianGroups.php.
+Added a Reincarnate Issue button and permission.
+Fixed users not being able to see their own resolved issue if they were a technician and they could not see Resolved issues.
+Added default privacy options for all issue (Privacy of specific issues coming soon!).
+
+v0.3.17
+-------
+
+v0.3.16
+-------
+Allowed Other category to have Help Desk permissions.
+
+v0.3.15
+-------
+Added notifications for accepting, assigning and reassigning issues.
+Fixed a bug which didn't allow people with Full Access to accept issues.
+
+v0.3.14
+-------
+
+v0.3.13
+-------
+Added spaces before the brackets in the notifications.
+Fixed technicians who had issues created on their behalfs getting two notifications.
+
+v0.3.12
+-------
+Added Assign button to issues_discussView.php.
+Fixed a bug where technicians would not get a notification when a post was made.
+Added a feature where the creater of an issue would will no longer get a notification.
+Added spaces before the brackets in the notifications.
+
+v0.3.11
+-------
+Combined text links with image links.
+Fixed a double notification bug.
+Added Issue Name to end of notification.
+
+v0.3.10
+-------
+Added ability to Reassign Issue.
+Added Reassign permission to Technician Groups.
+Fixed the assigning system.
+Fixed breadcrumbs on multiple files.
+
+v0.3.05
+-------
+Added row coloring to tables to fit with the rest of gibbon.
+Allowed Resolved issues to be viewed.
+
+v0.3.04
+-------
+Fixed helpDesk_setTechGroup.php not having the technicians group as a default.
+Changed some icons to others to fit the theme of the rest of gibbon.
+
+v0.3.03
+-------
+Fixed one permission having the wrong URL.
+
+v0.3.02
+-------
+Fixed some permissions having the wrong URLs.
+
+v0.3.01
+-------
+Made Manage Technician Groups a default Permission.
+Fixed helpDesk_createTechnicianGroup using the wrong permission.
+Fixed Manage Technician having the wrong entry and URLList value.
+
+v0.3.00
+-------
+Renamed Multiple Files to either have the prefix helpDesk or issues.
+Recoded the Technician System to allow for more control and in general better usage across the system.
+Added Technician Groups to allow for technician permission to be set and for easier control.
+
+v0.2.02
+-------
+Fixed an issue where technicians could not see All issues.
+
+v0.2.01
+-------
+Fixed a bug where assigning someone to an issue would give their gibbonPersonID instead of their technicianID.
+Fixed accept link not leading to the correct location in issues_discuss_view.php.
+Fixed a bug where a person could assign themselves to their own issues in issues_assign.php.
+
+v0.2.00
+-------
+Changed "Issue ID" to "ID" in multiple places.
+Changed number input to text input with Live Validation in issues_view.php.
+
+v0.1.05
+-------
+Add Issue ID to top table in issues_discuss_view.php.
+Combine Title and Description, Date and Status in issues_view.php.
+Add Issue ID as column in issues_view.php.
+Add search for Issue ID in issues_view.php.
+Give person ID when issue is created in issues_discuss_view.php.
+Add space to create in issues_view.php.
+Set Accept icon to page_new.png in issues_view.php.
+Add link to working on in issues_manage_technicians.
+
+v0.1.04
+-------
+Fixed an issue where the gibbonPersonID would not be set when creating an issue in issues_create.php.
+Fixed an issues where issues_discuss_view.php would not display properly.
+Fixed multiple misc issues. 
+
+v0.1.03
+-------
+Fixed a bug where the gibbonPersonID would sometimes not be set in issues_createProcess.php.
+Fixed having double error/success boxes ons issues_discuss_view.php.
+Fixed buttons duplicating in issues_view.php.
+Fixed one redirect not working in issue_createProcess.php
+Fixed people sometimes showing twice in issues_create.php and issues_createTechnician.php along with ordering the lists by surname, preferredName.
+Ordered list in issues_assign.php.
+
+v0.1.02
+-------
+Changed Student to Owner in issues_discuss_view.php.
+Changed Name to Owner in issues_view.php.
+Changed drop down to order by surname, preferredName in issues_createTechnicians.php.
+Changed drop down to show surname, preferredName in issues_createTechnicians.php.
+Combined Date and Title and Owner and Category in issues_view.php.
+Gave Admins full access to system.
+Changed URLList of View issues_All and View issues_All&Assign to "issues_view.php, issues_discuss_view.php" and "issues_view.php, issues_assign.php, issues_discuss_view.php" respectively.
+Changed technicianPosted to gibbonPersonID in table helpDeskIssueDiscuss.
+Fixed an issue where admins would not show their name when posting.
+Added success and failure boxes at the tops of multiple pages.
+
+v0.1.01
+-------
+Update broken in v0.1.00 fixed in this version.
 
 v0.1.00
 -------
@@ -44,267 +292,24 @@ Change background colour of technician post in issues_discuss_view.php.
 Changed Issue Filter default to "All" if available.
 Added notification for posting for issues_discuss_view.php.
 
-v0.1.01
+v0.0.02
 -------
-Update broken in v0.1.00 fixed in this version.
+Fixed an issue with issues_assignProcess.php where a user would not be redirected.
+Added a button above the Table on issues_view.php to go to issues_submit.php.
+Set default for category and priority drop downs in issues_submit.php to 'Please Select'.
+Added Live Verification to the inputs in issues_submit.php.
+Deleted Create Technicians Action in manifest.php.
+Added Manage Technicians Action in manifest.php.
+Added issues_manage_technicians.php.
+Added issues_techniciansDeleteProcess.php.
+Fixed 2 issues with the table in issues_manage_technicians.php
+Fixed an issues with the drop down menu in issues_createTechnicians.php where you could make a technician a technician.
+Fixed Security Issues with issues_discuss_view_post.php and issues_discuss_postProcess.php.
+Fixed Security Issue with issues_technicianDeleteProcess.php.
+Fixed an issue with the table in issues_manage_technicians.php.
+Fixed an issue with issues_createTechnician.php
+Updated issues_technicianDeleteProcess.php so it deletes all related data in the helpDeskIssues table.
 
-v0.1.02
+v0.0.01
 -------
-Changed Student to Owner in issues_discuss_view.php.
-Changed Name to Owner in issues_view.php.
-Changed drop down to order by surname, preferredName in issues_createTechnicians.php.
-Changed drop down to show surname, preferredName in issues_createTechnicians.php.
-Combined Date and Title and Owner and Category in issues_view.php.
-Gave Admins full access to system.
-Changed URLList of View issues_All and View issues_All&Assign to "issues_view.php, issues_discuss_view.php" and "issues_view.php, issues_assign.php, issues_discuss_view.php" respectively.
-Changed technicianPosted to gibbonPersonID in table helpDeskIssueDiscuss.
-Fixed an issue where admins would not show their name when posting.
-Added success and failure boxes at the tops of multiple pages.
-
-v0.1.03
--------
-Fixed a bug where the gibbonPersonID would sometimes not be set in issues_createProcess.php.
-Fixed having double error/success boxes ons issues_discuss_view.php.
-Fixed buttons duplicating in issues_view.php.
-Fixed one redirect not working in issue_createProcess.php
-Fixed people sometimes showing twice in issues_create.php and issues_createTechnician.php along with ordering the lists by surname, preferredName.
-Ordered list in issues_assign.php.
-
-v0.1.04
--------
-Fixed an issue where the gibbonPersonID would not be set when creating an issue in issues_create.php.
-Fixed an issues where issues_discuss_view.php would not display properly.
-Fixed multiple misc issues. 
-
-v0.1.05
--------
-Add Issue ID to top table in issues_discuss_view.php.
-Combine Title and Description, Date and Status in issues_view.php.
-Add Issue ID as column in issues_view.php.
-Add search for Issue ID in issues_view.php.
-Give person ID when issue is created in issues_discuss_view.php.
-Add space to create in issues_view.php.
-Set Accept icon to page_new.png in issues_view.php.
-Add link to working on in issues_manage_technicians.
-
-v0.2.00
--------
-Changed "Issue ID" to "ID" in multiple places.
-Changed number input to text input with Live Validation in issues_view.php.
-
-v0.2.01
--------
-Fixed a bug where assigning someone to an issue would give their gibbonPersonID instead of their technicianID.
-Fixed accept link not leading to the correct location in issues_discuss_view.php.
-Fixed a bug where a person could assign themselves to their own issues in issues_assign.php.
-
-v0.2.02
--------
-Fixed an issue where technicians could not see All issues.
-
-v0.3.00
--------
-Renamed Multiple Files to either have the prefix helpDesk or issues.
-Recoded the Technician System to allow for more control and in general better usage across the system.
-Added Technician Groups to allow for technician permission to be set and for easier control.
-
-v0.3.01
--------
-Made Manage Technician Groups a default Permission.
-Fixed helpDesk_createTechnicianGroup using the wrong permission.
-Fixed Manage Technician having the wrong entry and URLList value.
-
-v0.3.02
--------
-Fixed some permissions having the wrong URLs.
-
-v0.3.03
--------
-Fixed one permission having the wrong URL.
-
-v0.3.04
--------
-Fixed helpDesk_setTechGroup.php not having the technicians group as a default.
-Changed some icons to others to fit the theme of the rest of gibbon.
-
-v0.3.05
--------
-Added row coloring to tables to fit with the rest of gibbon.
-Allowed Resolved issues to be viewed.
-
-v0.3.10
--------
-Added ability to Reassign Issue.
-Added Reassign permission to Technician Groups.
-Fixed the assigning system.
-Fixed breadcrumbs on multiple files.
-
-v0.3.11
--------
-Combined text links with image links.
-Fixed a double notification bug.
-Added Issue Name to end of notification.
-
-v0.3.12
--------
-Added Assign button to issues_discussView.php.
-Fixed a bug where technicians would not get a notification when a post was made.
-Added a feature where the creater of an issue would will no longer get a notification.
-Added spaces before the brackets in the notifications.
-
-v0.3.13
--------
-Added spaces before the brackets in the notifications.
-Fixed technicians who had issues created on their behalfs getting two notifications.
-
-v0.3.14
--------
-
-v0.3.15
--------
-Added notifications for accepting, assigning and reassigning issues.
-Fixed a bug which didn't allow people with Full Access to accept issues.
-
-v0.3.16
--------
-Allowed Other category to have Help Desk permissions.
-
-v0.3.17
--------
-
-v0.4.00
--------
-Cleaned up functions.
-Changed textareas to a Wysiwyg.
-Made issues_view.php full width.
-Fixed bug where a table data would not take up all of the rows.
-Changed coloring of rows to represent the status of the issue
-Changed the ordering of the rows to order by status, priority, date, issueID.
-Added Assigned Technician column to issues_view.php.
-Fixed bug where issues_assignProcess.php would send you no where.
-Fixed and updated notifications along with adding new ones.
-Change order of buttons in helpDesk_manageTechnicians.php and helpDesk_manageTechnicianGroups.php.
-Added a Reincarnate Issue button and permission.
-Fixed users not being able to see their own resolved issue if they were a technician and they could not see Resolved issues.
-Added default privacy options for all issue (Privacy of specific issues coming soon!).
-
-v0.4.10
--------
-Changed default privacy of issue to Related (Note: The system default are set to Everyone).
-Added a privacy drop down in issues_create.php.
-Arrange sidebar links into categories
-Added privacy setting to issue_discussView.php.
-Added ability to change privacy setting by clicking on the privacy setting text in issue_disucssView.php.
-Made the privacy setting affect multiple areas.
-Made descriptions shorter and stripped the tags off in issues_view.php.
-
-v0.4.20
--------
-Implemented Logs into Help Desk.
-Changed Category of Help Desk Settings to "Admin".
-Changed Category of Manage Technicians to "Technician".
-Changed Category of Manage Technician Groups to "Technician".
-Added Statistics action.
-Created helpDesk_statistics.php and helpDesk_technicianStats.php
-Fixed a bug where the Issue Filter was not being used.
-Added helpDesk_statisticsDetail.php.
-Added the ability to only have one Technician Group show up in helpDesk_manageTechnicianGroup.php.
-Changed text "No one" text in helpDesk_manageTechnicianGroup.php to "No one is currently in this group.".
-Added the ability to highlight(in red) a post in issues_discussView.php.
-Added Stats button in helpDesk_technicianID.php.
-Added Technician Stats.
-
-v1.0.00
--------
-Fixed an issue with issues_createProcess.php.
-Added Year Filter.
-Added Default groups when first installed.
-
-v1.0.01
--------
-Fixed Default groups not being added when first installing.
-Added Gibbon v10 Compatibility.
-Fixed date not passing through in when creating an issue.
-Fixed %issueName% showing up in helpDesk_statisticsDetail.php.
-
-v1.0.02
--------
-If the date is null it will no longer show as "30/11/-0001".
-
-v1.1.00
--------
-Updated format to match Gibbon Core.
-Implemented new Return System.
-Removed Log compatibility
-Fixed an issue where helpDesk_statisticsDetail.php would default the title to the "Issue Created (for Another Person)".
-
-v1.1.01
--------
-Fixed an installation bug.
-
-v1.1.02
--------
-Properly fixed the installation bug.
-
-v1.1.03
--------
-Fixed a bug that would prevent a user from creating an issue.
-Fixed a bug that would prevent a user from viewing their own issue.
-
-v1.1.04
--------
-Fixed a bug that would prevent helpDesk_manageTechnicianGroup.php from loading.
-
-v1.1.05
--------
-Update manifest tables to use InnoDB storage engine
-
-v1.2.00
--------
-OO Update
-hand full of bug fixes
-
-v1.2.01
--------
-Updated Authors to include Ashton Power
-Fixed descriptions on issues view.
-Fixed version.php to show correct version.
-
-v1.2.02
--------
-Properly added Ashton Power to Authors.
-
-v1.2.03
--------
-Fixed Technician working on bug.
-Fixed Issue View bug
-
-v1.2.04
--------
-Fixed acceptIssue permission check not working
-
-v1.2.05
--------
-Fixed issue discuss bug
-Fixed non-full status technicians displaying
-
-v1.2.06
--------
-Fixed issue discuss post permission typo
-
-v1.3.00
--------
-Implemented Departments and Subcategories.
-Added setting to enable/disalbe simple categories.
-Added edit links for Technicians in Manage Tech Groups.
-Added edit links for Tech Groups in Manage Technicians.
-
-v1.4.00
--------
-Removed Privacy Setting.
-Fixed Facility Sorting Bug.
-Fixed Department Filter Bug.
-
-v1.4.01
--------
-Fixed Bug where Facility would not display on Issue Discuss page.
+First Release.

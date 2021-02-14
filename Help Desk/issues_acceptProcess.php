@@ -26,13 +26,11 @@ $_POST['address'] = '/modules/Help Desk/issues_acceptProcess.php';
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
-
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_discussView.php';
+$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
-    $URL .= '&return=error0';
+    $URL .= '/issues_view.php&return=error0';
     header("Location: {$URL}");
     exit();
 } else {
@@ -44,7 +42,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     if (empty($issueID) || empty($issue) || $issue['technicianID'] != null) {
         //Fail 3
-        $URL .= '&return=error1';
+        $URL .= '/issues_view.php&return=error1';
         header("Location: {$URL}");
         exit();
     } else {
@@ -56,6 +54,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
 
         if ($technician->isNotEmpty() && $techGroupGateway->getPermissionValue($gibbonPersonID, 'acceptIssue')) {
+            $URL .= '/issues_discussView.php&issueID=' . $issueID;  
+    
             //Write to database
             $technicianID = $technician->fetch()['technicianID'];
             try {
@@ -64,9 +64,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                     throw new PDOException('Invalid gibbonModuleID.');
                 }
 
-                $data = array('technicianID' => $technicianID, 'status' => 'Pending');
-                
-                if (!$issueGateway->update($issueID, $data)) {
+                if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
                     throw new PDOException('Could not update issue.');
                 }
             } catch (PDOException $e) {
@@ -78,16 +76,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
             setNotification($connection2, $guid, $issue['gibbonPersonID'], 'A technician has started working on your isuse.', 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
 
-            $array = array('issueID' => $issueID, 'technicianID' => $technicianID);
-
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Accepted', $array, null);
+            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Accepted', ['issueID' => $issueID, 'technicianID' => $technicianID], null);
 
             //Success 1 aka Accepted
-            $URL .= "&issueID=$issueID&return=success0";
+            $URL .= '&return=success0';
             header("Location: {$URL}");
             exit();
         } else {
-            $URL .= '&return=error0';
+            $URL .= '/issues_view.php&return=error0';
             header("Location: {$URL}");
             exit();
         }

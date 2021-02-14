@@ -40,7 +40,7 @@ class IssueGateway extends QueryableGateway
         return $results->getRow(0);
     }      
     
-    public function queryIssues($criteria) {      
+    public function queryIssues($criteria, $gibbonSchoolYearID = null, $gibbonPersonID = null, $relation = null, $viewIssueStatus = null, $departmentID = null) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
@@ -49,6 +49,34 @@ class IssueGateway extends QueryableGateway
             ->leftJoin('helpDeskSubcategories', 'helpDeskIssue.subcategoryID=helpDeskSubcategories.subcategoryID')
             ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID')
             ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID');
+
+        if (!empty($gibbonSchoolYearID)) {
+            $query->where('helpDeskIssue.gibbonSchoolYearID = :year')
+                ->bindValue('year', $gibbonSchoolYearID);
+        }
+        
+        if ($relation == 'My Issues') {
+            $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')
+                ->bindValue('gibbonPersonID', $gibbonPersonID);
+        } else {
+            if ($viewIssueStatus == 'PR') {
+                $query->where('helpDeskIssue.status <> "Unassigned"');
+            } else if ($viewIssueStatus == 'UP') {
+                $query->where('helpDeskIssue.status <> "Resolved"');
+            } else if ($viewIssueStatus == 'Pending') {
+                $query->where('helpDeskIssue.status = "Pending"');
+            }
+
+            if (!empty($departmentID)) {
+                $query->where('helpDeskSubcategories.departmentID = :departmentID')
+                    ->bindValue('departmentID', $departmentID); 
+            }
+
+            if ($relation == 'My Assigned') {
+                $query->where('techID.gibbonPersonID=:techPersonID')
+                    ->bindValue('techPersonID', $gibbonPersonID);
+            }
+        }
 
         $criteria->addFilterRules([
             'issueID' => function($query, $issueID) {
@@ -70,11 +98,6 @@ class IssueGateway extends QueryableGateway
                 return $query
                     ->where('helpDeskIssue.priority = :priority')
                     ->bindValue('priority', $priority);
-            },
-            'year' => function($query, $year) {
-                return $query
-                    ->where('helpDeskIssue.gibbonSchoolYearID = :year')
-                    ->bindValue('year', $year);
             },
             'subcategoryID' => function ($query, $subcategoryID) {
                 return $query
@@ -107,7 +130,7 @@ class IssueGateway extends QueryableGateway
 
     //This can probably be simplfied, however, for now it works.
     public function getPeopleInvolved($issueID) {
-        $people = array();
+        $people = [];
 
         $query = $this
             ->newQuery()

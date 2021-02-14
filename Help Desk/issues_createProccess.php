@@ -41,7 +41,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
 
-    $data = array(
+    $data = [
         //Default data
         'gibbonPersonID' => $gibbonPersonID,
         'createdByID' => $gibbonPersonID,
@@ -55,7 +55,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         'gibbonSpaceID' => null,
         'priority' => '',
         'subcategoryID' => null,
-    );
+    ];
 
     foreach ($data as $key => $value) {
         if (empty($value) && isset($_POST[$key])) {
@@ -139,7 +139,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         }
 
         //Log
-        $array = array('issueID' => $issueID);
+        $array = ['issueID' => $issueID];
         $title = 'Issue Created';
         if ($createdOnBehalf) {
             $array['technicianID'] = $technicianGateway->getTechnicianByPersonID($gibbonPersonID)->fetch()['technicianID'];

@@ -24,6 +24,7 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Domain\User\UserGateway;
 use Gibbon\Domain\School\FacilityGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
@@ -43,7 +44,8 @@ if (!isModuleAccessible($guid, $connection2)) {
     $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
     $moduleName = $gibbon->session->get('module');
     $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
-    
+    $relation = $_GET['relation'] ?? null;
+
     if (isset($_GET['return'])) {
         $editLink = null;
         if (isset($_GET['issueID'])) {
@@ -61,34 +63,33 @@ if (!isModuleAccessible($guid, $connection2)) {
     $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
     $isTechnician = $technician->isNotEmpty();
     $techGroup = $techGroupGateway->getByID($isTechnician ? $technician->fetch()['groupID'] : ''); 
-    $departmentID = $_GET['departmentID'] ?? $techGroup['departmentID'] ?? NULL;
     $fullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
+    $techDeptFilter = $isTechnician && !empty($techGroup['departmentID']) && !$fullAccess && ($relation != 'My Issues');
        
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
-        ->filterBy('year', $year)
-        ->filterBy('departmentID', $departmentID)
         ->sortBy('status', 'ASC')
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
-     
-    $criteria->addFilterRules([
-        'issue' => function ($query, $issue) use ($gibbon) {
-            switch($issue) {
-                case 'My Issues':
-                    $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')
-                        ->bindValue('gibbonPersonID', $gibbon->session->get('gibbonPersonID'));
-                    break;
-                case 'My Assigned':
-                    $query->where('techID.gibbonPersonID=:techPersonID')
-                        ->bindValue('techPersonID', $gibbon->session->get('gibbonPersonID'));
-                    break;
-            }
-            return $query;
-        },
-    ]);
+    
+    //Set up Relation data
+    $relations = [];
 
-    $issues = $issueGateway->queryIssues($criteria);
+    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
+        $relations[] = 'All';
+        $relation = $relation ?? 'All';
+    }
+
+    if ($isTechnician) {
+        $relations[] = 'My Assigned';
+        $relation = $relation ?? 'My Assigned';
+    }
+    
+    $relations[] = 'My Issues';
+
+    if (!in_array($relation, $relations)) {
+        $relation = 'My Issues';
+    }
 
     //Search Form
     $form = Form::create('searchForm', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
@@ -106,6 +107,14 @@ if (!isModuleAccessible($guid, $connection2)) {
         $row->addTextField('search')
             ->setValue($criteria->getSearchText());
     
+    if (count($relations) > 1) {
+        $row = $form->addRow();
+            $row->addLabel('relation', __('Relation'));
+            $row->addSelect('relation')
+                ->fromArray($relations)
+                ->selected($relation);
+    }
+
     $row = $form->addRow();
         $row->addLabel('year', __('Year Filter'));
         $row->addSelectSchoolYear('year', 'All')
@@ -116,32 +125,32 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     echo $form->getOutput();      
     
-    $mode = 'owner';
+    $simpleCategories = $settingsGateway->getSettingByScope($moduleName, 'simpleCategories');
 
-    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
-        $mode = 'all';
-    } else if ($isTechnician) {
-        $mode = 'tech';
+    $techDepartment = $techGroup['departmentID'] ?? null;
+    if ($simpleCategories || !$techDeptFilter) {
+        $techDepartment = null;
     }
-    
+
+    $techViewIssueStatus = $techGroup['viewIssueStatus'] ?? null;
+    if ($fullAccess) {
+        $techViewIssueStatus = null;
+    }
+
+    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation, $techViewIssueStatus, $techDepartment);
+
     $table = DataTable::createPaginated('issues', $criteria);
     $table->setTitle('Issues');
     
-    //FILTERS START
-    if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
-        $table->addMetaData('filterOptions', ['issue:All'    => __('Issues').': '.__('All')]);
-    }
-    if ($isTechnician) {
-        $table->addMetaData('filterOptions', ['issue:My Assigned'    => __('Issues').': '.__('My Assigned')]);
-    }
-    $table->addMetaData('filterOptions', ['issue:My Issues'    => __('Issues').': '.__('My Issues')]);
-    
+    //FILTERS START    
     $statusFilter = [
         'status:Unassigned' => __('Status').': '.__('Unassigned'),
         'status:Pending'    => __('Status').': '.__('Pending'),
         'status:Resolved'   => __('Status').': '.__('Resolved')
     ];
 
+    /*
+    Removed for simplicity
     if ($isTechnician) {
         switch($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssueStatus')) {
             case 'UP':
@@ -153,15 +162,14 @@ if (!isModuleAccessible($guid, $connection2)) {
                 break;
 
             case 'Pending':
-                $statusFilter = array();
+                $statusFilter = [];
                 break;
         }   
     }
+    */
 
     $table->addMetaData('filterOptions', $statusFilter);
 
-
-    $simpleCategories = $settingsGateway->getSettingByScope($moduleName, 'simpleCategories');
     if ($simpleCategories) {
         $categoryFilters = explodeTrim($settingsGateway->getSettingByScope($moduleName, 'issueCategory'));
         foreach  ($categoryFilters as $category) {
@@ -170,25 +178,39 @@ if (!isModuleAccessible($guid, $connection2)) {
             ]);
         }
     } else {
-        if (!$isTechnician || ($isTechnician && $techGroup['departmentID'] == null) || $fullAccess) {
-            $departmentGateway = $container->get(DepartmentGateway::class);
-            $departments = $departmentGateway->selectDepartments()->toDataSet();
+        $departments = [];
 
-            foreach ($departments as $department) {
-                $table->addMetaData('filterOptions', [
-                    'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
-                ]);
+        if ($isTechnician) {
+            $departmentGateway = $container->get(DepartmentGateway::class);
+            if ($techDeptFilter) {
+                $departments[] = $departmentGateway->getByID($techGroup['departmentID']);
+            } else {
+                $departments = $departmentGateway->selectDepartments()->toDataSet();
             }
         } else {
-            $subcategoryGateway = $container->get(SubcategoryGateway::class);
+            $gibbonRoleID = $gibbon->session->get('gibbonRoleIDCurrent');
+            $departmentPermissionGateway = $container->get(DepartmentPermissionsGateway::class);
+            $departmentPermissionCriteria = $departmentPermissionGateway->newQueryCriteria()
+                ->filterBy('gibbonRoleID', $gibbonRoleID)
+                ->sortBy(['departmentName']);
+
+            $departments = $departmentPermissionGateway->queryDeptPerms($departmentPermissionCriteria);
+        }
+
+        $subcategoryGateway = $container->get(SubcategoryGateway::class);
+        foreach ($departments as $department) {
+            $table->addMetaData('filterOptions', [
+                'departmentID:' . $department['departmentID'] => __('Department') . ': ' . $department['departmentName'],
+            ]);
+
             $subcategoryCriteria = $subcategoryGateway->newQueryCriteria(true)
-                ->filterBy('departmentID', $techGroup['departmentID'])
-                ->sortBy(['departmentName', 'subcategoryName']);
+                ->filterBy('departmentID', $department['departmentID'])
+                ->sortBy(['subcategoryName']);
 
             $subcategories = $subcategoryGateway->querySubcategories($subcategoryCriteria);
             foreach ($subcategories as $subcategory) {
                 $table->addMetaData('filterOptions', [
-                    'subcategoryID:' . $subcategory['subcategoryID'] => __('Subcategory') . ': ' . $subcategory['departmentName'] . ' - ' . $subcategory['subcategoryName'],
+                    'subcategoryID:' . $subcategory['subcategoryID'] => '&emsp;' . __('Subcategory') . ': ' . $subcategory['departmentName'] . ' - ' . $subcategory['subcategoryName'],
                 ]);
             }
         }
@@ -203,35 +225,13 @@ if (!isModuleAccessible($guid, $connection2)) {
     //FILTERS END    
     
     //Row Modifiers
-    $table->modifyRows(function($issue, $row) use ($gibbonPersonID, $techGroupGateway, $issueGateway, $mode, $techGroup) {
+    $table->modifyRows(function($issue, $row) {
         if ($issue['status'] == 'Resolved') {
             $row->addClass('current');
         } else if ($issue['status'] == 'Unassigned') {
             $row->addClass('error');
         } else if ($issue['status'] == 'Pending') {
             $row->addClass('warning');
-        }
-
-        if ($mode == 'owner') {
-            if ($issue['gibbonPersonID'] != $gibbonPersonID) {
-                $row = null;
-            }
-        } else if ($mode == 'tech') {
-            if ($issue['techPersonID'] != $gibbonPersonID && $issue['gibbonPersonID'] != $gibbonPersonID) {
-                $viewIssueStatus = $techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssueStatus');
-
-                if ($viewIssueStatus == 'PR' && $issue['status'] == 'Unassigned') {
-                    $row = null;
-                } else if ($viewIssueStatus == 'UP' && $issue['status'] == 'Resolved') {
-                    $row = null;
-                } else if ($viewIssueStatus == 'Pending' && $issue['status'] != 'Pending') {
-                    $row = null;
-                }
-
-                if ($techGroup['departmentID'] != null && $issue['departmentID'] != $techGroup['departmentID']) {
-                    $row = null;
-                }
-            }
         }
 
         return $row;

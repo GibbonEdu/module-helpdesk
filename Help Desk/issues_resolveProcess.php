@@ -26,8 +26,6 @@ $_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
-
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
@@ -60,9 +58,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                     throw new PDOException('Invalid gibbonModuleID.');
                 }
 
-                $data = array('status' => 'Resolved');
-                
-                if (!$issueGateway->update($issueID, $data)) {
+                if (!$issueGateway->update($issueID, ['status' => 'Resolved'])) {
                     throw new PDOException('Failed to update issue.');
                 }
             } catch (PDOException $e) {

@@ -41,7 +41,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($groupID) || !$techGroupGateway->exists($groupID)) {
         $page->addError(__('No group selected.'));
     } else {
-        $data = array('groupID' => $groupID);
+        $data = ['groupID' => $groupID];
         $sql = 'SELECT groupID as value, groupName as name FROM helpDeskTechGroups WHERE groupID!=:groupID ORDER BY helpDeskTechGroups.groupID ASC'; 
 
         //Make sure that there are other groups aside from the group being deleted
@@ -55,7 +55,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 $row->addSelect('group')
                     ->fromQuery($pdo, $sql, $data)
                     ->placeholder()
-                    ->isRequired(); 
+                    ->required(); 
 
             $row = $form->addRow();
                 $row->addFooter();

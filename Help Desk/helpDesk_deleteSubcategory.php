@@ -32,14 +32,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $subcategoryGateway = $container->get(SubcategoryGateway::class);
     $subcategory = $subcategoryGateway->getByID($subcategoryID);
 
-    if (empty($departmentID) || empty($subcategoryID) || empty($subcategory) || $subcategory['departmentID'] != $departmentID) {
+    if (empty($departmentID) || empty($subcategory) || $subcategory['departmentID'] != $departmentID) {
         $page->addError(__('Invalid Data Provided'));
     } else {
-        $page->breadcrumbs
-            ->add(__('Manage Departments'), 'helpDesk_manageDepartments.php')
-            ->add(__('Edit Department'), 'helpDesk_editDepartment.php', ['departmentID' => $departmentID])
-            ->add(__('Delete Subcategory'));
-
         $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . "/helpDesk_deleteSubcategoryProcess.php");
         $form->addHiddenValue('address', $gibbon->session->get('address'));
         $form->addHiddenValue('departmentID', $departmentID);

@@ -22,8 +22,6 @@ use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
-
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnician.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
@@ -49,7 +47,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 throw new PDOException('Invalid gibbonModuleID.');
             }
 
-            $data = array('gibbonPersonID' => $person, 'groupID' => $group);
+            $data = ['gibbonPersonID' => $person, 'groupID' => $group];
 
             $technicianGateway = $container->get(TechnicianGateway::class);
 
@@ -69,8 +67,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             exit();
         }
 
-        $array = array('gibbonPersonID' => $person, 'technicianID' => $technicianID);
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Added', $array, null);
+        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Added', ['gibbonPersonID' => $person, 'technicianID' => $technicianID], null);
 
         //Success 0
         $URL .= "&technicianID=$technicianID&return=success0";

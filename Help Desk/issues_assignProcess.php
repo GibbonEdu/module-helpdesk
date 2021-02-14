@@ -24,8 +24,6 @@ use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
 
-require_once './moduleFunctions.php';
-
 $URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
@@ -91,9 +89,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             throw new PDOException('Invalid gibbonModuleID.');
         }
         
-        $data = array('technicianID' => $technicianID, 'status' => 'Pending');
-
-        if (!$issueGateway->update($issueID, $data)) {
+        if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending']) {
             throw new PDOException('Could not update issue.');
         }
     } catch (PDOException $e) {
@@ -121,9 +117,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         } 
     }    
 
-    $array = array('issueID' => $issueID, 'technicainID' => $technicianID);
-
-    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Technician Assigned', $array, null);
+    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Technician Assigned', ['issueID' => $issueID, 'technicainID' => $technicianID], null);
 
     $URL .= "/issues_discussView.php&issueID=$issueID&return=success0";
     header("Location: {$URL}");
