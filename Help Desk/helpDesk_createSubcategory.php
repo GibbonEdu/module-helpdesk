@@ -30,11 +30,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $page->addError(__('No Department Selected.'));
     } else {
-        $page->breadcrumbs
-            ->add(__('Manage Departments'), 'helpDesk_manageDepartments.php')
-            ->add(__('Edit Department'), 'helpDesk_editDepartment.php', ['departmentID' => $departmentID])
-            ->add(__('Create Subcategory'));
-
         $form = Form::create('createSubcategory',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createSubcategoryProcess.php', 'post');
         $form->addHiddenValue('address', $gibbon->session->get('address'));
         $form->addHiddenValue('departmentID', $departmentID);
