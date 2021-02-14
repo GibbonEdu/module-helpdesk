@@ -60,11 +60,11 @@ class IssueGateway extends QueryableGateway
                 ->bindValue('gibbonPersonID', $gibbonPersonID);
         } else {
             if ($viewIssueStatus == 'PR') {
-                $query->where('helpDeskIssue.status <> Unassigned');
+                $query->where('helpDeskIssue.status <> "Unassigned"');
             } else if ($viewIssueStatus == 'UP') {
-                $query->where('helpDeskIssue.status <> Resolved');
+                $query->where('helpDeskIssue.status <> "Resolved"');
             } else if ($viewIssueStatus == 'Pending') {
-                $query->where('helpDeskIssue.status = Pending');
+                $query->where('helpDeskIssue.status = "Pending"');
             }
 
             if (!empty($departmentID)) {
