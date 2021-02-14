@@ -55,7 +55,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     }
 
-    $data = array('departmentName' => $departmentName, 'departmentDesc' => $departmentDesc);
+    $data = ['departmentName' => $departmentName, 'departmentDesc' => $departmentDesc];
 
     if (!$departmentGateway->unique($data, ['departmentName'], $departmentID)) {
         $URL .= '&return=error7';
@@ -72,7 +72,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
 
     foreach ($roles AS $role) {
-        $data = array('departmentID' => $departmentID, 'gibbonRoleID' => $role);
+        $data = ['departmentID' => $departmentID, 'gibbonRoleID' => $role];
         $departmentPermissionsGateway->insert($data);
     }
     $URL .= '&return=success0';
