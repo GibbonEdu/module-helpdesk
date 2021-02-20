@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v1.4.20
+-------
+Added Technician only comments.
+
 v1.4.10
 -------
 Adds permission filters.
