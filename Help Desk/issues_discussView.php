@@ -171,7 +171,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             $settingGateway = $container->get(SettingGateway::class);
 
-            if ($isTechnician && $settingGateway->getSettingByScope('Help Desk', 'techNotes')) {
+            if ($isTechnician && !$isPersonsIssue && $settingGateway->getSettingByScope('Help Desk', 'techNotes')) {
                 $form = Form::create('techNotes',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussNoteProccess.php', 'post');
                 $form->addHiddenValue('issueID', $issueID);
                 $form->addHiddenValue('address', $gibbon->session->get('address'));
