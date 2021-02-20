@@ -23,10 +23,12 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
+use Gibbon\Module\HelpDesk\Domain\IssueNoteGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Domain\DataSet;
 use Gibbon\Domain\System\DiscussionGateway;
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Domain\User\UserGateway;
 use Gibbon\Domain\School\FacilityGateway;
 use Gibbon\View\View;
@@ -166,6 +168,48 @@ if (!isModuleAccessible($guid, $connection2)) {
             $table->addColumn('description', __('Description'))->addClass('col-span-10');
 
             echo $table->render([$detailsData]);
+
+            $settingGateway = $container->get(SettingGateway::class);
+
+            if ($isTechnician && $settingGateway->getSettingByScope('Help Desk', 'techNotes')) {
+                $form = Form::create('techNotes',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussNoteProccess.php', 'post');
+                $form->addHiddenValue('issueID', $issueID);
+                $form->addHiddenValue('address', $gibbon->session->get('address'));
+
+                $row = $form->addRow();
+                    $col = $row->addColumn();
+                        $col->addHeading(__('Technician Notes'))->addClass('inline-block');
+                   
+                    $col->addWebLink('<img title="'.__('Add Technician Note').'" src="./themes/'.$_SESSION[$guid]['gibbonThemeName'].'/img/plus.png" />')
+                        ->addData('toggle', '.techNote')
+                        ->addClass('floatRight');
+
+                $row = $form->addRow()->setClass('techNote hidden flex flex-col sm:flex-row items-stretch sm:items-center');
+                    $col = $row->addColumn();
+                        $col->addLabel('techNote', __('Technician Note'));
+                        $col->addEditor('techNote', $guid)
+                            ->setRows(5)
+                            ->showMedia()
+                            ->required();
+                
+                $row = $form->addRow()->setClass('techNote hidden flex flex-col sm:flex-row items-stretch sm:items-center');;
+                    $row->addFooter();
+                    $row->addSubmit();
+
+                $issueNoteGateway = $container->get(IssueNoteGateway::class);
+                $notes = $issueNoteGateway->getIssueNotesByID($issueID)->fetchAll();
+
+                if (count($notes) > 0) {
+                    $form->addRow()
+                        ->addContent('comments')
+                        ->setContent($page->fetchFromTemplate('ui/discussion.twig.html', [
+                            'title' => __(''),
+                            'discussion' => $notes
+                        ])); 
+                }
+
+                echo $form->getOutput();
+            }
 
            
             $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
