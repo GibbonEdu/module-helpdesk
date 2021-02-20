@@ -37,6 +37,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
         'issueCategory',
         'issuePriority',
         'issuePriorityName',
+        'techNotes'
     ];
 
     $settingGateway = $container->get(SettingGateway::class);
@@ -60,6 +61,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
                         ->required();
                     break;
                 case 'simpleCategories':
+                case 'techNotes':
                     $row->addCheckbox($setting['name'])
                         ->checked(intval($setting['value']));
                     break;
