@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+v1.4.11
+-------
+Fixed issues_assignProcess where a bracket was missing
 
 v1.4.10
 -------
