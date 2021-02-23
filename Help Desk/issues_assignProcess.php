@@ -89,7 +89,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             throw new PDOException('Invalid gibbonModuleID.');
         }
         
-        if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending']) {
+        if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
             throw new PDOException('Could not update issue.');
         }
     } catch (PDOException $e) {
