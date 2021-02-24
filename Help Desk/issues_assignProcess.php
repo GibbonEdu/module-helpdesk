@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
@@ -108,8 +109,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         } 
     }    
 
-    $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Technician Assigned', ['issueID' => $issueID, 'technicainID' => $technicianID], null);
+    $logGateway = $container->get(LogGateway::class);
+    $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Technician Assigned', ['issueID' => $issueID, 'technicainID' => $technicianID]);
 
     $URL .= "/issues_discussView.php&issueID=$issueID&return=success0";
     header("Location: {$URL}");

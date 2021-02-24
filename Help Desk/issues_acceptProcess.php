@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
@@ -58,17 +59,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     
             //Write to database
             $technicianID = $technician->fetch()['technicianID'];
-            try {
-                $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-                if ($gibbonModuleID == null) {
-                    throw new PDOException('Invalid gibbonModuleID.');
-                }
-
-                if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
-                    throw new PDOException('Could not update issue.');
-                }
-            } catch (PDOException $e) {
-                //Fail 2
+            if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
                 $URL .= '&return=error2';
                 header("Location: {$URL}");
                 exit();
@@ -76,7 +67,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
             setNotification($connection2, $guid, $issue['gibbonPersonID'], 'A technician has started working on your isuse.', 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
 
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Accepted', ['issueID' => $issueID, 'technicianID' => $technicianID], null);
+            $logGateway = $container->get(LogGateway::class);
+            $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Accepted', ['issueID' => $issueID, 'technicianID' => $technicianID]);
 
             //Success 1 aka Accepted
             $URL .= '&return=success0';

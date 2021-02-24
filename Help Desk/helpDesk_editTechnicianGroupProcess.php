@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
@@ -68,29 +69,21 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 $data[$setting] = isset($_POST[$setting]);
             }
 
-            try {
-                $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-                if ($gibbonModuleID == null) {
-                    throw new PDOException('Invalid gibbonModuleID.');
-                }
+            if (!$techGroupGateway->unique($data, ['groupName'], $groupID)) {
+                $URL .= '&return=error7';
+                header("Location: {$URL}");
+                exit();
+            }
 
-                if (!$techGroupGateway->unique($data, ['groupName'], $groupID)) {
-                    $URL .= '&return=error7';
-                    header("Location: {$URL}");
-                    exit();
-                }
-
-                if (!$techGroupGateway->update($groupID, $data)) {
-                    throw new PDOException('Could not update group.');
-                }
-            } catch (PDOException $e) { 
+            if (!$techGroupGateway->update($groupID, $data)) {
                 $URL .= '&return=error2';
                 header("Location: {$URL}");
                 exit();
             }
 
             //Success 0
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Edited', ['groupID' => $groupID], null);
+            $logGateway = $container->get(LogGateway::class);
+            $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Technician Group Edited', ['groupID' => $groupID]);
 
             $URL .= '&return=success0';
             header("Location: {$URL}");

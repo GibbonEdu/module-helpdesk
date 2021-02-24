@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
@@ -89,18 +90,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         header("Location: {$URL}");
         exit();
     } else {
-        try {
-            $gibbonModuleID = getModuleIDFromName($connection2, $moduleName);
-            if ($gibbonModuleID == null) {
-                throw new PDOException('Invalid gibbonModuleID.');
-            }
-
-            $issueGateway = $container->get(IssueGateway::class);
-            $issueID = $issueGateway->insert($data);
-            if ($issueID === false) {
-                throw new PDOException('Could not insert issue.');
-            }
-        } catch (PDOException $e) {
+        $issueGateway = $container->get(IssueGateway::class);
+        $issueID = $issueGateway->insert($data);
+        if ($issueID === false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
@@ -146,7 +138,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
             $title = 'Issue Created (for Another Person)';
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, $title, $array, null);
+        $logGateway = $container->get(LogGateway::class);
+        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, $title, $array);
 
         $URL .= "&issueID=$issueID&return=success0";
         header("Location: {$URL}");
