@@ -46,12 +46,8 @@ if (!isModuleAccessible($guid, $connection2)) {
     $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
     $relation = $_GET['relation'] ?? null;
 
-    if (isset($_GET['return'])) {
-        $editLink = null;
-        if (isset($_GET['issueID'])) {
-            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $_GET['issueID'];
-        }
-        returnProcess($guid, $_GET['return'], $editLink, null);
+    if (isset($_GET['issueID'])) {
+        $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $_GET['issueID']);
     }
     
     $issueGateway = $container->get(IssueGateway::class);

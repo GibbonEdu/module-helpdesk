@@ -30,9 +30,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, ['errorA' => 'Cannot delete last technician group.']);
-    }
+    $page->return->addReturn('errorA', __('Cannot delete last technician group.'));
 
     $manageTechnicians = isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php');
     $moduleName = $gibbon->session->get('module');

@@ -44,10 +44,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         $techGroupGateway = $container->get(TechGroupGateway::class);
 
         if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), $permission)) {
-            if (isset($_GET['return'])) {
-                returnProcess($guid, $_GET['return'], null, null);
-            }
-
             $technicianGateway = $container->get(TechnicianGateway::class);
 
             $techs = array_reduce($technicianGateway->selectTechnicians()->fetchAll(), function ($group, $item) {

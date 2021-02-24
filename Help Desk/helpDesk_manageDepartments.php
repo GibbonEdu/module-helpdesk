@@ -29,10 +29,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
     $settingGateway = $container->get(SettingGateway::class);
     if ($settingGateway->getSettingByScope('Help Desk', 'simpleCategories')) {
         $page->addWarning(__('Simple Categories are currently enabled. Please disabled them in Help Desk Settings in order to Manage Departments.'));

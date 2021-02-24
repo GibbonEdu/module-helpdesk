@@ -71,10 +71,6 @@ if (!isModuleAccessible($guid, $connection2)) {
 
 
         if ($allowed) {
-            if (isset($_GET['return'])) {
-                returnProcess($guid, $_GET['return'], null, null);
-            }
-        
             $createdByShow = ($issue['createdByID'] != $issue['gibbonPersonID']);
             
             $userGateway = $container->get(UserGateway::class);
