@@ -90,7 +90,6 @@ if (!isModuleAccessible($guid, $connection2)) {
             $table = DataTable::createDetails('details');
             $table->setTitle($issue['issueName']);
 
-            //TODO: Double check these permission
             if ($isResolved) {
                 if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) || $hasFullAccess) {
                     $table->addHeaderAction('reincarnate', __('Reincarnate'))
