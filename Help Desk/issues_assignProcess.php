@@ -82,17 +82,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         header("Location: {$URL}");
         exit();
     }
-
-    try {
-        $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-        if ($gibbonModuleID == null) {
-            throw new PDOException('Invalid gibbonModuleID.');
-        }
         
-        if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
-            throw new PDOException('Could not update issue.');
-        }
-    } catch (PDOException $e) {
+    if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
         $URL .= "/issues_assign.php&issueID=$issueID&technicianID=$technicianID&return=error2";
         header("Location: {$URL}");
         exit();
@@ -117,6 +108,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         } 
     }    
 
+    $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
     setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Technician Assigned', ['issueID' => $issueID, 'technicainID' => $technicianID], null);
 
     $URL .= "/issues_discussView.php&issueID=$issueID&return=success0";

@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="1.4.11";
+$version="1.4.20";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
 $url="https://github.com/GibbonEdu/module-helpDesk";
 
@@ -55,6 +55,16 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskIssueDiscuss` (
     `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
     PRIMARY KEY (`issueDiscussID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskIssueNotes` (
+    `issueNoteID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `issueID` int(12) unsigned zerofill NOT NULL,
+    `note` text NOT NULL,
+    `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
+    PRIMARY KEY (`issueNoteID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskTechnicians` (
     `technicianID` int(4) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -110,7 +120,8 @@ $moduleTables[$tables++]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope
     (NULL, 'Help Desk', 'issuePriority', 'Issue Priority', 'Different priority levels for the issues.', ''),
     (NULL, 'Help Desk', 'issuePriorityName', 'Issue Priority Name', 'Different name for the Issue Priority', 'Priority'),
     (NULL, 'Help Desk', 'issueCategory', 'Issue Category', 'Different categories for the issues.', 'Network,Hardware,Software,Application'),
-    (NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE)";
+    (NULL, 'Help Desk', 'simpleCategories', 'Simple Categories', 'Whether to use Simple Categories or Not.', TRUE),
+    (NULL, 'Help Desk', 'techNotes', 'Technician Notes', 'Whether technicians can leave notes on issues that only other technicians can see.', FALSE)";
 
 //Action rows
 //One array per action

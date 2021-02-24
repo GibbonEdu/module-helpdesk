@@ -40,6 +40,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
         'issueCategory',
         'issuePriority',
         'simpleCategories',
+        'techNotes',
     ];
 
     $settingGateway = $container->get(SettingGateway::class);
@@ -70,6 +71,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
                     }
                     break;
                 case 'simpleCategories':
+                case 'techNotes':
                     $value = isset($_POST[$setting]) ? '1' : '0';
                     break;
             }

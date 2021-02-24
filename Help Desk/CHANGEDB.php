@@ -340,3 +340,18 @@ INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departme
 INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '002' FROM helpDeskDepartments;end
 INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '003' FROM helpDeskDepartments;end
 ";
+
+//v1.4.011
+$count++;
+$sql[$count][0]="1.4.011";
+$sql[$count][1]="
+";
+
+//v1.4.20
+$count++;
+$sql[$count][0]="1.4.20";
+$sql[$count][1]="
+INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
+VALUES (NULL, 'Help Desk', 'techNotes', 'Technician Notes', 'Whether technicians can leave notes on issues that only other technicians can see.', FALSE);end
+CREATE TABLE `helpDeskIssueNotes` (`issueNoteID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT, `issueID` int(12) unsigned zerofill NOT NULL, `note` text NOT NULL, `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP, `gibbonPersonID` int(10) unsigned zerofill NOT NULL, PRIMARY KEY (`issueNoteID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
+";
