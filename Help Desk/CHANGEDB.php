@@ -341,6 +341,12 @@ INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departme
 INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '003' FROM helpDeskDepartments;end
 ";
 
+//v1.4.011
+$count++;
+$sql[$count][0]="1.4.011";
+$sql[$count][1]="
+";
+
 //v1.4.20
 $count++;
 $sql[$count][0]="1.4.20";
