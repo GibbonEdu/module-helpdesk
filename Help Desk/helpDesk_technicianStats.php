@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
@@ -79,8 +80,17 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         //Stats collection
 
         //TODO: Migrate this to a gateway and honestly fix it, because it seems like it doesn't work anyways.
-        $result = getLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), getModuleIDFromName($connection2, 'Help Desk'), null, null, $startDate, $endDate, null, ['technicianID' => $technicianID]);
-        $rArray = $result->fetchAll();
+        $logGateway = $container->get(LogGateway::class);
+
+        $logCriteria = $logGateway->newQueryCriteria(false)
+            ->filterBy('module', 'Help Desk')
+            ->filterBy('startDate', $startDate)
+            ->filterBy('endDate', date('Y-m-d 23:59:59', strtotime($endDate)))
+            ->filterBy('array', serialize(['technicianID' => $technicianID]))
+            ->sortBy(['timestamp']);
+
+        $result = $logGateway->queryLogs($logCriteria, $gibbon->session->get('gibbonSchoolYearID'));
+        $rArray = $result->toArray();
 
         $items = [];
 
