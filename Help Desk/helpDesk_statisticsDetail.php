@@ -24,6 +24,7 @@ use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Domain\User\UserGateway;
 
 $page->breadcrumbs
@@ -35,73 +36,11 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    if (isset($_GET["title"])) {
-        $title = $_GET["title"];
+    $title = $_GET["title"] ?? '';
+    if (empty($title)) {
+        $page->addError(__('No statistics selected.'));
+    } else {
         $URL = $gibbon->session->get('absoluteURL') . "/index.php?q=/modules/" . $gibbon->session->get('module');
-
-        $extras = array();
-
-        if ($title == "Issue Created" || $title == "Issue Accepted" || $title == "Issue Reincarnated" || $title == "Issue Resolved") {
-            $extra = "Issue ID";
-            $extraKey = "issueID";
-            $extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%extraInfo%</a>";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        } else if ($title == "Issue Created (for Another Person)") {
-            $extra = "Issue ID";
-            $extraKey = "issueID";
-            $extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%extraInfo%</a>";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-
-            $extra = "Technician Name";
-            $extraKey = "technicianID";
-            $extraString = "%techName%";
-            $extras[1] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        } else if ($title == "Technician Assigned") {
-            $extra = "Issue ID";
-            $extraKey = "issueID";
-            $extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%extraInfo%" ."'>%extraInfo%</a>";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-
-            $extra = "Technician Name";
-            $extraKey = "technicianID";
-            $extraString = "%techName%";
-            $extras[1] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        } else if ($title == "Discussion Posted") {
-            $extra = "Issue Discuss ID";
-            $extraKey = "issueDiscussID";
-            $extraString = "<a href='" . $URL . "/issues_discussView.php&issueID=%IDfromPost%&issueDiscussID=%extraInfo%" ."'>View</a>";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        } else if ($title == "Technician Group Added" || $title == "Technician Group Edited") {
-            $extra = "Group";
-            $extraKey = "groupID";
-            $extraString = "<a href='" . $URL . "/helpDesk_manageTechnicianGroup.php&groupID=%extraInfo%" ."'>%groupName%</a>";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        } else if ($title == "Technician Added") {
-            $extra = "Technician Name";
-            $extraKey = "gibbonPersonID";
-            $extraString = "%personName%";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        } else if ($title == "Technician Group Set") {
-            $extra = "Group";
-            $extraKey = "groupID";
-            $extraString = "<a href='" . $URL . "/helpDesk_manageTechnicianGroup.php&groupID=%extraInfo%" ."'>%groupName%</a>";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-
-            $extra = "Technician Name";
-            $extraKey = "technicianID";
-            $extraString = "%techName%";
-            $extras[1] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        } else if ($title == "Technician Removed") {
-            $extra = "Person";
-            $extraKey = "gibbonPersonID";
-            $extraString = "%personName%";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        } else if ($title == "Technician Group Removed") {
-            $extra = "New Group";
-            $extraKey = "newGroupID";
-            $extraString = "<a href='" . $URL . "/helpDesk_manageTechnicianGroup.php&groupID=%extraInfo%" ."'>%groupName%</a>";
-            $extras[0] = array('extra' => $extra, 'extraKey' => $extraKey, 'extraString' => $extraString);
-        }
 
         //Default Data
         $d = new DateTime('first day of this month');
@@ -155,47 +94,99 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
         $table->addColumn('person', __('Person'))
                 ->format(Format::using('name', ['title', 'preferredName', 'surname', 'Student']));
 
-        $techGroupGateway = $container->get(TechGroupGateway::class);
-        $technicianGateway = $container->get(TechnicianGateway::class);
-        $issueDisucssGateway = $container->get(IssueDiscussGateway::class);
-        $userGateway = $container->get(UserGateway::class);
-        //TODO: This is silly and doesn't seem to work for all things. Theres barely any error catching or really any good code here.
-        //At some point this needs to be scrapped or built up from the ground, until then, too bad!
-        foreach ($extras as $extra) {
-            $table->addColumn($extra['extraKey'], __($extra['extra']))
-                    ->format(function ($row) use ($extra, $technicianGateway, $techGroupGateway, $issueDisucssGateway, $userGateway) {
-                        $array = unserialize($row['serialisedArray']);
-                        $eString = str_replace("%extraInfo%", $array[$extra['extraKey']], $extra['extraString']);
 
-                        if (strpos($eString, '%groupName%') !== false) {
-                            $eString = str_replace('%groupName%', $techGroupGateway->getByID($array[$extra['extraKey']])['groupName'], $eString);
-                        }
+        function issueColumn(&$table, $container) {
+            $issueGateway = $container->get(IssueGateway::class);
+            $table->addColumn('issueID', __('Issue'))
+                ->format(function ($log) use ($issueGateway) {
+                    $array = unserialize($log['serialisedArray']);
 
-                        if (strpos($eString, '%techName%') !== false) {
-                            $technician = $technicianGateway->getByID($array[$extra['extraKey']]);
-                            if (!empty($technician)) {
-                                $techName = $userGateway->getByID($technician['gibbonPersonID']);
-                                $eString = str_replace('%techName%', Format::name($techName['title'], $techName['preferredName'], $techName['surname'], 'Student'), $eString);
-                            }
-                        }
+                    $issue = $issueGateway->getByID($array['issueID']);
+                    if (!empty($issue)) {
+                        return Format::link('./index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issue['issueID'], $issue['issueName']);
+                    }
 
-                        if (strpos($eString, '%personName%') !== false) {
-                            $personName = $userGateway->getByID($array[$extra['extraKey']]);
-                            $eString = str_replace('%personName%', Format::name($personName['title'], $personName['preferredName'], $personName['surname'], 'Student'), $eString);
-                        }
-
-                        if (strpos($eString, '%IDfromPost%') !== false) {
-                            $issueID = $issueDisucssGateway->getByID($array[$extra['extraKey']])['issueID'];
-                            $eString = str_replace('%IDfromPost%', $issueID, $eString);
-                        }
-
-                        return $eString;
-                    });
+                    return __('Could not find Issue.');
+                });
         }
 
+        function techColumn(&$table, $container) {
+            $technicianGateway = $container->get(TechnicianGateway::class);
+            $table->addColumn('technicianID', __('Technician'))
+                ->format(function ($log) use ($technicianGateway) {
+                    $array = unserialize($log['serialisedArray']);
+
+                    $technician = $technicianGateway->getTechnician($array['technicianID']);
+                    if ($technician->isNotEmpty()) {
+                        $technician = $technician->fetch();
+                        return Format::name($technician['title'], $technician['preferredName'], $technician['surname'], 'Student');
+                    }
+
+                    return __('Could not find Technician.');
+                });
+        }
+
+        function groupColumn(&$table, $container, $new = false) {
+            $techGroupGateway = $container->get(TechGroupGateway::class);
+            $table->addColumn('technicianID', __($new ? 'New Group' : 'Group'))
+                ->format(function ($log) use ($techGroupGateway, $new) {
+                    $array = unserialize($log['serialisedArray']);
+
+                    $group = $techGroupGateway->getByID($array[$new ? 'newGroupID' : 'groupID']);
+                    if (!empty($group)) {
+                        return Format::link('./index.php?q=/modules/Help Desk/helpDesk_manageTechnicianGroup.php&groupID=' . $group['groupID'], $group['groupName']);
+                    }
+
+                    return __('Could not find Group.');
+                });
+        }
+
+        if ($title == "Issue Created" || $title == "Issue Accepted" || $title == "Issue Reincarnated" || $title == "Issue Resolved") {
+            issueColumn($table, $container);
+        } else if ($title == "Issue Created (for Another Person)") {
+            issueColumn($table, $container);
+            techColumn($table);
+        } else if ($title == "Technician Assigned") {
+            issueColumn($table, $container);
+            techColumn($table, $container);
+        } else if ($title == "Discussion Posted") {
+            $issueDisucssGateway = $container->get(IssueDiscussGateway::class);
+            $table->addColumn('issueDiscussID', __('Issue Discss'))
+                ->format(function ($log) use ($issueDisucssGateway) {
+                    $array = unserialize($log['serialisedArray']);
+
+                    $issueDiscuss = $issueDisucssGateway->getByID($array['issueDiscussID']);
+                    if (!empty($issueDiscuss)) {
+                        return Format::link('./index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueDiscuss['issueID'] . '&issueDiscussID=' . $issueDiscuss['issueDiscussID'], __('Discussion Post'));
+                    }
+
+                    return __('Could not find discussion.');
+                });
+        } else if ($title == "Technician Group Added" || $title == "Technician Group Edited") {
+            groupColumn($table, $container);
+        } else if ($title == "Technician Added") {
+            techColumn($table, $container);
+        } else if ($title == "Technician Group Set") {
+            groupColumn($table, $container);
+            techColumn($table, $container);
+        } else if ($title == "Technician Removed") {
+            $userGateway = $container->get(UserGateway::class);
+            $table->addColumn('person', __('Person'))
+                ->format(function ($log) use ($userGateway) {
+                    $array = unserialize($log['serialisedArray']);
+
+                    $person = $userGateway->getByID($array['gibbonPersonID']);
+                    if (!empty($person)) {
+                        return Format::name($person['title'], $person['preferredName'], $person['surname'], 'Student');
+                    }
+
+                    return __('Could not find person');
+                });
+        } else if ($title == "Technician Group Removed") {
+            groupColumn($table, $container, true);
+        }
+       
         echo $table->render($logs);
-    } else {
-        $page->addError(__('No statistics selected.'));
     }
 }
 ?>
