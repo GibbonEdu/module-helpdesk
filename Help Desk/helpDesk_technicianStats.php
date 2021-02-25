@@ -23,6 +23,8 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
+require_once __DIR__ . '\moduleFunctions.php';
+
 $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
     ->add(__('Techncian Statistics'));
@@ -37,7 +39,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $technicianGateway = $container->get(TechnicianGateway::class);
     $technician = $technicianGateway->getTechnician($technicianID);
 
-    if (empty($technicianID) || $technician->isEmpty()) {
+    if ($technician->isEmpty()) {
         $page->addError(__('No Technician Selected.'));
     } else {
         $technician = $technician->fetch();
@@ -78,8 +80,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         echo $form->getOutput();
 
         //Stats collection
-
-        //TODO: Migrate this to a gateway and honestly fix it, because it seems like it doesn't work anyways.
         $logGateway = $container->get(LogGateway::class);
 
         $logCriteria = $logGateway->newQueryCriteria(false)
@@ -87,26 +87,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             ->filterBy('startDate', $startDate)
             ->filterBy('endDate', date('Y-m-d 23:59:59', strtotime($endDate)))
             ->filterBy('array', serialize(['technicianID' => $technicianID]))
-            ->sortBy(['timestamp']);
+            ->sortBy('timestamp', 'DESC');
 
-        $result = $logGateway->queryLogs($logCriteria, $gibbon->session->get('gibbonSchoolYearID'));
-        $rArray = $result->toArray();
+        $logs = $logGateway->queryLogs($logCriteria, $gibbon->session->get('gibbonSchoolYearID'));
 
-        $items = [];
-
-        foreach($rArray as $row) {
-            if (!isset($items[$row['title']])) {
-                $items[$row['title']] = 1;
-            } else {
-                $items[$row['title']] = $items[$row['title']]+1;
-            }
-        }
-        ksort($items);
-
-        $display = [];
-        foreach ($items as $key => $value) {
-            array_push($display, ['name' => $key, 'value' => $value]);
-        }
+        $items = statsOverview($logs);
 
         $table = DataTable::create('simpleStats');
         $table->setTitle(__('Simple Statistics'));
@@ -115,7 +100,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $table->addColumn('value', __('Action Count'));
 
-        echo $table->render($display);
+        echo $table->render($items);
 
         $table = DataTable::create('detailedStats');
         $table->setTitle('Detailed Statistics');
@@ -125,7 +110,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $table->addColumn('title', __('Action Title'));
 
-        echo $table->render($rArray);
+        echo $table->render($logs);
     }
 }
 ?>
