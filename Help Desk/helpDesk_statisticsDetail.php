@@ -144,24 +144,6 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             ->filterBy('endDate', date('Y-m-d 23:59:59', strtotime($endDate)))
             ->fromPOST();
 
-        $criteria->addFilterRules([
-            'module' => function ($query, $module) {
-                return $query
-                    ->where('gibbonModule.name = :module')
-                    ->bindValue('module', $module);
-            },
-            'startDate' => function ($query, $startDate) {
-                return $query
-                    ->where('timestamp >= :startDate')
-                    ->bindValue('startDate', $startDate);
-            },
-            'endDate' => function ($query, $endDate) {
-                return $query
-                    ->where('timestamp <= :endDate')
-                    ->bindValue('endDate', $endDate);
-            },
-        ]);
-
         $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
         
         $table = DataTable::createPaginated('detailedStats', $criteria);
