@@ -43,9 +43,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $page->addError(__('No Technician Selected.'));
     } else {
         $technician = $technician->fetch();
-        echo '<h3>';
+        echo '<h2>';
             echo Format::name($technician['title'], $technician['preferredName'], $technician['surname'], 'Student');
-        echo '</h3>';
+        echo '</h2>';
 
         //Default Data
         $d = new DateTime('first day of this month');
