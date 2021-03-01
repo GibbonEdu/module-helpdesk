@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
@@ -70,7 +71,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 ->required()
                 ->setValue($values['groupName']);
 
-        if (count($departmentData) > 0) {
+        $settingGateway = $container->get(SettingGateway::class);
+        if (count($departmentData) > 0 && !$settingGateway->getSettingByScope('Help Desk', 'simpleCategories')) {
             $row = $form->addRow();
                 $row->addLabel('departmentID', __('Department'))
                     ->description(__('Assigning a Department to a Tech Group will only allow techs in the group to work on issues in the department.'));
