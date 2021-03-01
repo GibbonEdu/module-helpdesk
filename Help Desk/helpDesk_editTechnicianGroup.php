@@ -19,8 +19,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
-use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
+use Gibbon\Module\HelpDesk\Domain\GroupDepartmentGateway;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 $page->breadcrumbs
     ->add(__('Manage Technician Groups'), 'helpDesk_manageTechnicianGroup.php')
@@ -40,11 +41,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $values = $techGroupGateway->getByID($groupID);
 
-    if (empty($groupID) || empty($values)) {
+    if (empty($values)) {
         $page->addError(__('No Group Selected.'));
     } else {
         $departmentGateway = $container->get(DepartmentGateway::class);
         $departmentData = $departmentGateway->selectDepartments()->toDataSet();
+
+        $groupDepartmentGateway = $container->get(GroupDepartmentGateway::class);
+        $groupDepartments = $groupDepartmentGateway->selectGroupDepartments($groupID)->toDataSet()->getColumn('departmentID');
 
         $statuses = [
             'All'       =>  __('All'),
@@ -72,8 +76,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                     ->description(__('Assigning a Department to a Tech Group will only allow techs in the group to work on issues in the department.'));
                 $row->addSelect('departmentID')
                     ->fromDataset($departmentData, 'departmentID', 'departmentName')
+                    ->selectMultiple()
                     ->placeholder()
-                    ->selected($values['departmentID']);
+                    ->selected($groupDepartments);
         }
 
         $form->addRow()->addHeading(__('Permissons'));
