@@ -23,7 +23,7 @@ class TechnicianGateway extends QueryableGateway
         $query = $this
             ->newSelect()
             ->from('helpDeskTechnicians')
-            ->cols(['helpDeskTechnicians.technicianID', 'helpDeskTechnicians.groupID', 'helpDeskTechGroups.groupName', 'gibbonPerson.gibbonPersonID', 'gibbonPerson.title', 'gibbonPerson.preferredName', 'gibbonPerson.surname', 'helpDeskTechGroups.departmentID'])
+            ->cols(['helpDeskTechnicians.technicianID', 'helpDeskTechnicians.groupID', 'helpDeskTechGroups.groupName', 'gibbonPerson.gibbonPersonID', 'gibbonPerson.title', 'gibbonPerson.preferredName', 'gibbonPerson.surname'])
             ->leftJoin('gibbonPerson', 'gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID')
             ->leftJoin('helpDeskTechGroups', 'helpDeskTechGroups.groupID=helpDeskTechnicians.groupID')
             ->where('gibbonPerson.status="Full"')
