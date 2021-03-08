@@ -64,7 +64,7 @@ class DepartmentGateway extends QueryableGateway
         //Delete group departments
         $query = $this
             ->newDelete()
-            ->from('helpDeskTechDepartments')
+            ->from('helpDeskGroupDepartment')
             ->where('departmentID = :departmentID')
             ->bindValue('departmentID', $departmentID);
 
