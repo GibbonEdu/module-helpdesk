@@ -61,14 +61,14 @@ class DepartmentGateway extends QueryableGateway
             return false;
         }
 
+        //Delete group departments
         $query = $this
-            ->newUpdate()
-            ->table('helpDeskTechGroups')
-            ->set('departmentID', NULL)
+            ->newDelete()
+            ->from('helpDeskTechDepartments')
             ->where('departmentID = :departmentID')
             ->bindValue('departmentID', $departmentID);
 
-        $this->runUpdate($query);
+        $this->runDelete($query);
 
         if (!$this->db()->getQuerySuccess()) {
             $this->db()->rollBack();

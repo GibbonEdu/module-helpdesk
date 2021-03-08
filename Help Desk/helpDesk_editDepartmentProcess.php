@@ -45,7 +45,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $departmentName = $_POST['departmentName'] ?? '';
     $departmentDesc = $_POST['departmentDesc'] ?? '';
-    $roles = $_POST['roles'] ?? '';
+    $roles = $_POST['roles'] ?? [];
 
     if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128) {
         $URL .= '&return=error1';

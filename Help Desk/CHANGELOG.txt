@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v1.5.00
+-------
+Allowed Technician Groups to have multiple departments
+
 v1.4.20
 -------
 Added Technician only comments.
