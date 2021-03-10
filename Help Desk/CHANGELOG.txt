@@ -1,9 +1,13 @@
 CHANGELOG
 =========
 
+v1.5.01
+-------
+Fixed install bug relating to default tech groups.
+
 v1.5.00
 -------
-Allowed Technician Groups to have multiple departments
+Allowed Technician Groups to have multiple departments.
 
 v1.4.20
 -------
