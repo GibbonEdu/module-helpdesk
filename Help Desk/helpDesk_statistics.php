@@ -22,7 +22,7 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 
-require_once __DIR__ . '\moduleFunctions.php';
+require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs->add(__('Statistics'));
 
