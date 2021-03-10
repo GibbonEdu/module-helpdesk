@@ -26,10 +26,8 @@ class TechGroupGateway extends QueryableGateway
                 'groupID','groupName',
                 'viewIssue', 'viewIssueStatus',
                 'assignIssue', 'acceptIssue', 'resolveIssue', 'createIssueForOther', 'fullAccess', 'reassignIssue', 'reincarnateIssue',
-                'helpDeskTechGroups.departmentID', 'departmentName',
             ])
             ->from('helpDeskTechGroups')
-            ->leftJoin('helpDeskDepartments', 'helpDeskTechGroups.departmentID=helpDeskDepartments.departmentID')
             ->orderBy(['groupID']);
 
         return $this->runSelect($query);

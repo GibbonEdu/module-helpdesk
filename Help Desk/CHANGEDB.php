@@ -356,6 +356,15 @@ VALUES (NULL, 'Help Desk', 'techNotes', 'Technician Notes', 'Whether technicians
 CREATE TABLE `helpDeskIssueNotes` (`issueNoteID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT, `issueID` int(12) unsigned zerofill NOT NULL, `note` text NOT NULL, `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP, `gibbonPersonID` int(10) unsigned zerofill NOT NULL, PRIMARY KEY (`issueNoteID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
 ";
 
+//v1.5.00
+$count++;
+$sql[$count][0]="1.5.00";
+$sql[$count][1]="
+CREATE TABLE `helpDeskGroupDepartment` (`groupDepartmentID` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, `groupID` int(4) UNSIGNED ZEROFILL NOT NULL, `departmentID` int(4) UNSIGNED ZEROFILL NOT NULL, PRIMARY KEY (`groupDepartmentID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
+INSERT INTO `helpDeskGroupDepartment` (`groupDepartmentID`, `groupID`, `departmentID`) SELECT NULL, helpDeskTechGroups.groupID, helpDeskTechGroups.departmentID FROM helpDeskTechGroups WHERE helpDeskTechGroups.departmentID IS NOT NULL;end
+ALTER TABLE `helpDeskTechGroups` DROP COLUMN `departmentID`;end
+";
+
 //v2.0.00
 $count++;
 $sql[$count][0]="2.0.00";

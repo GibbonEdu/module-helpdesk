@@ -66,7 +66,6 @@ class SubcategoryGateway extends QueryableGateway
             return false;
         }
 
-
         $this->delete($subcategoryID);
 
         if (!$this->db()->getQuerySuccess()) {

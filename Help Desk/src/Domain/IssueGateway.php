@@ -40,7 +40,7 @@ class IssueGateway extends QueryableGateway
         return $results->getRow(0);
     }      
     
-    public function queryIssues($criteria, $gibbonSchoolYearID = null, $gibbonPersonID = null, $relation = null, $viewIssueStatus = null, $departmentID = null) {      
+    public function queryIssues($criteria, $gibbonSchoolYearID = null, $gibbonPersonID = null, $relation = null, $viewIssueStatus = null, $techDepartments = null) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
@@ -67,9 +67,16 @@ class IssueGateway extends QueryableGateway
                 $query->where('helpDeskIssue.status = "Pending"');
             }
 
-            if (!empty($departmentID)) {
-                $query->where('helpDeskSubcategories.departmentID = :departmentID')
-                    ->bindValue('departmentID', $departmentID); 
+            if (is_array($techDepartments) && !empty($techDepartments)) {
+
+                $inClause = '';
+                foreach ($techDepartments as $key => $department) {
+                    $bind = 'department' . $key;
+                    $inClause .= ($key > 0 ? ',' : '') . ':' . $bind;
+                    $query->bindValue($bind, $department['departmentID']);
+                }
+
+                $query->where('helpDeskSubcategories.departmentID IN (' . $inClause . ')');
             }
 
             if ($relation == 'My Assigned') {

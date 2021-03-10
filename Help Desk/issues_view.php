@@ -25,6 +25,7 @@ use Gibbon\Domain\User\UserGateway;
 use Gibbon\Domain\School\FacilityGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
+use Gibbon\Module\HelpDesk\Domain\GroupDepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
@@ -55,12 +56,14 @@ if (!isModuleAccessible($guid, $connection2)) {
     $technicianGateway = $container->get(TechnicianGateway::class);
     $userGateway = $container->get(UserGateway::class);
     $settingsGateway = $container->get(SettingGateway::class);
+    $groupDepartmentGateway = $container->get(GroupDepartmentGateway::class);
  
     $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
     $isTechnician = $technician->isNotEmpty();
     $techGroup = $techGroupGateway->getByID($isTechnician ? $technician->fetch()['groupID'] : ''); 
+    $techDepartments = $isTechnician ? $groupDepartmentGateway->selectGroupDepartments($techGroup['groupID'])->fetchAll() : [];
     $fullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
-    $techDeptFilter = $isTechnician && !empty($techGroup['departmentID']) && !$fullAccess && ($relation != 'My Issues');
+    $techDeptFilter = $isTechnician && !empty($techDepartments) && !$fullAccess && ($relation != 'My Issues');
        
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
@@ -123,9 +126,8 @@ if (!isModuleAccessible($guid, $connection2)) {
     
     $simpleCategories = $settingsGateway->getSettingByScope($moduleName, 'simpleCategories');
 
-    $techDepartment = $techGroup['departmentID'] ?? null;
     if ($simpleCategories || !$techDeptFilter) {
-        $techDepartment = null;
+        $techDepartments = [];
     }
 
     $techViewIssueStatus = $techGroup['viewIssueStatus'] ?? null;
@@ -133,7 +135,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         $techViewIssueStatus = null;
     }
 
-    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation, $techViewIssueStatus, $techDepartment);
+    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation, $techViewIssueStatus, $techDepartments);
 
     $table = DataTable::createPaginated('issues', $criteria);
     $table->setTitle('Issues');
@@ -179,7 +181,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         if ($isTechnician) {
             $departmentGateway = $container->get(DepartmentGateway::class);
             if ($techDeptFilter) {
-                $departments[] = $departmentGateway->getByID($techGroup['departmentID']);
+                $departments = $techDepartments;
             } else {
                 $departments = $departmentGateway->selectDepartments()->toDataSet();
             }

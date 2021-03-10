@@ -18,7 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Domain\System\LogGateway;
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
+use Gibbon\Module\HelpDesk\Domain\GroupDepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
@@ -45,10 +47,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $departmentGateway = $container->get(DepartmentGateway::class);
 
         $groupName = $_POST['groupName'] ?? '';
-        $departmentID = $_POST['departmentID'] ?? null;
-        if (empty($departmentID)) {
-            $departmentID = null;
-        }
+        $departments = $_POST['departmentID'] ?? [];
 
         $viewIssueStatus =  $_POST['viewIssueStatus'] ?? '';
 
@@ -62,7 +61,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $data = [
                 'groupName' => $groupName,
                 'viewIssueStatus' => $viewIssueStatus,
-                'departmentID' => $departmentID,
             ];
 
             foreach ($settings as $setting) {
@@ -73,6 +71,16 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                 $URL .= '&return=error7';
                 header("Location: {$URL}");
                 exit();
+            }
+
+            $settingGateway = $container->get(SettingGateway::class);
+            if (!$settingGateway->getSettingByScope('Help Desk', 'simpleCategories')) {
+                $groupDepartmentGateway = $container->get(GroupDepartmentGateway::class);
+                $groupDepartmentGateway->deleteWhere(['groupID' => $groupID]);
+
+                foreach ($departments as $departmentID) {
+                    $groupDepartmentGateway->insert(['groupID' => $groupID, 'departmentID' => $departmentID]);
+                }
             }
 
             if (!$techGroupGateway->update($groupID, $data)) {
