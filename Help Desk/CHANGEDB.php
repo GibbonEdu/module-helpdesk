@@ -364,3 +364,9 @@ CREATE TABLE `helpDeskGroupDepartment` (`groupDepartmentID` int(4) UNSIGNED ZERO
 INSERT INTO `helpDeskGroupDepartment` (`groupDepartmentID`, `groupID`, `departmentID`) SELECT NULL, helpDeskTechGroups.groupID, helpDeskTechGroups.departmentID FROM helpDeskTechGroups WHERE helpDeskTechGroups.departmentID IS NOT NULL;end
 ALTER TABLE `helpDeskTechGroups` DROP COLUMN `departmentID`;end
 ";
+
+//v1.5.01
+$count++;
+$sql[$count][0]="1.5.01";
+$sql[$count][1]="
+";
