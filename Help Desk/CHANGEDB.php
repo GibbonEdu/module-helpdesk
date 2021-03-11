@@ -371,6 +371,12 @@ $sql[$count][0]="1.5.01";
 $sql[$count][1]="
 ";
 
+//v1.5.02
+$count++;
+$sql[$count][0]="1.5.02";
+$sql[$count][1]="
+";
+
 //v2.0.00
 $count++;
 $sql[$count][0]="2.0.00";

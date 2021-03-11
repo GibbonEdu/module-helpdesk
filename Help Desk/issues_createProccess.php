@@ -23,7 +23,7 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
-use Gibbon\Module\HelpDesk\Domain\GroupDepartmentGateway;
+
 require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
@@ -106,24 +106,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         //Notify Techicians
         $technicianGateway = $container->get(TechnicianGateway::class);
 
-        $techs = $technicianGateway->selectTechnicians()->fetchAll();
-
-        if (!$simpleCategories) {
-            $criteria = $subcategoryGateway->newQueryCriteria()
-                ->filterBy('subcategoryID', $data['subcategoryID']);
-                
-            $departmentData = $subcategoryGateway->querySubcategories($criteria);
-            if ($departmentData->count() > 0) {
-                $departmentID = $departmentData->getRow(0)['departmentID'];
-                $groupDepartmentGateway = $container->get(GroupDepartmentGateway::class);
-                $groups = $groupDepartmentGateway->selectBy(['departmentID' => $departmentID])->fetchAll();
-                foreach ($groups as $group){
-                    $techs[] = $technicianGateway->selectBy(['groupID' => $group['groupID']])->fetchAll();
-                }
-            }
+        if ($simpleCategories) {
+            $techs = $technicianGateway->selectTechnicians()->fetchAll();
+        } else {
+            $departmentID = $subcategoryGateway->getByID($data['subcategoryID'])['departmentID'];
+            $techs = $technicianGateway->selectTechniciansByDepartment($departmentID)->fetchAll();
         }
 
-        $techs = array_unique(array_column($techs, 'gibbonPersonID'));
+        $techs = array_column($techs, 'gibbonPersonID');
 
         foreach ($techs as $techPersonID) {
             $permission = $techGroupGateway->getPermissionValue($techPersonID, 'viewIssueStatus');
