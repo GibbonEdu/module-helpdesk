@@ -106,19 +106,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         //Notify Techicians
         $technicianGateway = $container->get(TechnicianGateway::class);
 
-        $techs = $technicianGateway->selectTechnicians()->fetchAll();
-
-        if (!$simpleCategories) {
-            $criteria = $subcategoryGateway->newQueryCriteria()
-                ->filterBy('subcategoryID', $data['subcategoryID']);
-                
-            $departmentData = $subcategoryGateway->querySubcategories($criteria);
-            if ($departmentData->count() > 0) {
-                $departmentID = $departmentData->getRow(0)['departmentID'];
-                $techs = array_filter($techs, function ($tech) use ($departmentID) {
-                    return empty($tech['departmentID']) || $tech['departmentID'] == $departmentID;
-                });
-            }
+        if ($simpleCategories) {
+            $techs = $technicianGateway->selectTechnicians()->fetchAll();
+        } else {
+            $departmentID = $subcategoryGateway->getByID($data['subcategoryID'])['departmentID'];
+            $techs = $technicianGateway->selectTechniciansByDepartment($departmentID)->fetchAll();
         }
 
         $techs = array_column($techs, 'gibbonPersonID');
