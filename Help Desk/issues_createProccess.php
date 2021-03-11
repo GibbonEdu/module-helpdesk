@@ -22,7 +22,7 @@ use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
-
+use Gibbon\Module\HelpDesk\Domain\GroupDepartmentGateway;
 require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
@@ -123,13 +123,15 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
             $departmentData = $subcategoryGateway->querySubcategories($criteria);
             if ($departmentData->count() > 0) {
                 $departmentID = $departmentData->getRow(0)['departmentID'];
-                $techs = array_filter($techs, function ($tech) use ($departmentID) {
-                    return empty($tech['departmentID']) || $tech['departmentID'] == $departmentID;
-                });
+                $groupDepartmentGateway = $container->get(GroupDepartmentGateway::class);
+                $groups = $groupDepartmentGateway->selectBy(['departmentID' => $departmentID])->fetchAll();
+                foreach ($groups as $group){
+                    $techs[] = $technicianGateway->selectBy(['groupID' => $group['groupID']])->fetchAll();
+                }
             }
         }
 
-        $techs = array_column($techs, 'gibbonPersonID');
+        $techs = array_unique(array_column($techs, 'gibbonPersonID'));
 
         foreach ($techs as $techPersonID) {
             $permission = $techGroupGateway->getPermissionValue($techPersonID, 'viewIssueStatus');
@@ -149,7 +151,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, $title, $array, null);
 
         $URL .= "&issueID=$issueID&return=success0";
-        header("Location: {$URL}");
+        //header("Location: {$URL}");
         exit();
     }
 }
