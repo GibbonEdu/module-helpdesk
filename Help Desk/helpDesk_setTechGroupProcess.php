@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
@@ -42,23 +43,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     } else {
         //Write to database
-        try {
-            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-            if ($gibbonModuleID == null) {
-                throw new PDOException('Invalid gibbonModuleID.');
-            }
-
-            if (!$technicianGateway->update($technicianID, ['groupID' => $group])) {
-                throw new PDOException('Failed to update technician.');
-            }
-        }
-        catch (PDOException $e) {
+        if (!$technicianGateway->update($technicianID, ['groupID' => $group])) {
             $URL .= '/helpDesk_setTechGroup.php&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Set', ['technicianID' => $technicianID, 'groupID' => $group], null);
+        $logGateway = $container->get(LogGateway::class);
+        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Technician Group Set', ['technicianID' => $technicianID, 'groupID' => $group]);
 
         //Success 0
         $URL .= '/helpDesk_manageTechnicians.php&return=success0';

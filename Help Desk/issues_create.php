@@ -34,13 +34,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 } else {
     $moduleName = $gibbon->session->get('module');
     
-    if (isset($_GET['return'])) {
-        $editLink = null;
-        if (isset($_GET['issueID'])) {
-            $issueID = $_GET['issueID'];
-            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $issueID;
-        }
-        returnProcess($guid, $_GET['return'], $editLink, null);
+    if (isset($_GET['issueID'])) {
+        $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $_GET['issueID']);
     }
 
     $techGroupGateway = $container->get(TechGroupGateway::class);

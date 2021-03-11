@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
@@ -38,33 +39,25 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     } else {
         //Write to database
 
-        try {
-            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-            if ($gibbonModuleID == null) {
-                throw new PDOException('Invalid gibbonModuleID.');
-            }
+        $data = ['groupName' => $groupName];
 
-            $data = ['groupName' => $groupName];
+        $techGroupGateway = $container->get(TechGroupGateway::class);
 
-            $techGroupGateway = $container->get(TechGroupGateway::class);
+        if (!$techGroupGateway->unique($data, ['groupName'])) {
+            $URL .= '&return=error7';
+            header("Location: {$URL}");
+            exit();
+        }
 
-            if (!$techGroupGateway->unique($data, ['groupName'])) {
-                $URL .= '&return=error7';
-                header("Location: {$URL}");
-                exit();
-            }
-
-            $groupID = $techGroupGateway->insert($data);
-            if ($groupID === false) {
-                throw new PDOException('Could not insert group.');
-            }
-        } catch (PDOException $e) {
+        $groupID = $techGroupGateway->insert($data);
+        if ($groupID === false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', ['groupID' => $groupID], null);
+        $logGateway = $container->get(LogGateway::class);
+        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', ['groupID' => $groupID]);
 
         //Success 0
         $URL .= "&groupID=$groupID&return=success0";

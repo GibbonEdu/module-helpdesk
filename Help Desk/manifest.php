@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="1.4.20";
+$version="2.0.00";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
 $url="https://github.com/GibbonEdu/module-helpDesk";
 
@@ -85,7 +85,6 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskTechGroups` (
     `fullAccess` boolean DEFAULT 0,
     `reassignIssue` boolean DEFAULT 0,
     `reincarnateIssue` boolean DEFAULT 1,
-    `departmentID` int(4) UNSIGNED ZEROFILL DEFAULT NULL,
     PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
@@ -101,6 +100,13 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskDepartmentPermissions` (
     `departmentID` int(4) UNSIGNED ZEROFILL NOT NULL,
     `gibbonRoleID` int(3) UNSIGNED ZEROFILL NOT NULL,
     PRIMARY KEY (`departmentPermissionsID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
+$moduleTables[$tables++]="CREATE TABLE `helpDeskGroupDepartment` (
+    `groupDepartmentID` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+    `groupID` int(4) UNSIGNED ZEROFILL NOT NULL,
+    `departmentID` int(4) UNSIGNED ZEROFILL NOT NULL,
+    PRIMARY KEY (`groupDepartmentID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
 $moduleTables[$tables++]="CREATE TABLE `helpDeskSubcategories` (

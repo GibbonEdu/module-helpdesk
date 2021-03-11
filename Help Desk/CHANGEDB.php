@@ -341,6 +341,12 @@ INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departme
 INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '003' FROM helpDeskDepartments;end
 ";
 
+//v1.4.11
+$count++;
+$sql[$count][0]="1.4.11";
+$sql[$count][1]="
+";
+
 //v1.4.20
 $count++;
 $sql[$count][0]="1.4.20";
@@ -348,4 +354,19 @@ $sql[$count][1]="
 INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
 VALUES (NULL, 'Help Desk', 'techNotes', 'Technician Notes', 'Whether technicians can leave notes on issues that only other technicians can see.', FALSE);end
 CREATE TABLE `helpDeskIssueNotes` (`issueNoteID` int(12) unsigned zerofill NOT NULL AUTO_INCREMENT, `issueID` int(12) unsigned zerofill NOT NULL, `note` text NOT NULL, `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP, `gibbonPersonID` int(10) unsigned zerofill NOT NULL, PRIMARY KEY (`issueNoteID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
+";
+
+//v1.5.00
+$count++;
+$sql[$count][0]="1.5.00";
+$sql[$count][1]="
+CREATE TABLE `helpDeskGroupDepartment` (`groupDepartmentID` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, `groupID` int(4) UNSIGNED ZEROFILL NOT NULL, `departmentID` int(4) UNSIGNED ZEROFILL NOT NULL, PRIMARY KEY (`groupDepartmentID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
+INSERT INTO `helpDeskGroupDepartment` (`groupDepartmentID`, `groupID`, `departmentID`) SELECT NULL, helpDeskTechGroups.groupID, helpDeskTechGroups.departmentID FROM helpDeskTechGroups WHERE helpDeskTechGroups.departmentID IS NOT NULL;end
+ALTER TABLE `helpDeskTechGroups` DROP COLUMN `departmentID`;end
+";
+
+//v2.0.00
+$count++;
+$sql[$count][0]="2.0.00";
+$sql[$count][1]="
 ";

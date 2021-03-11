@@ -28,12 +28,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    if (isset($_GET['return'])) {
-        $editLink = null;
-        if (isset($_GET['groupID'])) {
-            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/'  . $gibbon->session->get('module') .  '/helpDesk_editTechnicianGroup.php&groupID=' . $_GET['groupID'];
-        }
-        returnProcess($guid, $_GET['return'], $editLink, null);
+    if (isset($_GET['groupID'])) {
+        $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/'  . $gibbon->session->get('module') .  '/helpDesk_editTechnicianGroup.php&groupID=' . $_GET['groupID']);
     }
 
     $form = Form::create('createTechnicianGroup',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupProcess.php', 'post');

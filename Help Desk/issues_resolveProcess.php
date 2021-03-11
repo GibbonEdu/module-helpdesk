@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
@@ -52,16 +53,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         $related = $issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
         if (($issue['gibbonPersonID'] == $gibbonPersonID) || ($related && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
             //Write to database
-            try {
-                $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-                if ($gibbonModuleID == null) {
-                    throw new PDOException('Invalid gibbonModuleID.');
-                }
-
-                if (!$issueGateway->update($issueID, ['status' => 'Resolved'])) {
-                    throw new PDOException('Failed to update issue.');
-                }
-            } catch (PDOException $e) {
+            if (!$issueGateway->update($issueID, ['status' => 'Resolved'])) {
                 $URL .= '&return=error2';
                 header("Location: {$URL}");
                 exit();
@@ -87,7 +79,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 $array['technicianID'] = $technician->fetch()['technicianID'];
             }
 
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Resolved', $array, null);
+            $logGateway = $container->get(LogGateway::class);
+            $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Resolved', $array);
 
             //Success 0
             $URL .= '&return=success0';

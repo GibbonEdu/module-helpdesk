@@ -29,10 +29,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
     $groupID = $_GET['groupID'] ?? '';
 
     $techGroupGateway = $container->get(TechGroupGateway::class);

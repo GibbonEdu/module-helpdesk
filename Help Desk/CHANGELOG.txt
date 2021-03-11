@@ -1,9 +1,22 @@
 CHANGELOG
 =========
 
+v2.0.00
+-------
+Replaced getLog calls with LogGateway::getLog
+Replaced setLog calls with LogGateway::addLog
+
+v1.5.00
+-------
+Allowed Technician Groups to have multiple departments
+
 v1.4.20
 -------
 Added Technician only comments.
+
+v1.4.11
+-------
+Fixed issues_assignProcess where a bracket was missing
 
 v1.4.10
 -------

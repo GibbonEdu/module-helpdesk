@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
@@ -41,33 +42,25 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     } else {
         //Write to database
-        try {
-            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-            if ($gibbonModuleID == null) {
-                throw new PDOException('Invalid gibbonModuleID.');
-            }
+        $data = ['gibbonPersonID' => $person, 'groupID' => $group];
 
-            $data = ['gibbonPersonID' => $person, 'groupID' => $group];
+        $technicianGateway = $container->get(TechnicianGateway::class);
 
-            $technicianGateway = $container->get(TechnicianGateway::class);
+        if (!$technicianGateway->unique($data, ['gibbonPersonID'])) {
+            $URL .= '&return=error7';
+            header("Location: {$URL}");
+            exit();
+        }
 
-            if (!$technicianGateway->unique($data, ['gibbonPersonID'])) {
-                $URL .= '&return=error7';
-                header("Location: {$URL}");
-                exit();
-            }
-
-            $technicianID = $technicianGateway->insert($data);
-            if ($technicianID === false) {
-                throw new PDOException('Could not insert technician.');
-            }
-        } catch (PDOException $e) {
+        $technicianID = $technicianGateway->insert($data);
+        if ($technicianID === false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Added', ['gibbonPersonID' => $person, 'technicianID' => $technicianID], null);
+        $logGateway = $container->get(LogGateway::class);
+        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Technician Added', ['gibbonPersonID' => $person, 'technicianID' => $technicianID]);
 
         //Success 0
         $URL .= "&technicianID=$technicianID&return=success0";

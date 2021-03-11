@@ -43,10 +43,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $moduleName = $gibbon->session->get('module');
 
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
-
         $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
         $criteria = $departmentPermissionsGateway->newQueryCriteria()
             ->filterBy('departmentID', $departmentID);

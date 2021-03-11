@@ -30,14 +30,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    if (isset($_GET['return'])) {
-        $editLink = null;
-        if (isset($_GET['departmentID'])) {
-            $editLink = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartment.php&departmentID=' . $_GET['departmentID'];
-        }
-        returnProcess($guid, $_GET['return'], $editLink, null);
+    if (isset($_GET['departmentID'])) {
+        $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartment.php&departmentID=' . $_GET['departmentID']);
     }
-
     $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartmentProcess.php', 'post');
     $form->addHiddenValue('address', $gibbon->session->get('address'));
 
