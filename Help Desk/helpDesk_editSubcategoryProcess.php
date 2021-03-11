@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Domain\System\LogGateway;
-use Gibbon\Module\HelpDesk\Domai\DepartmentGateway;
+use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 
