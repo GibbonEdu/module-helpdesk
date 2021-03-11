@@ -365,6 +365,12 @@ INSERT INTO `helpDeskGroupDepartment` (`groupDepartmentID`, `groupID`, `departme
 ALTER TABLE `helpDeskTechGroups` DROP COLUMN `departmentID`;end
 ";
 
+//v1.5.01
+$count++;
+$sql[$count][0]="1.5.01";
+$sql[$count][1]="
+";
+
 //v2.0.00
 $count++;
 $sql[$count][0]="2.0.00";

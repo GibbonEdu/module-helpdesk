@@ -116,10 +116,10 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskSubcategories` (
     PRIMARY KEY (`subcategoryID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
-$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, `resolveIssue`, `createIssueForOther`, `fullAccess`, `reassignIssue`, `reincarnateIssue`, `departmentID`)
+$moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, `resolveIssue`, `createIssueForOther`, `fullAccess`, `reassignIssue`, `reincarnateIssue`)
     VALUES
-    (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1, NULL),
-    (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1, NULL)";
+    (NULL, 'Head Technician', 1, 'All', 1, 1, 1, 1, 1, 1, 1),
+    (NULL, 'Technician', 1, 'All', 0, 1, 1, 1, 0, 0, 1)";
 
 $moduleTables[$tables++]="INSERT INTO `gibbonSetting` (`gibbonSettingID`, `scope`, `name`, `nameDisplay`, `description`, `value`)
     VALUES
