@@ -144,7 +144,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, $title, $array);
 
         $URL .= "&issueID=$issueID&return=success0";
-        //header("Location: {$URL}");
+        header("Location: {$URL}");
         exit();
     }
 }
