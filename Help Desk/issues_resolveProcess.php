@@ -17,7 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Comms\NotificationSender;
 use Gibbon\Domain\System\LogGateway;
+use Gibbon\Domain\System\NotificationGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
@@ -59,18 +61,23 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 exit();
             }
 
-            $message = 'Issue #';
-            $message .= $issueID;
-            $message .= ' (' . $issue['issueName'] . ') has been resolved.';
+            //Send Notification
+            $notificationGateway = $container->get(NotificationGateway::class);
+            $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
+
+            $message = __('Issue #') . $issueID . ' (' . $issue['issueName'] . ') ' __('has been resolved.');
 
             $personIDs = $issueGateway->getPeopleInvolved($issueID);
-
+            
             foreach ($personIDs as $personID) {
                 if ($personID != $gibbonPersonID) {
-                    setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+                    $notificationSender->addNotification($personID, $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
                 } 
             }
 
+            $notificationSender->sendNotifications();
+
+            //Log
             $array['issueID'] = $issueID;
 
             $technicianGateway = $container->get(TechnicianGateway::class);

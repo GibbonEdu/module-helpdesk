@@ -17,7 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Comms\NotificationSender;
 use Gibbon\Domain\System\LogGateway;
+use Gibbon\Domain\System\NotificationGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
@@ -85,18 +87,26 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
         $isTech = $technician->isNotEmpty() && ($issue['gibbonPersonID'] != $gibbonPersonID);
 
-        $message = 'A new message has been added to Issue #';
-        $message .= $issueID;
-        $message .= ' (' . $issue['issueName'] . ').';
+        //Send Notification
+        $notificationGateway = $container->get(NotificationGateway::class);
+        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session); 
+
+        $message = __('A new message has been added to Issue #') . $issueID . ' (' . $issue['issueName'] . ').';
 
         $personIDs = $issueGateway->getPeopleInvolved($issueID);
 
+        $notificationGateway = $container->get(NotificationGateway::class);
+        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
+ 
         foreach ($personIDs as $personID) {
             if ($personID != $gibbonPersonID) {
-                setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+                $notificationSender->addNotification($personID, $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
             } 
         }
 
+        $notificationSender->sendNotifications();
+
+        //Log
         $array = ['issueDiscussID' => $issueDiscussID];
 
         if ($isTech) {
