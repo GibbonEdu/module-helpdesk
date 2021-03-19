@@ -65,7 +65,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             $notificationGateway = $container->get(NotificationGateway::class);
             $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
 
-            $message = __('Issue #') . $issueID . ' (' . $issue['issueName'] . ') ' __('has been resolved.');
+            $message = __('Issue #') . $issueID . ' (' . $issue['issueName'] . ') ' . __('has been resolved.');
 
             $personIDs = $issueGateway->getPeopleInvolved($issueID);
             
