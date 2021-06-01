@@ -47,9 +47,6 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         header("Location: {$URL}");
         exit();
     }
-    
-    //TODO: create an if error for this
-    $departmentPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
 
     $URL .= '&return=success0';
     header("Location: {$URL}");
