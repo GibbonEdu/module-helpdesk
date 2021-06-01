@@ -35,6 +35,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $departmentGateway = $container->get(DepartmentGateway::class);
     
+    //Check that department exists
     if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $URL .= '/helpDesk_manageDepartments.php&return=error1';
         header("Location: {$URL}");
@@ -48,7 +49,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $subcategoryGateway = $container->get(SubcategoryGateway::class);
     $subcategory = $subcategoryGateway->getByID($subcategoryID);
 
-    if (empty($subcategoryID) || empty($subcategory) || $subcategory['departmentID'] != $departmentID) {
+    //Check that subcategory exists and is within department
+    if (empty($subcategory) || $subcategory['departmentID'] != $departmentID) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
@@ -56,6 +58,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $subcategoryName = $_POST['subcategoryName'] ?? '';
 
+    //Check that subcategory name is valid
     if (empty($subcategoryName) || strlen($subcategoryName) > 55) {
     	$URL .= '&return=error1';
         header("Location: {$URL}");
@@ -64,19 +67,21 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $data = ['subcategoryName' => $subcategoryName, 'departmentID' => $departmentID];
 
+    //Check that subcategory name is unique (within department)
     if (!$subcategoryGateway->unique($data, ['subcategoryName', 'departmentID'], $subcategoryID)) {
     	$URL .= '&return=error7';
         header("Location: {$URL}");
         exit();
     }
 
-    unset($data['departmentID']);
+    //Update subcategory
     if (!$subcategoryGateway->update($subcategoryID, $data)) {
         $URL .= '&return=error2';
         header("Location: {$URL}");
         exit();
     }
 
+    //Log
     $logGateway = $container->get(LogGateway::class);
     $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Subcategory Edited', ['subcategoryID' => $subcategoryID]);
 
