@@ -137,4 +137,18 @@ class TechnicianGateway extends QueryableGateway
         $this->db()->commit();
         return true;
     }
+
+    public function selectNonTechnicians() {
+        $select = $this
+            ->newSelect()
+            ->from('gibbonPerson')
+            ->cols(['gibbonPerson.gibbonPersonID', 'title', 'surname', 'preferredName', 'username', 'gibbonRole.category'])
+            ->leftJoin('gibbonRole', 'gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary')
+            ->leftJoin('helpDeskTechnicians', 'helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID')
+            ->where('gibbonPerson.status = "Full"')
+            ->where('helpDeskTechnicians.gibbonPersonID IS NULL')
+            ->orderBy(['surname', 'preferredName']);
+
+        return $this->runSelect($select);
+    }
 }
