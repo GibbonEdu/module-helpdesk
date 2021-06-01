@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Domain\System\LogGateway;
+use Gibbon\Domain\User\UserGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
@@ -34,9 +35,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $person = $_POST['person'] ?? '';
     $group = $_POST['group'] ?? '';
 
+    $userGateway = $container->get(UserGateway::class);
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
-    if (empty($person) || empty($group) || !$techGroupGateway->exists($group)) {
+    //Check that person and group exist
+    if (empty($person) || !$userGateway->exists($person)
+        || empty($group) || !$techGroupGateway->exists($group)
+    ) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
@@ -46,12 +51,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $technicianGateway = $container->get(TechnicianGateway::class);
 
+        //Check that user is not already a technician
         if (!$technicianGateway->unique($data, ['gibbonPersonID'])) {
             $URL .= '&return=error7';
             header("Location: {$URL}");
             exit();
         }
 
+        //Insert the new technician
         $technicianID = $technicianGateway->insert($data);
         if ($technicianID === false) {
             $URL .= '&return=error2';
@@ -59,6 +66,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             exit();
         }
 
+        //Log
         $logGateway = $container->get(LogGateway::class);
         $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Technician Added', ['gibbonPersonID' => $person, 'technicianID' => $technicianID]);
 
