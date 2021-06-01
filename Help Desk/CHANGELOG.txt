@@ -5,6 +5,7 @@ v2.0.00
 -------
 Replaced getLog calls with LogGateway::getLog
 Replaced setLog calls with LogGateway::addLog
+Replaced setNotifiaction with NotificationSender calls
 
 v1.5.02
 -------
