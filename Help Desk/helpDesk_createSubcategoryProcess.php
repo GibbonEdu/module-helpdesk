@@ -34,6 +34,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $departmentGateway = $container->get(DepartmentGateway::class);
 
+    //Check if department exists
     if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $URL .= '/helpDesk_manageDepartments.php&return=error1';
         header("Location: {$URL}");
@@ -44,6 +45,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $subcategoryName = $_POST['subcategoryName'] ?? '';
 
+    //Check if name is valid
     if (empty($subcategoryName) || strlen($subcategoryName) > 55) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
@@ -54,12 +56,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $subcategoryGateway = $container->get(SubcategoryGateway::class);
 
+    //Check if subcategory is unique (in department)
     if (!$subcategoryGateway->unique($data, ['subcategoryName', 'departmentID'])) {
         $URL .= '&return=error7';
         header("Location: {$URL}");
         exit();
     }
 
+    //Insert subcategory
     $subcategoryID = $subcategoryGateway->insert($data);
     if ($subcategoryID === false) {
         $URL .= '&return=error2';
@@ -67,6 +71,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     }
 
+    //Log
     $logGateway = $container->get(LogGateway::class);
     $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Subcategory Added', ['subcategoryID' => $subcategoryID]);
 

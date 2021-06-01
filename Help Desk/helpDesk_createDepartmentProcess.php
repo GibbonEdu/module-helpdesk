@@ -45,30 +45,38 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $departmentGateway = $container->get(DepartmentGateway::class);
 
+        //Check if name is unique
         if (!$departmentGateway->unique($data, ['departmentName'])) {
             $URL .= '&return=error7';
             header("Location: {$URL}");
             exit();
         }
 
+        //Insert Department
         $departmentID = $departmentGateway->insert($data);
         if ($departmentID === false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
-        $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
 
-        foreach ($roles AS $role) {
+        //Associate roles with department
+        $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
+        $return = 'success0';
+
+        foreach ($roles as $role) {
             $data = ['departmentID' => $departmentID, 'gibbonRoleID' => $role];
-            $departmentPermissionsGateway->insert($data);
+            if ($departmentPermissionsGateway->insert($data) === false) {
+                $return = 'warning1';
+            }
         }
             
+        //Log
         $logGateway = $container->get(LogGateway::class);
         $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Department Added', ['departmentID' => $departmentID]);
 
         //Success 0
-        $URL .= "&departmentID=$departmentID&return=success0";
+        $URL .= "&departmentID=$departmentID&return=$return";
         header("Location: {$URL}");
     }
 }

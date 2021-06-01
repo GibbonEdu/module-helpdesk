@@ -37,18 +37,18 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         header("Location: {$URL}");
         exit();
     } else {
-        //Write to database
-
         $data = ['groupName' => $groupName];
 
         $techGroupGateway = $container->get(TechGroupGateway::class);
 
+        //Check if name is unique
         if (!$techGroupGateway->unique($data, ['groupName'])) {
             $URL .= '&return=error7';
             header("Location: {$URL}");
             exit();
         }
 
+        //Insert group
         $groupID = $techGroupGateway->insert($data);
         if ($groupID === false) {
             $URL .= '&return=error2';
@@ -56,6 +56,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             exit();
         }
 
+        //Log
         $logGateway = $container->get(LogGateway::class);
         $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Technician Group Added', ['groupID' => $groupID]);
 
