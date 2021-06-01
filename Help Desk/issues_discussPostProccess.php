@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Comms\NotificationSender;
+use Gibbon\Domain\System\LogGateway;
+use Gibbon\Domain\System\NotificationGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
@@ -64,25 +67,16 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             exit();
         }
 
-        try {
-            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-            if ($gibbonModuleID == null) {
-                throw new PDOException('Invalid gibbonModuleID.');
-            }
+        $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
 
-            $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
-
-            $issueDiscussID = $issueDiscussGateway->insert([
-                'issueID' => $issueID,
-                'comment' => $comment,
-                'timestamp' => date('Y-m-d H:i:s'),
-                'gibbonPersonID' => $gibbonPersonID
-            ]);
-            
-            if ($issueDiscussID === false) {
-                throw new PDOException('Could not insert comment.');
-            }
-        } catch (PDOException $e) {
+        $issueDiscussID = $issueDiscussGateway->insert([
+            'issueID' => $issueID,
+            'comment' => $comment,
+            'timestamp' => date('Y-m-d H:i:s'),
+            'gibbonPersonID' => $gibbonPersonID
+        ]);
+        
+        if ($issueDiscussID === false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
@@ -93,25 +87,34 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
         $isTech = $technician->isNotEmpty() && ($issue['gibbonPersonID'] != $gibbonPersonID);
 
-        $message = 'A new message has been added to Issue #';
-        $message .= $issueID;
-        $message .= ' (' . $issue['issueName'] . ').';
+        //Send Notification
+        $notificationGateway = $container->get(NotificationGateway::class);
+        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session); 
+
+        $message = __('A new message has been added to Issue #') . $issueID . ' (' . $issue['issueName'] . ').';
 
         $personIDs = $issueGateway->getPeopleInvolved($issueID);
 
+        $notificationGateway = $container->get(NotificationGateway::class);
+        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
+ 
         foreach ($personIDs as $personID) {
             if ($personID != $gibbonPersonID) {
-                setNotification($connection2, $guid, $personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+                $notificationSender->addNotification($personID, $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
             } 
         }
 
+        $notificationSender->sendNotifications();
+
+        //Log
         $array = ['issueDiscussID' => $issueDiscussID];
 
         if ($isTech) {
             $array['technicianID'] = $technician->fetch()['technicianID'];
         } 
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Discussion Posted', $array, null);
+        $logGateway = $container->get(LogGateway::class);
+        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Discussion Posted', $array);
 
         $URL .= '&return=success0';
         header("Location: {$URL}");

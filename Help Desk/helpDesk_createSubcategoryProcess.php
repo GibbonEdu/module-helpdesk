@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 
@@ -33,6 +34,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $departmentGateway = $container->get(DepartmentGateway::class);
 
+    //Check if department exists
     if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $URL .= '/helpDesk_manageDepartments.php&return=error1';
         header("Location: {$URL}");
@@ -43,39 +45,35 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $subcategoryName = $_POST['subcategoryName'] ?? '';
 
+    //Check if name is valid
     if (empty($subcategoryName) || strlen($subcategoryName) > 55) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
     }
 
-    try {
-        $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-        if ($gibbonModuleID == null) {
-            throw new PDOException('Invalid gibbonModuleID.');
-        }
+    $data = ['subcategoryName' => $subcategoryName, 'departmentID' => $departmentID];
 
-        $data = ['subcategoryName' => $subcategoryName, 'departmentID' => $departmentID];
+    $subcategoryGateway = $container->get(SubcategoryGateway::class);
 
-        $subcategoryGateway = $container->get(SubcategoryGateway::class);
+    //Check if subcategory is unique (in department)
+    if (!$subcategoryGateway->unique($data, ['subcategoryName', 'departmentID'])) {
+        $URL .= '&return=error7';
+        header("Location: {$URL}");
+        exit();
+    }
 
-        if (!$subcategoryGateway->unique($data, ['subcategoryName', 'departmentID'])) {
-            $URL .= '&return=error7';
-            header("Location: {$URL}");
-            exit();
-        }
-
-        $subcategoryID = $subcategoryGateway->insert($data);
-        if ($subcategoryID === false) {
-            throw new PDOException('Could not insert Subcategory.');
-        }
-    } catch (PDOException $e) {
+    //Insert subcategory
+    $subcategoryID = $subcategoryGateway->insert($data);
+    if ($subcategoryID === false) {
         $URL .= '&return=error2';
         header("Location: {$URL}");
         exit();
     }
 
-    setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Subcategory Added', ['subcategoryID' => $subcategoryID], null);
+    //Log
+    $logGateway = $container->get(LogGateway::class);
+    $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Subcategory Added', ['subcategoryID' => $subcategoryID]);
 
     $URL .= "&subcategoryID=$subcategoryID&return=success0";
     header("Location: {$URL}");

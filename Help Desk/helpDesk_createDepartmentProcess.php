@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Domain\User\RoleGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
@@ -40,43 +41,42 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         exit();
     } else {
         //Write to database
-        try {
-            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-            if ($gibbonModuleID == null) {
-                throw new PDOException('Invalid gibbonModuleID.');
-            }
+        $data = ['departmentName' => $departmentName, 'departmentDesc' => $departmentDesc];
 
-            $data = ['departmentName' => $departmentName, 'departmentDesc' => $departmentDesc];
+        $departmentGateway = $container->get(DepartmentGateway::class);
 
-            $departmentGateway = $container->get(DepartmentGateway::class);
+        //Check if name is unique
+        if (!$departmentGateway->unique($data, ['departmentName'])) {
+            $URL .= '&return=error7';
+            header("Location: {$URL}");
+            exit();
+        }
 
-            if (!$departmentGateway->unique($data, ['departmentName'])) {
-                $URL .= '&return=error7';
-                header("Location: {$URL}");
-                exit();
-            }
-
-            $departmentID = $departmentGateway->insert($data);
-            if ($departmentID === false) {
-                throw new PDOException('Could not insert group.');
-            }
-            $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
-
-            foreach ($roles AS $role) {
-                $data = ['departmentID' => $departmentID, 'gibbonRoleID' => $role];
-                $departmentPermissionsGateway->insert($data);
-            }
-            
-        } catch (PDOException $e) {
+        //Insert Department
+        $departmentID = $departmentGateway->insert($data);
+        if ($departmentID === false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Department Added', ['departmentID' => $departmentID], null);
+        //Associate roles with department
+        $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
+        $return = 'success0';
+
+        foreach ($roles as $role) {
+            $data = ['departmentID' => $departmentID, 'gibbonRoleID' => $role];
+            if ($departmentPermissionsGateway->insert($data) === false) {
+                $return = 'warning1';
+            }
+        }
+            
+        //Log
+        $logGateway = $container->get(LogGateway::class);
+        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Department Added', ['departmentID' => $departmentID]);
 
         //Success 0
-        $URL .= "&departmentID=$departmentID&return=success0";
+        $URL .= "&departmentID=$departmentID&return=$return";
         header("Location: {$URL}");
     }
 }

@@ -17,10 +17,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
+
+require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs
     ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
@@ -36,13 +39,13 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $technicianGateway = $container->get(TechnicianGateway::class);
     $technician = $technicianGateway->getTechnician($technicianID);
 
-    if (empty($technicianID) || $technician->isEmpty()) {
+    if ($technician->isEmpty()) {
         $page->addError(__('No Technician Selected.'));
     } else {
         $technician = $technician->fetch();
-        echo '<h3>';
+        echo '<h2>';
             echo Format::name($technician['title'], $technician['preferredName'], $technician['surname'], 'Student');
-        echo '</h3>';
+        echo '</h2>';
 
         //Default Data
         $d = new DateTime('first day of this month');
@@ -77,26 +80,18 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         echo $form->getOutput();
 
         //Stats collection
+        $logGateway = $container->get(LogGateway::class);
 
-        //TODO: Migrate this to a gateway and honestly fix it, because it seems like it doesn't work anyways.
-        $result = getLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), getModuleIDFromName($connection2, 'Help Desk'), null, null, $startDate, $endDate, null, ['technicianID' => $technicianID]);
-        $rArray = $result->fetchAll();
+        $logCriteria = $logGateway->newQueryCriteria(false)
+            ->filterBy('module', 'Help Desk')
+            ->filterBy('startDate', $startDate)
+            ->filterBy('endDate', date('Y-m-d 23:59:59', strtotime($endDate)))
+            ->filterBy('array', serialize(['technicianID' => $technicianID]))
+            ->sortBy('timestamp', 'DESC');
 
-        $items = [];
+        $logs = $logGateway->queryLogs($logCriteria, $gibbon->session->get('gibbonSchoolYearID'));
 
-        foreach($rArray as $row) {
-            if (!isset($items[$row['title']])) {
-                $items[$row['title']] = 1;
-            } else {
-                $items[$row['title']] = $items[$row['title']]+1;
-            }
-        }
-        ksort($items);
-
-        $display = [];
-        foreach ($items as $key => $value) {
-            array_push($display, ['name' => $key, 'value' => $value]);
-        }
+        $items = statsOverview($logs);
 
         $table = DataTable::create('simpleStats');
         $table->setTitle(__('Simple Statistics'));
@@ -105,7 +100,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $table->addColumn('value', __('Action Count'));
 
-        echo $table->render($display);
+        echo $table->render($items);
 
         $table = DataTable::create('detailedStats');
         $table->setTitle('Detailed Statistics');
@@ -115,7 +110,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         $table->addColumn('title', __('Action Title'));
 
-        echo $table->render($rArray);
+        echo $table->render($logs);
     }
 }
 ?>

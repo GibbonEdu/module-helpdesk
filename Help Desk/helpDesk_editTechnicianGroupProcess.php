@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\LogGateway;
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\GroupDepartmentGateway;
@@ -89,8 +90,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             }
 
             //Success 0
-            $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbon->session->get('gibbonPersonID'), 'Technician Group Edited', ['groupID' => $groupID], null);
+            $logGateway = $container->get(LogGateway::class);
+            $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Technician Group Edited', ['groupID' => $groupID]);
 
             $URL .= '&return=success0';
             header("Location: {$URL}");

@@ -71,10 +71,6 @@ if (!isModuleAccessible($guid, $connection2)) {
 
 
         if ($allowed) {
-            if (isset($_GET['return'])) {
-                returnProcess($guid, $_GET['return'], null, null);
-            }
-        
             $createdByShow = ($issue['createdByID'] != $issue['gibbonPersonID']);
             
             $userGateway = $container->get(UserGateway::class);
@@ -94,7 +90,6 @@ if (!isModuleAccessible($guid, $connection2)) {
             $table = DataTable::createDetails('details');
             $table->setTitle($issue['issueName']);
 
-            //TODO: Double check these permission
             if ($isResolved) {
                 if ($isPersonsIssue || ($isRelated && $techGroupGateway->getPermissionValue($gibbonPersonID, 'reincarnateIssue')) || $hasFullAccess) {
                     $table->addHeaderAction('reincarnate', __('Reincarnate'))

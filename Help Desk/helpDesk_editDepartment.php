@@ -24,6 +24,10 @@ use Gibbon\Tables\DataTable;
 
 require_once __DIR__ . '/moduleFunctions.php';
 
+$page->breadcrumbs
+    ->add(__('Manage Departments'), 'helpDesk_manageDepartments.php')
+    ->add(__('Edit Department'));
+
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
@@ -37,23 +41,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($department)) {
         $page->addError(__('No Department Selected.'));
     } else {
-        $page->breadcrumbs
-            ->add(__('Manage Departments'), 'helpDesk_manageDepartments.php')
-            ->add(__('Edit Department'));
-
         $moduleName = $gibbon->session->get('module');
 
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
-
         $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
-        $criteria = $departmentPermissionsGateway->newQueryCriteria()
-            ->filterBy('departmentID', $departmentID);
+        $selectedRoles = $departmentPermissionsGateway->selectBy(['departmentID' => $departmentID])->toDataSet()->getColumn('gibbonRoleID');
 
-        $selectedRoles = $departmentPermissionsGateway->queryDeptPerms($criteria)->getColumn('gibbonRoleID');
-
-        //Edit Form
+        //Edit Department Form
         $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/helpDesk_editDepartmentProcess.php', 'post');
         $form->setTitle($department['departmentName']);
         $form->addHiddenValue('address', $gibbon->session->get('address'));
@@ -90,6 +83,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         echo $form->getOutput();
 
+        //Subcategory table
         $subcategoryGateway = $container->get(SubcategoryGateway::class);
 
         $criteria = $subcategoryGateway->newQueryCriteria(true)

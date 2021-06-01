@@ -341,7 +341,7 @@ INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departme
 INSERT INTO `helpDeskDepartmentPermissions` (`departmentPermissionsID`,`departmentID`, `gibbonRoleID`) SELECT NULL, helpDeskDepartments.departmentID, '003' FROM helpDeskDepartments;end
 ";
 
-//v1.4.011
+//v1.4.11
 $count++;
 $sql[$count][0]="1.4.11";
 $sql[$count][1]="
@@ -368,5 +368,17 @@ ALTER TABLE `helpDeskTechGroups` DROP COLUMN `departmentID`;end
 //v1.5.01
 $count++;
 $sql[$count][0]="1.5.01";
+$sql[$count][1]="
+";
+
+//v1.5.02
+$count++;
+$sql[$count][0]="1.5.02";
+$sql[$count][1]="
+";
+
+//v2.0.00
+$count++;
+$sql[$count][0]="2.0.00";
 $sql[$count][1]="
 ";

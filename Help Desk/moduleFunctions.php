@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Domain\User\RoleGateway;
+use Gibbon\Domain\DataSet;
 use Psr\Container\ContainerInterface;
 
 function explodeTrim($commaSeperatedString) {
@@ -34,6 +35,21 @@ function getRoles(ContainerInterface $container) {
         $group[$role['gibbonRoleID']] = __($role['name']) . ' (' . __($role['category']) . ')';
         return $group; 
     }, []);
+}
+
+function statsOverview(DataSet $logs) {
+    //Count each log entry
+	$items = array_count_values($logs->getColumn('title'));
+
+    //Sort by the title of the entry
+    ksort($items);
+
+    //Map the associative array to be displayed in the table
+    array_walk($items, function (&$value, $key) {
+        $value = ['name' => $key, 'value' => $value];
+    });
+
+    return $items;
 }
 
 ?>

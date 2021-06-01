@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Comms\NotificationSender;
+use Gibbon\Domain\System\LogGateway;
+use Gibbon\Domain\System\NotificationGateway;
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
@@ -89,54 +92,46 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         header("Location: {$URL}");
         exit();
     } else {
-        try {
-            $gibbonModuleID = getModuleIDFromName($connection2, $moduleName);
-            if ($gibbonModuleID == null) {
-                throw new PDOException('Invalid gibbonModuleID.');
-            }
-
-            $issueGateway = $container->get(IssueGateway::class);
-            $issueID = $issueGateway->insert($data);
-            if ($issueID === false) {
-                throw new PDOException('Could not insert issue.');
-            }
-        } catch (PDOException $e) {
+        $issueGateway = $container->get(IssueGateway::class);
+        $issueID = $issueGateway->insert($data);
+        if ($issueID === false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit();
         }
 
+        //Send Notification
+        $notificationGateway = $container->get(NotificationGateway::class);
+        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session); 
+
         //Notify issue owner, if created on their behalf
         if ($createdOnBehalf) {
-            setNotification($connection2, $guid, $data['gibbonPersonID'], 'A new issue has been created on your behalf (' . $data['issueName'] . ').', 'Help Desk', "/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=$issueID");
+            $message = __('A new issue has been created on your behalf, Issue #') . $issueID . '(' . $data['issueName'] . ').';
+            $notificationSender->addNotification($data['gibbonPersonID'], $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
         }
 
         //Notify Techicians
         $technicianGateway = $container->get(TechnicianGateway::class);
 
-        $techs = $technicianGateway->selectTechnicians()->fetchAll();
-
-        if (!$simpleCategories) {
-            $criteria = $subcategoryGateway->newQueryCriteria()
-                ->filterBy('subcategoryID', $data['subcategoryID']);
-                
-            $departmentData = $subcategoryGateway->querySubcategories($criteria);
-            if ($departmentData->count() > 0) {
-                $departmentID = $departmentData->getRow(0)['departmentID'];
-                $techs = array_filter($techs, function ($tech) use ($departmentID) {
-                    return empty($tech['departmentID']) || $tech['departmentID'] == $departmentID;
-                });
-            }
+        if ($simpleCategories) {
+            $techs = $technicianGateway->selectTechnicians()->fetchAll();
+        } else {
+            $departmentID = $subcategoryGateway->getByID($data['subcategoryID'])['departmentID'];
+            $techs = $technicianGateway->selectTechniciansByDepartment($departmentID)->fetchAll();
         }
 
         $techs = array_column($techs, 'gibbonPersonID');
 
+        $message = __('A new issue has been added') . ' (' . $data['issueName'] . ').';
+
         foreach ($techs as $techPersonID) {
             $permission = $techGroupGateway->getPermissionValue($techPersonID, 'viewIssueStatus');
             if ($techPersonID != $gibbon->session->get('gibbonPersonID') && $techPersonID != $data['gibbonPersonID'] && in_array($permission, ['UP', 'All'])) {
-                setNotification($connection2, $guid, $techPersonID, 'A new issue has been added (' . $data['issueName'] . ').', $moduleName, "/index.php?q=/modules/$moduleName/issues_discussView.php&issueID=$issueID");
+                $notificationSender->addNotification($techPersonID, $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
             }
         }
+
+        $notificationSender->sendNotifications();
 
         //Log
         $array = ['issueID' => $issueID];
@@ -146,7 +141,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
             $title = 'Issue Created (for Another Person)';
         }
 
-        setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, $title, $array, null);
+        $logGateway = $container->get(LogGateway::class);
+        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, $title, $array);
 
         $URL .= "&issueID=$issueID&return=success0";
         header("Location: {$URL}");

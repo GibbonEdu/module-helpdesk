@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Comms\NotificationSender;
+use Gibbon\Domain\System\LogGateway;
+use Gibbon\Domain\System\NotificationGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
@@ -40,7 +43,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     $issueGateway = $container->get(IssueGateway::class);
     $issue = $issueGateway->getByID($issueID);
 
-    if (empty($issueID) || empty($issue) || $issue['technicianID'] != null) {
+    if (empty($issue) || $issue['technicianID'] != null) {
         //Fail 3
         $URL .= '/issues_view.php&return=error1';
         header("Location: {$URL}");
@@ -58,25 +61,23 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     
             //Write to database
             $technicianID = $technician->fetch()['technicianID'];
-            try {
-                $gibbonModuleID = getModuleIDFromName($connection2, 'Help Desk');
-                if ($gibbonModuleID == null) {
-                    throw new PDOException('Invalid gibbonModuleID.');
-                }
-
-                if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
-                    throw new PDOException('Could not update issue.');
-                }
-            } catch (PDOException $e) {
-                //Fail 2
+            if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
                 $URL .= '&return=error2';
                 header("Location: {$URL}");
                 exit();
             }
 
-            setNotification($connection2, $guid, $issue['gibbonPersonID'], 'A technician has started working on your isuse.', 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+            //Send Notification
+            $notificationGateway = $container->get(NotificationGateway::class);
+            $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
 
-            setLog($connection2, $gibbon->session->get('gibbonSchoolYearID'), $gibbonModuleID, $gibbonPersonID, 'Issue Accepted', ['issueID' => $issueID, 'technicianID' => $technicianID], null);
+            $notificationSender->addNotification($issue['gibbonPersonID'], __('A technician has started working on your issue.'), 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+
+            $notificationSender->sendNotifications();
+
+            //Log
+            $logGateway = $container->get(LogGateway::class);
+            $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Accepted', ['issueID' => $issueID, 'technicianID' => $technicianID]);
 
             //Success 1 aka Accepted
             $URL .= '&return=success0';

@@ -35,6 +35,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentGateway = $container->get(DepartmentGateway::class);
     $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
     
+    //Check that department exists
     if(empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $URL .= 'helpDesk_manageDepartments.php&return=error1';
         header("Location: {$URL}");
@@ -47,7 +48,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $departmentDesc = $_POST['departmentDesc'] ?? '';
     $roles = $_POST['roles'] ?? [];
 
-    if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128) {
+    //Check that data is valid
+    if (empty($departmentName) || strlen($departmentName) > 55 || empty($departmentDesc) || strlen($departmentDesc) > 128 || empty($roles)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit();
@@ -55,25 +57,38 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $data = ['departmentName' => $departmentName, 'departmentDesc' => $departmentDesc];
 
+    //Check that department name is unique
     if (!$departmentGateway->unique($data, ['departmentName'], $departmentID)) {
         $URL .= '&return=error7';
         header("Location: {$URL}");
         exit();
     }
 
+    //Update department
     if (!$departmentGateway->update($departmentID, $data)) {
         $URL .= '&return=error2';
         header("Location: {$URL}");
         exit();
     }
-    //TODO: create an if error for this
-    $departmentPermissionsGateway->deleteWhere(['departmentID' => $departmentID]);
 
-    foreach ($roles AS $role) {
-        $data = ['departmentID' => $departmentID, 'gibbonRoleID' => $role];
-        $departmentPermissionsGateway->insert($data);
+    //Remove current role permissions
+    if (!$departmentPermissionsGateway->deleteWhere(['departmentID' => $departmentID])) {
+        $URL .= '&return=warning1';
+        header("Location: {$URL}");
+        exit():
     }
-    $URL .= '&return=success0';
+
+    $return = 'success0';
+
+    //Add new role permissions
+    foreach ($roles as $role) {
+        $data = ['departmentID' => $departmentID, 'gibbonRoleID' => $role];
+        if ($departmentPermissionsGateway->insert($data) === false) {
+            $return = 'warning1';
+        }
+    }
+
+    $URL .= "&return=$return";
     header("Location: {$URL}");
     exit();
 }

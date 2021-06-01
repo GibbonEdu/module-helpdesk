@@ -18,35 +18,29 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
+use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Services\Format;
 
 $page->breadcrumbs
-        ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
-        ->add(__('Create Technician'));
+    ->add(__('Manage Technicians'), 'helpDesk_manageTechnicians.php')
+    ->add(__('Create Technician'));
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php')) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php', null);
-    }
+    $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php');
 
-    $groupSql = 'SELECT groupID as value, groupName as name 
-                    FROM helpDeskTechGroups 
-                    ORDER BY helpDeskTechGroups.groupID ASC';
+    //Get Tech Groups    
+    $techGroupGateway = $container->get(TechGroupGateway::class);
+    $groups = $techGroupGateway->selectBy([], ['groupID as value', 'groupName as name']);
 
-    $peopleSql = 'SELECT gibbonPerson.gibbonPersonID, title, surname, preferredName, username, gibbonRole.category
-                        FROM gibbonPerson 
-                        JOIN gibbonRole ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary)
-                        LEFT JOIN helpDeskTechnicians ON (helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID) 
-                        WHERE status="Full"
-                        AND helpDeskTechnicians.gibbonPersonID IS NULL
-                        ORDER BY surname, preferredName';
+    //Get Non-Technicians
+    $technicianGateway = $container->get(TechnicianGateway::class);
 
-    $result = $pdo->executeQuery([], $peopleSql);
-    $users = array_reduce($result->fetchAll(), function ($group, $item) {
+    $users = array_reduce($technicianGateway->selectNonTechnicians()->fetchAll(), function ($group, $item) {
         $group[$item['gibbonPersonID']] = Format::name('', $item['preferredName'], $item['surname'], 'Student', true) . ' (' . $item['username'] . ', ' . __($item['category']) . ')';
         return $group;
     }, []);
@@ -64,7 +58,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $row = $form->addRow();
         $row->addLabel('group', __('Technician Group'));
         $row->addSelect('group')
-            ->fromQuery($pdo, $groupSql, [])
+            ->fromResults($groups)
             ->placeholder()
             ->required(); 
 

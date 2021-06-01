@@ -75,6 +75,19 @@ class DepartmentGateway extends QueryableGateway
             return false;
         }
 
+        $query = $this
+            ->newDelete()
+            ->from('helpDeskDepartmentPermissions')
+            ->where('departmentID = :departmentID')
+            ->bindValue('departmentID', $departmentID);
+
+        $this->runDelete($query);
+
+        if (!$this->db()->getQuerySuccess()) {
+            $this->db()->rollBack();
+            return false;
+        }
+
         //Delete Department
         $this->delete($departmentID);
 

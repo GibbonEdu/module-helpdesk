@@ -46,6 +46,23 @@ class TechnicianGateway extends QueryableGateway
         return $this->runSelect($query);
     }
 
+    public function selectTechniciansByDepartment($departmentID) {
+        $query = $this
+            ->newSelect()
+            ->distinct()
+            ->from('helpDeskTechnicians')
+            ->cols(['gibbonPerson.gibbonPersonID'])
+            ->leftJoin('gibbonPerson', 'gibbonPerson.gibbonPersonID=helpDeskTechnicians.gibbonPersonID')
+            ->leftJoin('helpDeskGroupDepartment', 'helpDeskGroupDepartment.groupID = helpDeskTechnicians.groupID')
+            ->where('(helpDeskGroupDepartment.departmentID = :departmentID')
+            ->orWhere('helpDeskGroupDepartment.departmentID IS NULL)')
+            ->bindValue('departmentID', $departmentID)
+            ->where('gibbonPerson.status = "Full"')
+            ->orderBy(['helpDeskTechnicians.technicianID']);
+
+        return $this->runSelect($query);
+    }
+
     public function getTechnician($technicianID) {
         $query = $this
             ->newQuery()
@@ -119,5 +136,19 @@ class TechnicianGateway extends QueryableGateway
 
         $this->db()->commit();
         return true;
+    }
+
+    public function selectNonTechnicians() {
+        $select = $this
+            ->newSelect()
+            ->from('gibbonPerson')
+            ->cols(['gibbonPerson.gibbonPersonID', 'title', 'surname', 'preferredName', 'username', 'gibbonRole.category'])
+            ->leftJoin('gibbonRole', 'gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary')
+            ->leftJoin('helpDeskTechnicians', 'helpDeskTechnicians.gibbonPersonID=gibbonPerson.gibbonPersonID')
+            ->where('gibbonPerson.status = "Full"')
+            ->where('helpDeskTechnicians.gibbonPersonID IS NULL')
+            ->orderBy(['surname', 'preferredName']);
+
+        return $this->runSelect($select);
     }
 }
