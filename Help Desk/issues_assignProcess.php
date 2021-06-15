@@ -27,9 +27,9 @@ use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
 
-$absoluteURL = $gibbon->session->get('absoluteURL');
+$absoluteURL = $session->get('absoluteURL');
 
-$URL = $absoluteURL . '/index.php?q=/modules/' . $gibbon->session->get('module');
+$URL = $absoluteURL . '/index.php?q=/modules/' . $session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
@@ -44,7 +44,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         header("Location: {$URL}");
         exit();
     }
-    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+    $gibbonPersonID = $session->get('gibbonPersonID');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
     if (!$techGroupGateway->getPermissionValue($gibbonPersonID, $permission)) {
@@ -101,7 +101,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     //Send Notification
     $notificationGateway = $container->get(NotificationGateway::class);
-    $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
+    $notificationSender = new NotificationSender($notificationGateway, $session);
 
     $message = Format::name($technician['title'], $technician['preferredName'], $technician['surname'], 'Student') . __(" has been $assign Issue #") . $issueID . '(' . $issue['issueName'] . ').';
 
@@ -117,7 +117,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     //Log
     $logGateway = $container->get(LogGateway::class);
-    $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Technician Assigned', ['issueID' => $issueID, 'technicainID' => $technicianID]);
+    $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Technician Assigned', ['issueID' => $issueID, 'technicainID' => $technicianID]);
 
     $URL .= "/issues_discussView.php&issueID=$issueID&return=success0";
     header("Location: {$URL}");

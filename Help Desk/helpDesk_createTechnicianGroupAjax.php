@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Gibbon system-wide include
 require_once '../../gibbon.php';
 
-if (empty($gibbon->session->get('gibbonPersonID')) || empty($gibbon->session->get('gibbonRoleIDPrimary'))
+if (empty($session->get('gibbonPersonID')) || empty($session->get('gibbonRoleIDPrimary'))
     || !isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')) {
     die(__('Your request failed because you do not have access to this action.'));
 } else {

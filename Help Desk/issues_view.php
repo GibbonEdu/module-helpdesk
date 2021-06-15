@@ -41,36 +41,36 @@ if (!isModuleAccessible($guid, $connection2)) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    
-    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-    $moduleName = $gibbon->session->get('module');
-    $year = $_GET['year'] ?? $gibbon->session->get('gibbonSchoolYearID');
+
+    $gibbonPersonID = $session->get('gibbonPersonID');
+    $moduleName = $session->get('module');
+    $year = $_GET['year'] ?? $session->get('gibbonSchoolYearID');
     $relation = $_GET['relation'] ?? null;
 
     if (isset($_GET['issueID'])) {
-        $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $_GET['issueID']);
+        $page->return->setEditLink($session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $_GET['issueID']);
     }
-    
+
     $issueGateway = $container->get(IssueGateway::class);
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $technicianGateway = $container->get(TechnicianGateway::class);
     $userGateway = $container->get(UserGateway::class);
     $settingsGateway = $container->get(SettingGateway::class);
     $groupDepartmentGateway = $container->get(GroupDepartmentGateway::class);
- 
+
     $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
     $isTechnician = $technician->isNotEmpty();
-    $techGroup = $techGroupGateway->getByID($isTechnician ? $technician->fetch()['groupID'] : ''); 
+    $techGroup = $techGroupGateway->getByID($isTechnician ? $technician->fetch()['groupID'] : '');
     $techDepartments = $isTechnician ? $groupDepartmentGateway->selectGroupDepartments($techGroup['groupID'])->fetchAll() : [];
     $fullAccess = $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess');
     $techDeptFilter = $isTechnician && !empty($techDepartments) && !$fullAccess && ($relation != 'My Issues');
-       
+
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
         ->sortBy('status', 'ASC')
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
-    
+
     //Set up Relation data
     $relations = [];
 
@@ -83,7 +83,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         $relations[] = 'My Assigned';
         $relation = $relation ?? 'My Assigned';
     }
-    
+
     $relations[] = 'My Issues';
 
     if (!in_array($relation, $relations)) {
@@ -91,11 +91,11 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
 
     //Search Form
-    $form = Form::create('searchForm', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
+    $form = Form::create('searchForm', $session->get('absoluteURL') . '/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('q', '/modules/' . $moduleName . '/issues_view.php');
-    $form->addHiddenValue('address', $gibbon->session->get('address'));
+    $form->addHiddenValue('address', $session->get('address'));
 
     $form->setClass('noIntBorder fullWidth standardForm');
     $form->setTitle(__('Search & Filter'));
@@ -105,7 +105,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             ->description(__('Issue ID, Name or Description.'));
         $row->addTextField('search')
             ->setValue($criteria->getSearchText());
-    
+
     if (count($relations) > 1) {
         $row = $form->addRow();
             $row->addLabel('relation', __('Relation'));
@@ -118,12 +118,12 @@ if (!isModuleAccessible($guid, $connection2)) {
         $row->addLabel('year', __('Year Filter'));
         $row->addSelectSchoolYear('year', 'All')
             ->selected($year);
-    
-    $row = $form->addRow();
-        $row->addSearchSubmit($gibbon->session, __('Clear Filters'));
 
-    echo $form->getOutput();      
-    
+    $row = $form->addRow();
+        $row->addSearchSubmit($session, __('Clear Filters'));
+
+    echo $form->getOutput();
+
     $simpleCategories = $settingsGateway->getSettingByScope($moduleName, 'simpleCategories');
 
     if ($simpleCategories || !$techDeptFilter) {
@@ -139,8 +139,8 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $table = DataTable::createPaginated('issues', $criteria);
     $table->setTitle('Issues');
-    
-    //FILTERS START    
+
+    //FILTERS START
     $statusFilter = [
         'status:Unassigned' => __('Status').': '.__('Unassigned'),
         'status:Pending'    => __('Status').': '.__('Pending'),
@@ -162,7 +162,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             case 'Pending':
                 $statusFilter = [];
                 break;
-        }   
+        }
     }
     */
 
@@ -186,7 +186,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $departments = $departmentGateway->selectDepartments()->toDataSet();
             }
         } else {
-            $gibbonRoleID = $gibbon->session->get('gibbonRoleIDCurrent');
+            $gibbonRoleID = $session->get('gibbonRoleIDCurrent');
             $departmentPermissionGateway = $container->get(DepartmentPermissionsGateway::class);
             $departmentPermissionCriteria = $departmentPermissionGateway->newQueryCriteria()
                 ->filterBy('gibbonRoleID', $gibbonRoleID)
@@ -220,8 +220,8 @@ if (!isModuleAccessible($guid, $connection2)) {
             'priority:'.$priority => __('Priority').': '.$priority,
         ]);
     }
-    //FILTERS END    
-    
+    //FILTERS END
+
     //Row Modifiers
     $table->modifyRows(function($issue, $row) {
         if ($issue['status'] == 'Resolved') {
@@ -244,7 +244,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     //Issue ID column
     $table->addColumn('issueID', __('Issue ID'))
-            ->format(Format::using('number', ['issueID'])); 
+            ->format(Format::using('number', ['issueID']));
 
     //Subject & Description Column
     $table->addColumn('issueName', __('Subject'))
@@ -252,9 +252,9 @@ if (!isModuleAccessible($guid, $connection2)) {
           ->format(function ($issue) {
             return Format::bold($issue['issueName']) . '<br/>' . Format::small(Format::truncate(strip_tags($issue['description']), 50));
           });
-          
+
     //Owner & Technician Column
-    $table->addColumn('gibbonPersonID', __('Owner')) 
+    $table->addColumn('gibbonPersonID', __('Owner'))
                 ->description(__('Technician'))
                 ->format(function ($row) use ($userGateway) {
                     $owner = $userGateway->getByID($row['gibbonPersonID']);
@@ -269,7 +269,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 });
 
     //Facility & Category Column
-    $table->addColumn('facility', __('Facility')) 
+    $table->addColumn('facility', __('Facility'))
         ->description(__('Category'))
         ->format(function ($row) use ($simpleCategories) {
             $facility = $row['facility'] ?? 'N/A';
@@ -281,7 +281,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             return  __(Format::bold($facility) . '<br/>'. Format::small($category));
         });
-    
+
     //Priority Column
     if (!empty($priorityFilters)) {
         $table->addColumn('priority', __($settingsGateway->getSettingByScope($moduleName, 'issuePriorityName')));
@@ -293,8 +293,8 @@ if (!isModuleAccessible($guid, $connection2)) {
           ->format(function ($issue) {
                 return Format::bold(__($issue['status'])) . '<br/>' . Format::small(Format::date($issue['date']));
             });
-   
-    //Action Column 
+
+    //Action Column
     $table->addActionColumn()
             ->addParam('issueID')
             ->format(function ($issues, $actions) use ($gibbonPersonID, $moduleName, $fullAccess, $techGroupGateway, $issueGateway) {
@@ -318,12 +318,12 @@ if (!isModuleAccessible($guid, $connection2)) {
                                     ->setURL('/modules/' . $moduleName . '/issues_assign.php')
                                     ->setIcon('attendance');
                         }
-                    } else if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue')) { 
+                    } else if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue')) {
                         $actions->addAction('assign', __('Reassign'))
                                 ->setURL('/modules/' . $moduleName . '/issues_assign.php')
                                 ->setIcon('attendance');
                     }
-                    
+
                     if ($isPersonsIssue || ($related && $techGroupGateway->getPermissionValue($gibbonPersonID, 'resolveIssue'))) {
                         $actions->addAction('resolve', __('Resolve'))
                                 ->directLink()
@@ -339,8 +339,8 @@ if (!isModuleAccessible($guid, $connection2)) {
                     }
                 }
             });
-    
-    echo $table->render($issues);    
- 
+
+    echo $table->render($issues);
+
 }
 ?>

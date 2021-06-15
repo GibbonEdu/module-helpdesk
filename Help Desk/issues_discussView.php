@@ -52,7 +52,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         $technicianGateway = $container->get(TechnicianGateway::class);
 
         //Information about the current user
-        $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+        $gibbonPersonID = $session->get('gibbonPersonID');
         $isPersonsIssue = ($issue['gibbonPersonID'] == $gibbonPersonID);
         $isTechnician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID)->isNotEmpty();
         $isRelated = $issueGateway->isRelated($issueID, $gibbonPersonID);
@@ -66,18 +66,18 @@ if (!isModuleAccessible($guid, $connection2)) {
         $isResolved = ($issue['status'] == 'Resolved');
 
         $allowed = $isRelated
-            || (!$hasTechAssigned && $isTechnician) 
+            || (!$hasTechAssigned && $isTechnician)
             || $hasViewAccess;
 
 
         if ($allowed) {
             $createdByShow = ($issue['createdByID'] != $issue['gibbonPersonID']);
-            
+
             $userGateway = $container->get(UserGateway::class);
             $owner = $userGateway->getByID($issue['gibbonPersonID']);
             if ($owner['gibbonRoleIDPrimary'] == '003' ) {
                 $ownerRole = 'Student';
-            } else {    
+            } else {
                 $ownerRole = 'Staff';
             }
             $detailsData = [
@@ -95,7 +95,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     $table->addHeaderAction('reincarnate', __('Reincarnate'))
                             ->setIcon('reincarnate')
                             ->directLink()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_reincarnateProcess.php')
+                            ->setURL('/modules/' . $session->get('module') . '/issues_reincarnateProcess.php')
                             ->addParam('issueID', $issueID);
                 }
             } else {
@@ -104,27 +104,27 @@ if (!isModuleAccessible($guid, $connection2)) {
                         $table->addHeaderAction('accept', __('Accept'))
                                 ->setIcon('page_new')
                                 ->directLink()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_acceptProcess.php')
+                                ->setURL('/modules/' . $session->get('module') . '/issues_acceptProcess.php')
                                 ->addParam('issueID', $issueID);
                     }
                     if (($techGroupGateway->getPermissionValue($gibbonPersonID, 'assignIssue') && !$isPersonsIssue) || $hasFullAccess) {
                         $table->addHeaderAction('assign', __('Assign'))
                                 ->setIcon('attendance')
                                 ->modalWindow()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                                ->setURL('/modules/' . $session->get('module') . '/issues_assign.php')
                                 ->addParam('issueID', $issueID);
                     }
                 } else {
                     $table->addHeaderAction('refresh', __('Refresh'))
                             ->setIcon('refresh')
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_discussView.php')
+                            ->setURL('/modules/' . $session->get('module') . '/issues_discussView.php')
                             ->addParam('issueID', $issueID);
 
                     if (($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && !$isPersonsIssue) || $hasFullAccess) {
                         $table->addHeaderAction('reassign', __('Reassign'))
                                 ->setIcon('attendance')
                                 ->modalWindow()
-                                ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_assign.php')
+                                ->setURL('/modules/' . $session->get('module') . '/issues_assign.php')
                                 ->addParam('issueID', $issueID);
                     }
                 }
@@ -133,7 +133,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     $table->addHeaderAction('resolve', __('Resolve'))
                             ->setIcon('iconTick')
                             ->directLink()
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/issues_resolveProcess.php')
+                            ->setURL('/modules/' . $session->get('module') . '/issues_resolveProcess.php')
                             ->addParam('issueID', $issueID);
                 }
             }
@@ -157,7 +157,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $table->addColumn('createdBy', __('Created By'));
             }
 
-            $table->addMetaData('gridClass', 'grid-cols-' . count($detailsData));            
+            $table->addMetaData('gridClass', 'grid-cols-' . count($detailsData));
 
             $detailsData['description'] = $issue['description'];
             $table->addColumn('description', __('Description'))->addClass('col-span-10');
@@ -167,15 +167,15 @@ if (!isModuleAccessible($guid, $connection2)) {
             $settingGateway = $container->get(SettingGateway::class);
 
             if ($isTechnician && !$isPersonsIssue && $settingGateway->getSettingByScope('Help Desk', 'techNotes')) {
-                $form = Form::create('techNotes',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussNoteProccess.php', 'post');
+                $form = Form::create('techNotes',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/issues_discussNoteProccess.php', 'post');
                 $form->addHiddenValue('issueID', $issueID);
-                $form->addHiddenValue('address', $gibbon->session->get('address'));
+                $form->addHiddenValue('address', $session->get('address'));
 
                 $row = $form->addRow();
                     $col = $row->addColumn();
                         $col->addHeading(__('Technician Notes'))->addClass('inline-block');
-                   
-                    $col->addWebLink('<img title="'.__('Add Technician Note').'" src="./themes/'.$_SESSION[$guid]['gibbonThemeName'].'/img/plus.png" />')
+
+                    $col->addWebLink('<img title="'.__('Add Technician Note').'" src="./themes/'.$session->get('gibbonThemeName').'/img/plus.png" />')
                         ->addData('toggle', '.techNote')
                         ->addClass('floatRight');
 
@@ -186,7 +186,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                             ->setRows(5)
                             ->showMedia()
                             ->required();
-                
+
                 $row = $form->addRow()->setClass('techNote hidden flex flex-col sm:flex-row items-stretch sm:items-center');;
                     $row->addFooter();
                     $row->addSubmit();
@@ -200,21 +200,21 @@ if (!isModuleAccessible($guid, $connection2)) {
                         ->setContent($page->fetchFromTemplate('ui/discussion.twig.html', [
                             'title' => __(''),
                             'discussion' => $notes
-                        ])); 
+                        ]));
                 }
 
                 echo $form->getOutput();
             }
 
-           
-            $form = Form::create('issueDiscuss',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
-            $form->addHiddenValue('address', $gibbon->session->get('address'));
+
+            $form = Form::create('issueDiscuss',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
+            $form->addHiddenValue('address', $session->get('address'));
             $row = $form->addRow();
             $col = $row->addColumn();
                 $col->addHeading(__('Comments'))->addClass('inline-block');
-               
+
             if ($issue['status'] == 'Pending' && ($isRelated || $hasFullAccess)) {
-                $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$_SESSION[$guid]['gibbonThemeName'].'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');
+                $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$session->get('gibbonThemeName').'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');
                 $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
                     $column = $row->addColumn();
                     $column->addLabel('comment', __('Comment'));
@@ -222,7 +222,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                         ->setRows(5)
                         ->showMedia()
                         ->required();
-                
+
                 $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');;
                     $row->addFooter();
                     $row->addSubmit();
@@ -245,7 +245,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                     ->setContent($page->fetchFromTemplate('ui/discussion.twig.html', [
                         'title' => __(''),
                         'discussion' => $logs
-                    ])); 
+                    ]));
             }
 
             if (count($form->getRows()) > 1) {
@@ -256,6 +256,3 @@ if (!isModuleAccessible($guid, $connection2)) {
         }
     }
 }
-
-
-

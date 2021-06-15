@@ -41,15 +41,15 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($department)) {
         $page->addError(__('No Department Selected.'));
     } else {
-        $moduleName = $gibbon->session->get('module');
+        $moduleName = $session->get('module');
 
         $departmentPermissionsGateway = $container->get(DepartmentPermissionsGateway::class);
         $selectedRoles = $departmentPermissionsGateway->selectBy(['departmentID' => $departmentID])->toDataSet()->getColumn('gibbonRoleID');
 
         //Edit Department Form
-        $form = Form::create('createDepartment',  $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/helpDesk_editDepartmentProcess.php', 'post');
+        $form = Form::create('createDepartment',  $session->get('absoluteURL') . '/modules/' . $moduleName . '/helpDesk_editDepartmentProcess.php', 'post');
         $form->setTitle($department['departmentName']);
-        $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form->addHiddenValue('address', $session->get('address'));
         $form->addHiddenValue('departmentID', $departmentID);
 
         $row = $form->addRow();

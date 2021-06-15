@@ -24,7 +24,7 @@ use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_createDepartment.php';
+$URL = $session->get('absoluteURL') . '/index.php?q=/modules/' . $session->get('module') . '/helpDesk_createDepartment.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     $URL .= '&return=error0';
@@ -73,7 +73,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             
         //Log
         $logGateway = $container->get(LogGateway::class);
-        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Department Added', ['departmentID' => $departmentID]);
+        $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $session->get('gibbonPersonID'), 'Department Added', ['departmentID' => $departmentID]);
 
         //Success 0
         $URL .= "&departmentID=$departmentID&return=$return";

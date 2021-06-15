@@ -29,7 +29,7 @@ $_POST['address'] = '/modules/Help Desk/issues_acceptProcess.php';
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
+$URL = $session->get('absoluteURL') . '/index.php?q=/modules/' . $session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
@@ -49,7 +49,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         header("Location: {$URL}");
         exit();
     } else {
-        $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+        $gibbonPersonID = $session->get('gibbonPersonID');
 
         $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -69,7 +69,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
             //Send Notification
             $notificationGateway = $container->get(NotificationGateway::class);
-            $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
+            $notificationSender = new NotificationSender($notificationGateway, $session);
 
             $notificationSender->addNotification($issue['gibbonPersonID'], __('A technician has started working on your issue.'), 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
 
@@ -77,7 +77,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
             //Log
             $logGateway = $container->get(LogGateway::class);
-            $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Accepted', ['issueID' => $issueID, 'technicianID' => $technicianID]);
+            $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Accepted', ['issueID' => $issueID, 'technicianID' => $technicianID]);
 
             //Success 1 aka Accepted
             $URL .= '&return=success0';

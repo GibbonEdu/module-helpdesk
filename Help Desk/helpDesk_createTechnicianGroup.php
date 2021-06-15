@@ -29,16 +29,16 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 } else {
     //Proceed!
     if (isset($_GET['groupID'])) {
-        $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/'  . $gibbon->session->get('module') .  '/helpDesk_editTechnicianGroup.php&groupID=' . $_GET['groupID']);
+        $page->return->setEditLink($session->get('absoluteURL') . '/index.php?q=/modules/'  . $session->get('module') .  '/helpDesk_editTechnicianGroup.php&groupID=' . $_GET['groupID']);
     }
 
-    $form = Form::create('createTechnicianGroup',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupProcess.php', 'post');
-    $form->addHiddenValue('address', $gibbon->session->get('address'));
+    $form = Form::create('createTechnicianGroup',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/helpDesk_createTechnicianGroupProcess.php', 'post');
+    $form->addHiddenValue('address', $session->get('address'));
 
     $row = $form->addRow();
         $row->addLabel('groupName', __('Group Name'));
         $row->addTextField('groupName')
-            ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php')
+            ->uniqueField('./modules/' . $session->get('module') . '/helpDesk_createTechnicianGroupAjax.php')
             ->required();
 
     $row = $form->addRow();

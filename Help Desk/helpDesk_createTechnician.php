@@ -31,7 +31,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $page->addError(__('You do not have access to this action.'));
 } else {
     //Proceed!
-    $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_manageTechnicians.php');
+    $page->return->setEditLink($session->get('absoluteURL') . '/index.php?q=/modules/' . $session->get('module') . '/helpDesk_manageTechnicians.php');
 
     //Get Tech Groups    
     $techGroupGateway = $container->get(TechGroupGateway::class);
@@ -45,8 +45,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         return $group;
     }, []);
 
-    $form = Form::create('createTechnician',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianProcess.php', 'post');
-    $form->addHiddenValue('address', $gibbon->session->get('address'));
+    $form = Form::create('createTechnician',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/helpDesk_createTechnicianProcess.php', 'post');
+    $form->addHiddenValue('address', $session->get('address'));
 
     $row = $form->addRow();
         $row->addLabel('person', __('Person'));

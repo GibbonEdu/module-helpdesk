@@ -24,7 +24,7 @@ use Gibbon\Module\HelpDesk\Domain\SubcategoryGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
+$URL = $session->get('absoluteURL') . '/index.php?q=/modules/' . $session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php')) {
     $URL .= '/issues_view.php&return=error0';
@@ -83,7 +83,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     //Log
     $logGateway = $container->get(LogGateway::class);
-    $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Subcategory Edited', ['subcategoryID' => $subcategoryID]);
+    $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $session->get('gibbonPersonID'), 'Subcategory Edited', ['subcategoryID' => $subcategoryID]);
 
     $URL .= '&return=success0';
     header("Location: {$URL}");

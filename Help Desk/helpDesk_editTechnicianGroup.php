@@ -54,8 +54,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             'Pending'   =>  __('Pending')
         ];
 
-        $form = Form::create('editTechnicianGroup', $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
-        $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form = Form::create('editTechnicianGroup', $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/helpDesk_editTechnicianGroupProcess.php?groupID=' . $groupID , 'post');
+        $form->addHiddenValue('address', $session->get('address'));
         $form->setTitle($values['groupName']);
 
         $form->addRow()->addHeading(__('Settings'));
@@ -63,7 +63,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $row = $form->addRow();
             $row->addLabel('groupName', __('Group Name'));
             $row->addTextField('groupName')
-                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', ['currentGroupName' => $values['groupName']])
+                ->uniqueField('./modules/' . $session->get('module') . '/helpDesk_createTechnicianGroupAjax.php', ['currentGroupName' => $values['groupName']])
                 ->required()
                 ->setValue($values['groupName']);
 

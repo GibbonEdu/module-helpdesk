@@ -37,8 +37,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_statis
     $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date('Y-m-d');
 
     //Filter
-    $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
-    $form->addHiddenValue('q', '/modules/' . $gibbon->session->get('module') . '/helpdesk_statistics.php');
+    $form = Form::create('helpDeskStatistics', $session->get('absoluteURL') . '/index.php', 'get');
+    $form->addHiddenValue('q', '/modules/' . $session->get('module') . '/helpdesk_statistics.php');
     $form->setTitle('Filter');
 
     $row = $form->addRow();
@@ -69,25 +69,25 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_statis
         ->filterBy('endDate', date('Y-m-d 23:59:59', strtotime($endDate)))
         ->sortBy('timestamp', 'DESC');
 
-    $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
+    $logs = $logGateway->queryLogs($criteria, $session->get('gibbonSchoolYearID'));
 
     $stats = statsOverview($logs);
 
     //Stat Table
     $table = DataTable::create('statistics');
     $table->setTitle('Statistics');
-    
+
     $data = [
-        'q' => '/modules/' . $gibbon->session->get('module') . '/helpDesk_statisticsDetail.php',
-        'title' => '', 
-        'startDate' => $startDate, 
+        'q' => '/modules/' . $session->get('module') . '/helpDesk_statisticsDetail.php',
+        'title' => '',
+        'startDate' => $startDate,
         'endDate' => $endDate,
     ];
 
     $table->addColumn('name', __('Name'))
-        ->format(function ($row) use ($gibbon, $data) {
+        ->format(function ($row) use ($session, $data) {
             $data['title'] = $row['name'];
-            return Format::link($gibbon->session->get('absoluteURL') . '/index.php?' . http_build_query($data), $row['name']);
+            return Format::link($session->get('absoluteURL') . '/index.php?' . http_build_query($data), $row['name']);
         });
 
     $table->addColumn('value', __('Value'));

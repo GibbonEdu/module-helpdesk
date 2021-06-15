@@ -27,7 +27,7 @@ use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
+$URL = $session->get('absoluteURL') . '/index.php?q=/modules/' . $session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     $URL .= '/issues_view.php&return=error0';
@@ -45,7 +45,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         exit();
     }
 
-    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+    $gibbonPersonID = $session->get('gibbonPersonID');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
@@ -89,14 +89,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
         //Send Notification
         $notificationGateway = $container->get(NotificationGateway::class);
-        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session); 
+        $notificationSender = new NotificationSender($notificationGateway, $session); 
 
         $message = __('A new message has been added to Issue #') . $issueID . ' (' . $issue['issueName'] . ').';
 
         $personIDs = $issueGateway->getPeopleInvolved($issueID);
 
         $notificationGateway = $container->get(NotificationGateway::class);
-        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
+        $notificationSender = new NotificationSender($notificationGateway, $session);
  
         foreach ($personIDs as $personID) {
             if ($personID != $gibbonPersonID) {
@@ -114,7 +114,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         } 
 
         $logGateway = $container->get(LogGateway::class);
-        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Discussion Posted', $array);
+        $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Discussion Posted', $array);
 
         $URL .= '&return=success0';
         header("Location: {$URL}");

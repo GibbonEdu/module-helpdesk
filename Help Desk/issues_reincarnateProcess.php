@@ -29,7 +29,7 @@ $_POST['address'] = '/modules/Help Desk/issues_reincarnateProcess.php';
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
+$URL = $session->get('absoluteURL') . '/index.php?q=/modules/' . $session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
@@ -48,7 +48,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         exit();
     }
 
-    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+    $gibbonPersonID = $session->get('gibbonPersonID');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
     
@@ -71,7 +71,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
         //Send Notification
         $notificationGateway = $container->get(NotificationGateway::class);
-        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
+        $notificationSender = new NotificationSender($notificationGateway, $session);
 
         $message = __('Issue #') . $issueID . ' (' . $issue['issueName'] . ') ' . __('has been reincarnated.');
 
@@ -95,7 +95,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
         }
 
         $logGateway = $container->get(LogGateway::class);
-        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Reincarnated', $array);
+        $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Reincarnated', $array);
 
         //Success 0
         $URL .= '&return=success0';

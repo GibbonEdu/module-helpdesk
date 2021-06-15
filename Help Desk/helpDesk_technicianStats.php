@@ -53,10 +53,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date('Y-m-d');
 
         //Filter
-        $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
+        $form = Form::create('helpDeskStatistics', $session->get('absoluteURL') . '/index.php', 'get');
 
         $form->setTitle('Filter');
-        $form->addHiddenValue('q', '/modules/' . $gibbon->session->get('module') . '/helpdesk_technicianStats.php');
+        $form->addHiddenValue('q', '/modules/' . $session->get('module') . '/helpdesk_technicianStats.php');
         $form->addHiddenValue('technicianID', $technicianID);
 
         $row = $form->addRow();
@@ -89,7 +89,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             ->filterBy('array', serialize(['technicianID' => $technicianID]))
             ->sortBy('timestamp', 'DESC');
 
-        $logs = $logGateway->queryLogs($logCriteria, $gibbon->session->get('gibbonSchoolYearID'));
+        $logs = $logGateway->queryLogs($logCriteria, $session->get('gibbonSchoolYearID'));
 
         $items = statsOverview($logs);
 
