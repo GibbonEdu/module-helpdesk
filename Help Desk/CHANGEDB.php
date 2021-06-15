@@ -382,3 +382,9 @@ $count++;
 $sql[$count][0]="2.0.00";
 $sql[$count][1]="
 ";
+
+//v2.0.01
+$count++;
+$sql[$count][0]="2.0.01";
+$sql[$count][1]="
+";
