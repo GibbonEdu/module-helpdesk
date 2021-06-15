@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+v2.0.01
+-------
+Fixed notification URLs not being set in some cases.
 
 v2.0.00
 -------
