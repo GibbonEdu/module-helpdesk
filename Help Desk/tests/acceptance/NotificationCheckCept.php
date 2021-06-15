@@ -19,5 +19,5 @@ $I->click('Logout');
 $I->loginAsTeacher();
 $I->amOnPage('/index.php?q=notifications.php');
 $I->see("A new message has been added to Issue");
-$I->see("A technician has started working on your isuse.", "//td[contains(text(),'Help Desk')]//..");
+$I->see("A technician has started working on your issue.", "//td[contains(text(),'Help Desk')]//..");
 $I->click('Delete All Notifications');

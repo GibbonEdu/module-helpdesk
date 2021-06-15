@@ -361,7 +361,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I = $this;
         $I->dontSee('Reassign');
         $I->dontSee('Assign');
-        $I->dontSee('Accept');
+        //$I->dontSee('Accept');
     }
     
     public function checkTeacherPermissionsFromView($issueID)

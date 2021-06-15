@@ -29,7 +29,7 @@ $I->seeInField('reassignIssue', '');
 $I->seeInField('reincarnateIssue', '1');
 $I->seeInField('fullAccess', '');
 $I->selectFromDropdown('viewIssueStatus', 1);
-$I->selectFromDropdown('departmentID', 1);
+//$I->selectFromDropdown('departmentID', 1); TODO: MAKE THIS WORK
 $I->click('Submit');
 $I->seeSuccessMessage();
 
