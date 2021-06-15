@@ -57,7 +57,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     if ($departmentGateway->countAll() > 0 && !$settingGateway->getSettingByScope('Help Desk', 'simpleCategories')) {
         $table->addColumn('department', __('Department'))
-            ->format(function ($techGroup) use ($gibbon, $groupDepartmentGateway, $canEditDepartment) {
+            ->format(function ($techGroup) use ($session, $gibbon, $groupDepartmentGateway, $canEditDepartment) {
                 $departments = $groupDepartmentGateway->selectGroupDepartments($techGroup['groupID'])->fetchAll();
 
                 if (count($departments) < 1) {
