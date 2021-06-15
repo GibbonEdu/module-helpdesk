@@ -27,7 +27,9 @@ use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module');
+$absoluteURL = $gibbon->session->get('absoluteURL');
+
+$URL = $absoluteURL . '/index.php?q=/modules/' . $gibbon->session->get('module');
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0

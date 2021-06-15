@@ -30,9 +30,10 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
+$absoluteURL = $gibbon->session->get('absoluteURL');
 $moduleName = $gibbon->session->get('module');
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName;
+$URL = $absoluteURL . '/index.php?q=/modules/' . $moduleName;
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.php')) {
     $URL .= '/issues_view.php&return=error0';
