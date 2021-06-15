@@ -51,7 +51,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
         $form = Form::create('helpDeskStatistics', $session->get('absoluteURL') . '/index.php', 'get');
 
         $form->setTitle('Filter');
-        $form->addHiddenValue('q', '/modules/' . $session->get('module') . '/helpdesk_statisticsDetail.php');
+        $form->addHiddenValue('q', '/modules/' . $session->get('module') . '/helpDesk_statisticsDetail.php');
         $form->addHiddenValue('title', $title);
 
         $row = $form->addRow();
