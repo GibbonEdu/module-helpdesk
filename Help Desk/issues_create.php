@@ -32,10 +32,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    $moduleName = $gibbon->session->get('module');
+    $moduleName = $session->get('module');
     
     if (isset($_GET['issueID'])) {
-        $page->return->setEditLink($gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $_GET['issueID']);
+        $page->return->setEditLink($session->get('absoluteURL') . '/index.php?q=/modules/' . $moduleName . '/issues_discussView.php&issueID=' . $_GET['issueID']);
     }
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
@@ -45,9 +45,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
     $categoryOptions = explodeTrim($settingGateway->getSettingByScope($moduleName, 'issueCategory'));
     $simpleCategories = ($settingGateway->getSettingByScope($moduleName, 'simpleCategories') == '1');
 
-    $form = Form::create('createIssue', $gibbon->session->get('absoluteURL') . '/modules/' . $moduleName . '/issues_createProccess.php', 'post');
+    $form = Form::create('createIssue', $session->get('absoluteURL') . '/modules/' . $moduleName . '/issues_createProccess.php', 'post');
     $form->setFactory(DatabaseFormFactory::create($pdo));     
-    $form->addHiddenValue('address', $gibbon->session->get('address'));
+    $form->addHiddenValue('address', $session->get('address'));
     
     $row = $form->addRow();
         $row->addLabel('issueName', __('Issue Subject'));
@@ -66,7 +66,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         }
     } else {
         $subcategoryGateway = $container->get(SubcategoryGateway::class);
-        $gibbonRoleID = $gibbon->session->get('gibbonRoleIDCurrent');
+        $gibbonRoleID = $session->get('gibbonRoleIDCurrent');
         $criteria = $subcategoryGateway->newQueryCriteria()
             ->sortBy(['departmentName', 'subcategoryName'])
             ->filterBy('gibbonRoleID', $gibbonRoleID)
@@ -108,7 +108,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
                 ->required();
     }
     
-    if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), 'createIssueForOther')) {
+    if ($techGroupGateway->getPermissionValue($session->get('gibbonPersonID'), 'createIssueForOther')) {
         $row = $form->addRow();
             $row->addLabel('createFor', __('Create on behalf of'))
                 ->description(__('Leave blank if creating issue for self.'));

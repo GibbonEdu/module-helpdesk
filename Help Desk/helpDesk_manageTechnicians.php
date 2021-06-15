@@ -30,7 +30,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 } else {
     //Proceed!
     $manageTechGroups = isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php');
-    $moduleName = $gibbon->session->get('module');
+    $moduleName = $session->get('module');
     
     $technicianGateway = $container->get(TechnicianGateway::class);
     $issueGateway = $container->get(IssueGateway::class); 
@@ -52,7 +52,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $table->setTitle('Technicians');
 
     $table->addHeaderAction('add', __('Add'))
-            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnician.php')
+            ->setURL('/modules/' . $session->get('module') . '/helpDesk_createTechnician.php')
             ->displayLabel();
 
     $table->addColumn('name', __('Name'))

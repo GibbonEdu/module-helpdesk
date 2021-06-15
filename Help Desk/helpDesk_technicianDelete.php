@@ -44,9 +44,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         }, []);
 
         unset($techs[$technicianID]);
-        $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID, false, false);
+        $form = DeleteForm::createForm($session->get('absoluteURL') . '/modules/' . $session->get('module') . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID, false, false);
 
-        $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form->addHiddenValue('address', $session->get('address'));
         $row = $form->addRow();
             $row->addLabel('newTechnicianID', __('New Technician'))
                 ->description(__('Optionally select a new technician to reassign the to-be-deleted technician\'s issues. Note, if no technician is selected, assigned issues that are pending will be unassigned.'));

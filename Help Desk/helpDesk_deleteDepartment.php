@@ -32,8 +32,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $page->addError(__('No Department Selected.'));
     } else {
-        $form = DeleteForm::createForm($gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . "/helpDesk_deleteDepartmentProcess.php");
-        $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form = DeleteForm::createForm($session->get('absoluteURL') . '/modules/' . $session->get('module') . "/helpDesk_deleteDepartmentProcess.php");
+        $form->addHiddenValue('address', $session->get('address'));
         $form->addHiddenValue('departmentID', $departmentID);
 
         echo $form->getOutput();

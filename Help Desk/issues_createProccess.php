@@ -30,8 +30,8 @@ require_once '../../gibbon.php';
 
 require_once './moduleFunctions.php';
 
-$absoluteURL = $gibbon->session->get('absoluteURL');
-$moduleName = $gibbon->session->get('module');
+$absoluteURL = $session->get('absoluteURL');
+$moduleName = $session->get('module');
 
 $URL = $absoluteURL . '/index.php?q=/modules/' . $moduleName;
 
@@ -43,14 +43,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
     //Proceed!    
     $URL .= '/issues_create.php';
 
-    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+    $gibbonPersonID = $session->get('gibbonPersonID');
 
     $data = [
         //Default data
         'gibbonPersonID' => $gibbonPersonID,
         'createdByID' => $gibbonPersonID,
         'status' => 'Unassigned',
-        'gibbonSchoolYearID' => $gibbon->session->get('gibbonSchoolYearID'),
+        'gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'),
         'date' => date('Y-m-d'),
         //Data to get from Post or getSettingByScope
         'issueName' => '',
@@ -103,7 +103,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
         //Send Notification
         $notificationGateway = $container->get(NotificationGateway::class);
-        $notificationSender = new NotificationSender($notificationGateway, $gibbon->session); 
+        $notificationSender = new NotificationSender($notificationGateway, $session); 
 
         //Notify issue owner, if created on their behalf
         if ($createdOnBehalf) {
@@ -127,7 +127,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
 
         foreach ($techs as $techPersonID) {
             $permission = $techGroupGateway->getPermissionValue($techPersonID, 'viewIssueStatus');
-            if ($techPersonID != $gibbon->session->get('gibbonPersonID') && $techPersonID != $data['gibbonPersonID'] && in_array($permission, ['UP', 'All'])) {
+            if ($techPersonID != $session->get('gibbonPersonID') && $techPersonID != $data['gibbonPersonID'] && in_array($permission, ['UP', 'All'])) {
                 $notificationSender->addNotification($techPersonID, $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
             }
         }
@@ -143,7 +143,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         }
 
         $logGateway = $container->get(LogGateway::class);
-        $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, $title, $array);
+        $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, $title, $array);
 
         $URL .= "&issueID=$issueID&return=success0";
         header("Location: {$URL}");

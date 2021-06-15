@@ -43,7 +43,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
         $techGroupGateway = $container->get(TechGroupGateway::class);
 
-        if ($techGroupGateway->getPermissionValue($gibbon->session->get('gibbonPersonID'), $permission)) {
+        if ($techGroupGateway->getPermissionValue($session->get('gibbonPersonID'), $permission)) {
             $technicianGateway = $container->get(TechnicianGateway::class);
 
             $techs = array_reduce($technicianGateway->selectTechnicians()->fetchAll(), function ($group, $item) {
@@ -56,8 +56,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 unset($techs[$ownerTech->fetch()['technicianID']]);
             }  
             
-            $form = Form::create('assignIssue',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
-            $form->addHiddenValue('address', $gibbon->session->get('address'));
+            $form = Form::create('assignIssue',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
+            $form->addHiddenValue('address', $session->get('address'));
 
             $row = $form->addRow();
                 $row->addLabel('technician', __('Technician'));

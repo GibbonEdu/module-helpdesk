@@ -29,7 +29,7 @@ $_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/' . $gibbon->session->get('module') . '/issues_view.php';
+$URL = $session->get('absoluteURL') . '/index.php?q=/modules/' . $session->get('module') . '/issues_view.php';
 
 if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php')) {
     //Fail 0
@@ -38,7 +38,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     exit();
 } else {
     //Proceed!
-    $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
+    $gibbonPersonID = $session->get('gibbonPersonID');
 
     $issueID = $_GET['issueID'] ?? '';
     
@@ -63,7 +63,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
             //Send Notification
             $notificationGateway = $container->get(NotificationGateway::class);
-            $notificationSender = new NotificationSender($notificationGateway, $gibbon->session);
+            $notificationSender = new NotificationSender($notificationGateway, $session);
 
             $message = __('Issue #') . $issueID . ' (' . $issue['issueName'] . ') ' . __('has been resolved.');
 
@@ -87,7 +87,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
             }
 
             $logGateway = $container->get(LogGateway::class);
-            $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Resolved', $array);
+            $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $gibbonPersonID, 'Issue Resolved', $array);
 
             //Success 0
             $URL .= '&return=success0';

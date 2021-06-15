@@ -30,15 +30,15 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (empty($departmentID) || !$departmentGateway->exists($departmentID)) {
         $page->addError(__('No Department Selected.'));
     } else {
-        $form = Form::create('createSubcategory',  $gibbon->session->get('absoluteURL') . '/modules/' . $gibbon->session->get('module') . '/helpDesk_createSubcategoryProcess.php', 'post');
-        $form->addHiddenValue('address', $gibbon->session->get('address'));
+        $form = Form::create('createSubcategory',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/helpDesk_createSubcategoryProcess.php', 'post');
+        $form->addHiddenValue('address', $session->get('address'));
         $form->addHiddenValue('departmentID', $departmentID);
 
         $row = $form->addRow();
             $row->addLabel('subcategoryName', __('Subcategory Name'));
             $row->addTextField('subcategoryName')
                 ->required()
-                ->uniqueField('./modules/' . $gibbon->session->get('module') . '/helpDesk_createSubcategoryAjax.php', ['departmentID' => $departmentID])
+                ->uniqueField('./modules/' . $session->get('module') . '/helpDesk_createSubcategoryAjax.php', ['departmentID' => $departmentID])
                 ->maxLength(55);
 
         $row = $form->addRow();

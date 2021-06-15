@@ -23,7 +23,7 @@ use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 require_once '../../gibbon.php';
 
-$URL = $gibbon->session->get('absoluteURL') . '/index.php?q=/modules/Help Desk';
+$URL = $session->get('absoluteURL') . '/index.php?q=/modules/Help Desk';
 
 if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicianGroup.php')==false) {
     //Fail 0
@@ -63,7 +63,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
     }
 
     $logGateway = $container->get(LogGateway::class);
-    $logGateway->addLog($gibbon->session->get('gibbonSchoolYearID'), 'Help Desk', $gibbon->session->get('gibbonPersonID'), 'Technician Group Removed', ['newGroupID' => $newGroupID]);
+    $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $session->get('gibbonPersonID'), 'Technician Group Removed', ['newGroupID' => $newGroupID]);
 
     //Success 0
     $URL .= '&return=success0';

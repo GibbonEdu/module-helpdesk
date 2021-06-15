@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v2.0.02
+-------
+Refactored session variables and null coalesce.
+
 v2.0.01
 -------
 Fixed notification URLs not being set in some cases.
@@ -272,7 +276,7 @@ v0.1.04
 -------
 Fixed an issue where the gibbonPersonID would not be set when creating an issue in issues_create.php.
 Fixed an issues where issues_discuss_view.php would not display properly.
-Fixed multiple misc issues. 
+Fixed multiple misc issues.
 
 v0.1.03
 -------

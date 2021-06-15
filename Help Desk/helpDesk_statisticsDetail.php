@@ -40,7 +40,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
     if (empty($title)) {
         $page->addError(__('No statistics selected.'));
     } else {
-        $URL = $gibbon->session->get('absoluteURL') . "/index.php?q=/modules/" . $gibbon->session->get('module');
+        $URL = $session->get('absoluteURL') . "/index.php?q=/modules/" . $session->get('module');
 
         //Default Data
         $d = new DateTime('first day of this month');
@@ -48,10 +48,10 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
         $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : date('Y-m-d');
 
         //Filter
-        $form = Form::create('helpDeskStatistics', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
+        $form = Form::create('helpDeskStatistics', $session->get('absoluteURL') . '/index.php', 'get');
 
         $form->setTitle('Filter');
-        $form->addHiddenValue('q', '/modules/' . $gibbon->session->get('module') . '/helpdesk_statisticsDetail.php');
+        $form->addHiddenValue('q', '/modules/' . $session->get('module') . '/helpdesk_statisticsDetail.php');
         $form->addHiddenValue('title', $title);
 
         $row = $form->addRow();
@@ -83,7 +83,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             ->filterBy('endDate', date('Y-m-d 23:59:59', strtotime($endDate)))
             ->fromPOST();
 
-        $logs = $logGateway->queryLogs($criteria, $gibbon->session->get('gibbonSchoolYearID'));
+        $logs = $logGateway->queryLogs($criteria, $session->get('gibbonSchoolYearID'));
         
         $table = DataTable::createPaginated('detailedStats', $criteria);
         $table->setTitle(__($title));

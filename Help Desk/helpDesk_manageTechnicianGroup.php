@@ -35,11 +35,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $page->return->addReturn('errorA', __('Cannot delete last technician group.'));
 
     $manageTechnicians = isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageTechnicians.php');
-    $moduleName = $gibbon->session->get('module');
+    $moduleName = $session->get('module');
 
     $techGroupGateway = $container->get(TechGroupGateway::class);
     $technicianGateway = $container->get(TechnicianGateway::class);
-    $departmentGateway = $container->get(DepartmentGateway::class); 
+    $departmentGateway = $container->get(DepartmentGateway::class);
     $groupDepartmentGateway = $container->get(GroupDepartmentGateway::class);
 
     $canEditDepartment = isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageDepartments.php');
@@ -49,12 +49,12 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     $table->setTitle('Technician Groups');
 
     $table->addHeaderAction('add', __('Add'))
-            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_createTechnicianGroup.php');
+            ->setURL('/modules/' . $session->get('module') . '/helpDesk_createTechnicianGroup.php');
 
     $table->addColumn('groupName', __('Group Name'));
 
     $settingGateway = $container->get(SettingGateway::class);
-    
+
     if ($departmentGateway->countAll() > 0 && !$settingGateway->getSettingByScope('Help Desk', 'simpleCategories')) {
         $table->addColumn('department', __('Department'))
             ->format(function ($techGroup) use ($gibbon, $groupDepartmentGateway, $canEditDepartment) {
@@ -64,9 +64,9 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                     return __('No departments assigned to this group');
                 }
 
-                return implode(', ', array_map(function ($department) use ($gibbon, $canEditDepartment) {
+                return implode(', ', array_map(function ($department) use ($session, $canEditDepartment) {
                     if ($canEditDepartment) {
-                        return Format::link('./index.php?q=/modules/' . $gibbon->session->get('module') . '/helpDesk_editDepartment.php&departmentID='. $department['departmentID'], $department['departmentName']);
+                        return Format::link('./index.php?q=/modules/' . $session->get('module') . '/helpDesk_editDepartment.php&departmentID='. $department['departmentID'], $department['departmentName']);
                     } else {
                         return $department['departmentName'];
                     }
@@ -93,16 +93,16 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
     $table->addActionColumn()
             ->addParam('groupID')
-            ->format(function ($techGroup, $actions) use ($gibbon, $techGroupData) {
+            ->format(function ($techGroup, $actions) use ($session, $techGroupData) {
                 $actions->addAction('edit', __('Edit'))
-                        ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_editTechnicianGroup.php');
+                        ->setURL('/modules/' . $session->get('module') . '/helpDesk_editTechnicianGroup.php');
 
                 if (count($techGroupData) > 1) {
                     $actions->addAction('delete', __('Delete'))
-                            ->setURL('/modules/' . $gibbon->session->get('module') . '/helpDesk_technicianGroupDelete.php');
+                            ->setURL('/modules/' . $session->get('module') . '/helpDesk_technicianGroupDelete.php');
                 }
             });
 
-    echo $table->render($techGroupData);    
+    echo $table->render($techGroupData);
 }
 ?>
