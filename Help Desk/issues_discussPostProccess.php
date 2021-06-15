@@ -100,7 +100,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
  
         foreach ($personIDs as $personID) {
             if ($personID != $gibbonPersonID) {
-                $notificationSender->addNotification($personID, $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+                $notificationSender->addNotification($personID, $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
             } 
         }
 

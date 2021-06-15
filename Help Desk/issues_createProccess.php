@@ -108,7 +108,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         //Notify issue owner, if created on their behalf
         if ($createdOnBehalf) {
             $message = __('A new issue has been created on your behalf, Issue #') . $issueID . '(' . $data['issueName'] . ').';
-            $notificationSender->addNotification($data['gibbonPersonID'], $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+            $notificationSender->addNotification($data['gibbonPersonID'], $message, 'Help Desk', '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
         }
 
         //Notify Techicians
@@ -128,7 +128,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
         foreach ($techs as $techPersonID) {
             $permission = $techGroupGateway->getPermissionValue($techPersonID, 'viewIssueStatus');
             if ($techPersonID != $session->get('gibbonPersonID') && $techPersonID != $data['gibbonPersonID'] && in_array($permission, ['UP', 'All'])) {
-                $notificationSender->addNotification($techPersonID, $message, 'Help Desk', $absoluteURL . '/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
+                $notificationSender->addNotification($techPersonID, $message, 'Help Desk','/index.php?q=/modules/Help Desk/issues_discussView.php&issueID=' . $issueID);
             }
         }
 
