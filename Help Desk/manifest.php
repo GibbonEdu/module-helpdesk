@@ -23,7 +23,7 @@ $description="A virtual help desk module for Gibbon.";
 $entryURL="issues_view.php";
 $type="Additional";
 $category="Other";
-$version="2.0.02";
+$version="2.1.00";
 $author="Ray Clark, Ashton Power & Adrien Tremblay";
 $url="https://github.com/GibbonEdu/module-helpDesk";
 
@@ -115,6 +115,13 @@ $moduleTables[$tables++]="CREATE TABLE `helpDeskSubcategories` (
     `subcategoryName` varchar(55) NOT NULL,
     PRIMARY KEY (`subcategoryID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
+$moduleTables[$tables++] = "CREATE TABLE `helpDeskReplyTemplate` (
+    `helpDeskReplyTemplateID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
+    `name` varchar(30) NOT NULL,
+    `body` text NOT NULL,
+    PRIMARY KEY (`helpDeskReplyTemplateID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 $moduleTables[$tables++]="INSERT INTO `helpDeskTechGroups` (`groupID`, `groupName`, `viewIssue`, `viewIssueStatus`, `assignIssue`, `acceptIssue`, `resolveIssue`, `createIssueForOther`, `fullAccess`, `reassignIssue`, `reincarnateIssue`)
     VALUES
@@ -250,4 +257,21 @@ $actionRows[$actionCount]["categoryPermissionStaff"]="Y";
 $actionRows[$actionCount]["categoryPermissionStudent"]="N";
 $actionRows[$actionCount]["categoryPermissionParent"]="N";
 $actionRows[$actionCount]["categoryPermissionOther"]="Y";
+
+$actionRows[$actionCount]["name"] = "Help Desk Reply Templates";
+$actionRows[$actionCount]["precedence"] = "0";
+$actionRows[$actionCount]["category"] = "Settings";
+$actionRows[$actionCount]["description"] = "Manage Help Desk Reply Templates.";
+$actionRows[$actionCount]["URLList"] = "helpDesk_manageReplyTemplates.php";
+$actionRows[$actionCount]["entryURL"] = "helpDesk_manageReplyTemplates.php";
+$actionRows[$actionCount]["defaultPermissionAdmin"] = "Y";
+$actionRows[$actionCount]["defaultPermissionTeacher"] = "N";
+$actionRows[$actionCount]["defaultPermissionStudent"] = "N";
+$actionRows[$actionCount]["defaultPermissionParent"] = "N";
+$actionRows[$actionCount]["defaultPermissionSupport"] = "N";
+$actionRows[$actionCount]["categoryPermissionStaff"] = "Y";
+$actionRows[$actionCount]["categoryPermissionStudent"] = "N";
+$actionRows[$actionCount]["categoryPermissionParent"] = "N";
+$actionRows[$actionCount]["categoryPermissionOther"] = "N";
+$actionCount++;
 ?>
