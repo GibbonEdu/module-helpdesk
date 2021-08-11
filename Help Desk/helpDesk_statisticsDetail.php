@@ -76,7 +76,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
         echo $form->getOutput();
 
         $logGateway = $container->get(LogGateway::class);
-        $criteria = $logGateway->newQueryCriteria(true)
+        $criteria = $logGateway->newQueryCriteria()
             ->sortBy('timestamp', 'DESC')
             ->filterBy('module', 'Help Desk')
             ->filterBy('title', $title)
