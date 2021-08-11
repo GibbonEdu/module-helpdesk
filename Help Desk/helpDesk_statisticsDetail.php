@@ -152,8 +152,8 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             $userGateway = $container->get(UserGateway::class);
             $chartData = array_count_values(array_column($chartDataArray, 'username'));
             
-            $chart = Chart::create('issueChart', 'pie')->setOptions(['overflow' => 'scroll']);
-            
+            $chart = Chart::create('issueChart', 'pie');
+            $chart->setLegend(false);
             foreach (array_keys($chartData) as $username){
                 $person = $userGateway->selectBy(['username'=>$username])->fetch();
                 $people[] = Format::name($person['title'], $person['preferredName'], $person['surname'], 'Student');
