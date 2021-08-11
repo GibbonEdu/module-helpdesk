@@ -153,7 +153,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             $chartData = array_count_values(array_column($chartDataArray, 'username'));
             
             $chart = Chart::create('issueChart', 'pie');
-            $chart->setLegend(false);
+            $chart->setLegend(['display' => TRUE,'position' => 'left']);
             foreach (array_keys($chartData) as $username){
                 $person = $userGateway->selectBy(['username'=>$username])->fetch();
                 $people[] = Format::name($person['title'], $person['preferredName'], $person['surname'], 'Student');
