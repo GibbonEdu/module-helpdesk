@@ -159,7 +159,6 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
                 $people[] = Format::name($person['title'], $person['preferredName'], $person['surname'], 'Student');
             }
             $chart->setLabels($people);
-            $chart->setColors(['rgba(54, 162, 235, 1.0)']);
             
             $chart->addDataset('data')
                 ->setData($chartData);
