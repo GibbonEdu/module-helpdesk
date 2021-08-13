@@ -145,7 +145,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
         if ($title == "Issue Created" || $title == "Issue Accepted" || $title == "Issue Reincarnated" || $title == "Issue Resolved") {
             issueColumn($table, $container);
             
-            //Stat Chart
+            //Stat Person Chart
             $page->scripts->add('chart');
             $chartDataArray = $logs->toArray();
             
@@ -164,6 +164,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
                 ->setData($chartData);
             
             echo $chart->render();
+            
                 
         } else if ($title == "Issue Created (for Another Person)") {
             issueColumn($table, $container);

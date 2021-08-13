@@ -17,7 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\UI\Chart\Chart;
 use Gibbon\Domain\System\LogGateway;
+use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
@@ -62,6 +64,26 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_statis
     echo $form->getOutput();
 
     //Stat Collection
+    $issueGateway = $container->get(IssueGateway::class);
+    $criteria = $issueGateway->newQueryCriteria()
+        ->filterBy('startDate', $startDate)
+        ->filterBy('endDate', date('Y-m-d 23:59:59', strtotime($endDate)));
+
+    $issues = $issueGateway->queryIssues($criteria)->toArray();
+    //Stat Issue Chart
+    $page->scripts->add('chart'); 
+    $chartData = array_count_values(array_column($issues, 'subcategoryName'));
+    
+    $chart = Chart::create('issueChart', 'pie');
+
+    $chart->setLabels(array_keys($chartData));
+    
+    $chart->addDataset('data')
+        ->setData($chartData);
+    
+    echo $chart->render();
+    
+    
     $logGateway = $container->get(LogGateway::class);
     $criteria = $logGateway->newQueryCriteria()
         ->filterBy('module', 'Help Desk')
@@ -72,10 +94,10 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_statis
     $logs = $logGateway->queryLogs($criteria, $session->get('gibbonSchoolYearID'));
 
     $stats = statsOverview($logs);
-
+    
     //Stat Table
-    $table = DataTable::create('statistics');
-    $table->setTitle('Statistics');
+    $table = DataTable::create('actionStatistics');
+    $table->setTitle('Action Statistics');
 
     $data = [
         'q' => '/modules/' . $session->get('module') . '/helpDesk_statisticsDetail.php',
