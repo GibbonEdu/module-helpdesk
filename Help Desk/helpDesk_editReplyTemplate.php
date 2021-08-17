@@ -54,6 +54,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
             $column->addLabel('body', 'Body');
             $column->addEditor('body', $guid)
                 ->setRequired(true)
+                ->showMedia()
                 ->setValue($replyTemplate['body']);
 
         $row = $form->addRow();
