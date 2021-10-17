@@ -21,6 +21,7 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Tables\Action;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
+use Gibbon\Module\HelpDesk\Domain\ReplyTemplateGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueDiscussGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueGateway;
 use Gibbon\Module\HelpDesk\Domain\IssueNoteGateway;
@@ -215,6 +216,25 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             if ($issue['status'] == 'Pending' && ($isRelated || $hasFullAccess)) {
                 $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$session->get('gibbonThemeName').'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');
+                
+                if ($isTechnician) {
+                    $replyTemplateGateway = $container->get(ReplyTemplateGateway::class);
+                    $criteria = $replyTemplateGateway->newQueryCriteria()
+                        ->sortBy(['name', 'helpDeskReplyTemplateID']);
+                    $templateNames = NULL;
+                    $templates = NULL;
+                    $replyTemplates = $replyTemplateGateway->queryTemplates($criteria);
+                    foreach ($replyTemplates as $replyTemplate) {
+                        $templateNames[$replyTemplate['helpDeskReplyTemplateID']] = $replyTemplate['name'];
+                        $templates[$replyTemplate['helpDeskReplyTemplateID']] = $replyTemplate['body'];
+                    }
+                    if ($templates != NULL) {
+                        $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
+                            $row->addLabel('replyTemplates', __('Reply Templates'));
+                            $row->addSelect('replyTemplates')
+                                ->fromArray($templateNames)->placeholder('Select a Reply Template');
+                    }
+                }
                 $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
                     $column = $row->addColumn();
                     $column->addLabel('comment', __('Comment'));
@@ -223,9 +243,12 @@ if (!isModuleAccessible($guid, $connection2)) {
                         ->showMedia()
                         ->required();
 
-                $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');;
+                $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
                     $row->addFooter();
                     $row->addSubmit();
+                
+                
+               
             }
 
             $issueDiscussGateway = $container->get(IssueDiscussGateway::class);
@@ -251,8 +274,25 @@ if (!isModuleAccessible($guid, $connection2)) {
             if (count($form->getRows()) > 1) {
                 echo $form->getOutput();
             }
+            if ($isTechnician) {
+                ?>
+                <script>
+                //Javascript to change reply when template selector is changed.
+                    <?php echo 'var templates = ' . json_encode($templates) . ';'; ?>
+                    $("select[name=replyTemplates]").on('change', function(){
+                        var templateID = $(this).val();
+                        if (templateID != '' && templateID >= 0) {
+                            if(confirm('Are you sure you want to use this template. Warning: This will overwrite any thing currently written.')) {
+                                tinyMCE.get('comment').setContent(templates[templateID]);
+                            }
+                        }
+                    });
+                </script>
+                <?php
+            } 
         } else {
             $page->addError(__('You do not have access to this action.'));
         }
     }
+        
 }

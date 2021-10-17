@@ -8,7 +8,7 @@ actor: AcceptanceTester
 modules:
     enabled:
         - PhpBrowser:
-            url: https://127.0.0.1:8888/core
+            url: http://localhost:8888/core
         - \Helper\Acceptance
         - Db
         - DbHelper
@@ -16,7 +16,7 @@ modules:
         - Asserts
     config:
         Db:
-            dsn: "mysql:host=localhost;dbname=gibbontest"
+            dsn: "mysql:host=127.0.0.1;dbname=gibbontest21"
             user: "root"
             password: "root"
             dump: 'tests/_data/dump.sql'
