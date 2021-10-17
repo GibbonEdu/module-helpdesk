@@ -17,9 +17,65 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Domain\User\RoleGateway;
 use Gibbon\Domain\DataSet;
+use Gibbon\Module\HelpDesk\Data\Setting;
+use Gibbon\Module\HelpDesk\Data\SettingManager;
 use Psr\Container\ContainerInterface;
+
+function getSettings(ContainerInterface $container) {
+    $settingManager = new SettingManager($container->get(SettingGateway::class), 'Help Desk');
+
+    $settingManager->addSetting('simpleCategories')
+        ->setRenderer(function($data, $row) {
+            $row->addCheckbox($data['name'])
+                ->checked(intval($data['value']));
+        })
+        ->setProcessor(function($data) {
+            return $data !== null ? 1 : 0;
+        });
+
+    $settingManager->addSetting('issueCategory')
+        ->setRenderer(function($data, $row) {
+            $row->addTextArea($data['name'])
+                ->setValue($data['value']);
+        })
+        ->setProcessor(function($data) {
+            return implode(',', explodeTrim($data ?? ''));
+        });
+
+    $settingManager->addSetting('issuePriority')
+        ->setRenderer(function($data, $row) {
+            $row->addTextArea($data['name'])
+                ->setValue($data['value']);
+        })
+        ->setProcessor(function($data) {
+            return implode(',', explodeTrim($data ?? ''));
+        });
+
+    $settingManager->addSetting('issuePriorityName')
+        ->setRenderer(function($data, $row) {
+            $row->addTextField($data['name'])
+                ->setValue($data['value'])
+                ->required();
+        })
+        ->setProcessor(function($data) {
+            return empty($data) ? false : $data;
+        });
+
+    $settingManager->addSetting('techNotes')
+        ->setRenderer(function($data, $row) {
+            $row->addCheckbox($data['name'])
+                ->checked(intval($data['value']));
+        })
+        ->setProcessor(function($data) {
+            return $data !== null ? 1 : 0;
+        });
+
+    return $settingManager;
+}
+
 
 function explodeTrim($commaSeperatedString) {
     //This could, in theory, be made for effiicent, however, I don't care to do so.

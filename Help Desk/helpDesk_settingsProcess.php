@@ -18,7 +18,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Domain\System\LogGateway;
-use Gibbon\Domain\System\SettingGateway;
 
 require_once '../../gibbon.php';
 
@@ -34,59 +33,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_settin
 } else {
     $URL .= '/helpDesk_settings.php';
 
-    //Not a fan, but too bad!
-    $settings = [
-        'resolvedIssuePrivacy',
-        'issuePriorityName',
-        'issueCategory',
-        'issuePriority',
-        'simpleCategories',
-        'techNotes',
-    ];
-
-    $settingGateway = $container->get(SettingGateway::class);
-
-    $dbFail = false;
-
-    //Is this really better, potentially, but I'm not going to worry about it too much.
-    foreach ($settings as $setting) {
-        if (isset($_POST[$setting]) || $setting == 'simpleCategories') {
-            $value = '';
-            switch ($setting) {
-                case 'issueCategory':
-                case 'issuePriority':
-                    $value = implode(',', explodeTrim($_POST[$setting]));
-                    break;
-                case 'resolvedIssuePrivacy':
-                    if (!in_array($_POST[$setting], privacyOptions())) {
-                        $URL .= '&return=error1';
-                        header("Location: {$URL}");
-                        exit();
-                    }
-                case 'issuePriorityName':
-                    $value = $_POST[$setting];
-                    if (empty($value)) {
-                        $URL .= '&return=error1';
-                        header("Location: {$URL}");
-                        exit();
-                    }
-                    break;
-                case 'simpleCategories':
-                case 'techNotes':
-                    $value = isset($_POST[$setting]) ? '1' : '0';
-                    break;
-            }
-            $dbFail |= !$settingGateway->updateSettingByScope('Help Desk', $setting, $value);
-        }
-    }
+    $settingManager = getSettings($container);
+    $return = $settingManager->process($_POST);
 
     $logGateway = $container->get(LogGateway::class);
     $logGateway->addLog($session->get('gibbonSchoolYearID'), 'Help Desk', $session->get('gibbonPersonID'), 'Help Desk Settings Edited');
-
-    $return = 'success0';
-    if ($dbFail) {
-        $return = 'warning1';
-    }
 
     $URL .= "&return=$return";
     header("Location: {$URL}");
