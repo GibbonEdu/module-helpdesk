@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+v2.0.03
+-------
+Implemented Setting Manager
+Fixed tech note permission checking.
+
 v2.0.02
 -------
 Refactored session variables and null coalesce.
