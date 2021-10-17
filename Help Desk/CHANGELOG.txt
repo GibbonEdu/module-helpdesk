@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v2.1.00
+-------
+Introduced reply templates.
+
 v2.0.02
 -------
 Refactored session variables and null coalesce.

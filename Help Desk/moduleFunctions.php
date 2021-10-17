@@ -52,4 +52,13 @@ function statsOverview(DataSet $logs) {
     return $items;
 }
 
+function formatExpandableSection($title, $content) {
+    $output = '';
+
+    $output .= '<h6>' . $title . '</h6></br>';
+    $output .= nl2brr($content);
+
+    return $output;
+}
+
 ?>

@@ -394,3 +394,11 @@ $count++;
 $sql[$count][0]="2.0.02";
 $sql[$count][1]="
 ";
+
+$count++;
+$sql[$count][0]="2.1.00";
+$sql[$count][1]="
+CREATE TABLE `helpDeskReplyTemplate` (`helpDeskReplyTemplateID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT, `name` varchar(30) NOT NULL, `body` text NOT NULL, PRIMARY KEY (`helpDeskReplyTemplateID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;end
+INSERT INTO gibbonAction SET name='Help Desk Reply Templates', precedence=0, category='Settings', description='Manage Help Desk Reply Templates.', URLList='helpDesk_manageReplyTemplates.php', entryURL='helpDesk_manageReplyTemplates.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Help Desk' AND gibbonAction.name='Help Desk Reply Templates'));end
+";
