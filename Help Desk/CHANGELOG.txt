@@ -3,6 +3,8 @@ CHANGELOG
 v2.1.00
 -------
 Introduced reply templates.
+Implemented Setting Manager
+Fixed tech note permission checking.
 
 v2.0.02
 -------

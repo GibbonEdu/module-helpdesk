@@ -51,9 +51,11 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
 
     $technician = $technicianGateway->getTechnicianByPersonID($gibbonPersonID);
 
+    $noTech = empty($technicianGateway->getByID($issue['technicianID']));
+
     if ($technician->isNotEmpty() //Is tech
         && !($gibbonPersonID == $issue['gibbonPersonID']) //Not owner
-        && ($issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) //Has access
+        && ($noTech || $issueGateway->isRelated($issueID, $gibbonPersonID) || $techGroupGateway->getPermissionValue($gibbonPersonID, 'fullAccess')) //Has access (no tech assigned, or is related, or has full acces) TODO: No Tech Check should probably check that the tech has permission to view unassigned issues.
         && $settingGateway->getSettingByScope('Help Desk', 'techNotes') //Setting is enabled
     ) {
       //Proceed!
