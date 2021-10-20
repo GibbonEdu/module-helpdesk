@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\UI\Chart\Chart;
 use Gibbon\Tables\DataTable;
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
@@ -75,7 +76,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
         echo $form->getOutput();
 
         $logGateway = $container->get(LogGateway::class);
-        $criteria = $logGateway->newQueryCriteria(true)
+        $criteria = $logGateway->newQueryCriteria()
             ->sortBy('timestamp', 'DESC')
             ->filterBy('module', 'Help Desk')
             ->filterBy('title', $title)
@@ -143,6 +144,28 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
 
         if ($title == "Issue Created" || $title == "Issue Accepted" || $title == "Issue Reincarnated" || $title == "Issue Resolved") {
             issueColumn($table, $container);
+            
+            //Stat Person Chart
+            $page->scripts->add('chart');
+            $chartDataArray = $logs->toArray();
+            
+            $userGateway = $container->get(UserGateway::class);
+            $chartData = array_count_values(array_column($chartDataArray, 'username'));
+            
+            $chart = Chart::create('issueChart', 'pie');
+            $chart->setLegend(false);
+            foreach (array_keys($chartData) as $username){
+                $person = $userGateway->selectBy(['username'=>$username])->fetch();
+                $people[] = Format::name($person['title'], $person['preferredName'], $person['surname'], 'Student');
+            }
+            $chart->setLabels($people);
+            
+            $chart->addDataset('data')
+                ->setData($chartData);
+            
+            echo $chart->render();
+            
+                
         } else if ($title == "Issue Created (for Another Person)") {
             issueColumn($table, $container);
             techColumn($table);

@@ -116,6 +116,16 @@ class IssueGateway extends QueryableGateway
                     ->where('helpDeskSubcategories.departmentID = :departmentID')
                     ->bindValue('departmentID', $departmentID);
             },
+             'startDate' => function ($query, $startDate) {
+                return $query
+                    ->where('date >= :startDate')
+                    ->bindValue('startDate', $startDate);
+            },
+            'endDate' => function ($query, $endDate) {
+                return $query
+                    ->where('date <= :endDate')
+                    ->bindValue('endDate', $endDate);
+            }
         ]);
 
        return $this->runQuery($query, $criteria);
