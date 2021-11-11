@@ -40,7 +40,7 @@ class IssueGateway extends QueryableGateway
         return $results->getRow(0);
     }      
     
-    public function queryIssues($criteria, $gibbonSchoolYearID = null, $gibbonPersonID = null, $relation = null, $viewIssueStatus = null, $techDepartments = null) {      
+    public function queryIssues($criteria, $gibbonPersonID = null, $relation = null, $viewIssueStatus = null, $techDepartments = null) {      
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
@@ -50,10 +50,6 @@ class IssueGateway extends QueryableGateway
             ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID')
             ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID');
 
-        if (!empty($gibbonSchoolYearID)) {
-            $query->where('helpDeskIssue.gibbonSchoolYearID = :year')
-                ->bindValue('year', $gibbonSchoolYearID);
-        }
         
         if ($relation == 'My Issues') {
             $query->where('helpDeskIssue.gibbonPersonID = :gibbonPersonID')

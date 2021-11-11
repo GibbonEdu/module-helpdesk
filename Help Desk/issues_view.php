@@ -44,7 +44,10 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $gibbonPersonID = $session->get('gibbonPersonID');
     $moduleName = $session->get('module');
-    $year = $_GET['year'] ?? $session->get('gibbonSchoolYearID');
+    $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : NULL;
+    $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : NULL;
+    
+    
     $relation = $_GET['relation'] ?? null;
 
     if (isset($_GET['issueID'])) {
@@ -67,6 +70,8 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $criteria = $issueGateway->newQueryCriteria(true)
         ->searchBy($issueGateway->getSearchableColumns(), $_GET['search'] ?? '')
+        ->filterBy('startDate', $startDate)
+        ->filterBy('endDate', $endDate)
         ->sortBy('status', 'ASC')
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
@@ -115,9 +120,18 @@ if (!isModuleAccessible($guid, $connection2)) {
     }
 
     $row = $form->addRow();
-        $row->addLabel('year', __('Year Filter'));
-        $row->addSelectSchoolYear('year', 'All')
-            ->selected($year);
+        $row->addLabel('startDate', __('Start Date Filter'));
+        $row->addDate('startDate')
+            ->setDateFromValue($startDate)
+            ->chainedTo('endDate')
+            ->required();
+
+    $row = $form->addRow();
+        $row->addLabel('endDate', __('End Date Filter'));
+        $row->addDate('endDate')
+            ->setDateFromValue($endDate)
+            ->chainedFrom('startDate')
+            ->required();
 
     $row = $form->addRow();
         $row->addSearchSubmit($session, __('Clear Filters'));
@@ -135,7 +149,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         $techViewIssueStatus = null;
     }
 
-    $issues = $issueGateway->queryIssues($criteria, $year, $gibbonPersonID, $relation, $techViewIssueStatus, $techDepartments);
+    $issues = $issueGateway->queryIssues($criteria, $gibbonPersonID, $relation, $techViewIssueStatus, $techDepartments);
 
     $table = DataTable::createPaginated('issues', $criteria);
     $table->setTitle('Issues');
