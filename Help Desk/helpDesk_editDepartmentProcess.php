@@ -75,7 +75,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     if (!$departmentPermissionsGateway->deleteWhere(['departmentID' => $departmentID])) {
         $URL .= '&return=warning1';
         header("Location: {$URL}");
-        exit():
+        exit();
     }
 
     $return = 'success0';
