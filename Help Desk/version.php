@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Sets version information
  */
-$moduleVersion='2.1.00';
+$moduleVersion='2.1.01';
 $coreVersion = '22.0.00';
 
 ?>

@@ -403,3 +403,9 @@ CREATE TABLE `helpDeskReplyTemplate` (`helpDeskReplyTemplateID` int(10) unsigned
 INSERT INTO gibbonAction SET name='Help Desk Reply Templates', precedence=0, category='Settings', description='Manage Help Desk Reply Templates.', URLList='helpDesk_manageReplyTemplates.php', entryURL='helpDesk_manageReplyTemplates.php', defaultPermissionAdmin='Y', defaultPermissionTeacher='N', defaultPermissionStudent='N', defaultPermissionParent='N', defaultPermissionSupport='N', categoryPermissionStaff='Y', categoryPermissionStudent='N', categoryPermissionParent='N', categoryPermissionOther='N', gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Help Desk');end
 INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Help Desk' AND gibbonAction.name='Help Desk Reply Templates'));end
 ";
+
+//v2.1.01
+$count++;
+$sql[$count][0]="2.1.01";
+$sql[$count][1]="
+";

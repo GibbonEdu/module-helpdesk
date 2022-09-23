@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v2.1.01
+-------
+Fixed attachments not showing up in initial issue description
+
 v2.1.00
 -------
 Introduced reply templates.
