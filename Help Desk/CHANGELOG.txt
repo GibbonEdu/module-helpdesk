@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+v2.1.02
+-------
+Added school-year date defaults to the Issues page
+Added an "Advanced Options" show/hide to the Issues page
+
 v2.1.01
 -------
 Fixed attachments not showing up in initial issue description

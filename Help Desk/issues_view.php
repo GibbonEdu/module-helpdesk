@@ -23,6 +23,7 @@ use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\User\UserGateway;
 use Gibbon\Domain\School\FacilityGateway;
+use Gibbon\Domain\School\SchoolYearGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentGateway;
 use Gibbon\Module\HelpDesk\Domain\DepartmentPermissionsGateway;
 use Gibbon\Module\HelpDesk\Domain\GroupDepartmentGateway;
@@ -41,12 +42,12 @@ if (!isModuleAccessible($guid, $connection2)) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-
     $gibbonPersonID = $session->get('gibbonPersonID');
     $moduleName = $session->get('module');
-    $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : NULL;
-    $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : NULL;
-    
+
+    $schoolYear = $container->get(SchoolYearGateway::class)->getByID($session->get('gibbonSchoolYearID'), ['firstDay', 'lastDay']);
+    $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : ($schoolYear['firstDay'] ?? null);
+    $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : ($schoolYear['lastDay'] ?? null);
     
     $relation = $_GET['relation'] ?? null;
 
@@ -112,21 +113,21 @@ if (!isModuleAccessible($guid, $connection2)) {
             ->setValue($criteria->getSearchText());
 
     if (count($relations) > 1) {
-        $row = $form->addRow();
+        $row = $form->addRow()->addClass('advancedOptions hidden');
             $row->addLabel('relation', __('Relation'));
             $row->addSelect('relation')
                 ->fromArray($relations)
                 ->selected($relation);
     }
 
-    $row = $form->addRow();
+    $row = $form->addRow()->addClass('advancedOptions hidden');
         $row->addLabel('startDate', __('Start Date Filter'));
         $row->addDate('startDate')
             ->setDateFromValue($startDate)
             ->chainedTo('endDate')
             ->required();
 
-    $row = $form->addRow();
+    $row = $form->addRow()->addClass('advancedOptions hidden');
         $row->addLabel('endDate', __('End Date Filter'));
         $row->addDate('endDate')
             ->setDateFromValue($endDate)
@@ -134,6 +135,9 @@ if (!isModuleAccessible($guid, $connection2)) {
             ->required();
 
     $row = $form->addRow();
+        $row->addContent('<a class="button rounded-sm" onclick="false" data-toggle=".advancedOptions">'.__('Advanced Options').'</a>')
+                ->wrap('<span class="small">', '</span>')
+                ->setClass('left');
         $row->addSearchSubmit($session, __('Clear Filters'));
 
     echo $form->getOutput();
