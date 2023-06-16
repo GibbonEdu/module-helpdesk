@@ -17,7 +17,7 @@ class IssueGateway extends QueryableGateway
 
     private static $tableName = 'helpDeskIssue';
     private static $primaryKey = 'issueID';
-    private static $searchableColumns = ['issueID', 'issueName', 'description'];
+    private static $searchableColumns = ['issueID', 'issueName', 'description', 'owner.preferredName', 'owner.surname', 'tech.preferredName', 'tech.surname'];
 
     public function selectActiveIssueByTechnician($technicianID) {
         $select = $this
@@ -44,11 +44,17 @@ class IssueGateway extends QueryableGateway
         $query = $this
             ->newQuery()
             ->from('helpDeskIssue')
-            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID', 'helpDeskDepartments.departmentName', 'helpDeskSubcategories.subcategoryName', 'helpDeskSubcategories.departmentID', 'gibbonSpace.name AS facility'])
+            ->cols(['helpDeskIssue.*', 'techID.gibbonPersonID AS techPersonID', 'helpDeskDepartments.departmentName', 'helpDeskSubcategories.subcategoryName', 'helpDeskSubcategories.departmentID', 'gibbonSpace.name AS facility',
+            
+            'owner.preferredName as preferredNameOwner', 'owner.surname as surnameOwner', 'owner.title as titleOwner',
+            'tech.preferredName as preferredNameTech', 'tech.surname as surnameTech', 'tech.title as titleTech',
+            ])
             ->leftJoin('helpDeskTechnicians AS techID', 'helpDeskIssue.technicianID=techID.technicianID')
             ->leftJoin('helpDeskSubcategories', 'helpDeskIssue.subcategoryID=helpDeskSubcategories.subcategoryID')
             ->leftJoin('helpDeskDepartments', 'helpDeskSubcategories.departmentID=helpDeskDepartments.departmentID')
-            ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID');
+            ->leftJoin('gibbonSpace', 'helpDeskIssue.gibbonSpaceID=gibbonSpace.gibbonSpaceID')
+            ->leftJoin('gibbonPerson as owner', 'owner.gibbonPersonID=helpDeskIssue.gibbonPersonID')
+            ->leftJoin('gibbonPerson as tech', 'tech.gibbonPersonID=techID.gibbonPersonID');
 
         
         if ($relation == 'My Issues') {

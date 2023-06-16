@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v2.1.03
+-------
+Added the option to search owners and technicians in Issues page
+
 v2.1.02
 -------
 Added school-year date defaults to the Issues page

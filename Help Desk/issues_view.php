@@ -108,7 +108,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
     $row = $form->addRow();
         $row->addLabel('search', __('Search'))
-            ->description(__('Issue ID, Name or Description.'));
+            ->description(__m('Issue ID, Name, Description, Owner or Technician.'));
         $row->addTextField('search')
             ->setValue($criteria->getSearchText());
 
@@ -274,13 +274,12 @@ if (!isModuleAccessible($guid, $connection2)) {
     //Owner & Technician Column
     $table->addColumn('gibbonPersonID', __('Owner'))
                 ->description(__('Technician'))
-                ->format(function ($row) use ($userGateway) {
-                    $owner = $userGateway->getByID($row['gibbonPersonID']);
-                    $output = Format::bold(Format::name($owner['title'], $owner['preferredName'], $owner['surname'], 'Staff')) . '<br/>';
+                ->sortable(['surnameOwner', 'preferredNameOwner'])
+                ->format(function ($row)  {
+                    $output = Format::bold(Format::name($row['titleOwner'], $row['preferredNameOwner'], $row['surnameOwner'], 'Staff')) . '<br/>';
 
-                    $tech = $userGateway->getByID($row['techPersonID']);
-                    if (!empty($tech)) {
-                        $output .= Format::small(Format::name($tech['title'], $tech['preferredName'], $tech['surname'], 'Staff'));
+                    if (!empty($row['surnameTech'])) {
+                        $output .= Format::small(Format::name($row['titleTech'], $row['preferredNameTech'], $row['surnameTech'], 'Staff'));
                     }
 
                     return $output;
