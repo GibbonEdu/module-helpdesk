@@ -76,11 +76,14 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_create.p
     $techGroupGateway = $container->get(TechGroupGateway::class);
 
     $createdOnBehalf = false;
-    if (isset($_POST['createFor']) && $_POST['createFor'] != 0 && $techGroupGateway->getPermissionValue($gibbonPersonID, 'createIssueForOther')) {
+
+    if(empty($_POST['createFor'])) {
+        $data['gibbonPersonID'] = $gibbonPersonID;
+    } else if (isset($_POST['createFor']) && $_POST['createFor'] != 0 && $techGroupGateway->getPermissionValue($gibbonPersonID, 'createIssueForOther')) {
         $data['gibbonPersonID'] = $_POST['createFor'];
         $createdOnBehalf = true;
     }
-
+    
     $subcategoryGateway = $container->get(SubcategoryGateway::class);
     
     if (empty($data['issueName'])
