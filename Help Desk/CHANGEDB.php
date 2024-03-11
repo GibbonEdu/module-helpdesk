@@ -425,5 +425,5 @@ $sql[$count][1]="
 //v2.1.04
 $count++;
 $sql[$count][0]="2.1.04";
-$sql[$count][1]="Update helpDeskIssue Set gibbonPersonID = 0000000001 Where gibbonPersonID = 0000000000;end
+$sql[$count][1]="UPDATE helpDeskIssue SET gibbonPersonID = 0000000001 WHERE gibbonPersonID = 0000000000;end
 ";
