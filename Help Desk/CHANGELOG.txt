@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+
+v2.1.04
+-------
+Fixed the bug in the create issues page so that the user is automatically detected when creating the issue for self.
+
 v2.1.03
 -------
 Added the option to search owners and technicians in Issues page
