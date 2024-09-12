@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+v2.2.00
+-------
+Transferred ownership from Ross Parker to Gibbon Foundation
 
 v2.1.04
 -------

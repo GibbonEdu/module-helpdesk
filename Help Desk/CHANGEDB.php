@@ -427,3 +427,10 @@ $count++;
 $sql[$count][0]="2.1.04";
 $sql[$count][1]="UPDATE helpDeskIssue SET gibbonPersonID = 0000000001 WHERE gibbonPersonID = 0000000000;end
 ";
+
+//v2.2.00
+++$count;
+$sql[$count][0] = '2.2.00';
+$sql[$count][1] = "
+UPDATE gibbonModule SET author='Gibbon Foundation', url='https://gibbonedu.org' WHERE name='Help Desk';end
+";
