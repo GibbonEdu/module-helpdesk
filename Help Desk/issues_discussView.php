@@ -119,11 +119,6 @@ if (!isModuleAccessible($guid, $connection2)) {
                                 ->addParam('issueID', $issueID);
                     }
                 } else {
-                    $table->addHeaderAction('refresh', __('Refresh'))
-                            ->setIcon('refresh')
-                            ->setURL('/modules/' . $session->get('module') . '/issues_discussView.php')
-                            ->addParam('issueID', $issueID);
-
                     if (($techGroupGateway->getPermissionValue($gibbonPersonID, 'reassignIssue') && !$isPersonsIssue) || $hasFullAccess) {
                         $table->addHeaderAction('reassign', __('Reassign'))
                                 ->setIcon('attendance')
@@ -172,6 +167,7 @@ if (!isModuleAccessible($guid, $connection2)) {
 
             if ($isTechnician && !$isPersonsIssue && $settingGateway->getSettingByScope('Help Desk', 'techNotes')) {
                 $form = Form::create('techNotes',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/issues_discussNoteProccess.php', 'post');
+                $form->setAttribute('x-data', '{comments: false, invalid: false, submitting: false}');
                 $form->addHiddenValue('issueID', $issueID);
                 $form->addHiddenValue('address', $session->get('address'));
 
@@ -179,21 +175,16 @@ if (!isModuleAccessible($guid, $connection2)) {
                     $col = $row->addColumn();
                         $col->addHeading(__('Technician Notes'))->addClass('inline-block');
 
-                    $col->addWebLink('<img title="'.__('Add Technician Note').'" src="./themes/'.$session->get('gibbonThemeName').'/img/plus.png" />')
-                        ->addData('toggle', '.techNote')
-                        ->addClass('floatRight');
+                    $col->addButton(__('Add Technician Note'))->setIcon('add')->addClass('float-right')->setAttribute('@click', 'comments = !comments');
 
-                $row = $form->addRow()->setClass('techNote hidden flex flex-col sm:flex-row items-stretch sm:items-center');
+                $row = $form->addRow()->setClass('flex flex-col sm:flex-row items-stretch sm:items-center')->setAttribute('x-cloak')->setAttribute('x-show', 'comments');
                     $col = $row->addColumn();
                         $col->addLabel('techNote', __('Technician Note'));
                         $col->addEditor('techNote', $guid)
                             ->setRows(5)
                             ->showMedia()
                             ->required();
-
-                $row = $form->addRow()->setClass('techNote hidden flex flex-col sm:flex-row items-stretch sm:items-center');;
-                    $row->addFooter();
-                    $row->addSubmit();
+                        $col->addSubmit();
 
                 $issueNoteGateway = $container->get(IssueNoteGateway::class);
                 $notes = $issueNoteGateway->getIssueNotesByID($issueID)->fetchAll();
@@ -212,13 +203,14 @@ if (!isModuleAccessible($guid, $connection2)) {
 
 
             $form = Form::create('issueDiscuss',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/issues_discussPostProccess.php?issueID=' . $issueID, 'post');
+            $form->setAttribute('x-data', '{comments: false, invalid: false, submitting: false}');
             $form->addHiddenValue('address', $session->get('address'));
             $row = $form->addRow();
             $col = $row->addColumn();
                 $col->addHeading(__('Comments'))->addClass('inline-block');
 
             if ($issue['status'] == 'Pending' && ($isRelated || $hasFullAccess)) {
-                $col->addWebLink('<img title="'.__('Add Comment').'" src="./themes/'.$session->get('gibbonThemeName').'/img/plus.png" />')->addData('toggle', '.comment')->addClass('floatRight');
+                $col->addButton(__('Add Comment'))->setIcon('add')->addClass('float-right')->setAttribute('@click', 'comments = !comments');
                 
                 if ($isTechnician) {
                     $replyTemplateGateway = $container->get(ReplyTemplateGateway::class);
@@ -232,25 +224,20 @@ if (!isModuleAccessible($guid, $connection2)) {
                         $templates[$replyTemplate['helpDeskReplyTemplateID']] = $replyTemplate['body'];
                     }
                     if ($templates != NULL) {
-                        $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
+                        $row = $form->addRow()->setClass('flex flex-col sm:flex-row items-stretch sm:items-center')->setAttribute('x-cloak')->setAttribute('x-show', 'comments');
                             $row->addLabel('replyTemplates', __('Reply Templates'));
                             $row->addSelect('replyTemplates')
                                 ->fromArray($templateNames)->placeholder('Select a Reply Template');
                     }
                 }
-                $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
+                $row = $form->addRow()->setClass('flex flex-col sm:flex-row items-stretch sm:items-center')->setAttribute('x-cloak')->setAttribute('x-show', 'comments');
                     $column = $row->addColumn();
                     $column->addLabel('comment', __('Comment'));
                     $column->addEditor('comment', $guid)
                         ->setRows(5)
                         ->showMedia()
                         ->required();
-
-                $row = $form->addRow()->setClass('comment hidden flex flex-col sm:flex-row items-stretch sm:items-center');
-                    $row->addFooter();
-                    $row->addSubmit();
-                
-                
+                    $column->addSubmit();
                
             }
 

@@ -105,7 +105,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     $form->addHiddenValue('q', '/modules/' . $moduleName . '/issues_view.php');
     $form->addHiddenValue('address', $session->get('address'));
 
-    $form->setClass('noIntBorder fullWidth standardForm');
+    $form->setClass('noIntBorder w-full standardForm');
     $form->setTitle(__('Search & Filter'));
 
     $row = $form->addRow();

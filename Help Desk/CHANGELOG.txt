@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v2.3.00
+-------
+Gibbon v28 support
+
 v2.2.01
 -------
 Fixed CSS bug introduced in last version

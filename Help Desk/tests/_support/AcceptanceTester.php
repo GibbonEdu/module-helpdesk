@@ -314,7 +314,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I = $this;
         $I->amOnModulePage('Help Desk', 'helpDesk_manageDepartments.php');
         $I->click("Delete", "//td[contains(text(),'Test Department')]//..");
-        $I->click('Yes');
+        $I->click('Delete');
         $I->seeSuccessMessage();
     }
     
@@ -330,7 +330,7 @@ class AcceptanceTester extends \Codeception\Actor
     {
         $I = $this;
         $I->click("Delete", "//td[contains(text(),'Test Subcategory')]//..");
-        $I->click('Yes');
+        $I->click('Delete');
         $I->seeSuccessMessage();
     }
     
