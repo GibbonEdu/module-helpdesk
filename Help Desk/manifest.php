@@ -25,7 +25,7 @@ $description    = 'A virtual help desk module for Gibbon.';
 $entryURL       = 'issues_view.php';
 $type           = 'Additional';
 $category       = 'Other';
-$version        = '2.3.00';
+$version        = '2.3.01';
 $author         = "Gibbon Foundation";
 $url            = "https://gibbonedu.org";
 

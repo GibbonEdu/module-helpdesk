@@ -46,7 +46,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
         }, []);
 
         unset($techs[$technicianID]);
-        $form = DeleteForm::createForm($session->get('absoluteURL') . '/modules/' . $session->get('module') . '/helpDesk_technicianDeleteProcess.php?technicianID=' . $technicianID, false, false);
+        $form = DeleteForm::createForm($session->get('absoluteURL') . '/modules/' . $session->get('module') . '/helpDesk_technicianDeleteProcess.php', false, false);
+        $form->addHiddenValue('technicianID', $technicianID);
 
         $form->addHiddenValue('address', $session->get('address'));
         $row = $form->addRow();

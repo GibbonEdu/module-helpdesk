@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+
+v2.3.00
+-------
+Change deletion actions to POST from GET
+
 v2.3.00
 -------
 Gibbon v28 support
