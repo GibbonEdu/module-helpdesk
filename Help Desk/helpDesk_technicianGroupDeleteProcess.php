@@ -44,7 +44,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manageT
         exit();
     }
 
-    $groupID = $_GET['groupID'] ?? '';
+    $groupID = $_POST['groupID'] ?? '';
     if (empty($groupID) || !$techGroupGateway->exists($groupID)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");

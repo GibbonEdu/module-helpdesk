@@ -44,7 +44,8 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
 
         //Make sure that there are other groups aside from the group being deleted
         if ($techGroupGateway->countAll() > 1) {
-            $form = DeleteForm::createForm($session->get('absoluteURL') . '/modules/' . $session->get('module') . "/helpDesk_technicianGroupDeleteProcess.php?groupID=$groupID", false, false);
+            $form = DeleteForm::createForm($session->get('absoluteURL') . '/modules/' . $session->get('module') . "/helpDesk_technicianGroupDeleteProcess.php", false, false);
+            $form->addHiddenValue('groupID', $groupID);
             $form->addHiddenValue('address', $session->get('address'));
             $form->setTitle(__($values['groupName']));
             $row = $form->addRow();

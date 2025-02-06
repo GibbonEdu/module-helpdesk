@@ -36,7 +36,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
     //Proceed!
     $URL .= '/helpDesk_manageTechnicians.php';
 
-    $technicianID = $_GET['technicianID'] ?? '';
+    $technicianID = $_POST['technicianID'] ?? '';
     $newTechnicianID = $_POST['newTechnicianID'] ?? '';
     $technicianGateway = $container->get(TechnicianGateway::class);
 
