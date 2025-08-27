@@ -35,7 +35,7 @@ use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 use Gibbon\Domain\System\SettingGateway;
 
-//Module includes
+// Module includes
 require_once __DIR__ . '/moduleFunctions.php';
 
 $page->breadcrumbs->add(__('Issues'));
@@ -79,7 +79,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         ->sortBy('issueID', 'DESC')
         ->fromPOST();
 
-    //Set up Relation data
+    // Set up Relation data
     $relations = [];
 
     if ($techGroupGateway->getPermissionValue($gibbonPersonID, 'viewIssue')) {
@@ -98,7 +98,7 @@ if (!isModuleAccessible($guid, $connection2)) {
         $relation = 'My Issues';
     }
 
-    //Search Form
+    // Search Form
     $form = Form::create('searchForm', $session->get('absoluteURL') . '/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
@@ -115,21 +115,21 @@ if (!isModuleAccessible($guid, $connection2)) {
             ->setValue($criteria->getSearchText());
 
     if (count($relations) > 1) {
-        $row = $form->addRow()->addClass('advancedOptions hidden');
+        $row = $form->addRow()->advancedOptions();
             $row->addLabel('relation', __('Relation'));
             $row->addSelect('relation')
                 ->fromArray($relations)
                 ->selected($relation);
     }
 
-    $row = $form->addRow()->addClass('advancedOptions hidden');
+    $row = $form->addRow()->advancedOptions();
         $row->addLabel('startDate', __('Start Date Filter'));
         $row->addDate('startDate')
             ->setDateFromValue($startDate)
             ->chainedTo('endDate')
             ->required();
 
-    $row = $form->addRow()->addClass('advancedOptions hidden');
+    $row = $form->addRow()->advancedOptions();
         $row->addLabel('endDate', __('End Date Filter'));
         $row->addDate('endDate')
             ->setDateFromValue($endDate)
@@ -137,9 +137,7 @@ if (!isModuleAccessible($guid, $connection2)) {
             ->required();
 
     $row = $form->addRow();
-        $row->addContent('<a class="button rounded-sm" onclick="false" data-toggle=".advancedOptions">'.__('Advanced Options').'</a>')
-                ->wrap('<span class="small">', '</span>')
-                ->setClass('left');
+        $row->addAdvancedOptionsToggle();
         $row->addSearchSubmit($session, __('Clear Filters'));
 
     echo $form->getOutput();
@@ -360,6 +358,5 @@ if (!isModuleAccessible($guid, $connection2)) {
             });
 
     echo $table->render($issues);
-
 }
 ?>
