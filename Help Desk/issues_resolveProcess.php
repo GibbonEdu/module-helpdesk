@@ -27,8 +27,6 @@ use Gibbon\Module\HelpDesk\Domain\TechGroupGateway;
 use Gibbon\Module\HelpDesk\Domain\TechnicianGateway;
 
 //Bit of a cheat, but needed for gateway to work
-$_POST['address'] = '/modules/Help Desk/issues_resolveProcess.php';
-
 require_once '../../gibbon.php';
 
 $URL = $session->get('absoluteURL') . '/index.php?q=/modules/' . $session->get('module') . '/issues_view.php';

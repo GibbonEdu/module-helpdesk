@@ -114,7 +114,7 @@ function formatExpandableSection($title, $content) {
     $output = '';
 
     $output .= '<h6>' . $title . '</h6></br>';
-    $output .= nl2brr($content);
+    $output .= nl2br($content);
 
     return $output;
 }

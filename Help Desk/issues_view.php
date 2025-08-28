@@ -47,8 +47,11 @@ if (!isModuleAccessible($guid, $connection2)) {
     $gibbonPersonID = $session->get('gibbonPersonID');
     $moduleName = $session->get('module');
 
-    $schoolYear = $container->get(SchoolYearGateway::class)->getByID($session->get('gibbonSchoolYearID'), ['firstDay', 'lastDay']);
-    $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : ($schoolYear['firstDay'] ?? null);
+    $schoolYearGateway = $container->get(SchoolYearGateway::class);
+    $schoolYear = $schoolYearGateway->getByID($session->get('gibbonSchoolYearID'), ['firstDay', 'lastDay']);
+    $prevSchoolYear = $schoolYearGateway->getPreviousSchoolYearByID($session->get('gibbonSchoolYearID'));
+
+    $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : ($prevSchoolYear['lastDay'] ?? $schoolYear['firstDay'] :: null);
     $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : ($schoolYear['lastDay'] ?? null);
     
     $relation = $_GET['relation'] ?? null;
