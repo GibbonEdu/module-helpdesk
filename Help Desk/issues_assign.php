@@ -52,12 +52,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
                 $group[$item['technicianID']] = Format::name($item['title'], $item['preferredName'], $item['surname'], 'Student', true) . ' (' . $item['groupName'] . ')';
                 return $group;
             }, []);
-
-            $ownerTech = $technicianGateway->getTechnicianByPersonID($issue['gibbonPersonID']);
-            if($ownerTech->isNotEmpty()) {
-                unset($techs[$ownerTech->fetch()['technicianID']]);
-            }  
-            
+                        
             $form = Form::create('assignIssue',  $session->get('absoluteURL') . '/modules/' . $session->get('module') . '/issues_assignProcess.php?issueID=' . $issueID . '&permission=' . $permission, 'post');
             $form->addHiddenValue('address', $session->get('address'));
 
