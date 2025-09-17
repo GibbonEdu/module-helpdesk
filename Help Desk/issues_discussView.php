@@ -268,7 +268,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 ?>
                 <script>
                 //Javascript to change reply when template selector is changed.
-                    <?php echo 'var templates = ' . json_encode($templates) . ';'; ?>
+                    <?php echo 'var templates = ' . json_encode($templates ?? '') . ';'; ?>
                     $("select[name=replyTemplates]").on('change', function(){
                         var templateID = $(this).val();
                         if (templateID != '' && templateID >= 0) {
