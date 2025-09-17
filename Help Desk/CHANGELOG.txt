@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v2.3.03
+-------
+Added the option to allow the creator of the ticket to also be assigned as the technician
+
 v2.3.02
 -------
 Fixed the issue of "Advanced Options" not working in the Issues Page

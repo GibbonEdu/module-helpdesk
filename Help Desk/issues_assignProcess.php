@@ -83,13 +83,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/issues_view.php
     }
 
     $technician = $technician->fetch();
-
-    if ($technician['gibbonPersonID'] == $issue['gibbonPersonID']) {
-        $URL .= "/issues_assign.php&issueID=$issueID&return=error1";
-        header("Location: {$URL}");
-        exit();
-    }
-        
+            
     if (!$issueGateway->update($issueID, ['technicianID' => $technicianID, 'status' => 'Pending'])) {
         $URL .= "/issues_assign.php&issueID=$issueID&technicianID=$technicianID&return=error2";
         header("Location: {$URL}");
