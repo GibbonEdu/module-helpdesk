@@ -51,7 +51,7 @@ if (!isModuleAccessible($guid, $connection2)) {
     $schoolYear = $schoolYearGateway->getByID($session->get('gibbonSchoolYearID'), ['firstDay', 'lastDay']);
     $prevSchoolYear = $schoolYearGateway->getPreviousSchoolYearByID($session->get('gibbonSchoolYearID'));
 
-    $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : ($prevSchoolYear['lastDay'] ?? $schoolYear['firstDay'] :: null);
+    $startDate = isset($_GET['startDate']) ? Format::dateConvert($_GET['startDate']) : ($prevSchoolYear['lastDay'] ?? $schoolYear['firstDay'] ?? null);
     $endDate = isset($_GET['endDate']) ? Format::dateConvert($_GET['endDate']) : ($schoolYear['lastDay'] ?? null);
     
     $relation = $_GET['relation'] ?? null;
