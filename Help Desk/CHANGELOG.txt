@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+v2.3.04
+-------
+Fixed Button::setIcon() calls on Discuss Issue to use the Gibbon v28+ icon library API
+Replaced removed theme icon names (internalAssessment, reincarnate) with current Heroicon names
+
 v2.3.03
 -------
 Added the option to allow the creator of the ticket to also be assigned as the technician

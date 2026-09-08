@@ -355,7 +355,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                         $actions->addAction('reincarnate', __('Reincarnate'))
                                 ->directLink()
                                 ->setURL('/modules/' . $moduleName . '/issues_reincarnateProcess.php')
-                                ->setIcon('reincarnate');
+                                ->setIcon('refresh');
                     }
                 }
             });

@@ -78,7 +78,7 @@ if (!isActionAccessible($guid, $connection2, '/modules/Help Desk/helpDesk_manage
                         ->setURL('/modules/' . $moduleName . '/helpDesk_setTechGroup.php');
 
                 $actions->addAction('stats', __('Stats'))
-                        ->setIcon('internalAssessment')
+                        ->setIcon('document')
                         ->setURL('/modules/' . $moduleName . '/helpDesk_technicianStats.php');
 
                 $actions->addAction('delete', __('Delete'))
