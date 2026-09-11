@@ -174,8 +174,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $row = $form->addRow();
                     $col = $row->addColumn();
                         $col->addHeading(__('Technician Notes'))->addClass('inline-block');
-
-                    $col->addButton(__('Add Technician Note'))->setIcon('add')->addClass('float-right')->setAttribute('@click', 'comments = !comments');
+                        $col->addButton(__('Add Technician Note'))->setIcon('solid', 'add')->addClass('float-right')->setAttribute('@click', 'comments = !comments');
 
                 $row = $form->addRow()->setClass('flex flex-col sm:flex-row items-stretch sm:items-center')->setAttribute('x-cloak')->setAttribute('x-show', 'comments');
                     $col = $row->addColumn();
@@ -210,7 +209,7 @@ if (!isModuleAccessible($guid, $connection2)) {
                 $col->addHeading(__('Comments'))->addClass('inline-block');
 
             if ($issue['status'] == 'Pending' && ($isRelated || $hasFullAccess)) {
-                $col->addButton(__('Add Comment'))->setIcon('add')->addClass('float-right')->setAttribute('@click', 'comments = !comments');
+                $col->addButton(__('Add Comment'))->setIcon('solid', 'add')->addClass('float-right')->setAttribute('@click', 'comments = !comments');
                 
                 if ($isTechnician) {
                     $replyTemplateGateway = $container->get(ReplyTemplateGateway::class);

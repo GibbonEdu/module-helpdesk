@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v2.3.04
+-------
+Fixed the issue with incorrect method call in Discuss View Page 
+
 v2.3.03
 -------
 Added the option to allow the creator of the ticket to also be assigned as the technician
