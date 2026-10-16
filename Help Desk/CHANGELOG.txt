@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+v2.3.04
+-------
+Improved the handling of log filters and stored log details
 
 v2.3.04
 -------
