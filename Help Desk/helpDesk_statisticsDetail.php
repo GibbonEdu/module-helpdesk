@@ -102,7 +102,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             $issueGateway = $container->get(IssueGateway::class);
             $table->addColumn('issueID', __('Issue'))
                 ->format(function ($log) use ($issueGateway) {
-                    $array = unserialize($log['serialisedArray']);
+                    $array = LogGateway::getLogData($log['serialisedArray'] ?? '');
 
                     $issue = $issueGateway->getByID($array['issueID']);
                     if (!empty($issue)) {
@@ -117,7 +117,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             $technicianGateway = $container->get(TechnicianGateway::class);
             $table->addColumn('technicianID', __('Technician'))
                 ->format(function ($log) use ($technicianGateway) {
-                    $array = unserialize($log['serialisedArray']);
+                    $array = LogGateway::getLogData($log['serialisedArray'] ?? '');
 
                     $technician = $technicianGateway->getTechnician($array['technicianID']);
                     if ($technician->isNotEmpty()) {
@@ -133,7 +133,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             $techGroupGateway = $container->get(TechGroupGateway::class);
             $table->addColumn('technicianID', __($new ? 'New Group' : 'Group'))
                 ->format(function ($log) use ($techGroupGateway, $new) {
-                    $array = unserialize($log['serialisedArray']);
+                    $array = LogGateway::getLogData($log['serialisedArray'] ?? '');
 
                     $group = $techGroupGateway->getByID($array[$new ? 'newGroupID' : 'groupID']);
                     if (!empty($group)) {
@@ -178,7 +178,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             $issueDisucssGateway = $container->get(IssueDiscussGateway::class);
             $table->addColumn('issueDiscussID', __('Issue Discss'))
                 ->format(function ($log) use ($issueDisucssGateway) {
-                    $array = unserialize($log['serialisedArray']);
+                    $array = LogGateway::getLogData($log['serialisedArray'] ?? '');
 
                     $issueDiscuss = $issueDisucssGateway->getByID($array['issueDiscussID']);
                     if (!empty($issueDiscuss)) {
@@ -198,7 +198,7 @@ if (!isActionAccessible($guid, $connection2, "/modules/Help Desk/helpDesk_statis
             $userGateway = $container->get(UserGateway::class);
             $table->addColumn('person', __('Person'))
                 ->format(function ($log) use ($userGateway) {
-                    $array = unserialize($log['serialisedArray']);
+                    $array = LogGateway::getLogData($log['serialisedArray'] ?? '');
 
                     $person = $userGateway->getByID($array['gibbonPersonID']);
                     if (!empty($person)) {
